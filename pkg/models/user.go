@@ -40,7 +40,7 @@ type User struct {
 type Tenant struct {
 	ID        string    `json:"id" db:"id"`
 	Name      string    `json:"name" db:"name"`
-	Domain    string    `json:"domain,omitempty" db:"domain"`
+	Domain    *string   `json:"domain,omitempty" db:"domain"`
 	Plan      string    `json:"plan" db:"plan"`
 	IsActive  bool      `json:"is_active" db:"is_active"`
 	Settings  []byte    `json:"settings,omitempty" db:"settings"`

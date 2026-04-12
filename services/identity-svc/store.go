@@ -229,7 +229,7 @@ func (s *Store) CreateSession(ctx context.Context, userID, tenantID, tokenHash, 
 	err := s.db.Pool.QueryRow(ctx,
 		`INSERT INTO sessions (user_id, tenant_id, token_hash, ip, user_agent, device_name, expires_at)
 		 VALUES ($1, $2, $3, $4::inet, $5, $6, $7)
-		 RETURNING id, user_id, tenant_id, ip, user_agent, device_name, last_active_at, expires_at, created_at`,
+		 RETURNING id, user_id, tenant_id, COALESCE(host(ip),''), COALESCE(user_agent,''), COALESCE(device_name,''), last_active_at, expires_at, created_at`,
 		userID, tenantID, tokenHash, nilIfEmpty(ip), userAgent, deviceName, expiresAt,
 	).Scan(
 		&sess.ID, &sess.UserID, &sess.TenantID, &sess.IP, &sess.UserAgent,

@@ -1,0 +1,4 @@
+FROM node:20-alpine
+WORKDIR /app
+# Dependencies are installed at container start via `npm ci` in the compose command,
+# so we only need the runtime here. The source is mounted as a volume.

@@ -38,7 +38,7 @@ type BrokerTemplate struct {
 	Method       string          `json:"method" db:"method"`
 	URLTemplate  string          `json:"url_template" db:"url_template"`
 	Headers      json.RawMessage `json:"headers" db:"headers"`
-	BodyTemplate json.RawMessage `json:"body_template" db:"body_template"`
+	BodyTemplate string          `json:"body_template" db:"body_template"`
 	AuthType     string          `json:"auth_type" db:"auth_type"`
 	ResponseMapping json.RawMessage `json:"response_mapping" db:"response_mapping"`
 	PostbackConfig  json.RawMessage `json:"postback_config,omitempty" db:"postback_config"`

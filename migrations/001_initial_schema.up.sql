@@ -94,7 +94,7 @@ CREATE TABLE broker_templates (
     method VARCHAR(10) NOT NULL DEFAULT 'POST',
     url_template TEXT NOT NULL,
     headers JSONB DEFAULT '{}',
-    body_template JSONB NOT NULL,
+    body_template TEXT NOT NULL DEFAULT '',
     auth_type VARCHAR(50) NOT NULL DEFAULT 'api_key',
     response_mapping JSONB NOT NULL DEFAULT '{}',
     postback_config JSONB,
@@ -153,7 +153,7 @@ CREATE INDEX idx_distribution_rules_active ON distribution_rules(tenant_id, is_a
 CREATE TABLE leads (
     id UUID NOT NULL DEFAULT uuid_generate_v4(),
     tenant_id UUID NOT NULL,
-    affiliate_id UUID NOT NULL,
+    affiliate_id UUID,
     idempotency_key VARCHAR(255),
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
@@ -178,7 +178,9 @@ CREATE INDEX idx_leads_status ON leads(tenant_id, status, created_at DESC);
 CREATE INDEX idx_leads_country ON leads(tenant_id, country, created_at DESC);
 CREATE INDEX idx_leads_email ON leads(tenant_id, email);
 CREATE INDEX idx_leads_idempotency ON leads(tenant_id, idempotency_key) WHERE idempotency_key IS NOT NULL;
-CREATE UNIQUE INDEX idx_leads_idempotency_unique ON leads(tenant_id, idempotency_key) WHERE idempotency_key IS NOT NULL;
+-- NOTE: unique constraint on partitioned table must include the partition key (created_at).
+-- Global idempotency is enforced at the application level using the index above.
+CREATE UNIQUE INDEX idx_leads_idempotency_unique ON leads(tenant_id, idempotency_key, created_at) WHERE idempotency_key IS NOT NULL;
 
 -- Create partitions for 2026
 CREATE TABLE leads_2026_01 PARTITION OF leads FOR VALUES FROM ('2026-01-01') TO ('2026-02-01');

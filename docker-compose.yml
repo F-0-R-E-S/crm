@@ -26,8 +26,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./migrations/001_initial_schema.up.sql:/docker-entrypoint-initdb.d/001_schema.sql
+      - ./migrations/002_rbac_sessions_invites.up.sql:/docker-entrypoint-initdb.d/002_rbac.sql
+      - ./migrations/003_affiliate_hierarchy_postbacks.up.sql:/docker-entrypoint-initdb.d/003_affiliate.sql
       - ./migrations/003_seed_broker_templates.up.sql:/docker-entrypoint-initdb.d/003_seed.sql
       - ./migrations/004_assistant_schema.up.sql:/docker-entrypoint-initdb.d/004_assistant.sql
+      - ./migrations/004_onboarding_wizard.up.sql:/docker-entrypoint-initdb.d/004_onboarding.sql
+      - ./migrations/004_add_lead_sub_params.up.sql:/docker-entrypoint-initdb.d/004_lead_sub_params.sql
+      - ./migrations/005_uad_scenarios.up.sql:/docker-entrypoint-initdb.d/005_uad.sql
+      - ./migrations/006_streams_2_to_6.up.sql:/docker-entrypoint-initdb.d/006_streams.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U gambchamp"]
       interval: 5s
@@ -80,7 +86,7 @@ services:
       - "8080:8080"
     environment:
       PORT: "8080"
-      JWT_PUBLIC_KEY: "dev-public-key"
+      JWT_SECRET: "dev-secret-change-in-production"
       REDIS_URL: "redis://redis:6379"
       LEAD_INTAKE_ADDR: "http://lead-intake:8001"
       ROUTING_ENGINE_ADDR: "http://routing-engine:8002"
@@ -232,8 +238,7 @@ services:
     environment:
       PORT: "8010"
       DB_URL: "postgres://gambchamp:gambchamp_dev@postgres:5432/gambchamp?sslmode=disable"
-      JWT_PRIVATE_KEY: "dev-private-key"
-      JWT_PUBLIC_KEY: "dev-public-key"
+      JWT_SECRET: "dev-secret-change-in-production"
 
   analytics:
     <<: *go-service
@@ -274,6 +279,17 @@ services:
       NOTIFICATION_ADDR: "http://notification:8008"
       AUTOLOGIN_ADDR: "http://autologin:8006"
       ANALYTICS_ADDR: "http://analytics:8011"
+
+  # Frontend
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "${WEB_PORT:-80}:80"
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
 
   # Monitoring
   prometheus:
