@@ -14,10 +14,20 @@ const navItems = [
   { path: '/conversions',  label: 'Conversions',  icon: '💰' },
   { path: '/marketplace',  label: 'Marketplace',  icon: '🛒' },
   { path: '/analytics',    label: 'Analytics',    icon: '📊' },
-  { path: '/settings',     label: 'Settings',     icon: '⚙' },
+  { path: '/fraud',            label: 'Fraud',            icon: '🛡', section: 'Fraud & Security' },
+  { path: '/fraud/blacklists', label: 'Blacklists',       icon: '⊘' },
+  { path: '/fraud/profiles',   label: 'Fraud Profiles',   icon: '☰' },
+  { path: '/fraud/shaves',     label: 'Shave Detection',  icon: '⚠' },
+  { path: '/fraud/analytics',  label: 'Fraud Analytics',  icon: '◈' },
+  { path: '/fraud/experiments', label: 'A/B Tests',       icon: '⇅' },
+  { path: '/status-groups',    label: 'Status Groups',    icon: '◉', section: 'Status & Compliance' },
+  { path: '/status-analytics', label: 'Status Analytics', icon: '◔' },
+  { path: '/compliance',       label: 'Compliance',       icon: '✓' },
+  { path: '/audit-log',        label: 'Audit Log',        icon: '📋' },
+  { path: '/settings',  label: 'Settings',  icon: '⚙', section: 'System' },
 ]
 
-const sectionBreak = 5 // insert divider after Routing
+// Section dividers are now driven by the `section` field on navItems
 
 interface MeResponse {
   id: string
@@ -94,15 +104,15 @@ export default function Layout() {
         </div>
 
         {/* Nav */}
-        <nav style={{ flex: 1 }}>
-          {navItems.map((item, i) => (
+        <nav style={{ flex: 1, overflowY: 'auto' }}>
+          {navItems.map((item) => (
             <>
-              {i === sectionBreak && (
-                <div key="divider" style={{
+              {'section' in item && item.section && (
+                <div key={`section-${item.section}`} style={{
                   fontSize: 10, fontWeight: 600, letterSpacing: '0.1em',
                   color: 'var(--text-3)', textTransform: 'uppercase',
-                  padding: '8px 8px 4px', marginTop: 4,
-                }}>Ops</div>
+                  padding: '8px 8px 4px', marginTop: 8,
+                }}>{(item as { section: string }).section}</div>
               )}
               <NavLink
                 key={item.path}

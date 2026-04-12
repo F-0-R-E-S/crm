@@ -5,6 +5,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"time"
 
 	apperrors "github.com/gambchamp/crm/pkg/errors"
@@ -15,17 +16,21 @@ import (
 
 // Handler holds dependencies for the status-sync HTTP handlers.
 type Handler struct {
-	logger *slog.Logger
-	store  *Store
-	nats   *messaging.NATSClient
+	logger     *slog.Logger
+	store      *Store
+	nats       *messaging.NATSClient
+	normalizer *StatusNormalizer
+	detector   *AnomalyDetector
 }
 
 // NewHandler creates a ready-to-use Handler.
-func NewHandler(logger *slog.Logger, store *Store, nats *messaging.NATSClient) *Handler {
+func NewHandler(logger *slog.Logger, store *Store, nats *messaging.NATSClient, normalizer *StatusNormalizer, detector *AnomalyDetector) *Handler {
 	return &Handler{
-		logger: logger,
-		store:  store,
-		nats:   nats,
+		logger:     logger,
+		store:      store,
+		nats:       nats,
+		normalizer: normalizer,
+		detector:   detector,
 	}
 }
 
@@ -33,6 +38,26 @@ func NewHandler(logger *slog.Logger, store *Store, nats *messaging.NATSClient) *
 func (h *Handler) Register(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/v1/postback/{broker_id}", h.HandlePostback)
 	mux.HandleFunc("GET /api/v1/leads/{id}/history", h.GetLeadHistory)
+
+	// Status groups
+	mux.HandleFunc("GET /api/v1/status-groups", h.ListStatusGroups)
+	mux.HandleFunc("POST /api/v1/status-groups", h.CreateStatusGroup)
+	mux.HandleFunc("PUT /api/v1/status-groups/{id}", h.UpdateStatusGroup)
+	mux.HandleFunc("DELETE /api/v1/status-groups/{id}", h.DeleteStatusGroup)
+
+	// Broker status mappings
+	mux.HandleFunc("GET /api/v1/status-groups/mappings/{broker_id}", h.ListBrokerMappings)
+	mux.HandleFunc("POST /api/v1/status-groups/mappings/{broker_id}", h.UpsertBrokerMapping)
+
+	// Status analytics
+	mux.HandleFunc("GET /api/v1/status-analytics/distribution", h.GetStatusDistribution)
+	mux.HandleFunc("GET /api/v1/status-analytics/stale-leads", h.GetStaleLeads)
+
+	// Shave detection / anomalies
+	mux.HandleFunc("GET /api/v1/shave-detection/anomalies", h.ListAnomalies)
+	mux.HandleFunc("POST /api/v1/shave-detection/anomalies/{id}/resolve", h.ResolveAnomaly)
+	mux.HandleFunc("GET /api/v1/shave-detection/rules", h.ListAnomalyRules)
+	mux.HandleFunc("POST /api/v1/shave-detection/rules", h.CreateAnomalyRule)
 }
 
 // ---------------------------------------------------------------------------
@@ -164,11 +189,23 @@ func (h *Handler) HandlePostback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// --- Normalize the status ---
-	normalizedStatus := NormalizeStatus(rawStatus)
+	// Use DB-driven normalizer when available, otherwise fall back to hardcoded.
+	var normalizedStatus string
+	if h.normalizer != nil {
+		normalizedStatus = h.normalizer.NormalizeForBroker(brokerID, rawStatus)
+	} else {
+		normalizedStatus = NormalizeStatus(rawStatus)
+	}
 	oldStatus := string(lead.Status)
+	normalizedOldStatus := NormalizeStatus(oldStatus)
 
 	// --- Shave detection ---
-	shaveDetected := DetectShave(NormalizeStatus(oldStatus), normalizedStatus)
+	var shaveDetected bool
+	if h.normalizer != nil {
+		shaveDetected, _, _ = h.normalizer.DetectShaveEnhanced(normalizedOldStatus, normalizedStatus)
+	} else {
+		shaveDetected = DetectShave(normalizedOldStatus, normalizedStatus)
+	}
 	if shaveDetected {
 		h.logger.Warn("shave detected",
 			"lead_id", lead.ID,
@@ -177,6 +214,40 @@ func (h *Handler) HandlePostback(w http.ResponseWriter, r *http.Request) {
 			"new_status", normalizedStatus,
 			"raw_status", rawStatus,
 		)
+	}
+
+	// --- Anomaly detection ---
+	if h.detector != nil {
+		anomalies, err := h.detector.CheckTransition(ctx, lead.TenantID, brokerID, lead.AffiliateID, lead.ID, normalizedOldStatus, normalizedStatus)
+		if err != nil {
+			h.logger.Error("anomaly detection failed", "lead_id", lead.ID, "error", err)
+		}
+		if len(anomalies) > 0 {
+			for _, a := range anomalies {
+				h.logger.Warn("anomaly rule triggered",
+					"anomaly_type", a.AnomalyType,
+					"severity", a.Severity,
+					"lead_id", lead.ID,
+					"broker_id", brokerID,
+				)
+			}
+			// Publish anomaly event for each detected anomaly.
+			for _, a := range anomalies {
+				anomalyData := map[string]interface{}{
+					"anomaly_id":   a.ID,
+					"tenant_id":    a.TenantID,
+					"broker_id":    a.BrokerID,
+					"affiliate_id": a.AffiliateID,
+					"lead_id":      a.LeadID,
+					"anomaly_type": a.AnomalyType,
+					"severity":     a.Severity,
+					"details":      a.Details,
+				}
+				if pubErr := h.nats.Publish(ctx, events.StatusAnomalyDetected, "status-sync-svc", anomalyData); pubErr != nil {
+					h.logger.Error("failed to publish status.anomaly.detected", "error", pubErr)
+				}
+			}
+		}
 	}
 
 	// --- Update lead status ---
@@ -304,6 +375,426 @@ func (h *Handler) GetLeadHistory(w http.ResponseWriter, r *http.Request) {
 		LeadID:  leadID,
 		History: history,
 	})
+}
+
+// ---------------------------------------------------------------------------
+// GET /api/v1/status-groups
+// ---------------------------------------------------------------------------
+
+func (h *Handler) ListStatusGroups(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	if tenantID == "" {
+		apperrors.NewBadRequest("X-Tenant-ID header is required").WriteJSON(w)
+		return
+	}
+
+	groups, err := h.store.ListStatusGroups(r.Context(), tenantID)
+	if err != nil {
+		h.logger.Error("failed to list status groups", "error", err)
+		apperrors.ErrInternal.WriteJSON(w)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"data": groups,
+	})
+}
+
+// ---------------------------------------------------------------------------
+// POST /api/v1/status-groups
+// ---------------------------------------------------------------------------
+
+func (h *Handler) CreateStatusGroup(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	if tenantID == "" {
+		apperrors.NewBadRequest("X-Tenant-ID header is required").WriteJSON(w)
+		return
+	}
+
+	var group models.StatusGroup
+	if err := json.NewDecoder(r.Body).Decode(&group); err != nil {
+		apperrors.NewBadRequest("invalid JSON body: " + err.Error()).WriteJSON(w)
+		return
+	}
+
+	if group.Name == "" || group.Slug == "" {
+		apperrors.NewValidationError("name and slug are required").WriteJSON(w)
+		return
+	}
+
+	group.TenantID = tenantID
+
+	if err := h.store.CreateStatusGroup(r.Context(), &group); err != nil {
+		h.logger.Error("failed to create status group", "error", err)
+		apperrors.ErrInternal.WriteJSON(w)
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, group)
+}
+
+// ---------------------------------------------------------------------------
+// PUT /api/v1/status-groups/{id}
+// ---------------------------------------------------------------------------
+
+func (h *Handler) UpdateStatusGroup(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	if tenantID == "" {
+		apperrors.NewBadRequest("X-Tenant-ID header is required").WriteJSON(w)
+		return
+	}
+
+	id := r.PathValue("id")
+	if id == "" {
+		apperrors.NewBadRequest("id path parameter is required").WriteJSON(w)
+		return
+	}
+
+	var group models.StatusGroup
+	if err := json.NewDecoder(r.Body).Decode(&group); err != nil {
+		apperrors.NewBadRequest("invalid JSON body: " + err.Error()).WriteJSON(w)
+		return
+	}
+
+	group.ID = id
+	group.TenantID = tenantID
+
+	if err := h.store.UpdateStatusGroup(r.Context(), &group); err != nil {
+		h.logger.Error("failed to update status group", "error", err)
+		apperrors.ErrInternal.WriteJSON(w)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, group)
+}
+
+// ---------------------------------------------------------------------------
+// DELETE /api/v1/status-groups/{id}
+// ---------------------------------------------------------------------------
+
+func (h *Handler) DeleteStatusGroup(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	if tenantID == "" {
+		apperrors.NewBadRequest("X-Tenant-ID header is required").WriteJSON(w)
+		return
+	}
+
+	id := r.PathValue("id")
+	if id == "" {
+		apperrors.NewBadRequest("id path parameter is required").WriteJSON(w)
+		return
+	}
+
+	if err := h.store.DeleteStatusGroup(r.Context(), tenantID, id); err != nil {
+		h.logger.Error("failed to delete status group", "error", err)
+		apperrors.ErrInternal.WriteJSON(w)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"deleted": true,
+	})
+}
+
+// ---------------------------------------------------------------------------
+// GET /api/v1/status-groups/mappings/{broker_id}
+// ---------------------------------------------------------------------------
+
+func (h *Handler) ListBrokerMappings(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	if tenantID == "" {
+		apperrors.NewBadRequest("X-Tenant-ID header is required").WriteJSON(w)
+		return
+	}
+
+	brokerID := r.PathValue("broker_id")
+	if brokerID == "" {
+		apperrors.NewBadRequest("broker_id path parameter is required").WriteJSON(w)
+		return
+	}
+
+	mappings, err := h.store.ListBrokerMappings(r.Context(), tenantID, brokerID)
+	if err != nil {
+		h.logger.Error("failed to list broker mappings", "error", err)
+		apperrors.ErrInternal.WriteJSON(w)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"data": mappings,
+	})
+}
+
+// ---------------------------------------------------------------------------
+// POST /api/v1/status-groups/mappings/{broker_id}
+// ---------------------------------------------------------------------------
+
+func (h *Handler) UpsertBrokerMapping(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	if tenantID == "" {
+		apperrors.NewBadRequest("X-Tenant-ID header is required").WriteJSON(w)
+		return
+	}
+
+	brokerID := r.PathValue("broker_id")
+	if brokerID == "" {
+		apperrors.NewBadRequest("broker_id path parameter is required").WriteJSON(w)
+		return
+	}
+
+	var mapping models.BrokerStatusMapping
+	if err := json.NewDecoder(r.Body).Decode(&mapping); err != nil {
+		apperrors.NewBadRequest("invalid JSON body: " + err.Error()).WriteJSON(w)
+		return
+	}
+
+	if mapping.RawStatus == "" || mapping.StatusGroupSlug == "" {
+		apperrors.NewValidationError("raw_status and status_group_slug are required").WriteJSON(w)
+		return
+	}
+
+	mapping.TenantID = tenantID
+	mapping.BrokerID = brokerID
+
+	if err := h.store.UpsertBrokerMapping(r.Context(), &mapping); err != nil {
+		h.logger.Error("failed to upsert broker mapping", "error", err)
+		apperrors.ErrInternal.WriteJSON(w)
+		return
+	}
+
+	// Reload normalizer cache after mapping change.
+	if h.normalizer != nil {
+		if err := h.normalizer.LoadMappings(r.Context(), tenantID); err != nil {
+			h.logger.Error("failed to reload normalizer mappings", "error", err)
+		}
+	}
+
+	writeJSON(w, http.StatusOK, mapping)
+}
+
+// ---------------------------------------------------------------------------
+// GET /api/v1/status-analytics/distribution
+// ---------------------------------------------------------------------------
+
+func (h *Handler) GetStatusDistribution(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	if tenantID == "" {
+		apperrors.NewBadRequest("X-Tenant-ID header is required").WriteJSON(w)
+		return
+	}
+
+	q := r.URL.Query()
+	brokerID := q.Get("broker_id")
+
+	from := time.Now().UTC().AddDate(0, 0, -30)
+	to := time.Now().UTC()
+
+	if v := q.Get("from"); v != "" {
+		if t, err := time.Parse(time.RFC3339, v); err == nil {
+			from = t
+		}
+	}
+	if v := q.Get("to"); v != "" {
+		if t, err := time.Parse(time.RFC3339, v); err == nil {
+			to = t
+		}
+	}
+
+	entries, err := h.store.GetStatusDistribution(r.Context(), tenantID, brokerID, from, to)
+	if err != nil {
+		h.logger.Error("failed to get status distribution", "error", err)
+		apperrors.ErrInternal.WriteJSON(w)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"data": entries,
+		"from": from.Format(time.RFC3339),
+		"to":   to.Format(time.RFC3339),
+	})
+}
+
+// ---------------------------------------------------------------------------
+// GET /api/v1/status-analytics/stale-leads
+// ---------------------------------------------------------------------------
+
+func (h *Handler) GetStaleLeads(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	if tenantID == "" {
+		apperrors.NewBadRequest("X-Tenant-ID header is required").WriteJSON(w)
+		return
+	}
+
+	thresholdHours := 48
+	if v := r.URL.Query().Get("threshold_hours"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			thresholdHours = n
+		}
+	}
+
+	leads, err := h.store.GetStaleLeads(r.Context(), tenantID, thresholdHours)
+	if err != nil {
+		h.logger.Error("failed to get stale leads", "error", err)
+		apperrors.ErrInternal.WriteJSON(w)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"data":            leads,
+		"threshold_hours": thresholdHours,
+	})
+}
+
+// ---------------------------------------------------------------------------
+// GET /api/v1/shave-detection/anomalies
+// ---------------------------------------------------------------------------
+
+func (h *Handler) ListAnomalies(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	if tenantID == "" {
+		apperrors.NewBadRequest("X-Tenant-ID header is required").WriteJSON(w)
+		return
+	}
+
+	q := r.URL.Query()
+	limit := 50
+	offset := 0
+	if v := q.Get("limit"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 && n <= 200 {
+			limit = n
+		}
+	}
+	if v := q.Get("offset"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n >= 0 {
+			offset = n
+		}
+	}
+
+	var resolved *bool
+	if v := q.Get("resolved"); v != "" {
+		b := v == "true" || v == "1"
+		resolved = &b
+	}
+
+	anomalies, total, err := h.store.ListAnomalies(r.Context(), tenantID, resolved, limit, offset)
+	if err != nil {
+		h.logger.Error("failed to list anomalies", "error", err)
+		apperrors.ErrInternal.WriteJSON(w)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"data":   anomalies,
+		"total":  total,
+		"limit":  limit,
+		"offset": offset,
+	})
+}
+
+// ---------------------------------------------------------------------------
+// POST /api/v1/shave-detection/anomalies/{id}/resolve
+// ---------------------------------------------------------------------------
+
+func (h *Handler) ResolveAnomaly(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	if tenantID == "" {
+		apperrors.NewBadRequest("X-Tenant-ID header is required").WriteJSON(w)
+		return
+	}
+
+	id := r.PathValue("id")
+	if id == "" {
+		apperrors.NewBadRequest("id path parameter is required").WriteJSON(w)
+		return
+	}
+
+	var body struct {
+		UserID string `json:"user_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		apperrors.NewBadRequest("invalid JSON body: " + err.Error()).WriteJSON(w)
+		return
+	}
+	if body.UserID == "" {
+		apperrors.NewValidationError("user_id is required").WriteJSON(w)
+		return
+	}
+
+	if err := h.store.ResolveAnomaly(r.Context(), tenantID, id, body.UserID); err != nil {
+		h.logger.Error("failed to resolve anomaly", "error", err)
+		apperrors.ErrInternal.WriteJSON(w)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"resolved": true,
+	})
+}
+
+// ---------------------------------------------------------------------------
+// GET /api/v1/shave-detection/rules
+// ---------------------------------------------------------------------------
+
+func (h *Handler) ListAnomalyRules(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	if tenantID == "" {
+		apperrors.NewBadRequest("X-Tenant-ID header is required").WriteJSON(w)
+		return
+	}
+
+	rules, err := h.store.ListAnomalyRules(r.Context(), tenantID)
+	if err != nil {
+		h.logger.Error("failed to list anomaly rules", "error", err)
+		apperrors.ErrInternal.WriteJSON(w)
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"data": rules,
+	})
+}
+
+// ---------------------------------------------------------------------------
+// POST /api/v1/shave-detection/rules
+// ---------------------------------------------------------------------------
+
+func (h *Handler) CreateAnomalyRule(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	if tenantID == "" {
+		apperrors.NewBadRequest("X-Tenant-ID header is required").WriteJSON(w)
+		return
+	}
+
+	var rule StatusAnomalyRule
+	if err := json.NewDecoder(r.Body).Decode(&rule); err != nil {
+		apperrors.NewBadRequest("invalid JSON body: " + err.Error()).WriteJSON(w)
+		return
+	}
+
+	if rule.Name == "" || rule.RuleType == "" || rule.Severity == "" {
+		apperrors.NewValidationError("name, rule_type, and severity are required").WriteJSON(w)
+		return
+	}
+
+	validTypes := map[string]bool{"regression": true, "velocity": true, "stuck": true, "pattern": true}
+	if !validTypes[rule.RuleType] {
+		apperrors.NewValidationError("rule_type must be one of: regression, velocity, stuck, pattern").WriteJSON(w)
+		return
+	}
+
+	validSeverities := map[string]bool{"low": true, "medium": true, "high": true, "critical": true}
+	if !validSeverities[rule.Severity] {
+		apperrors.NewValidationError("severity must be one of: low, medium, high, critical").WriteJSON(w)
+		return
+	}
+
+	if err := h.store.CreateAnomalyRule(r.Context(), tenantID, &rule); err != nil {
+		h.logger.Error("failed to create anomaly rule", "error", err)
+		apperrors.ErrInternal.WriteJSON(w)
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, rule)
 }
 
 // ---------------------------------------------------------------------------

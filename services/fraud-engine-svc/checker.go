@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net"
@@ -27,15 +28,17 @@ type CheckRequest struct {
 // FraudChecker performs 5-level fraud verification.
 type FraudChecker struct {
 	redis      *cache.Redis
+	store      *Store
 	logger     *slog.Logger
 	maxmindKey string
 	ipqsKey    string
 }
 
 // NewFraudChecker creates a FraudChecker with the given dependencies.
-func NewFraudChecker(redis *cache.Redis, logger *slog.Logger, maxmindKey, ipqsKey string) *FraudChecker {
+func NewFraudChecker(redis *cache.Redis, store *Store, logger *slog.Logger, maxmindKey, ipqsKey string) *FraudChecker {
 	return &FraudChecker{
 		redis:      redis,
+		store:      store,
 		logger:     logger,
 		maxmindKey: maxmindKey,
 		ipqsKey:    ipqsKey,
@@ -45,6 +48,48 @@ func NewFraudChecker(redis *cache.Redis, logger *slog.Logger, maxmindKey, ipqsKe
 // CheckLead performs all fraud checks and returns a FraudVerificationCard.
 func (fc *FraudChecker) CheckLead(ctx context.Context, req *CheckRequest) (*models.FraudVerificationCard, error) {
 	var checks []models.FraudCheck
+
+	// 0. Blacklist Check — immediate reject if matched
+	if fc.store != nil {
+		blacklistHits, err := fc.store.CheckBlacklist(ctx, req.TenantID, req.IP, req.Email, req.PhoneE164)
+		if err != nil {
+			fc.logger.Warn("blacklist check failed, continuing", "error", err)
+		} else if len(blacklistHits) > 0 {
+			// Build a blacklist check entry
+			reasons := make([]string, 0, len(blacklistHits))
+			for _, hit := range blacklistHits {
+				reasons = append(reasons, fmt.Sprintf("%s:%s", hit.ListType, hit.Value))
+			}
+			checks = append(checks, models.FraudCheck{
+				Category:    "blacklist",
+				CheckName:   "blacklist_match",
+				Score:       0,
+				MaxScore:    100,
+				Result:      "fail",
+				Explanation: fmt.Sprintf("Blacklisted: %s", strings.Join(reasons, ", ")),
+				Provider:    "internal",
+			})
+
+			card := &models.FraudVerificationCard{
+				LeadID:       req.LeadID,
+				OverallScore: 0,
+				Verdict:      "rejected",
+				Checks:       checks,
+				CheckedAt:    time.Now().UTC(),
+			}
+
+			// Persist result
+			fc.persistResult(ctx, req, card)
+
+			fc.logger.Info("fraud check completed (blacklisted)",
+				"lead_id", req.LeadID,
+				"score", 0,
+				"verdict", "rejected",
+				"blacklist_hits", len(blacklistHits),
+			)
+			return card, nil
+		}
+	}
 
 	// 1. IP Check (0-25 points)
 	ipChecks := fc.checkIP(req.IP, req.Country)
@@ -84,6 +129,9 @@ func (fc *FraudChecker) CheckLead(ctx context.Context, req *CheckRequest) (*mode
 		CheckedAt:    time.Now().UTC(),
 	}
 
+	// Persist result
+	fc.persistResult(ctx, req, card)
+
 	fc.logger.Info("fraud check completed",
 		"lead_id", req.LeadID,
 		"score", overallScore,
@@ -91,6 +139,32 @@ func (fc *FraudChecker) CheckLead(ctx context.Context, req *CheckRequest) (*mode
 	)
 
 	return card, nil
+}
+
+// persistResult saves the fraud check result to the database.
+func (fc *FraudChecker) persistResult(ctx context.Context, req *CheckRequest, card *models.FraudVerificationCard) {
+	if fc.store == nil {
+		return
+	}
+
+	checksJSON, err := json.Marshal(card.Checks)
+	if err != nil {
+		fc.logger.Warn("failed to marshal checks for persistence", "error", err)
+		return
+	}
+
+	result := &models.FraudCheckResult{
+		TenantID:     req.TenantID,
+		LeadID:       req.LeadID,
+		OverallScore: card.OverallScore,
+		Verdict:      card.Verdict,
+		Checks:       checksJSON,
+		CheckedAt:    card.CheckedAt,
+	}
+
+	if err := fc.store.SaveFraudCheckResult(ctx, result); err != nil {
+		fc.logger.Warn("failed to persist fraud check result", "error", err, "lead_id", req.LeadID)
+	}
 }
 
 // ---------------------------------------------------------------------------

@@ -28,6 +28,25 @@ const (
 	CapExhausted       = "cap.exhausted"
 	AffiliateCreated   = "affiliate.created"
 	BrokerHealthChanged = "broker.integration.health_changed"
+
+	// Fraud events
+	LeadFraudChecked    = "lead.fraud.checked"
+	BlacklistHit        = "blacklist.hit"
+	BlacklistEntryAdded = "blacklist.entry.added"
+
+	// Shave & status events
+	ShaveAcknowledged     = "shave.acknowledged"
+	StatusAnomalyDetected = "status.anomaly.detected"
+
+	// Compliance events
+	AuditLogCreated      = "audit.log.created"
+	GDPRRequestCreated   = "gdpr.request.created"
+	GDPRRequestCompleted = "gdpr.request.completed"
+
+	// ML fraud events
+	MLModelTrained        = "ml.model.trained"
+	MLModelActivated      = "ml.model.activated"
+	VelocityRuleTriggered = "velocity.rule.triggered"
 )
 
 func New(eventType, source string, data interface{}) CloudEvent {

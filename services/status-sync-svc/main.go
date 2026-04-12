@@ -42,9 +42,21 @@ func main() {
 	defer nc.Close()
 	logger.Info("connected to nats")
 
-	// --- Wire up store + handler ---
+	// --- Wire up store, normalizer, anomaly detector, handler ---
 	store := NewStore(db)
-	h := NewHandler(logger, store, nc)
+
+	normalizer := NewStatusNormalizer(store)
+	// Load initial mappings. Use a background tenant ID; individual requests
+	// can reload per-tenant mappings via the API.
+	if err := normalizer.LoadMappings(ctx, ""); err != nil {
+		logger.Warn("failed to load initial status mappings (non-fatal, will use hardcoded fallback)", "error", err)
+	} else {
+		logger.Info("loaded status group mappings into normalizer cache")
+	}
+
+	detector := NewAnomalyDetector(store, normalizer, logger)
+
+	h := NewHandler(logger, store, nc, normalizer, detector)
 
 	// --- NATS subscriber: lead.delivered ---
 	// Track when leads are delivered to brokers so we can correlate

@@ -18,6 +18,16 @@ import SessionsPage from './pages/SessionsPage'
 import NotificationPreferencesPage from './pages/NotificationPreferencesPage'
 import OnboardingPage from './pages/OnboardingPage'
 import AcceptInvitePage from './pages/AcceptInvitePage'
+import StatusGroupsPage from './pages/StatusGroupsPage'
+import StatusAnalyticsPage from './pages/StatusAnalyticsPage'
+import AuditLogPage from './pages/AuditLogPage'
+import CompliancePage from './pages/CompliancePage'
+import FraudDashboardPage from './pages/FraudDashboardPage'
+import BlacklistsPage from './pages/BlacklistsPage'
+import FraudProfilesPage from './pages/FraudProfilesPage'
+import ShaveDetectionPage from './pages/ShaveDetectionPage'
+import FraudAnalyticsPage from './pages/FraudAnalyticsPage'
+import FraudExperimentsPage from './pages/FraudExperimentsPage'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -56,6 +66,16 @@ export default function App() {
         <Route path="settings/sessions" element={<SessionsPage />} />
         <Route path="settings/notifications" element={<NotificationPreferencesPage />} />
         <Route path="onboarding" element={<OnboardingPage />} />
+        <Route path="fraud" element={<FraudDashboardPage />} />
+        <Route path="fraud/blacklists" element={<BlacklistsPage />} />
+        <Route path="fraud/profiles" element={<FraudProfilesPage />} />
+        <Route path="fraud/shaves" element={<ShaveDetectionPage />} />
+        <Route path="fraud/analytics" element={<FraudAnalyticsPage />} />
+        <Route path="fraud/experiments" element={<FraudExperimentsPage />} />
+        <Route path="status-groups" element={<StatusGroupsPage />} />
+        <Route path="status-analytics" element={<StatusAnalyticsPage />} />
+        <Route path="audit-log" element={<AuditLogPage />} />
+        <Route path="compliance" element={<CompliancePage />} />
       </Route>
     </Routes>
   )
