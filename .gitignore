@@ -1,4 +1,15 @@
-# Go
+# Go binaries (compiled services)
+/identity-svc
+/lead-intake-svc
+/routing-engine-svc
+/broker-adapter-svc
+/fraud-engine-svc
+/status-sync-svc
+/autologin-svc
+/uad-svc
+/notification-svc
+/api-gateway
+/analytics-svc
 bin/
 *.exe
 *.exe~
