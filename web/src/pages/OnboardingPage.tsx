@@ -91,6 +91,10 @@ export default function OnboardingPage() {
   async function completeStep(stepId: string) {
     setCompleting(true)
     try {
+      await api.put(`/onboarding/step/${stepId}/data`, {
+        touched_at: new Date().toISOString(),
+        source: 'web_ui',
+      })
       await api.post(`/onboarding/step/${stepId}/complete`, {})
       await loadState()
     } catch { /* ignore */ }

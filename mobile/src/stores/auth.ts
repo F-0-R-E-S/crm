@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
 import type { User, Tenant } from '../types';
 
+const API_BASE = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8080/api';
+const BASE_URL = `${API_BASE}/v1`;
+
 interface AuthState {
   token: string | null;
   refreshToken: string | null;
@@ -16,7 +19,7 @@ interface AuthState {
   logout: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   token: null,
   refreshToken: null,
   user: null,
@@ -32,8 +35,35 @@ export const useAuthStore = create<AuthState>((set) => ({
         SecureStore.getItemAsync('user'),
         SecureStore.getItemAsync('tenant'),
       ]);
-      const user = userStr ? JSON.parse(userStr) : null;
+
+      let user = userStr ? JSON.parse(userStr) : null;
       const tenant = tenantStr ? JSON.parse(tenantStr) : null;
+
+      if (token) {
+        try {
+          const res = await fetch(`${BASE_URL}/auth/me`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          });
+
+          if (res.ok) {
+            const me = await res.json();
+            user = {
+              id: me.id,
+              email: me.email,
+              name: me.name,
+              role: me.role,
+            } as User;
+            await SecureStore.setItemAsync('user', JSON.stringify(user));
+          }
+        } catch {
+          // ignore /auth/me hydration errors and use locally cached user
+        }
+      }
+
       set({
         token,
         refreshToken,
@@ -76,6 +106,20 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: async () => {
+    const refreshToken = get().refreshToken;
+
+    if (refreshToken) {
+      try {
+        await fetch(`${BASE_URL}/auth/logout`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh_token: refreshToken }),
+        });
+      } catch {
+        // ignore remote logout errors on client cleanup
+      }
+    }
+
     await Promise.all([
       SecureStore.deleteItemAsync('token'),
       SecureStore.deleteItemAsync('refresh_token'),

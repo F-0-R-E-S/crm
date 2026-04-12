@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -6,8 +8,6 @@
    LIQUID GLASS — GambChamp CRM Design System
    iOS 26 / macOS 26 inspired
    ═══════════════════════════════════════════════════════════ */
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
   /* Base */
@@ -335,4 +335,159 @@ html, body, #root {
   width: 23px; height: 23px; border-radius: 50%; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   font-size: 11px; margin-top: 2px;
+}
+
+/* ── Form system ────────────────────────────────────────────── */
+.form-shell {
+  background: var(--glass-light);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border-hi);
+  border-radius: var(--r-xl);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.35),
+              inset 0 1px 0 rgba(255,255,255,0.06);
+  padding: 24px;
+}
+.form-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.form-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.02em;
+}
+.form-subtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-2);
+}
+.form-grid {
+  display: grid;
+  gap: 14px;
+}
+.form-grid-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.form-grid-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 860px) {
+  .form-grid-2,
+  .form-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.form-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-3);
+}
+.form-help {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+.form-control {
+  width: 100%;
+  background: var(--glass-ultra);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--r-md);
+  padding: 10px 13px;
+  font-size: 13px;
+  color: var(--text-1);
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.form-control::placeholder {
+  color: var(--text-3);
+}
+.form-control:focus {
+  border-color: rgba(79,172,254,0.45);
+  box-shadow: 0 0 0 3px rgba(79,172,254,0.12);
+  background: rgba(255,255,255,0.05);
+}
+.form-control:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+textarea.form-control {
+  min-height: 92px;
+  resize: vertical;
+  line-height: 1.45;
+}
+.form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+.form-alert {
+  border-radius: var(--r-md);
+  padding: 10px 13px;
+  border: 1px solid transparent;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.form-alert-error {
+  background: rgba(248,113,113,0.1);
+  border-color: rgba(248,113,113,0.28);
+  color: #f87171;
+}
+.form-alert-success {
+  background: rgba(52,211,153,0.1);
+  border-color: rgba(52,211,153,0.3);
+  color: #34d399;
+}
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(248,113,113,0.12);
+  color: #f87171;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 16px;
+  border-radius: var(--r-pill);
+  border: 1px solid rgba(248,113,113,0.36);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+}
+.btn-danger:hover {
+  background: rgba(248,113,113,0.18);
+  transform: translateY(-1px);
+}
+.btn-danger:active {
+  transform: scale(0.98);
+}
+
+/* ── Button states ───────────────────────────────────────────── */
+.btn-primary:disabled,
+.btn-glass:disabled,
+.btn-ghost:disabled,
+.btn-danger:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+.btn-primary:disabled:hover,
+.btn-glass:disabled:hover,
+.btn-ghost:disabled:hover,
+.btn-danger:disabled:hover {
+  transform: none;
+  box-shadow: none;
 }

@@ -4,7 +4,21 @@ import { useRouter } from 'expo-router';
 import { api } from '../../src/lib/api';
 import { StatusBadge } from '../../src/components/StatusBadge';
 import { colors, spacing, radius, font, shadows } from '../../src/theme';
-import type { Lead, DashboardStats } from '../../src/types';
+import type { Lead } from '../../src/types';
+
+interface AnalyticsDashboardResponse {
+  kpi: {
+    leads_today: number;
+    leads_week: number;
+    leads_month: number;
+    conversion_rate: number;
+    fraud_rate: number;
+    active_brokers: number;
+    active_affiliates: number;
+  };
+  period: string;
+  updated_at: string;
+}
 
 function StatCard({ label, value, color }: { label: string; value: string | number; color: string }) {
   return (
@@ -18,15 +32,18 @@ function StatCard({ label, value, color }: { label: string; value: string | numb
 export default function DashboardScreen() {
   const router = useRouter();
 
-  const { data: stats, isLoading: statsLoading } = useQuery({
-    queryKey: ['dashboard-stats'],
-    queryFn: () => api.get<DashboardStats>('/dashboard/stats'),
+  const { data: analytics, isLoading: statsLoading } = useQuery({
+    queryKey: ['analytics-dashboard-mobile'],
+    queryFn: () => api.get<AnalyticsDashboardResponse>('/analytics/dashboard'),
+    refetchInterval: 60_000,
   });
 
   const { data: recentLeads, isLoading: leadsLoading } = useQuery({
     queryKey: ['recent-leads'],
     queryFn: () => api.get<{ leads: Lead[] }>('/leads?limit=5&sort=-created_at'),
   });
+
+  const kpi = analytics?.kpi;
 
   return (
     <FlatList
@@ -36,23 +53,23 @@ export default function DashboardScreen() {
         <>
           <View style={styles.statsGrid}>
             <StatCard
-              label="Total Leads"
-              value={statsLoading ? '...' : stats?.total_leads ?? 0}
+              label="Leads Today"
+              value={statsLoading ? '...' : kpi?.leads_today ?? 0}
               color={colors.brand[600]}
             />
             <StatCard
-              label="New"
-              value={statsLoading ? '...' : stats?.recent_new ?? 0}
+              label="Leads Week"
+              value={statsLoading ? '...' : kpi?.leads_week ?? 0}
               color={colors.green[600]}
             />
             <StatCard
-              label="Delivered"
-              value={statsLoading ? '...' : stats?.recent_delivered ?? 0}
+              label="Active Brokers"
+              value={statsLoading ? '...' : kpi?.active_brokers ?? 0}
               color={colors.indigo[700]}
             />
             <StatCard
-              label="Avg Fraud"
-              value={statsLoading ? '...' : `${(stats?.avg_fraud_score ?? 0).toFixed(0)}%`}
+              label="Fraud Rate"
+              value={statsLoading ? '...' : `${(kpi?.fraud_rate ?? 0).toFixed(1)}%`}
               color={colors.yellow[700]}
             />
           </View>

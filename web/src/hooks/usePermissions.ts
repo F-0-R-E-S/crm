@@ -1,3 +1,6 @@
+import { useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { api } from '../lib/api'
 import { useAuthStore } from '../stores/auth'
 
 const ROLE_PERMISSIONS: Record<string, string[]> = {
@@ -42,19 +45,40 @@ const ROLE_PERMISSIONS: Record<string, string[]> = {
   ],
 }
 
+interface PermissionsResponse {
+  role: string
+  permissions: string[]
+}
+
 export function usePermissions() {
   const role = useAuthStore((s) => s.user?.role ?? '')
 
+  const { data } = useQuery({
+    queryKey: ['auth-permissions', role],
+    queryFn: () =>
+      api.get<PermissionsResponse>('/auth/permissions').catch(() => ({
+        role,
+        permissions: ROLE_PERMISSIONS[role] || [],
+      })),
+    enabled: Boolean(role),
+    staleTime: 60_000,
+  })
+
+  const permissions = useMemo(() => {
+    if (data?.permissions?.length) {
+      return data.permissions
+    }
+    return ROLE_PERMISSIONS[role] || []
+  }, [data, role])
+
   function has(permission: string): boolean {
-    const perms = ROLE_PERMISSIONS[role]
-    if (!perms) return false
-    if (perms.includes('*')) return true
-    return perms.includes(permission)
+    if (permissions.includes('*')) return true
+    return permissions.includes(permission)
   }
 
-  function hasAny(...permissions: string[]): boolean {
-    return permissions.some((p) => has(p))
+  function hasAny(...required: string[]): boolean {
+    return required.some((p) => has(p))
   }
 
-  return { role, has, hasAny }
+  return { role: data?.role || role, has, hasAny, permissions }
 }

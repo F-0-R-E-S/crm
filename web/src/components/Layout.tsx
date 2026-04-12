@@ -1,6 +1,8 @@
+import { useEffect } from 'react'
 import { Outlet, NavLink } from 'react-router-dom'
 import { useAuthStore } from '../stores/auth'
 import { useAssistantStore } from '../stores/assistant'
+import { api } from '../lib/api'
 import AssistantPanel from './AssistantPanel'
 
 const navItems = [
@@ -15,12 +17,28 @@ const navItems = [
 
 const sectionBreak = 4 // insert divider after Affiliates
 
+interface MeResponse {
+  id: string
+  email: string
+  name: string
+  role: string
+}
+
 export default function Layout() {
-  const { user, logout } = useAuthStore()
+  const { user, token, logout, setUser } = useAuthStore()
   const toggleAssistant  = useAssistantStore((s) => s.toggle)
   const isAssistantOpen  = useAssistantStore((s) => s.isOpen)
 
   const initial = (user?.email?.[0] ?? 'U').toUpperCase()
+
+  useEffect(() => {
+    if (!token) return
+    api.get<MeResponse>('/auth/me')
+      .then((me) => setUser({ id: me.id, email: me.email, name: me.name, role: me.role }))
+      .catch(() => {
+        // ignore boot-time profile sync errors
+      })
+  }, [token, setUser])
 
   return (
     <div style={{ display: 'flex', height: '100vh', position: 'relative', zIndex: 1 }}>
@@ -146,7 +164,7 @@ export default function Layout() {
               <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-1)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user?.email}
               </div>
-              <div style={{ fontSize: 11, color: 'var(--text-3)' }}>Network Admin</div>
+              <div style={{ fontSize: 11, color: 'var(--text-3)' }}>{user?.role ?? 'User'}</div>
             </div>
           </div>
           <button

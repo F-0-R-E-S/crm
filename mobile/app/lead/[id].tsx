@@ -7,6 +7,16 @@ import { StatusBadge } from '../../src/components/StatusBadge';
 import { colors, spacing, radius, font, shadows } from '../../src/theme';
 import type { Lead, LeadEvent } from '../../src/types';
 
+interface LeadHistoryResponse {
+  lead_id: string;
+  history: Array<{
+    id: string;
+    event_type: string;
+    raw_body?: Record<string, unknown>;
+    created_at: string;
+  }>;
+}
+
 function DetailRow({ label, value }: { label: string; value?: string | null }) {
   if (!value) return null;
   return (
@@ -33,9 +43,9 @@ export default function LeadDetailScreen() {
     enabled: !!id,
   });
 
-  const { data: eventsData } = useQuery({
+  const { data: historyData } = useQuery({
     queryKey: ['lead-events', id],
-    queryFn: () => api.get<{ events: LeadEvent[] }>(`/leads/${id}/events`),
+    queryFn: () => api.get<LeadHistoryResponse>(`/leads/${id}/history`),
     enabled: !!id,
   });
 
@@ -55,7 +65,12 @@ export default function LeadDetailScreen() {
     );
   }
 
-  const events = eventsData?.events ?? [];
+  const events: LeadEvent[] = (historyData?.history ?? []).map((entry) => ({
+    id: entry.id,
+    event_type: entry.event_type,
+    payload: entry.raw_body,
+    created_at: entry.created_at,
+  }));
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>

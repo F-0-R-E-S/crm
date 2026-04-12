@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { format } from 'date-fns'
 import { api } from '../lib/api'
 import { usePermissions } from '../hooks/usePermissions'
 import PermissionGate from '../components/PermissionGate'
@@ -25,7 +26,14 @@ interface InviteItem {
   created_at: string
 }
 
-const ROLES = [
+interface RoleItem {
+  role: string
+  label: string
+  description?: string
+  permissions?: string[]
+}
+
+const FALLBACK_ROLES = [
   { value: 'super_admin', label: 'Super Admin' },
   { value: 'network_admin', label: 'Network Admin' },
   { value: 'affiliate_manager', label: 'Affiliate Manager' },
@@ -55,11 +63,19 @@ export default function UsersPage() {
     enabled: has('users:invite'),
   })
 
+  const { data: rolesData } = useQuery({
+    queryKey: ['roles'],
+    queryFn: () =>
+      api.get<{ roles: RoleItem[] }>('/roles').catch(() => ({ roles: [] as RoleItem[] })),
+    enabled: has('users:write'),
+  })
+
   async function handleInvite(e: React.FormEvent) {
     e.preventDefault()
     setInviteError('')
     setInviteSuccess('')
     setInviteLoading(true)
+
     try {
       await api.post('/auth/invites', { email: inviteEmail, role: inviteRole, name: inviteName })
       setInviteSuccess(`Invite sent to ${inviteEmail}`)
@@ -76,150 +92,137 @@ export default function UsersPage() {
 
   async function handleRoleChange(userId: string, newRole: string) {
     try {
-      await api.put(`/users/${userId}/role`, { role: newRole })
+      await api.patch(`/users/${userId}/role`, { role: newRole })
       refetchUsers()
-    } catch { /* ignore */ }
+    } catch {
+      // ignore
+    }
   }
 
   async function handleToggleActive(userId: string, isActive: boolean) {
     try {
       await api.post(`/users/${userId}/${isActive ? 'deactivate' : 'activate'}`, {})
       refetchUsers()
-    } catch { /* ignore */ }
+    } catch {
+      // ignore
+    }
   }
 
   async function handleDeleteInvite(inviteId: string) {
     try {
       await api.delete(`/auth/invites/${inviteId}`)
       refetchInvites()
-    } catch { /* ignore */ }
+    } catch {
+      // ignore
+    }
   }
 
   const users = usersData?.users || []
   const invites = invitesData?.invites || []
+  const roleOptions = rolesData?.roles?.length
+    ? rolesData.roles.map((r) => ({ value: r.role, label: r.label }))
+    : FALLBACK_ROLES
+
+  function getRoleLabel(role: string) {
+    return roleOptions.find((item) => item.value === role)?.label || role
+  }
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Team Members</h2>
+    <div className="page-section">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
+        <div>
+          <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.5, color: 'var(--text-1)' }}>Team Members</h1>
+          <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 2 }}>
+            {users.length.toLocaleString()} users · role-based access control
+          </p>
+        </div>
+
         <PermissionGate permission="users:invite">
           <button
-            onClick={() => setShowInvite(true)}
-            className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm hover:bg-brand-700"
+            onClick={() => {
+              setInviteError('')
+              setShowInvite(true)
+            }}
+            className="btn-primary"
+            style={{ fontSize: 12, padding: '8px 16px' }}
           >
-            Invite User
+            + Invite User
           </button>
         </PermissionGate>
       </div>
 
       {inviteSuccess && (
-        <div className="bg-green-50 text-green-700 p-3 rounded-lg mb-4 text-sm">{inviteSuccess}</div>
-      )}
-
-      {showInvite && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Invite New User</h3>
-          {inviteError && (
-            <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">{inviteError}</div>
-          )}
-          <form onSubmit={handleInvite} className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <input
-              type="text"
-              value={inviteName}
-              onChange={(e) => setInviteName(e.target.value)}
-              placeholder="Name"
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500"
-            />
-            <input
-              type="email"
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
-              placeholder="Email"
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500"
-              required
-            />
-            <select
-              value={inviteRole}
-              onChange={(e) => setInviteRole(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500"
-            >
-              {ROLES.map((r) => (
-                <option key={r.value} value={r.value}>{r.label}</option>
-              ))}
-            </select>
-            <div className="flex gap-2">
-              <button
-                type="submit"
-                disabled={inviteLoading}
-                className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm hover:bg-brand-700 disabled:opacity-50"
-              >
-                {inviteLoading ? 'Sending...' : 'Send Invite'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowInvite(false)}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+        <div className="form-alert form-alert-success" style={{ marginBottom: 14 }}>
+          {inviteSuccess}
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+      <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
+        <table className="glass-table">
+          <thead>
             <tr>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">User</th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Role</th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">2FA</th>
-              <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th>User</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>2FA</th>
+              <th>Last Login</th>
+              <th style={{ textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+
+          <tbody>
             {users.map((u) => (
-              <tr key={u.id} className="hover:bg-gray-50">
-                <td className="px-4 py-3">
-                  <div className="text-sm font-medium text-gray-900">{u.name || u.email}</div>
-                  <div className="text-xs text-gray-500">{u.email}</div>
+              <tr key={u.id}>
+                <td className="td-primary" style={{ minWidth: 220 }}>
+                  <div style={{ fontSize: 13.5 }}>{u.name || 'Unnamed User'}</div>
+                  <div style={{ color: 'var(--text-3)', fontSize: 12, marginTop: 2 }}>{u.email}</div>
                 </td>
-                <td className="px-4 py-3">
+
+                <td>
                   {has('users:write') ? (
                     <select
                       value={u.role}
                       onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                      className="text-sm border border-gray-200 rounded px-2 py-1"
+                      className="form-control"
+                      style={{ padding: '8px 10px', minWidth: 165 }}
                     >
-                      {ROLES.map((r) => (
+                      {roleOptions.map((r) => (
                         <option key={r.value} value={r.value}>{r.label}</option>
                       ))}
                     </select>
                   ) : (
-                    <span className="text-sm text-gray-700">
-                      {ROLES.find((r) => r.value === u.role)?.label || u.role}
-                    </span>
+                    <span style={{ color: 'var(--text-1)', fontSize: 13 }}>{getRoleLabel(u.role)}</span>
                   )}
                 </td>
-                <td className="px-4 py-3">
-                  <span className={clsx(
-                    'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium',
-                    u.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                  )}>
-                    {u.is_active ? 'Active' : 'Inactive'}
+
+                <td>
+                  <span className={clsx('status-badge', u.is_active ? 'delivered' : 'rejected')}>
+                    {u.is_active ? 'active' : 'inactive'}
                   </span>
                 </td>
-                <td className="px-4 py-3">
-                  <span className={clsx('text-xs', u.is_2fa_enabled ? 'text-green-600' : 'text-gray-400')}>
+
+                <td>
+                  <span style={{
+                    fontSize: 12,
+                    color: u.is_2fa_enabled ? '#34d399' : 'var(--text-3)',
+                    fontWeight: 600,
+                  }}>
                     {u.is_2fa_enabled ? 'Enabled' : 'Off'}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-right">
+
+                <td style={{ whiteSpace: 'nowrap' }}>
+                  {u.last_login_at
+                    ? format(new Date(u.last_login_at), 'MMM d, HH:mm')
+                    : <span style={{ color: 'var(--text-3)' }}>Never</span>}
+                </td>
+
+                <td style={{ textAlign: 'right' }}>
                   <PermissionGate permission="users:delete">
                     <button
                       onClick={() => handleToggleActive(u.id, u.is_active)}
-                      className="text-xs text-gray-500 hover:text-gray-700"
+                      className="btn-ghost"
+                      style={{ fontSize: 12, padding: '6px 13px' }}
                     >
                       {u.is_active ? 'Deactivate' : 'Activate'}
                     </button>
@@ -227,33 +230,45 @@ export default function UsersPage() {
                 </td>
               </tr>
             ))}
+
+            {users.length === 0 && (
+              <tr>
+                <td colSpan={6} style={{ textAlign: 'center', padding: '42px 0', color: 'var(--text-3)' }}>
+                  No team members found.
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
       {invites.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Pending Invites</h3>
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+        <div style={{ marginTop: 24 }}>
+          <div className="section-label">Pending Invites</div>
+          <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
+            <table className="glass-table">
+              <thead>
                 <tr>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Email</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Role</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-gray-500 uppercase">Expires</th>
-                  <th className="text-right px-4 py-3 text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Created</th>
+                  <th>Expires</th>
+                  <th style={{ textAlign: 'right' }}>Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody>
                 {invites.map((inv) => (
-                  <tr key={inv.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm text-gray-900">{inv.email}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {ROLES.find((r) => r.value === inv.role)?.label || inv.role}
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{new Date(inv.expires_at).toLocaleDateString()}</td>
-                    <td className="px-4 py-3 text-right">
-                      <button onClick={() => handleDeleteInvite(inv.id)} className="text-xs text-red-600 hover:text-red-700">
+                  <tr key={inv.id}>
+                    <td className="td-primary">{inv.email}</td>
+                    <td>{getRoleLabel(inv.role)}</td>
+                    <td style={{ whiteSpace: 'nowrap' }}>{format(new Date(inv.created_at), 'MMM d, HH:mm')}</td>
+                    <td style={{ whiteSpace: 'nowrap' }}>{format(new Date(inv.expires_at), 'MMM d, HH:mm')}</td>
+                    <td style={{ textAlign: 'right' }}>
+                      <button
+                        onClick={() => handleDeleteInvite(inv.id)}
+                        className="btn-danger"
+                        style={{ fontSize: 12, padding: '6px 12px' }}
+                      >
                         Revoke
                       </button>
                     </td>
@@ -262,6 +277,87 @@ export default function UsersPage() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {showInvite && (
+        <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && setShowInvite(false)}>
+          <form onSubmit={handleInvite} className="modal-box" style={{ maxWidth: 760 }}>
+            <div className="form-header">
+              <div>
+                <div className="form-title">Invite Team Member</div>
+                <div className="form-subtitle">
+                  Invite a teammate and assign their access role before onboarding.
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn-ghost"
+                style={{ width: 32, height: 32, borderRadius: 16, padding: 0, justifyContent: 'center' }}
+                onClick={() => setShowInvite(false)}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            {inviteError && (
+              <div className="form-alert form-alert-error" style={{ marginBottom: 14 }}>
+                {inviteError}
+              </div>
+            )}
+
+            <div className="form-grid form-grid-2">
+              <div className="form-field">
+                <label className="form-label" htmlFor="invite-name">Full Name</label>
+                <input
+                  id="invite-name"
+                  type="text"
+                  value={inviteName}
+                  onChange={(e) => setInviteName(e.target.value)}
+                  placeholder="Alex Petrov"
+                  className="form-control"
+                  autoFocus
+                />
+                <div className="form-help">Optional. Leave empty if you only know the email.</div>
+              </div>
+
+              <div className="form-field">
+                <label className="form-label" htmlFor="invite-role">Role</label>
+                <select
+                  id="invite-role"
+                  value={inviteRole}
+                  onChange={(e) => setInviteRole(e.target.value)}
+                  className="form-control"
+                >
+                  {roleOptions.map((r) => (
+                    <option key={r.value} value={r.value}>{r.label}</option>
+                  ))}
+                </select>
+                <div className="form-help">Permissions are applied immediately after account activation.</div>
+              </div>
+
+              <div className="form-field" style={{ gridColumn: '1 / -1' }}>
+                <label className="form-label" htmlFor="invite-email">Work Email</label>
+                <input
+                  id="invite-email"
+                  type="email"
+                  value={inviteEmail}
+                  onChange={(e) => setInviteEmail(e.target.value)}
+                  placeholder="name@company.com"
+                  className="form-control"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-actions">
+              <button type="button" onClick={() => setShowInvite(false)} className="btn-ghost">Cancel</button>
+              <button type="submit" disabled={inviteLoading || !inviteEmail.trim()} className="btn-primary">
+                {inviteLoading ? 'Sending…' : 'Send Invite'}
+              </button>
+            </div>
+          </form>
         </div>
       )}
     </div>

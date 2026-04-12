@@ -47,7 +47,7 @@ export interface PendingConfirmation {
   impactAnalysis?: Record<string, unknown>
 }
 
-export const useAssistantStore = create<AssistantState>((set, get) => ({
+export const useAssistantStore = create<AssistantState>((set) => ({
   isOpen: false,
   sessions: [],
   currentSessionId: null,

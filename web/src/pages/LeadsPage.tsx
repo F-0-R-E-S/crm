@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { api } from '../lib/api'
 import StatusBadge from '../components/StatusBadge'
@@ -25,6 +25,13 @@ interface LeadsResponse {
   offset: number
 }
 
+interface BulkImportResponse {
+  total: number
+  accepted: number
+  rejected: number
+  errors?: Array<{ row: number; field?: string; message: string }>
+}
+
 const PAGE_SIZE = 20
 
 function fraudColor(score: number) {
@@ -32,13 +39,42 @@ function fraudColor(score: number) {
 }
 
 export default function LeadsPage() {
+  const queryClient = useQueryClient()
   const [page, setPage] = useState(0)
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null)
+  const [showBulkImport, setShowBulkImport] = useState(false)
+  const [bulkPayload, setBulkPayload] = useState(
+    JSON.stringify([
+      {
+        first_name: 'John',
+        last_name: 'Doe',
+        email: 'john.doe@example.com',
+        phone: '+14155552671',
+        country: 'US',
+      },
+    ], null, 2)
+  )
+  const [bulkError, setBulkError] = useState('')
+  const [bulkSuccess, setBulkSuccess] = useState('')
 
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ['leads', page],
     queryFn: () => api.get<LeadsResponse>(`/leads?limit=${PAGE_SIZE}&offset=${page * PAGE_SIZE}`),
     placeholderData: (prev) => prev,
+  })
+
+  const bulkImportMutation = useMutation({
+    mutationFn: (leads: unknown[]) => api.post<BulkImportResponse>('/leads/bulk', { leads }),
+    onSuccess: (res) => {
+      setBulkSuccess(`Bulk import complete: accepted ${res.accepted}/${res.total}, rejected ${res.rejected}.`)
+      setBulkError('')
+      setShowBulkImport(false)
+      queryClient.invalidateQueries({ queryKey: ['leads'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard-leads'] })
+    },
+    onError: (err) => {
+      setBulkError(err instanceof Error ? err.message : 'Bulk import failed')
+    },
   })
 
   const leads      = data?.leads ?? []
@@ -55,8 +91,26 @@ export default function LeadsPage() {
             {total > 0 ? `${total.toLocaleString()} total` : 'No leads yet'}
           </p>
         </div>
-        <button className="btn-glass" style={{ fontSize: 12, padding: '7px 14px' }}>⬇ Export CSV</button>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button
+            className="btn-primary"
+            style={{ fontSize: 12, padding: '7px 14px' }}
+            onClick={() => {
+              setBulkError('')
+              setShowBulkImport(true)
+            }}
+          >
+            ⤴ Bulk Import
+          </button>
+          <button className="btn-glass" style={{ fontSize: 12, padding: '7px 14px' }}>⬇ Export CSV</button>
+        </div>
       </div>
+
+      {bulkSuccess && (
+        <div className="form-alert form-alert-success" style={{ marginBottom: 14 }}>
+          {bulkSuccess}
+        </div>
+      )}
 
       {/* Toolbar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
@@ -167,6 +221,75 @@ export default function LeadsPage() {
 
       {selectedLeadId && (
         <LeadDetail leadId={selectedLeadId} onClose={() => setSelectedLeadId(null)} />
+      )}
+
+      {showBulkImport && (
+        <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && setShowBulkImport(false)}>
+          <form
+            className="modal-box"
+            style={{ maxWidth: 840 }}
+            onSubmit={(e) => {
+              e.preventDefault()
+              setBulkError('')
+
+              let leads: unknown[]
+              try {
+                const parsed = JSON.parse(bulkPayload)
+                if (!Array.isArray(parsed)) {
+                  throw new Error('Payload must be a JSON array')
+                }
+                leads = parsed
+              } catch {
+                setBulkError('Invalid JSON payload. Provide an array of leads.')
+                return
+              }
+
+              bulkImportMutation.mutate(leads)
+            }}
+          >
+            <div className="form-header">
+              <div>
+                <div className="form-title">Bulk Import Leads</div>
+                <div className="form-subtitle">Upload up to 10,000 leads in one request via `/leads/bulk`.</div>
+              </div>
+              <button
+                type="button"
+                className="btn-ghost"
+                style={{ width: 32, height: 32, borderRadius: 16, padding: 0, justifyContent: 'center' }}
+                onClick={() => setShowBulkImport(false)}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            {bulkError && (
+              <div className="form-alert form-alert-error" style={{ marginBottom: 12 }}>
+                {bulkError}
+              </div>
+            )}
+
+            <div className="form-field">
+              <label className="form-label" htmlFor="bulk-payload">Leads JSON Array</label>
+              <textarea
+                id="bulk-payload"
+                className="form-control"
+                value={bulkPayload}
+                onChange={(e) => setBulkPayload(e.target.value)}
+                rows={13}
+                style={{ fontFamily: 'SF Mono, Menlo, Consolas, monospace', fontSize: 12 }}
+              />
+              <div className="form-help">Required fields per lead: `first_name`, `email`, `phone`, `country`.</div>
+            </div>
+
+            <div className="form-actions">
+              <button type="button" className="btn-ghost" onClick={() => setShowBulkImport(false)}>Cancel</button>
+              <button type="submit" className="btn-primary" disabled={bulkImportMutation.isPending}>
+                {bulkImportMutation.isPending ? 'Importing…' : 'Run Bulk Import'}
+              </button>
+            </div>
+          </form>
+        </div>
       )}
     </div>
   )

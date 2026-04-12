@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import type { AssistantMessage as MessageType } from '../lib/assistantApi'
 import type { StreamingMessage, ToolCall } from '../stores/assistant'
 

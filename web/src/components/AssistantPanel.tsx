@@ -5,7 +5,6 @@ import { useAssistantSSE } from '../hooks/useAssistantSSE'
 import { useAssistantWS } from '../hooks/useAssistantWS'
 import AssistantMessage from './AssistantMessage'
 import AssistantInput from './AssistantInput'
-import clsx from 'clsx'
 
 export default function AssistantPanel() {
   const {
