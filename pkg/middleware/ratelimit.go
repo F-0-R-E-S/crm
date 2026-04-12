@@ -1,48 +1,38 @@
 package middleware
 
 import (
+	"context"
+	"fmt"
 	"net/http"
-	"sync"
 	"time"
+
+	"github.com/gambchamp/crm/pkg/cache"
 )
 
 type RateLimiter struct {
-	mu       sync.Mutex
-	requests map[string][]time.Time
-	limit    int
-	window   time.Duration
+	redis  *cache.Redis
+	limit  int64
+	window time.Duration
 }
 
-func NewRateLimiter(limit int, window time.Duration) *RateLimiter {
+func NewRateLimiter(redis *cache.Redis, limit int64, window time.Duration) *RateLimiter {
 	return &RateLimiter{
-		requests: make(map[string][]time.Time),
-		limit:    limit,
-		window:   window,
+		redis:  redis,
+		limit:  limit,
+		window: window,
 	}
 }
 
-func (rl *RateLimiter) Allow(key string) bool {
-	rl.mu.Lock()
-	defer rl.mu.Unlock()
+func (rl *RateLimiter) Allow(ctx context.Context, key string) bool {
+	bucket := time.Now().Unix() / int64(rl.window.Seconds())
+	redisKey := fmt.Sprintf("ratelimit:%s:%d", key, bucket)
 
-	now := time.Now()
-	cutoff := now.Add(-rl.window)
-
-	reqs := rl.requests[key]
-	var valid []time.Time
-	for _, t := range reqs {
-		if t.After(cutoff) {
-			valid = append(valid, t)
-		}
+	count, err := rl.redis.IncrWithExpiry(ctx, redisKey, rl.window+time.Second)
+	if err != nil {
+		return true
 	}
 
-	if len(valid) >= rl.limit {
-		rl.requests[key] = valid
-		return false
-	}
-
-	rl.requests[key] = append(valid, now)
-	return true
+	return count <= rl.limit
 }
 
 func RateLimitMiddleware(limiter *RateLimiter) func(http.Handler) http.Handler {
@@ -52,11 +42,12 @@ func RateLimitMiddleware(limiter *RateLimiter) func(http.Handler) http.Handler {
 			if key == "" {
 				key = r.RemoteAddr
 			}
-			if !limiter.Allow(key) {
-				http.Error(w, `{"error":"rate limit exceeded"}`, http.StatusTooManyRequests)
+			if !limiter.Allow(r.Context(), key) {
+				w.Header().Set("Retry-After", "60")
+				http.Error(w, `{"error":{"code":"RATE_LIMITED","message":"too many requests"}}`, http.StatusTooManyRequests)
 				return
 			}
-			next.ServeHTTP(w, r.WithContext(r.Context()))
+			next.ServeHTTP(w, r)
 		})
 	}
 }

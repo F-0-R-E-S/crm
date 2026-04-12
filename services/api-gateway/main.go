@@ -37,7 +37,7 @@ func main() {
 
 	// Create handler with proxy targets
 	mux := http.NewServeMux()
-	h := NewHandler(logger, cfg, auth)
+	h := NewHandler(logger, cfg, auth, redisClient)
 	h.Register(mux)
 
 	// Health and metrics — no auth

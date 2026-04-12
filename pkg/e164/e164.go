@@ -37,9 +37,29 @@ func Normalize(phone, country string) (string, error) {
 		return "", fmt.Errorf("phone number contains no digits")
 	}
 
+	// If phone already starts with "+", treat as international
+	if strings.HasPrefix(strings.TrimSpace(phone), "+") {
+		if len(digits) >= 7 && len(digits) <= 15 {
+			return "+" + digits, nil
+		}
+		return "", fmt.Errorf("normalized phone length %d is out of valid E.164 range", len(digits))
+	}
+
+	// Handle international prefix "00"
+	if strings.HasPrefix(digits, "00") {
+		digits = digits[2:]
+		if len(digits) >= 7 && len(digits) <= 15 {
+			return "+" + digits, nil
+		}
+		return "", fmt.Errorf("normalized phone length %d is out of valid E.164 range", len(digits))
+	}
+
 	country = strings.ToUpper(strings.TrimSpace(country))
 	code, ok := countryCodes[country]
 	if !ok {
+		if len(digits) >= 7 && len(digits) <= 15 {
+			return "+" + digits, nil
+		}
 		return "", fmt.Errorf("unknown country code: %s", country)
 	}
 
@@ -47,7 +67,7 @@ func Normalize(phone, country string) (string, error) {
 		return "+" + digits, nil
 	}
 
-	if digits[0] == '0' {
+	if len(digits) > 0 && digits[0] == '0' {
 		digits = digits[1:]
 	}
 
@@ -59,10 +79,26 @@ func Normalize(phone, country string) (string, error) {
 	return result, nil
 }
 
+// NormalizeE164 is a convenience wrapper that returns an empty string on error
+// instead of an error value. Drop-in replacement for pkg/phone.NormalizeE164.
+func NormalizeE164(phone, countryCode string) string {
+	result, err := Normalize(phone, countryCode)
+	if err != nil {
+		return ""
+	}
+	return result
+}
+
 // CountryCode returns the dialing code for an ISO country.
 func CountryCode(country string) (string, bool) {
 	code, ok := countryCodes[strings.ToUpper(strings.TrimSpace(country))]
 	return code, ok
+}
+
+// IsValidCountry checks if the given ISO 3166-1 alpha-2 code is known.
+func IsValidCountry(country string) bool {
+	_, ok := countryCodes[strings.ToUpper(strings.TrimSpace(country))]
+	return ok
 }
 
 func stripNonDigits(s string) string {

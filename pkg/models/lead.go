@@ -30,6 +30,17 @@ type Lead struct {
 	Country        string          `json:"country" db:"country"`
 	IP             string          `json:"ip" db:"ip"`
 	UserAgent      string          `json:"user_agent" db:"user_agent"`
+	FunnelName     string          `json:"funnel_name,omitempty" db:"funnel_name"`
+	AffSub1        string          `json:"aff_sub1,omitempty" db:"aff_sub1"`
+	AffSub2        string          `json:"aff_sub2,omitempty" db:"aff_sub2"`
+	AffSub3        string          `json:"aff_sub3,omitempty" db:"aff_sub3"`
+	AffSub4        string          `json:"aff_sub4,omitempty" db:"aff_sub4"`
+	AffSub5        string          `json:"aff_sub5,omitempty" db:"aff_sub5"`
+	AffSub6        string          `json:"aff_sub6,omitempty" db:"aff_sub6"`
+	AffSub7        string          `json:"aff_sub7,omitempty" db:"aff_sub7"`
+	AffSub8        string          `json:"aff_sub8,omitempty" db:"aff_sub8"`
+	AffSub9        string          `json:"aff_sub9,omitempty" db:"aff_sub9"`
+	AffSub10       string          `json:"aff_sub10,omitempty" db:"aff_sub10"`
 	Status         LeadStatus      `json:"status" db:"status"`
 	QualityScore   int             `json:"quality_score" db:"quality_score"`
 	FraudCard      json.RawMessage `json:"fraud_card,omitempty" db:"fraud_card"`

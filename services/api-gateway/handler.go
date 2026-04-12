@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gambchamp/crm/pkg/cache"
 	"github.com/gambchamp/crm/pkg/errors"
 	"github.com/gambchamp/crm/pkg/middleware"
 )
@@ -17,18 +18,20 @@ type Handler struct {
 	logger        *slog.Logger
 	cfg           Config
 	auth          *Authenticator
+	redis         *cache.Redis
 	jwtLimiter    *middleware.RateLimiter // 120 req/min for JWT-authenticated users
 	apiKeyLimiter *middleware.RateLimiter // 60 req/min for API key users
 }
 
 // NewHandler creates a Handler with the given config and authenticator.
-func NewHandler(logger *slog.Logger, cfg Config, auth *Authenticator) *Handler {
+func NewHandler(logger *slog.Logger, cfg Config, auth *Authenticator, redis *cache.Redis) *Handler {
 	return &Handler{
 		logger:        logger,
 		cfg:           cfg,
 		auth:          auth,
-		jwtLimiter:    middleware.NewRateLimiter(120, time.Minute),
-		apiKeyLimiter: middleware.NewRateLimiter(60, time.Minute),
+		redis:         redis,
+		jwtLimiter:    middleware.NewRateLimiter(redis, 120, time.Minute),
+		apiKeyLimiter: middleware.NewRateLimiter(redis, 60, time.Minute),
 	}
 }
 
@@ -130,7 +133,7 @@ func (h *Handler) requireAuth(next http.Handler) http.Handler {
 			limiter = h.apiKeyLimiter
 		}
 
-		if !limiter.Allow(rateLimitKey) {
+		if !limiter.Allow(r.Context(), rateLimitKey) {
 			h.logger.Warn("rate limit exceeded", "key", rateLimitKey, "path", r.URL.Path)
 			errors.ErrRateLimit.WriteJSON(w)
 			return

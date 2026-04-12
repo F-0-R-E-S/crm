@@ -177,12 +177,12 @@ func (h *Handler) CreateRule(w http.ResponseWriter, r *http.Request) {
 
 	// Validate algorithm
 	switch req.Algorithm {
-	case "weighted_round_robin", "priority", "":
+	case "weighted_round_robin", "priority", "slots_chance", "":
 		if req.Algorithm == "" {
 			req.Algorithm = "weighted_round_robin"
 		}
 	default:
-		apperrors.NewValidationError("algorithm must be 'weighted_round_robin' or 'priority'").WriteJSON(w)
+		apperrors.NewValidationError("algorithm must be 'weighted_round_robin', 'priority', or 'slots_chance'").WriteJSON(w)
 		return
 	}
 
