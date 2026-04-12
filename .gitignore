@@ -1,0 +1,42 @@
+# Go
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage.out
+coverage.html
+
+# Node
+web/node_modules/
+web/dist/
+web/.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Env
+.env
+.env.local
+.env.production
+
+# Polyscope
+.context/
+
+# Pipeline artifacts (existing)
+videos/*.mp4
+videos/*.mov

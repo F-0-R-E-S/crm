@@ -1,0 +1,7 @@
+.git
+videos/
+Transcript_videos/
+product_backlog/
+*.md
+!CLAUDE.md
+.context/

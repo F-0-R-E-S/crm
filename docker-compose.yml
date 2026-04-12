@@ -1,0 +1,282 @@
+version: "3.9"
+
+x-go-service: &go-service
+  build:
+    context: .
+    dockerfile: Dockerfile
+  restart: unless-stopped
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+    nats:
+      condition: service_started
+
+services:
+  # Infrastructure
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: gambchamp
+      POSTGRES_USER: gambchamp
+      POSTGRES_PASSWORD: gambchamp_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations/001_initial_schema.up.sql:/docker-entrypoint-initdb.d/001_schema.sql
+      - ./migrations/003_seed_broker_templates.up.sql:/docker-entrypoint-initdb.d/003_seed.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gambchamp"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  nats:
+    image: nats:2.10-alpine
+    command: ["--jetstream", "--store_dir", "/data", "--http_port", "8222"]
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    volumes:
+      - nats_data:/data
+
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.1
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+      - ./migrations/002_clickhouse_schema.sql:/docker-entrypoint-initdb.d/001_schema.sql
+    environment:
+      CLICKHOUSE_DB: gambchamp
+      CLICKHOUSE_USER: gambchamp
+      CLICKHOUSE_PASSWORD: gambchamp_dev
+
+  # Application services
+  api-gateway:
+    <<: *go-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      JWT_PUBLIC_KEY: "dev-public-key"
+      REDIS_URL: "redis://redis:6379"
+      LEAD_INTAKE_ADDR: "http://lead-intake:8001"
+      ROUTING_ENGINE_ADDR: "http://routing-engine:8002"
+      BROKER_ADAPTER_ADDR: "http://broker-adapter:8003"
+      FRAUD_ENGINE_ADDR: "http://fraud-engine:8004"
+      STATUS_SYNC_ADDR: "http://status-sync:8005"
+      AUTOLOGIN_ADDR: "http://autologin:8006"
+      UAD_ADDR: "http://uad:8007"
+      NOTIFICATION_ADDR: "http://notification:8008"
+      IDENTITY_ADDR: "http://identity:8010"
+      ANALYTICS_ADDR: "http://analytics:8011"
+
+  lead-intake:
+    <<: *go-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: lead-intake-svc
+    ports:
+      - "8001:8001"
+    environment:
+      PORT: "8001"
+      DB_URL: "postgres://gambchamp:gambchamp_dev@postgres:5432/gambchamp?sslmode=disable"
+      REDIS_URL: "redis://redis:6379"
+      NATS_URL: "nats://nats:4222"
+      FRAUD_ENGINE_ADDR: "http://fraud-engine:8004"
+
+  routing-engine:
+    <<: *go-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: routing-engine-svc
+    ports:
+      - "8002:8002"
+    environment:
+      PORT: "8002"
+      DB_URL: "postgres://gambchamp:gambchamp_dev@postgres:5432/gambchamp?sslmode=disable"
+      REDIS_URL: "redis://redis:6379"
+      NATS_URL: "nats://nats:4222"
+
+  broker-adapter:
+    <<: *go-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: broker-adapter-svc
+    ports:
+      - "8003:8003"
+    environment:
+      PORT: "8003"
+      DB_URL: "postgres://gambchamp:gambchamp_dev@postgres:5432/gambchamp?sslmode=disable"
+      NATS_URL: "nats://nats:4222"
+
+  fraud-engine:
+    <<: *go-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: fraud-engine-svc
+    ports:
+      - "8004:8004"
+    environment:
+      PORT: "8004"
+      DB_URL: "postgres://gambchamp:gambchamp_dev@postgres:5432/gambchamp?sslmode=disable"
+      REDIS_URL: "redis://redis:6379"
+      MAXMIND_KEY: "dev-maxmind-key"
+      IPQS_KEY: "dev-ipqs-key"
+      TWILIO_SID: "dev-twilio-sid"
+      TWILIO_TOKEN: "dev-twilio-token"
+
+  status-sync:
+    <<: *go-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: status-sync-svc
+    ports:
+      - "8005:8005"
+    environment:
+      PORT: "8005"
+      DB_URL: "postgres://gambchamp:gambchamp_dev@postgres:5432/gambchamp?sslmode=disable"
+      NATS_URL: "nats://nats:4222"
+
+  autologin:
+    <<: *go-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: autologin-svc
+    ports:
+      - "8006:8006"
+    environment:
+      PORT: "8006"
+      DB_URL: "postgres://gambchamp:gambchamp_dev@postgres:5432/gambchamp?sslmode=disable"
+      REDIS_URL: "redis://redis:6379"
+      NATS_URL: "nats://nats:4222"
+
+  uad:
+    <<: *go-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: uad-svc
+    ports:
+      - "8007:8007"
+    environment:
+      PORT: "8007"
+      DB_URL: "postgres://gambchamp:gambchamp_dev@postgres:5432/gambchamp?sslmode=disable"
+      REDIS_URL: "redis://redis:6379"
+      NATS_URL: "nats://nats:4222"
+
+  notification:
+    <<: *go-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: notification-svc
+    ports:
+      - "8008:8008"
+    environment:
+      PORT: "8008"
+      DB_URL: "postgres://gambchamp:gambchamp_dev@postgres:5432/gambchamp?sslmode=disable"
+      NATS_URL: "nats://nats:4222"
+      TELEGRAM_TOKEN: "dev-telegram-token"
+      SMTP_HOST: "localhost"
+      SMTP_PORT: "1025"
+
+  identity:
+    <<: *go-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: identity-svc
+    ports:
+      - "8010:8010"
+    environment:
+      PORT: "8010"
+      DB_URL: "postgres://gambchamp:gambchamp_dev@postgres:5432/gambchamp?sslmode=disable"
+      JWT_PRIVATE_KEY: "dev-private-key"
+      JWT_PUBLIC_KEY: "dev-public-key"
+
+  analytics:
+    <<: *go-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: analytics-svc
+    ports:
+      - "8011:8011"
+    environment:
+      PORT: "8011"
+      DB_URL: "postgres://gambchamp:gambchamp_dev@postgres:5432/gambchamp?sslmode=disable"
+      CLICKHOUSE_URL: "clickhouse://gambchamp:gambchamp_dev@clickhouse:9000/gambchamp"
+      NATS_URL: "nats://nats:4222"
+
+  # Monitoring
+  prometheus:
+    image: prom/prometheus:v2.50.0
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana:10.3.1
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+  loki:
+    image: grafana/loki:2.9.4
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki_data:/loki
+
+volumes:
+  postgres_data:
+  redis_data:
+  nats_data:
+  clickhouse_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:

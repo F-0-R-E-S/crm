@@ -1,0 +1,59 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "api-gateway"
+    static_configs:
+      - targets: ["api-gateway:8080"]
+    metrics_path: /metrics
+
+  - job_name: "lead-intake"
+    static_configs:
+      - targets: ["lead-intake:8001"]
+    metrics_path: /metrics
+
+  - job_name: "routing-engine"
+    static_configs:
+      - targets: ["routing-engine:8002"]
+    metrics_path: /metrics
+
+  - job_name: "broker-adapter"
+    static_configs:
+      - targets: ["broker-adapter:8003"]
+    metrics_path: /metrics
+
+  - job_name: "fraud-engine"
+    static_configs:
+      - targets: ["fraud-engine:8004"]
+    metrics_path: /metrics
+
+  - job_name: "status-sync"
+    static_configs:
+      - targets: ["status-sync:8005"]
+    metrics_path: /metrics
+
+  - job_name: "autologin"
+    static_configs:
+      - targets: ["autologin:8006"]
+    metrics_path: /metrics
+
+  - job_name: "uad"
+    static_configs:
+      - targets: ["uad:8007"]
+    metrics_path: /metrics
+
+  - job_name: "notification"
+    static_configs:
+      - targets: ["notification:8008"]
+    metrics_path: /metrics
+
+  - job_name: "identity"
+    static_configs:
+      - targets: ["identity:8010"]
+    metrics_path: /metrics
+
+  - job_name: "analytics"
+    static_configs:
+      - targets: ["analytics:8011"]
+    metrics_path: /metrics
