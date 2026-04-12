@@ -1,0 +1,652 @@
+openapi: "3.1.0"
+info:
+  title: GambChamp CRM — Lead Schema Contract
+  version: "1.0.0"
+  description: |
+    Cross-stream contract for Lead Pipeline (Stream 1).
+    Consumed by: Stream 3 (Broker & Delivery), Stream 4 (Fraud & Security), Stream 5 (Frontend & Analytics).
+
+    This contract defines:
+    - Lead API request/response schemas
+    - Lead database model
+    - NATS event formats
+    - Deduplication and idempotency behavior
+
+paths:
+  /api/v1/leads:
+    post:
+      operationId: createLead
+      summary: Ingest a new lead
+      description: |
+        Accepts a lead from an affiliate, validates fields, normalizes phone to E.164,
+        checks deduplication (email + phone, 90-day window), enforces idempotency,
+        and publishes `lead.received` event to NATS.
+      parameters:
+        - name: X-Tenant-ID
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: X-API-Key
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema:
+            type: string
+            maxLength: 255
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateLeadRequest"
+      responses:
+        "202":
+          description: Lead accepted for processing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateLeadResponse"
+        "400":
+          description: Invalid request body or missing required fields
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Duplicate lead (email or phone within dedup window)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DuplicateErrorResponse"
+        "422":
+          description: Validation error (field-level details)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ValidationErrorResponse"
+        "429":
+          description: Rate limit exceeded
+          headers:
+            Retry-After:
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    get:
+      operationId: listLeads
+      summary: List leads for a tenant
+      parameters:
+        - name: X-Tenant-ID
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/LeadStatus"
+        - name: country
+          in: query
+          schema:
+            type: string
+            pattern: "^[A-Z]{2}$"
+        - name: affiliate_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: date_from
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: date_to
+          in: query
+          schema:
+            type: string
+            format: date-time
+        - name: search
+          in: query
+          description: Search by email, phone, or name
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Paginated list of leads
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListLeadsResponse"
+
+  /api/v1/leads/{id}:
+    get:
+      operationId: getLead
+      summary: Get lead details with event history
+      parameters:
+        - name: X-Tenant-ID
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Lead with events
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GetLeadResponse"
+        "404":
+          description: Lead not found
+
+  /api/v1/leads/bulk:
+    post:
+      operationId: bulkImportLeads
+      summary: Import leads via CSV or JSON array
+      parameters:
+        - name: X-Tenant-ID
+          in: header
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: CSV file with leads
+          application/json:
+            schema:
+              type: object
+              properties:
+                leads:
+                  type: array
+                  maxItems: 10000
+                  items:
+                    $ref: "#/components/schemas/CreateLeadRequest"
+      responses:
+        "202":
+          description: Bulk import accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkImportResponse"
+
+components:
+  schemas:
+    CreateLeadRequest:
+      type: object
+      required:
+        - first_name
+        - email
+        - phone
+        - country
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 255
+        phone:
+          type: string
+          minLength: 5
+          maxLength: 20
+        country:
+          type: string
+          pattern: "^[A-Za-z]{2}$"
+          description: ISO 3166-1 alpha-2
+        ip:
+          type: string
+          format: ipv4
+        user_agent:
+          type: string
+        affiliate_id:
+          type: string
+          format: uuid
+        funnel_name:
+          type: string
+          maxLength: 255
+        aff_sub1:
+          type: string
+          maxLength: 255
+        aff_sub2:
+          type: string
+          maxLength: 255
+        aff_sub3:
+          type: string
+          maxLength: 255
+        aff_sub4:
+          type: string
+          maxLength: 255
+        aff_sub5:
+          type: string
+          maxLength: 255
+        aff_sub6:
+          type: string
+          maxLength: 255
+        aff_sub7:
+          type: string
+          maxLength: 255
+        aff_sub8:
+          type: string
+          maxLength: 255
+        aff_sub9:
+          type: string
+          maxLength: 255
+        aff_sub10:
+          type: string
+          maxLength: 255
+        extra:
+          type: object
+          additionalProperties: true
+
+    CreateLeadResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: "#/components/schemas/LeadStatus"
+        phone_e164:
+          type: string
+          description: Normalized E.164 phone
+        quality_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+        validation:
+          $ref: "#/components/schemas/ValidationResult"
+
+    ValidationResult:
+      type: object
+      properties:
+        email_valid:
+          type: boolean
+        email_disposable:
+          type: boolean
+        phone_e164:
+          type: string
+        phone_valid:
+          type: boolean
+        ip_country:
+          type: string
+          description: Country detected from IP via GeoIP2
+        ip_isp:
+          type: string
+
+    ListLeadsResponse:
+      type: object
+      properties:
+        leads:
+          type: array
+          items:
+            $ref: "#/components/schemas/Lead"
+        total:
+          type: integer
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    GetLeadResponse:
+      type: object
+      properties:
+        lead:
+          $ref: "#/components/schemas/Lead"
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeadEvent"
+
+    BulkImportResponse:
+      type: object
+      properties:
+        job_id:
+          type: string
+          format: uuid
+        total:
+          type: integer
+        accepted:
+          type: integer
+        rejected:
+          type: integer
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              row:
+                type: integer
+              field:
+                type: string
+              message:
+                type: string
+
+    Lead:
+      type: object
+      description: Core lead model — shared across all streams
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        affiliate_id:
+          type: string
+          format: uuid
+        idempotency_key:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        phone_e164:
+          type: string
+        country:
+          type: string
+        ip:
+          type: string
+        user_agent:
+          type: string
+        funnel_name:
+          type: string
+        aff_sub1:
+          type: string
+        aff_sub2:
+          type: string
+        aff_sub3:
+          type: string
+        aff_sub4:
+          type: string
+        aff_sub5:
+          type: string
+        aff_sub6:
+          type: string
+        aff_sub7:
+          type: string
+        aff_sub8:
+          type: string
+        aff_sub9:
+          type: string
+        aff_sub10:
+          type: string
+        status:
+          $ref: "#/components/schemas/LeadStatus"
+        quality_score:
+          type: integer
+        fraud_card:
+          type: object
+          description: Fraud verification card (set by Stream 4)
+        extra:
+          type: object
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    LeadStatus:
+      type: string
+      enum:
+        - new
+        - processing
+        - routed
+        - delivered
+        - rejected
+        - fraud
+        - duplicate
+
+    LeadEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        lead_id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        event_type:
+          type: string
+          enum:
+            - lead.received
+            - lead.routed
+            - lead.delivered
+            - lead.delivery_failed
+            - lead.status_updated
+            - lead.fraud.flagged
+            - lead.shave_detected
+            - lead.autologin.started
+            - lead.autologin.completed
+            - lead.autologin.failed
+        broker_id:
+          type: string
+          format: uuid
+        request_body:
+          type: object
+        response_body:
+          type: object
+        status_code:
+          type: integer
+        duration_ms:
+          type: integer
+        error:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            detail:
+              type: string
+
+    DuplicateErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              const: DUPLICATE_LEAD
+            message:
+              type: string
+            duplicate_of:
+              type: string
+              format: uuid
+            matched_on:
+              type: string
+              enum: [email, phone, both]
+            original_created_at:
+              type: string
+              format: date-time
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              const: VALIDATION_ERROR
+            message:
+              type: string
+            fields:
+              type: array
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                  message:
+                    type: string
+                  code:
+                    type: string
+
+    # --- NATS Event Schemas (CloudEvents v1.0) ---
+
+    NATSLeadReceivedEvent:
+      type: object
+      description: |
+        Published to NATS subject `lead.received` when a new lead is ingested.
+        Consumed by: routing-engine-svc (Stream 1), fraud-engine-svc (Stream 4), analytics-svc (Stream 5).
+      properties:
+        specversion:
+          type: string
+          const: "1.0"
+        type:
+          type: string
+          const: lead.received
+        source:
+          type: string
+          const: lead-intake-svc
+        id:
+          type: string
+          format: uuid
+        time:
+          type: string
+          format: date-time
+        datacontenttype:
+          type: string
+          const: application/json
+        data:
+          type: object
+          required:
+            - lead_id
+            - tenant_id
+          properties:
+            lead_id:
+              type: string
+              format: uuid
+            tenant_id:
+              type: string
+              format: uuid
+            affiliate_id:
+              type: string
+              format: uuid
+            email:
+              type: string
+            phone_e164:
+              type: string
+            country:
+              type: string
+            ip:
+              type: string
+            funnel_name:
+              type: string
+            aff_sub1:
+              type: string
+            quality_score:
+              type: integer
+            created_at:
+              type: string
+              format: date-time
+
+    NATSLeadRoutedEvent:
+      type: object
+      description: |
+        Published to NATS subject `lead.routed` after routing decision.
+        Consumed by: broker-adapter-svc (Stream 3), analytics-svc (Stream 5).
+      properties:
+        specversion:
+          type: string
+          const: "1.0"
+        type:
+          type: string
+          const: lead.routed
+        source:
+          type: string
+          const: routing-engine-svc
+        data:
+          type: object
+          properties:
+            lead_id:
+              type: string
+              format: uuid
+            tenant_id:
+              type: string
+              format: uuid
+            broker_id:
+              type: string
+              format: uuid
+            rule_id:
+              type: string
+              format: uuid
+            algorithm:
+              type: string
+              enum: [weighted_round_robin, priority, slots_chance]
+            waterfall:
+              type: array
+              items:
+                type: string
+                format: uuid
+            reason:
+              type: string
+            latency_ms:
+              type: integer

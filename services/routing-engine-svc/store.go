@@ -119,6 +119,8 @@ func (s *Store) GetLead(ctx context.Context, leadID string) (*models.Lead, error
 		`SELECT id, tenant_id, affiliate_id, idempotency_key,
 		        first_name, last_name, email, phone, phone_e164,
 		        country, status, quality_score,
+		        funnel_name, aff_sub1, aff_sub2, aff_sub3, aff_sub4, aff_sub5,
+		        aff_sub6, aff_sub7, aff_sub8, aff_sub9, aff_sub10,
 		        fraud_card, extra, created_at, updated_at
 		 FROM leads WHERE id = $1`,
 		leadID,
@@ -126,6 +128,8 @@ func (s *Store) GetLead(ctx context.Context, leadID string) (*models.Lead, error
 		&lead.ID, &lead.TenantID, &lead.AffiliateID, &lead.IdempotencyKey,
 		&lead.FirstName, &lead.LastName, &lead.Email, &lead.Phone, &lead.PhoneE164,
 		&lead.Country, &lead.Status, &lead.QualityScore,
+		&lead.FunnelName, &lead.AffSub1, &lead.AffSub2, &lead.AffSub3, &lead.AffSub4, &lead.AffSub5,
+		&lead.AffSub6, &lead.AffSub7, &lead.AffSub8, &lead.AffSub9, &lead.AffSub10,
 		&lead.FraudCard, &lead.Extra, &lead.CreatedAt, &lead.UpdatedAt,
 	)
 	if err != nil {
