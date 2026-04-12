@@ -18,7 +18,7 @@ import (
 
 // UserHandler handles user CRUD operations.
 type UserHandler struct {
-	DB  *sqlc.Queries
+	DB  UserQuerier
 	Cfg *config.Config
 }
 

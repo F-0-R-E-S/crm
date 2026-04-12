@@ -26,7 +26,7 @@ const rateLimit = 100
 
 // Handler holds lead intake dependencies.
 type Handler struct {
-	DB    *sqlc.Queries
+	DB    IntakeQuerier
 	RDB   *redis.Client
 	NC    *nats.Conn
 	Idem  *idempotency.Store

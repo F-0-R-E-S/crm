@@ -19,7 +19,7 @@ import (
 
 // AffiliateHandler handles affiliate CRUD operations.
 type AffiliateHandler struct {
-	DB  *sqlc.Queries
+	DB  AffiliateQuerier
 	RDB *redis.Client
 }
 

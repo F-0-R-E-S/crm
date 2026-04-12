@@ -16,7 +16,7 @@ import (
 
 // CompanyHandler handles company CRUD operations.
 type CompanyHandler struct {
-	DB *sqlc.Queries
+	DB CompanyQuerier
 }
 
 type createCompanyRequest struct {
