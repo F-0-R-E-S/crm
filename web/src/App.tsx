@@ -28,6 +28,8 @@ import FraudProfilesPage from './pages/FraudProfilesPage'
 import ShaveDetectionPage from './pages/ShaveDetectionPage'
 import FraudAnalyticsPage from './pages/FraudAnalyticsPage'
 import FraudExperimentsPage from './pages/FraudExperimentsPage'
+import ReportBuilderPage from './pages/ReportBuilderPage'
+import DashboardBuilderPage from './pages/DashboardBuilderPage'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -61,6 +63,8 @@ export default function App() {
         <Route path="uad" element={<UADPage />} />
         <Route path="smart-routing" element={<SmartRoutingPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
+        <Route path="reports" element={<ReportBuilderPage />} />
+        <Route path="dashboards" element={<DashboardBuilderPage />} />
         <Route path="users" element={<UsersPage />} />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="settings/sessions" element={<SessionsPage />} />

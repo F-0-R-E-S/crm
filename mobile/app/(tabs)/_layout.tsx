@@ -40,7 +40,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="brokers"
         options={{
-          title: 'Brokers',
+          title: 'Caps',
           tabBarIcon: ({ focused }) => <TabIcon icon="🏢" focused={focused} />,
         }}
       />

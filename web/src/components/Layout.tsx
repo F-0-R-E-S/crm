@@ -14,6 +14,8 @@ const navItems = [
   { path: '/conversions',  label: 'Conversions',  icon: '💰' },
   { path: '/marketplace',  label: 'Marketplace',  icon: '🛒' },
   { path: '/analytics',    label: 'Analytics',    icon: '📊' },
+  { path: '/reports',      label: 'Report Builder', icon: '◈' },
+  { path: '/dashboards',   label: 'Dashboards',   icon: '⬡' },
   { path: '/fraud',            label: 'Fraud',            icon: '🛡', section: 'Fraud & Security' },
   { path: '/fraud/blacklists', label: 'Blacklists',       icon: '⊘' },
   { path: '/fraud/profiles',   label: 'Fraud Profiles',   icon: '☰' },
