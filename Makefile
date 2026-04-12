@@ -1,4 +1,4 @@
-.PHONY: all build test lint clean docker-up docker-down migrate nats-init help
+.PHONY: all build test lint clean docker-up docker-down migrate nats-init help e2e e2e-infra-up e2e-infra-down
 
 SERVICES := lead-intake-svc routing-engine-svc broker-adapter-svc fraud-engine-svc \
             status-sync-svc autologin-svc uad-svc notification-svc api-gateway \
@@ -84,6 +84,15 @@ dev: docker-dev-up nats-init ## Start full dev environment (Vite HMR + all backe
 	@echo "  NATS:        http://localhost:8222"
 	@echo "  ClickHouse:  http://localhost:8123"
 	@echo ""
+
+e2e-infra-up: ## Start E2E test infrastructure (Postgres, Redis, NATS on non-default ports)
+	docker compose -f tests/e2e/docker-compose.e2e.yml up -d --wait
+
+e2e-infra-down: ## Stop E2E test infrastructure
+	docker compose -f tests/e2e/docker-compose.e2e.yml down -v
+
+e2e: ## Run full E2E integration tests (starts infra, runs tests, stops infra)
+	./tests/e2e/run.sh
 
 proto: ## Generate protobuf code (if needed)
 	@echo "No proto files yet"
