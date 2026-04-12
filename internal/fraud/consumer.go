@@ -80,7 +80,7 @@ func (c *Consumer) handleMessage(ctx context.Context, msg *nats.Msg) {
 		return
 	}
 
-	_ = c.JS.Publish("leads.routing", msg.Data)
+	_, _ = c.JS.Publish("leads.routing", msg.Data)
 	_ = msg.Ack()
 
 	c.Log.Info("fraud check complete", "lead_id", leadID, "fraud_score", 0)
