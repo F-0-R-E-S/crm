@@ -40,6 +40,13 @@ func (h *Handler) Register(mux *http.ServeMux) {
 	// Auth endpoints — NO authentication required (login, register, etc.)
 	mux.Handle("/api/v1/auth/", h.cors(h.proxyTo(h.cfg.IdentityAddr)))
 
+	// Identity admin and onboarding endpoints — auth required
+	mux.Handle("/api/v1/onboarding", h.cors(h.requireAuth(h.proxyTo(h.cfg.IdentityAddr))))
+	mux.Handle("/api/v1/onboarding/", h.cors(h.requireAuth(h.proxyTo(h.cfg.IdentityAddr))))
+	mux.Handle("/api/v1/roles", h.cors(h.requireAuth(h.proxyTo(h.cfg.IdentityAddr))))
+	mux.Handle("/api/v1/users", h.cors(h.requireAuth(h.proxyTo(h.cfg.IdentityAddr))))
+	mux.Handle("/api/v1/users/", h.cors(h.requireAuth(h.proxyTo(h.cfg.IdentityAddr))))
+
 	// Postback/webhook endpoints — NO authentication required (broker callbacks)
 	mux.Handle("/api/v1/postback/", h.cors(h.proxyTo(h.cfg.StatusSyncAddr)))
 
@@ -47,12 +54,30 @@ func (h *Handler) Register(mux *http.ServeMux) {
 	mux.Handle("/api/v1/leads", h.cors(h.requireAuth(h.proxyTo(h.cfg.LeadIntakeAddr))))
 	mux.Handle("/api/v1/leads/", h.cors(h.requireAuth(h.proxyTo(h.cfg.LeadIntakeAddr))))
 
+	// Broker configuration — auth required
+	mux.Handle("/api/v1/brokers", h.cors(h.requireAuth(h.proxyTo(h.cfg.BrokerAdapterAddr))))
+	mux.Handle("/api/v1/brokers/", h.cors(h.requireAuth(h.proxyTo(h.cfg.BrokerAdapterAddr))))
+	mux.Handle("/api/v1/broker-templates", h.cors(h.requireAuth(h.proxyTo(h.cfg.BrokerAdapterAddr))))
+	mux.Handle("/api/v1/broker-templates/", h.cors(h.requireAuth(h.proxyTo(h.cfg.BrokerAdapterAddr))))
+
+	// Routing rules — auth required
+	mux.Handle("/api/v1/rules", h.cors(h.requireAuth(h.proxyTo(h.cfg.RoutingEngineAddr))))
+	mux.Handle("/api/v1/rules/", h.cors(h.requireAuth(h.proxyTo(h.cfg.RoutingEngineAddr))))
+
 	// Analytics — auth required
 	mux.Handle("/api/v1/analytics/", h.cors(h.requireAuth(h.proxyTo(h.cfg.AnalyticsAddr))))
+
+	// UAD — auth required
+	mux.Handle("/api/v1/uad", h.cors(h.requireAuth(h.proxyTo(h.cfg.UADAddr))))
+	mux.Handle("/api/v1/uad/", h.cors(h.requireAuth(h.proxyTo(h.cfg.UADAddr))))
 
 	// Notifications — auth required
 	mux.Handle("/api/v1/notifications", h.cors(h.requireAuth(h.proxyTo(h.cfg.NotificationAddr))))
 	mux.Handle("/api/v1/notifications/", h.cors(h.requireAuth(h.proxyTo(h.cfg.NotificationAddr))))
+
+	// Smart routing — auth required
+	mux.Handle("/api/v1/smart-routing", h.cors(h.requireAuth(h.proxyTo(h.cfg.SmartRoutingAddr))))
+	mux.Handle("/api/v1/smart-routing/", h.cors(h.requireAuth(h.proxyTo(h.cfg.SmartRoutingAddr))))
 
 	// AI Assistant — auth required, SSE needs streaming support
 	mux.Handle("/api/v1/assistant/", h.cors(h.requireAuth(h.proxyTo(h.cfg.AssistantAddr))))

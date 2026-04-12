@@ -21,6 +21,8 @@ func NewHandler(logger *slog.Logger, router *Router, store *Store) *Handler {
 }
 
 func (h *Handler) Register(mux *http.ServeMux) {
+	mux.HandleFunc("GET /api/v1/rules", h.ListRules)
+	mux.HandleFunc("POST /api/v1/rules", h.CreateRule)
 	mux.HandleFunc("POST /internal/route", h.RouteLead)
 	mux.HandleFunc("GET /internal/rules", h.ListRules)
 	mux.HandleFunc("POST /internal/rules", h.CreateRule)

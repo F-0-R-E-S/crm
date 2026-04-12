@@ -1,28 +1,190 @@
 import { useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import clsx from 'clsx'
+import { api } from '../lib/api'
 
-const BROKERS = [
-  { name: 'AlphaFX Pro', region: 'EU', today: 312, conv: 14.2, delay: '1.2s', cap: 500, used: 312, status: 'connected' },
-  { name: 'TradingHub', region: 'EU', today: 287, conv: 11.8, delay: '0.9s', cap: 400, used: 287, status: 'connected' },
-  { name: 'CryptoLeads+', region: 'APAC', today: 198, conv: 9.4, delay: '2.1s', cap: 300, used: 198, status: 'connected' },
-  { name: 'ForexDirect', region: 'MENA', today: 174, conv: 16.3, delay: '1.4s', cap: 250, used: 174, status: 'connected' },
-  { name: 'BinaryWorld', region: 'LATAM', today: 143, conv: 8.7, delay: '3.4s', cap: 200, used: 143, status: 'connected' },
-  { name: 'MarketPlus', region: 'EU', today: 89, conv: 12.1, delay: '1.8s', cap: 150, used: 89, status: 'connected' },
-  { name: 'ProSignals', region: 'APAC', today: 0, conv: 7.2, delay: '—', cap: 100, used: 0, status: 'error' },
-  { name: 'TradeCore', region: 'EU', today: 0, conv: 0.0, delay: '—', cap: 200, used: 0, status: 'inactive' },
-]
+interface Broker {
+  id: string
+  name: string
+  status: 'active' | 'inactive' | 'paused'
+  template_id: string
+  endpoint: string
+  daily_cap: number
+  total_cap: number
+  priority: number
+  health_status: string
+  created_at: string
+  updated_at: string
+}
 
-const INITIAL_FORM = {
+interface BrokerTemplate {
+  id: string
+  name: string
+  version: number
+  method: string
+  auth_type: string
+}
+
+interface BrokerFormState {
+  name: string
+  templateId: string
+  endpoint: string
+  apiKey: string
+  dailyCap: number
+  priority: number
+  status: Broker['status']
+}
+
+const INITIAL_FORM: BrokerFormState = {
   name: '',
+  templateId: '',
   endpoint: '',
-  key: '',
-  region: 'EU',
-  cap: 500,
+  apiKey: '',
+  dailyCap: 500,
+  priority: 1,
+  status: 'active',
 }
 
 export default function BrokersPage() {
+  const queryClient = useQueryClient()
   const [showModal, setShowModal] = useState(false)
-  const [form, setForm] = useState(INITIAL_FORM)
-  const [createSuccess, setCreateSuccess] = useState('')
+  const [editingBrokerId, setEditingBrokerId] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
+  const [form, setForm] = useState<BrokerFormState>(INITIAL_FORM)
+  const [submitError, setSubmitError] = useState('')
+  const [flashMessage, setFlashMessage] = useState('')
+
+  const { data: brokersData, isLoading: loadingBrokers } = useQuery({
+    queryKey: ['brokers'],
+    queryFn: () => api.get<{ brokers: Broker[]; total: number }>('/brokers'),
+  })
+
+  const { data: templatesData } = useQuery({
+    queryKey: ['broker-templates'],
+    queryFn: () => api.get<{ templates: BrokerTemplate[]; total: number }>('/broker-templates'),
+  })
+
+  const brokers = brokersData?.brokers ?? []
+  const templates = templatesData?.templates ?? []
+
+  const createMutation = useMutation({
+    mutationFn: (payload: Record<string, unknown>) => api.post<Broker>('/brokers', payload),
+    onSuccess: (broker) => {
+      setFlashMessage(`Broker "${broker.name}" created.`)
+      closeModal()
+      void queryClient.invalidateQueries({ queryKey: ['brokers'] })
+    },
+    onError: (error) => {
+      setSubmitError(error instanceof Error ? error.message : 'Failed to create broker')
+    },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: Record<string, unknown> }) =>
+      api.patch<Broker>(`/brokers/${id}`, payload),
+    onSuccess: (broker) => {
+      setFlashMessage(`Broker "${broker.name}" updated.`)
+      closeModal()
+      void queryClient.invalidateQueries({ queryKey: ['brokers'] })
+    },
+    onError: (error) => {
+      setSubmitError(error instanceof Error ? error.message : 'Failed to update broker')
+    },
+  })
+
+  const toggleStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: Broker['status'] }) =>
+      api.patch<Broker>(`/brokers/${id}`, { status }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['brokers'] })
+    },
+  })
+
+  const filteredBrokers = brokers.filter((broker) => {
+    const template = templates.find((item) => item.id === broker.template_id)
+    const haystack = `${broker.name} ${broker.endpoint} ${template?.name ?? ''}`.toLowerCase()
+    return haystack.includes(search.trim().toLowerCase())
+  })
+
+  const activeCount = brokers.filter((broker) => broker.status === 'active').length
+
+  function closeModal() {
+    setShowModal(false)
+    setEditingBrokerId(null)
+    setSubmitError('')
+    setForm({
+      ...INITIAL_FORM,
+      templateId: templates[0]?.id ?? '',
+      priority: brokers.length + 1,
+    })
+  }
+
+  function openCreate() {
+    setFlashMessage('')
+    setEditingBrokerId(null)
+    setSubmitError('')
+    setForm({
+      ...INITIAL_FORM,
+      templateId: templates[0]?.id ?? '',
+      priority: brokers.length + 1,
+    })
+    setShowModal(true)
+  }
+
+  function openEdit(broker: Broker) {
+    setFlashMessage('')
+    setEditingBrokerId(broker.id)
+    setSubmitError('')
+    setForm({
+      name: broker.name,
+      templateId: broker.template_id,
+      endpoint: broker.endpoint,
+      apiKey: '',
+      dailyCap: broker.daily_cap,
+      priority: broker.priority,
+      status: broker.status,
+    })
+    setShowModal(true)
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setSubmitError('')
+
+    const payload: Record<string, unknown> = {
+      name: form.name.trim(),
+      template_id: form.templateId,
+      endpoint: form.endpoint.trim(),
+      daily_cap: form.dailyCap,
+      priority: form.priority,
+      status: form.status,
+    }
+
+    if (form.apiKey.trim()) {
+      payload.credentials = { api_key: form.apiKey.trim() }
+    }
+
+    if (editingBrokerId) {
+      updateMutation.mutate({ id: editingBrokerId, payload })
+      return
+    }
+
+    createMutation.mutate(payload)
+  }
+
+  function getTemplateLabel(templateId: string) {
+    const template = templates.find((item) => item.id === templateId)
+    return template ? `${template.name} v${template.version}` : 'Unknown template'
+  }
+
+  function getHealthBadge(status: string) {
+    if (status === 'healthy') return 'delivered'
+    if (status === 'degraded') return 'processing'
+    if (status === 'offline') return 'invalid'
+    return 'new'
+  }
+
+  const isSubmitting = createMutation.isPending || updateMutation.isPending
 
   return (
     <div className="page-section">
@@ -30,112 +192,121 @@ export default function BrokersPage() {
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.5, color: 'var(--text-1)' }}>Brokers</h1>
           <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 2 }}>
-            {BROKERS.filter((b) => b.status === 'connected').length} connected · {BROKERS.length} total
+            {activeCount} active · {brokers.length} total
           </p>
         </div>
-        <button
-          className="btn-primary"
-          style={{ fontSize: 12, padding: '8px 18px' }}
-          onClick={() => {
-            setCreateSuccess('')
-            setShowModal(true)
-          }}
-        >
+        <button className="btn-primary" style={{ fontSize: 12, padding: '8px 18px' }} onClick={openCreate}>
           + Add Broker
         </button>
       </div>
 
-      {createSuccess && (
+      {flashMessage && (
         <div className="form-alert form-alert-success" style={{ marginBottom: 14 }}>
-          {createSuccess}
+          {flashMessage}
         </div>
       )}
 
       <div style={{ display: 'flex', gap: 12, marginBottom: 18 }}>
-        <div style={{ position: 'relative', flex: 1, maxWidth: 280 }}>
+        <div style={{ position: 'relative', flex: 1, maxWidth: 320 }}>
           <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)', fontSize: 14, pointerEvents: 'none' }}>⌕</span>
-          <input className="glass-input" style={{ paddingLeft: 34 }} placeholder="Search brokers…" />
+          <input
+            className="glass-input"
+            style={{ paddingLeft: 34 }}
+            placeholder="Search brokers or endpoints..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-        <button className="btn-ghost">All Status ▾</button>
-        <button className="btn-ghost">Region ▾</button>
       </div>
 
       <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
         <table className="glass-table">
           <thead>
             <tr>
-              <th>Broker</th><th>Region</th><th>Today</th>
-              <th>Conv%</th><th>Avg Delay</th><th>Cap Used</th><th>Status</th><th></th>
+              <th>Broker</th>
+              <th>Template</th>
+              <th>Endpoint</th>
+              <th>Daily Cap</th>
+              <th>Priority</th>
+              <th>Status</th>
+              <th>Health</th>
+              <th style={{ textAlign: 'right' }}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {BROKERS.map((b) => (
-              <tr key={b.name}>
-                <td className="td-primary" style={{ fontWeight: 600 }}>{b.name}</td>
-                <td>
-                  <span style={{ fontSize: 11, padding: '3px 8px', borderRadius: 999, background: 'rgba(255,255,255,0.06)', color: 'var(--text-2)' }}>
-                    {b.region}
-                  </span>
-                </td>
-                <td style={{ fontWeight: 600, color: 'var(--text-1)' }}>{b.today}</td>
-                <td style={{ fontWeight: 600, color: b.conv > 12 ? '#34d399' : '#fbbf24' }}>{b.conv}%</td>
-                <td>{b.delay}</td>
-                <td>
-                  <div style={{ minWidth: 100 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginBottom: 4 }}>
-                      <span style={{ color: 'var(--text-3)' }}>{b.used}/{b.cap}</span>
-                      <span style={{ color: 'var(--text-2)' }}>{b.cap ? Math.round((b.used / b.cap) * 100) : 0}%</span>
-                    </div>
-                    <div className="score-track">
-                      <div className="score-fill" style={{
-                        width: `${b.cap ? (b.used / b.cap) * 100 : 0}%`,
-                        background: b.used / b.cap > 0.9 ? 'var(--grad-rose)'
-                          : b.used / b.cap > 0.7 ? 'linear-gradient(135deg,#fbbf24,#f59e0b)'
-                            : 'var(--grad-blue)',
-                      }} />
-                    </div>
-                  </div>
-                </td>
-                <td><span className={`status-badge ${b.status}`}>{b.status}</span></td>
-                <td>
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <button className="btn-ghost">Edit</button>
-                    <button className="btn-ghost">⚙</button>
-                  </div>
+            {loadingBrokers ? (
+              <tr>
+                <td colSpan={8} style={{ padding: '32px 0', textAlign: 'center', color: 'var(--text-3)' }}>
+                  Loading brokers...
                 </td>
               </tr>
-            ))}
+            ) : filteredBrokers.length === 0 ? (
+              <tr>
+                <td colSpan={8} style={{ padding: '32px 0', textAlign: 'center', color: 'var(--text-3)' }}>
+                  No brokers found.
+                </td>
+              </tr>
+            ) : (
+              filteredBrokers.map((broker) => (
+                <tr key={broker.id}>
+                  <td className="td-primary" style={{ fontWeight: 600 }}>{broker.name}</td>
+                  <td>{getTemplateLabel(broker.template_id)}</td>
+                  <td style={{ maxWidth: 260, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{broker.endpoint}</td>
+                  <td>{broker.daily_cap || 'none'}</td>
+                  <td>{broker.priority}</td>
+                  <td>
+                    <span className={clsx('status-badge', broker.status === 'active' ? 'delivered' : broker.status === 'paused' ? 'processing' : 'invalid')}>
+                      {broker.status}
+                    </span>
+                  </td>
+                  <td>
+                    <span className={clsx('status-badge', getHealthBadge(broker.health_status))}>
+                      {broker.health_status || 'unknown'}
+                    </span>
+                  </td>
+                  <td style={{ textAlign: 'right' }}>
+                    <div style={{ display: 'inline-flex', gap: 6 }}>
+                      <button className="btn-ghost" onClick={() => openEdit(broker)}>Edit</button>
+                      <button
+                        className="btn-ghost"
+                        onClick={() => toggleStatusMutation.mutate({ id: broker.id, status: broker.status === 'active' ? 'inactive' : 'active' })}
+                        disabled={toggleStatusMutation.isPending}
+                      >
+                        {broker.status === 'active' ? 'Pause' : 'Activate'}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
       {showModal && (
-        <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && setShowModal(false)}>
-          <form
-            className="modal-box"
-            style={{ maxWidth: 760 }}
-            onSubmit={(e) => {
-              e.preventDefault()
-              setCreateSuccess(`Broker integration “${form.name.trim()}” saved in preview mode.`)
-              setForm(INITIAL_FORM)
-              setShowModal(false)
-            }}
-          >
+        <div className="modal-backdrop" onClick={(e) => e.target === e.currentTarget && closeModal()}>
+          <form className="modal-box" style={{ maxWidth: 760 }} onSubmit={handleSubmit}>
             <div className="form-header">
               <div>
-                <div className="form-title">Add Broker Integration</div>
-                <div className="form-subtitle">Connect a new broker to routing and validate credentials.</div>
+                <div className="form-title">{editingBrokerId ? 'Edit Broker' : 'Add Broker Integration'}</div>
+                <div className="form-subtitle">Real broker records are stored in backend and used by routing services.</div>
               </div>
               <button
                 type="button"
                 className="btn-ghost"
                 style={{ width: 32, height: 32, borderRadius: 16, padding: 0, justifyContent: 'center' }}
-                onClick={() => setShowModal(false)}
+                onClick={closeModal}
                 aria-label="Close"
               >
                 ✕
               </button>
             </div>
+
+            {submitError && (
+              <div className="form-alert form-alert-error" style={{ marginBottom: 12 }}>
+                {submitError}
+              </div>
+            )}
 
             <div className="form-grid form-grid-2">
               <div className="form-field">
@@ -152,17 +323,20 @@ export default function BrokersPage() {
               </div>
 
               <div className="form-field">
-                <label className="form-label" htmlFor="broker-region">Region</label>
+                <label className="form-label" htmlFor="broker-template">Template</label>
                 <select
-                  id="broker-region"
+                  id="broker-template"
                   className="form-control"
-                  value={form.region}
-                  onChange={(e) => setForm((prev) => ({ ...prev, region: e.target.value }))}
+                  value={form.templateId}
+                  onChange={(e) => setForm((prev) => ({ ...prev, templateId: e.target.value }))}
+                  required
                 >
-                  <option value="EU">EU</option>
-                  <option value="MENA">MENA</option>
-                  <option value="APAC">APAC</option>
-                  <option value="LATAM">LATAM</option>
+                  <option value="">Select template</option>
+                  {templates.map((template) => (
+                    <option key={template.id} value={template.id}>
+                      {template.name} v{template.version}
+                    </option>
+                  ))}
                 </select>
               </div>
 
@@ -183,11 +357,11 @@ export default function BrokersPage() {
                 <input
                   id="broker-key"
                   className="form-control"
-                  value={form.key}
-                  onChange={(e) => setForm((prev) => ({ ...prev, key: e.target.value }))}
-                  placeholder="sk_live_xxx"
-                  required
+                  value={form.apiKey}
+                  onChange={(e) => setForm((prev) => ({ ...prev, apiKey: e.target.value }))}
+                  placeholder={editingBrokerId ? 'Leave empty to keep existing secret' : 'sk_live_xxx'}
                 />
+                <div className="form-help">Only sent when you provide a new value.</div>
               </div>
 
               <div className="form-field">
@@ -195,26 +369,48 @@ export default function BrokersPage() {
                 <input
                   id="broker-cap"
                   type="number"
-                  min={1}
+                  min={0}
                   className="form-control"
-                  value={form.cap}
-                  onChange={(e) => setForm((prev) => ({ ...prev, cap: Math.max(1, Number(e.target.value) || 1) }))}
+                  value={form.dailyCap}
+                  onChange={(e) => setForm((prev) => ({ ...prev, dailyCap: Math.max(0, Number(e.target.value) || 0) }))}
                 />
               </div>
 
               <div className="form-field">
-                <label className="form-label">Connection Test</label>
-                <button type="button" className="btn-glass" style={{ justifyContent: 'center' }}>
-                  Test Connection
-                </button>
-                <div className="form-help">Runs handshake and auth check against endpoint.</div>
+                <label className="form-label" htmlFor="broker-priority">Priority</label>
+                <input
+                  id="broker-priority"
+                  type="number"
+                  min={0}
+                  className="form-control"
+                  value={form.priority}
+                  onChange={(e) => setForm((prev) => ({ ...prev, priority: Math.max(0, Number(e.target.value) || 0) }))}
+                />
+              </div>
+
+              <div className="form-field">
+                <label className="form-label" htmlFor="broker-status">Status</label>
+                <select
+                  id="broker-status"
+                  className="form-control"
+                  value={form.status}
+                  onChange={(e) => setForm((prev) => ({ ...prev, status: e.target.value as Broker['status'] }))}
+                >
+                  <option value="active">active</option>
+                  <option value="inactive">inactive</option>
+                  <option value="paused">paused</option>
+                </select>
               </div>
             </div>
 
             <div className="form-actions">
-              <button type="button" className="btn-ghost" onClick={() => setShowModal(false)}>Cancel</button>
-              <button type="submit" className="btn-primary" disabled={!form.name.trim() || !form.endpoint.trim() || !form.key.trim()}>
-                Add Broker
+              <button type="button" className="btn-ghost" onClick={closeModal}>Cancel</button>
+              <button
+                type="submit"
+                className="btn-primary"
+                disabled={isSubmitting || !form.name.trim() || !form.templateId || !form.endpoint.trim()}
+              >
+                {isSubmitting ? 'Saving...' : editingBrokerId ? 'Save Changes' : 'Add Broker'}
               </button>
             </div>
           </form>

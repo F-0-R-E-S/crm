@@ -100,6 +100,7 @@ services:
       IDENTITY_ADDR: "http://identity:8010"
       ANALYTICS_ADDR: "http://analytics:8011"
       ASSISTANT_ADDR: "http://assistant:8012"
+      SMART_ROUTING_ADDR: "http://smart-routing:8013"
 
   lead-intake:
     <<: *go-service
@@ -279,6 +280,21 @@ services:
       NOTIFICATION_ADDR: "http://notification:8008"
       AUTOLOGIN_ADDR: "http://autologin:8006"
       ANALYTICS_ADDR: "http://analytics:8011"
+
+  smart-routing:
+    <<: *go-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: smart-routing-svc
+    ports:
+      - "8013:8013"
+    environment:
+      PORT: "8013"
+      DB_URL: "postgres://gambchamp:gambchamp_dev@postgres:5432/gambchamp?sslmode=disable"
+      REDIS_URL: "redis://redis:6379"
+      NATS_URL: "nats://nats:4222"
 
   # Frontend
   web:

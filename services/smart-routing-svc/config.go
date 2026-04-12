@@ -11,7 +11,7 @@ type Config struct {
 
 func LoadConfig() Config {
 	return Config{
-		Port:     envOrDefault("PORT", "8012"),
+		Port:     envOrDefault("PORT", "8013"),
 		DBURL:    envOrDefault("DB_URL", "postgres://localhost:5432/gambchamp?sslmode=disable"),
 		RedisURL: envOrDefault("REDIS_URL", "redis://localhost:6379/0"),
 		NATSURL:  envOrDefault("NATS_URL", "nats://localhost:4222"),
