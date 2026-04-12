@@ -3,9 +3,12 @@ package main
 import "os"
 
 type Config struct {
-	Port         string
-	JWTPublicKey string
-	RedisURL     string
+	Port      string
+	JWTSecret string
+	RedisURL  string
+
+	// CORS
+	CORSAllowOrigins string
 
 	// Upstream service addresses
 	LeadIntakeAddr    string
@@ -22,9 +25,11 @@ type Config struct {
 
 func LoadConfig() Config {
 	return Config{
-		Port:         envOrDefault("PORT", "8080"),
-		JWTPublicKey: os.Getenv("JWT_PUBLIC_KEY"),
-		RedisURL:     envOrDefault("REDIS_URL", "redis://localhost:6379/0"),
+		Port:      envOrDefault("PORT", "8080"),
+		JWTSecret: os.Getenv("JWT_SECRET"),
+		RedisURL:  envOrDefault("REDIS_URL", "redis://localhost:6379/0"),
+
+		CORSAllowOrigins: envOrDefault("CORS_ALLOW_ORIGINS", "*"),
 
 		LeadIntakeAddr:    envOrDefault("LEAD_INTAKE_ADDR", "http://localhost:8001"),
 		RoutingEngineAddr: envOrDefault("ROUTING_ENGINE_ADDR", "http://localhost:8002"),
