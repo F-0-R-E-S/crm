@@ -47,7 +47,16 @@ func main() {
 	store := NewStore(db)
 	engine := NewTemplateEngine()
 	deliverer := NewDeliverer(store, engine, cfg.DeliveryTimeout, cfg.MaxRetries, logger)
+	cb := NewCircuitBreaker(store, logger, 5, 300)
 	h := NewHandler(logger, store, deliverer)
+	pbHandler := NewPostbackHandler(store, nc, logger)
+
+	// --- Health monitor ---
+	healthMonitor := NewHealthMonitor(store, logger, 60*time.Second)
+	healthMonitor.Start(ctx)
+	defer healthMonitor.Stop()
+
+	_ = cb // circuit breaker available for delivery flow
 
 	// --- NATS subscriber: lead.routed ---
 	err = nc.Subscribe(ctx, "leads", "broker-adapter", func(subCtx context.Context, event messaging.CloudEvent) error {
@@ -65,6 +74,7 @@ func main() {
 	// --- HTTP server ---
 	mux := http.NewServeMux()
 	h.Register(mux)
+	pbHandler.Register(mux)
 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
