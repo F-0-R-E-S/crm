@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/netip"
 	"time"
 
@@ -233,6 +234,56 @@ func (s *Store) GetLeadEvents(ctx context.Context, leadID string) ([]*models.Lea
 		events = append(events, ev)
 	}
 	return events, nil
+}
+
+func (s *Store) SearchLeads(ctx context.Context, tenantID, email, country, status string, limit int) ([]*models.Lead, error) {
+	query := `SELECT id, tenant_id, affiliate_id, idempotency_key,
+	                 first_name, last_name, email, phone, phone_e164,
+	                 country, ip, user_agent, status, quality_score,
+	                 fraud_card, extra, created_at, updated_at
+	          FROM leads WHERE tenant_id = $1`
+	args := []interface{}{tenantID}
+	argIdx := 2
+
+	if email != "" {
+		query += fmt.Sprintf(" AND email ILIKE $%d", argIdx)
+		args = append(args, "%"+email+"%")
+		argIdx++
+	}
+	if country != "" {
+		query += fmt.Sprintf(" AND country = $%d", argIdx)
+		args = append(args, country)
+		argIdx++
+	}
+	if status != "" {
+		query += fmt.Sprintf(" AND status = $%d", argIdx)
+		args = append(args, status)
+		argIdx++
+	}
+
+	query += fmt.Sprintf(" ORDER BY created_at DESC LIMIT $%d", argIdx)
+	args = append(args, limit)
+
+	rows, err := s.db.Pool.Query(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var leads []*models.Lead
+	for rows.Next() {
+		lead := &models.Lead{}
+		if err := rows.Scan(
+			&lead.ID, &lead.TenantID, &lead.AffiliateID, &lead.IdempotencyKey,
+			&lead.FirstName, &lead.LastName, &lead.Email, &lead.Phone, &lead.PhoneE164,
+			&lead.Country, &lead.IP, &lead.UserAgent, &lead.Status, &lead.QualityScore,
+			&lead.FraudCard, &lead.Extra, &lead.CreatedAt, &lead.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		leads = append(leads, lead)
+	}
+	return leads, nil
 }
 
 func nilIfEmpty(s string) interface{} {

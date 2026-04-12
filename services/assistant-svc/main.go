@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -15,13 +16,17 @@ import (
 )
 
 func main() {
-	logger := telemetry.NewLogger("fraud-engine-svc")
+	logger := telemetry.NewLogger("assistant-svc")
 	cfg := LoadConfig()
+
+	if cfg.AnthropicAPIKey == "" {
+		logger.Error("ANTHROPIC_API_KEY is required")
+		os.Exit(1)
+	}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	// --- Connect to PostgreSQL ---
 	db, err := database.New(ctx, cfg.DBURL)
 	if err != nil {
 		logger.Error("failed to connect to database", "error", err)
@@ -30,7 +35,6 @@ func main() {
 	defer db.Close()
 	logger.Info("connected to database")
 
-	// --- Connect to Redis ---
 	rdb, err := cache.NewRedis(ctx, cfg.RedisURL)
 	if err != nil {
 		logger.Error("failed to connect to redis", "error", err)
@@ -39,23 +43,30 @@ func main() {
 	defer rdb.Close()
 	logger.Info("connected to redis")
 
-	// --- Connect to NATS ---
 	nc, err := messaging.NewNATS(ctx, cfg.NATSURL, logger)
 	if err != nil {
-		logger.Warn("nats connection failed, cmd handler disabled", "error", err)
-	} else {
-		defer nc.Close()
-		logger.Info("connected to nats")
+		logger.Error("failed to connect to nats", "error", err)
+		os.Exit(1)
 	}
+	defer nc.Close()
+	logger.Info("connected to nats")
 
-	// --- Wire up store, checker, and handler ---
 	store := NewStore(db)
-	checker := NewFraudChecker(rdb, logger, cfg.MaxMindKey, cfg.IPQSKey)
-	h := NewHandler(logger, checker, store)
+	ctxMgr := NewContextManager(rdb, db, logger)
+	sessionMgr := NewSessionManager(logger)
+	toolRegistry := NewToolRegistry()
+	executor := NewActionExecutor(nc, rdb, store, toolRegistry, logger, cfg)
+	claude := NewClaudeClient(cfg.AnthropicAPIKey, cfg.Model, logger)
+	promptBuilder := NewPromptBuilder(toolRegistry)
 
-	if nc != nil {
-		StartCmdHandler(nc, store, checker, logger)
+	eventHandler := NewEventHandler(ctxMgr, sessionMgr, nc, logger)
+	if err := eventHandler.Start(ctx); err != nil {
+		logger.Error("failed to start event handler", "error", err)
+		os.Exit(1)
 	}
+	logger.Info("event handler started")
+
+	h := NewHandler(logger, store, ctxMgr, sessionMgr, claude, promptBuilder, executor, toolRegistry, cfg)
 
 	mux := http.NewServeMux()
 	h.Register(mux)
@@ -71,11 +82,10 @@ func main() {
 		Addr:         ":" + cfg.Port,
 		Handler:      mux,
 		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 30 * time.Second,
-		IdleTimeout:  60 * time.Second,
+		WriteTimeout: 120 * time.Second, // longer for SSE streaming
+		IdleTimeout:  120 * time.Second,
 	}
 
-	// --- Start server ---
 	go func() {
 		logger.Info("starting server", "port", cfg.Port)
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
@@ -84,13 +94,13 @@ func main() {
 		}
 	}()
 
-	// --- Graceful shutdown ---
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	sig := <-quit
 	logger.Info("received shutdown signal", "signal", sig.String())
 
 	cancel()
+	sessionMgr.CloseAll()
 
 	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer shutdownCancel()

@@ -70,6 +70,44 @@ func (s *Store) GetFraudProfile(ctx context.Context, tenantID, affiliateID strin
 	return profile, nil
 }
 
+func (s *Store) ListFraudProfiles(ctx context.Context, tenantID string) ([]*FraudProfile, error) {
+	rows, err := s.db.Pool.Query(ctx,
+		`SELECT id, tenant_id, affiliate_id, ip_check_enabled, email_check_enabled,
+		        phone_check_enabled, velocity_check_enabled, min_quality_score, auto_reject_score
+		 FROM fraud_profiles WHERE tenant_id = $1`,
+		tenantID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("list fraud profiles: %w", err)
+	}
+	defer rows.Close()
+
+	var profiles []*FraudProfile
+	for rows.Next() {
+		p := &FraudProfile{}
+		if err := rows.Scan(&p.ID, &p.TenantID, &p.AffiliateID,
+			&p.IPCheckEnabled, &p.EmailCheckEnabled,
+			&p.PhoneCheckEnabled, &p.VelocityCheckEnabled,
+			&p.MinQualityScore, &p.AutoRejectScore); err != nil {
+			return nil, err
+		}
+		profiles = append(profiles, p)
+	}
+	return profiles, nil
+}
+
+func (s *Store) UpdateMinQualityScore(ctx context.Context, affiliateID string, score int) error {
+	return s.db.Exec(ctx,
+		`UPDATE fraud_profiles SET min_quality_score = $1 WHERE affiliate_id = $2`,
+		score, affiliateID)
+}
+
+func (s *Store) UpdateAutoRejectScore(ctx context.Context, affiliateID string, score int) error {
+	return s.db.Exec(ctx,
+		`UPDATE fraud_profiles SET auto_reject_score = $1 WHERE affiliate_id = $2`,
+		score, affiliateID)
+}
+
 // UpsertFraudProfile creates or updates a fraud profile.
 func (s *Store) UpsertFraudProfile(ctx context.Context, profile *FraudProfile) error {
 	return s.db.Exec(ctx,

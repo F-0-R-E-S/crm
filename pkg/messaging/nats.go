@@ -121,6 +121,43 @@ func (n *NATSClient) Subscribe(ctx context.Context, stream, consumer string, han
 	return nil
 }
 
+type CommandEnvelope struct {
+	Action   string      `json:"action"`
+	TenantID string      `json:"tenant_id"`
+	UserID   string      `json:"user_id"`
+	Input    interface{} `json:"input"`
+}
+
+type CommandResponse struct {
+	Success bool            `json:"success"`
+	Data    json.RawMessage `json:"data,omitempty"`
+	Error   string          `json:"error,omitempty"`
+}
+
+func (n *NATSClient) Request(ctx context.Context, subject string, cmd *CommandEnvelope, timeout time.Duration) (*CommandResponse, error) {
+	payload, err := json.Marshal(cmd)
+	if err != nil {
+		return nil, fmt.Errorf("marshal command: %w", err)
+	}
+
+	msg, err := n.conn.RequestWithContext(ctx, subject, payload)
+	if err != nil {
+		return nil, fmt.Errorf("nats request %s: %w", subject, err)
+	}
+
+	var resp CommandResponse
+	if err := json.Unmarshal(msg.Data, &resp); err != nil {
+		return nil, fmt.Errorf("unmarshal response: %w", err)
+	}
+
+	n.logger.Debug("command response", "subject", subject, "action", cmd.Action, "success", resp.Success)
+	return &resp, nil
+}
+
+func (n *NATSClient) Conn() *nats.Conn {
+	return n.conn
+}
+
 func (n *NATSClient) JetStream() jetstream.JetStream {
 	return n.js
 }

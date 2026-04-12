@@ -8,12 +8,24 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gambchamp/crm/pkg/messaging"
 	"github.com/gambchamp/crm/pkg/telemetry"
 )
 
 func main() {
 	logger := telemetry.NewLogger("analytics-svc")
 	cfg := LoadConfig()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	nc, err := messaging.NewNATS(ctx, cfg.NATSURL, logger)
+	if err != nil {
+		logger.Warn("nats connection failed, cmd handler disabled", "error", err)
+	} else {
+		defer nc.Close()
+		StartCmdHandler(nc, logger)
+	}
 
 	mux := http.NewServeMux()
 	h := NewHandler(logger)

@@ -68,6 +68,9 @@ func main() {
 	}
 	logger.Info("subscribed to lead.received events")
 
+	// --- NATS command handler for assistant-svc ---
+	StartCmdHandler(nc, store, logger)
+
 	// --- HTTP server ---
 	mux := http.NewServeMux()
 	h.Register(mux)

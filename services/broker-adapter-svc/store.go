@@ -136,6 +136,36 @@ func (s *Store) CreateLeadEvent(ctx context.Context, event *models.LeadEvent) er
 	).Scan(&event.ID, &event.CreatedAt)
 }
 
+func (s *Store) GetActiveBrokers(ctx context.Context, tenantID string) ([]*models.Broker, error) {
+	rows, err := s.db.Query(ctx,
+		`SELECT id, tenant_id, name, status, daily_cap, total_cap, priority, health_status, created_at, updated_at
+		 FROM brokers WHERE tenant_id = $1 ORDER BY priority ASC`,
+		tenantID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var brokers []*models.Broker
+	for rows.Next() {
+		b := &models.Broker{}
+		if err := rows.Scan(&b.ID, &b.TenantID, &b.Name, &b.Status, &b.DailyCap, &b.TotalCap, &b.Priority, &b.HealthStatus, &b.CreatedAt, &b.UpdatedAt); err != nil {
+			return nil, err
+		}
+		brokers = append(brokers, b)
+	}
+	return brokers, nil
+}
+
+func (s *Store) UpdateBrokerStatus(ctx context.Context, brokerID, status string) error {
+	return s.db.Exec(ctx, `UPDATE brokers SET status = $1, updated_at = NOW() WHERE id = $2`, status, brokerID)
+}
+
+func (s *Store) UpdateBrokerCap(ctx context.Context, brokerID string, dailyCap int) error {
+	return s.db.Exec(ctx, `UPDATE brokers SET daily_cap = $1, updated_at = NOW() WHERE id = $2`, dailyCap, brokerID)
+}
+
 func ensureJSON(raw json.RawMessage) json.RawMessage {
 	if raw == nil || len(raw) == 0 {
 		return json.RawMessage("{}")
