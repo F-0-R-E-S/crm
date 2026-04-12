@@ -52,7 +52,7 @@ func (te *TemplateEngine) BuildRequest(lead *models.Lead, broker *models.Broker,
 	}
 
 	// Build request body from body_template.
-	body, err := te.buildBody(tmpl.BodyTemplate, mappedFields)
+	body, err := te.buildBody([]byte(tmpl.BodyTemplate), mappedFields)
 	if err != nil {
 		return nil, fmt.Errorf("build body: %w", err)
 	}

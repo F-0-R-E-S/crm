@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 
 CREATE INDEX idx_sessions_user ON sessions(user_id);
 CREATE INDEX idx_sessions_tenant ON sessions(tenant_id);
-CREATE INDEX idx_sessions_expires ON sessions(expires_at) WHERE expires_at > NOW();
+CREATE INDEX idx_sessions_expires ON sessions(expires_at);
 
 ALTER TABLE sessions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY tenant_isolation_sessions ON sessions
@@ -39,7 +39,7 @@ CREATE TABLE user_invites (
 CREATE INDEX idx_user_invites_tenant ON user_invites(tenant_id);
 CREATE INDEX idx_user_invites_token ON user_invites(token_hash);
 CREATE UNIQUE INDEX idx_user_invites_pending ON user_invites(tenant_id, email)
-    WHERE accepted_at IS NULL AND expires_at > NOW();
+    WHERE accepted_at IS NULL;
 
 ALTER TABLE user_invites ENABLE ROW LEVEL SECURITY;
 CREATE POLICY tenant_isolation_user_invites ON user_invites

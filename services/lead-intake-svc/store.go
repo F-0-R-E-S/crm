@@ -45,7 +45,7 @@ func (s *Store) CreateLead(ctx context.Context, lead *models.Lead) error {
 			 status, quality_score, fraud_card, extra)
 		 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25,$26)
 		 RETURNING id, created_at, updated_at`,
-		lead.TenantID, lead.AffiliateID, nilIfEmpty(lead.IdempotencyKey),
+		lead.TenantID, nilIfEmpty(lead.AffiliateID), nilIfEmpty(lead.IdempotencyKey),
 		lead.FirstName, lead.LastName, lead.Email, lead.Phone, lead.PhoneE164,
 		lead.Country, ipVal, lead.UserAgent, nilIfEmpty(lead.FunnelName),
 		nilIfEmpty(lead.AffSub1), nilIfEmpty(lead.AffSub2), nilIfEmpty(lead.AffSub3),
@@ -60,8 +60,8 @@ func (s *Store) GetLeadByIdempotencyKey(ctx context.Context, tenantID, key strin
 	lead := &models.Lead{}
 	var ip *netip.Prefix
 	err := s.db.Pool.QueryRow(ctx,
-		`SELECT id, tenant_id, affiliate_id, idempotency_key,
-		        first_name, last_name, email, phone, phone_e164,
+		`SELECT id, tenant_id, COALESCE(affiliate_id::text, ''), COALESCE(idempotency_key,''),
+		        first_name, last_name, email, COALESCE(phone,''), COALESCE(phone_e164,''),
 		        country, ip, status, quality_score, fraud_card,
 		        created_at, updated_at
 		 FROM leads
@@ -184,11 +184,11 @@ func (s *Store) GetLead(ctx context.Context, leadID string) (*models.Lead, error
 	lead := &models.Lead{}
 	var ip *netip.Prefix
 	err := s.db.Pool.QueryRow(ctx,
-		`SELECT id, tenant_id, affiliate_id, idempotency_key,
-		        first_name, last_name, email, phone, phone_e164,
-		        country, ip, user_agent, funnel_name,
-		        aff_sub1, aff_sub2, aff_sub3, aff_sub4, aff_sub5,
-		        aff_sub6, aff_sub7, aff_sub8, aff_sub9, aff_sub10,
+		`SELECT id, tenant_id, COALESCE(affiliate_id::text, ''), COALESCE(idempotency_key,''),
+		        first_name, last_name, email, COALESCE(phone,''), COALESCE(phone_e164,''),
+		        country, ip, COALESCE(user_agent,''), COALESCE(funnel_name,''),
+		        COALESCE(aff_sub1,''), COALESCE(aff_sub2,''), COALESCE(aff_sub3,''), COALESCE(aff_sub4,''), COALESCE(aff_sub5,''),
+		        COALESCE(aff_sub6,''), COALESCE(aff_sub7,''), COALESCE(aff_sub8,''), COALESCE(aff_sub9,''), COALESCE(aff_sub10,''),
 		        status, quality_score,
 		        fraud_card, extra, created_at, updated_at
 		 FROM leads WHERE id = $1`,
@@ -278,8 +278,8 @@ func (s *Store) ListLeads(ctx context.Context, tenantID string, limit, offset in
 
 	queryArgs := append(args, limit, offset)
 	rows, err := s.db.Pool.Query(ctx,
-		fmt.Sprintf(`SELECT id, tenant_id, affiliate_id, first_name, last_name,
-		        email, phone_e164, country, funnel_name, status, quality_score,
+		fmt.Sprintf(`SELECT id, tenant_id, COALESCE(affiliate_id::text, ''), first_name, last_name,
+		        email, COALESCE(phone_e164,''), country, COALESCE(funnel_name,''), status, quality_score,
 		        created_at, updated_at
 		 FROM leads
 		 WHERE %s
@@ -349,9 +349,9 @@ func (s *Store) GetLeadEvents(ctx context.Context, leadID string) ([]*models.Lea
 }
 
 func (s *Store) SearchLeads(ctx context.Context, tenantID, email, country, status string, limit int) ([]*models.Lead, error) {
-	query := `SELECT id, tenant_id, affiliate_id, idempotency_key,
-	                 first_name, last_name, email, phone, phone_e164,
-	                 country, ip, user_agent, status, quality_score,
+	query := `SELECT id, tenant_id, COALESCE(affiliate_id::text, ''), COALESCE(idempotency_key,''),
+	                 first_name, last_name, email, COALESCE(phone,''), COALESCE(phone_e164,''),
+	                 country, COALESCE(host(ip),''), COALESCE(user_agent,''), status, quality_score,
 	                 fraud_card, extra, created_at, updated_at
 	          FROM leads WHERE tenant_id = $1`
 	args := []interface{}{tenantID}

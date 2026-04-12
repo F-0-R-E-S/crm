@@ -35,11 +35,17 @@ clean: ## Clean build artifacts
 	rm -rf bin/
 	rm -f coverage.out coverage.html
 
-docker-up: ## Start all services with Docker Compose
+docker-up: ## Start all services with Docker Compose (production frontend)
 	docker compose up -d
 
 docker-down: ## Stop all services
 	docker compose down
+
+docker-dev-up: ## Start all services with Vite HMR frontend (dev mode)
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+docker-dev-down: ## Stop dev services
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
 
 docker-build: ## Build all Docker images
 	@for svc in $(SERVICES); do \
@@ -50,18 +56,34 @@ docker-build: ## Build all Docker images
 docker-logs: ## Tail logs from all services
 	docker compose logs -f
 
+docker-dev-logs: ## Tail logs from dev services
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f
+
 migrate: ## Run database migrations
 	docker compose exec postgres psql -U gambchamp -d gambchamp -f /docker-entrypoint-initdb.d/001_schema.sql
 
-nats-init: ## Initialize NATS JetStream streams
-	./scripts/nats-init.sh
+nats-init: ## Initialize NATS JetStream streams (uses local nats CLI or Docker fallback)
+	@if command -v nats >/dev/null 2>&1; then \
+		./scripts/nats-init.sh; \
+	else \
+		echo "nats CLI not found — running via Docker (natsio/nats-box)..."; \
+		docker run --rm \
+			-v "$$(pwd)/scripts:/scripts" \
+			--network "$$(basename $$(pwd))_default" \
+			natsio/nats-box:latest \
+			sh /scripts/nats-init.sh nats://nats:4222; \
+	fi
 
-dev: docker-up nats-init ## Start development environment
+dev: docker-dev-up nats-init ## Start full dev environment (Vite HMR + all backend services)
+	@echo ""
 	@echo "Development environment ready!"
+	@echo "  Frontend:    http://localhost:5173  (Vite HMR)"
 	@echo "  API Gateway: http://localhost:8080"
-	@echo "  Grafana:     http://localhost:3000 (admin/admin)"
+	@echo "  Grafana:     http://localhost:3000  (admin/admin)"
 	@echo "  Prometheus:  http://localhost:9090"
 	@echo "  NATS:        http://localhost:8222"
+	@echo "  ClickHouse:  http://localhost:8123"
+	@echo ""
 
 proto: ## Generate protobuf code (if needed)
 	@echo "No proto files yet"
