@@ -166,6 +166,124 @@ func (s *Store) UpdateBrokerCap(ctx context.Context, brokerID string, dailyCap i
 	return s.db.Exec(ctx, `UPDATE brokers SET daily_cap = $1, updated_at = NOW() WHERE id = $2`, dailyCap, brokerID)
 }
 
+func (s *Store) UpdateBrokerCircuit(ctx context.Context, brokerID string, state string, failureCount int, openedAt time.Time) error {
+	return s.db.Exec(ctx,
+		`UPDATE brokers SET circuit_state = $1, circuit_failure_count = $2, circuit_opened_at = $3, updated_at = NOW() WHERE id = $4`,
+		state, failureCount, openedAt, brokerID,
+	)
+}
+
+func (s *Store) UpdateBrokerHealthStatus(ctx context.Context, brokerID string, status string) error {
+	return s.db.Exec(ctx,
+		`UPDATE brokers SET health_status = $1, last_health_check = NOW(), updated_at = NOW() WHERE id = $2`,
+		status, brokerID,
+	)
+}
+
+func (s *Store) GetBrokersWithHealthCheck(ctx context.Context) ([]brokerHealthInfo, error) {
+	rows, err := s.db.Query(ctx,
+		`SELECT id, health_check_url, tenant_id FROM brokers
+		 WHERE health_check_url IS NOT NULL AND health_check_url != ''
+		   AND status = 'active' AND maintenance_mode = false`,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var brokers []brokerHealthInfo
+	for rows.Next() {
+		var b brokerHealthInfo
+		if err := rows.Scan(&b.ID, &b.HealthCheckURL, &b.TenantID); err != nil {
+			return nil, err
+		}
+		brokers = append(brokers, b)
+	}
+	return brokers, nil
+}
+
+func (s *Store) IsBrokerOpen(ctx context.Context, brokerID string) (bool, error) {
+	var isOpen bool
+	err := s.db.QueryRow(ctx,
+		`SELECT EXISTS(
+			SELECT 1 FROM broker_opening_hours
+			WHERE broker_id = $1
+			  AND day_of_week = EXTRACT(DOW FROM NOW())
+			  AND is_enabled = true
+			  AND open_time <= LOCALTIME
+			  AND close_time > LOCALTIME
+		)`, brokerID,
+	).Scan(&isOpen)
+	return isOpen, err
+}
+
+func (s *Store) GetFunnelMapping(ctx context.Context, brokerID, sourceFunnel string) (string, error) {
+	var target string
+	err := s.db.QueryRow(ctx,
+		`SELECT target_funnel FROM broker_funnel_mappings
+		 WHERE broker_id = $1 AND source_funnel = $2`,
+		brokerID, sourceFunnel,
+	).Scan(&target)
+	return target, err
+}
+
+func (s *Store) GetBrokerPostbackConfig(ctx context.Context, brokerID string) (*PostbackConfig, error) {
+	cfg := &PostbackConfig{}
+	err := s.db.QueryRow(ctx,
+		`SELECT is_enabled, verification_type, hmac_secret, hmac_algorithm,
+		        hmac_header, allowed_ips, status_mapping, variable_template
+		 FROM broker_postback_configs WHERE broker_id = $1`,
+		brokerID,
+	).Scan(&cfg.IsEnabled, &cfg.VerificationType, &cfg.HMACSecret, &cfg.HMACAlgorithm,
+		&cfg.HMACHeader, &cfg.AllowedIPs, &cfg.StatusMapping, &cfg.VariableTemplate)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return cfg, nil
+}
+
+func (s *Store) LogPostback(ctx context.Context, log *PostbackLogEntry) error {
+	return s.db.Pool.QueryRow(ctx,
+		`INSERT INTO broker_postback_log
+			(company_id, broker_id, lead_id, raw_payload, parsed_status, mapped_status,
+			 verification_result, processing_result, error, source_ip)
+		 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id, created_at`,
+		log.TenantID, log.BrokerID, nilIfEmpty(log.LeadID),
+		log.RawPayload, nilIfEmpty(log.ParsedStatus), nilIfEmpty(log.MappedStatus),
+		nilIfEmpty(log.VerificationResult), log.ProcessingResult,
+		nilIfEmpty(log.Error), nilIfEmpty(log.SourceIP),
+	).Scan(&log.ID, &log.CreatedAt)
+}
+
+type PostbackConfig struct {
+	IsEnabled        bool            `json:"is_enabled"`
+	VerificationType string          `json:"verification_type"`
+	HMACSecret       *string         `json:"hmac_secret"`
+	HMACAlgorithm    *string         `json:"hmac_algorithm"`
+	HMACHeader       *string         `json:"hmac_header"`
+	AllowedIPs       []string        `json:"allowed_ips"`
+	StatusMapping    json.RawMessage `json:"status_mapping"`
+	VariableTemplate json.RawMessage `json:"variable_template"`
+}
+
+type PostbackLogEntry struct {
+	ID                 string          `json:"id"`
+	TenantID           string          `json:"tenant_id"`
+	BrokerID           string          `json:"broker_id"`
+	LeadID             string          `json:"lead_id"`
+	RawPayload         json.RawMessage `json:"raw_payload"`
+	ParsedStatus       string          `json:"parsed_status"`
+	MappedStatus       string          `json:"mapped_status"`
+	VerificationResult string          `json:"verification_result"`
+	ProcessingResult   string          `json:"processing_result"`
+	Error              string          `json:"error"`
+	SourceIP           string          `json:"source_ip"`
+	CreatedAt          time.Time       `json:"created_at"`
+}
+
 func ensureJSON(raw json.RawMessage) json.RawMessage {
 	if raw == nil || len(raw) == 0 {
 		return json.RawMessage("{}")

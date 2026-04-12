@@ -5,6 +5,8 @@ import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
 import LeadsPage from './pages/LeadsPage'
 import BrokersPage from './pages/BrokersPage'
+import ConversionsPage from './pages/ConversionsPage'
+import MarketplacePage from './pages/MarketplacePage'
 import AffiliatesPage from './pages/AffiliatesPage'
 import RoutingPage from './pages/RoutingPage'
 import UADPage from './pages/UADPage'
@@ -42,6 +44,8 @@ export default function App() {
         <Route path="dashboard" element={<DashboardPage />} />
         <Route path="leads" element={<LeadsPage />} />
         <Route path="brokers" element={<BrokersPage />} />
+        <Route path="conversions" element={<ConversionsPage />} />
+        <Route path="marketplace" element={<MarketplacePage />} />
         <Route path="affiliates" element={<AffiliatesPage />} />
         <Route path="routing" element={<RoutingPage />} />
         <Route path="uad" element={<UADPage />} />

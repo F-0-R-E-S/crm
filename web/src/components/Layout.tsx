@@ -6,16 +6,18 @@ import { api } from '../lib/api'
 import AssistantPanel from './AssistantPanel'
 
 const navItems = [
-  { path: '/dashboard', label: 'Dashboard', icon: '⬡' },
-  { path: '/leads',     label: 'Leads',     icon: '👤' },
-  { path: '/brokers',   label: 'Brokers',   icon: '🏢' },
-  { path: '/affiliates',label: 'Affiliates',icon: '🔗' },
-  { path: '/routing',   label: 'Routing',   icon: '⇄' },
-  { path: '/analytics', label: 'Analytics', icon: '📊' },
-  { path: '/settings',  label: 'Settings',  icon: '⚙' },
+  { path: '/dashboard',    label: 'Dashboard',    icon: '⬡' },
+  { path: '/leads',        label: 'Leads',        icon: '👤' },
+  { path: '/brokers',      label: 'Brokers',      icon: '🏢' },
+  { path: '/affiliates',   label: 'Affiliates',   icon: '🔗' },
+  { path: '/routing',      label: 'Routing',      icon: '⇄' },
+  { path: '/conversions',  label: 'Conversions',  icon: '💰' },
+  { path: '/marketplace',  label: 'Marketplace',  icon: '🛒' },
+  { path: '/analytics',    label: 'Analytics',    icon: '📊' },
+  { path: '/settings',     label: 'Settings',     icon: '⚙' },
 ]
 
-const sectionBreak = 4 // insert divider after Affiliates
+const sectionBreak = 5 // insert divider after Routing
 
 interface MeResponse {
   id: string
