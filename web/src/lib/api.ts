@@ -1,6 +1,7 @@
 import { useAuthStore } from '../stores/auth'
 
-const BASE_URL = '/api/v1'
+const API_BASE = import.meta.env.VITE_API_URL || '/api'
+const BASE_URL = `${API_BASE}/v1`
 
 let isRefreshing = false
 let refreshPromise: Promise<boolean> | null = null
