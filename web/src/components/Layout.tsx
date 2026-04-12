@@ -8,6 +8,8 @@ const navItems = [
   { path: '/brokers', label: 'Brokers', icon: '\u{1F3E2}' },
   { path: '/affiliates', label: 'Affiliates', icon: '\u{1F91D}' },
   { path: '/routing', label: 'Routing', icon: '\u{1F500}' },
+  { path: '/uad', label: 'UAD', icon: '\u{1F504}' },
+  { path: '/smart-routing', label: 'AI Routing', icon: '\u{1F9E0}' },
   { path: '/analytics', label: 'Analytics', icon: '\u{1F4C8}' },
   { path: '/settings', label: 'Settings', icon: '\u2699\uFE0F' },
 ]

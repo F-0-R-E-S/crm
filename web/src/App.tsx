@@ -7,6 +7,8 @@ import LeadsPage from './pages/LeadsPage'
 import BrokersPage from './pages/BrokersPage'
 import AffiliatesPage from './pages/AffiliatesPage'
 import RoutingPage from './pages/RoutingPage'
+import UADPage from './pages/UADPage'
+import SmartRoutingPage from './pages/SmartRoutingPage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import SettingsPage from './pages/SettingsPage'
 
@@ -33,6 +35,8 @@ export default function App() {
         <Route path="brokers" element={<BrokersPage />} />
         <Route path="affiliates" element={<AffiliatesPage />} />
         <Route path="routing" element={<RoutingPage />} />
+        <Route path="uad" element={<UADPage />} />
+        <Route path="smart-routing" element={<SmartRoutingPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
