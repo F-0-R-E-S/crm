@@ -100,80 +100,56 @@ export default function AssistantPanel() {
 
   if (!isOpen) return null
 
+  const panelStyle: React.CSSProperties = {
+    position: 'fixed', top: 0, right: 0, bottom: 0,
+    width: 400, zIndex: 300,
+    background: 'rgba(8,14,29,0.92)',
+    backdropFilter: 'blur(32px) saturate(180%)',
+    WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+    borderLeft: '1px solid rgba(255,255,255,0.10)',
+    display: 'flex', flexDirection: 'column',
+    boxShadow: '-20px 0 60px rgba(0,0,0,0.5)',
+  }
+
   return (
-    <div className="fixed inset-y-0 right-0 w-[400px] bg-white shadow-2xl border-l border-gray-200 flex flex-col z-50">
+    <div style={panelStyle}>
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 bg-gray-50">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-green-500" />
-          <h2 className="text-sm font-semibold text-gray-900">AI Assistant</h2>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#34d399', boxShadow: '0 0 8px #34d399' }} />
+          <span style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.9)' }}>AI Assistant</span>
         </div>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={handleNewSession}
-            className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors"
-            title="New conversation"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-          </button>
-          <button
-            onClick={close}
-            className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+        <div style={{ display: 'flex', gap: 4 }}>
+          <button onClick={handleNewSession} style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }} title="New conversation">+</button>
+          <button onClick={close} style={{ width: 30, height: 30, borderRadius: 8, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', cursor: 'pointer', color: 'rgba(255,255,255,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
         </div>
       </div>
 
-      {/* Session list (when no session selected) */}
+      {/* Session list */}
       {!currentSessionId && (
-        <div className="flex-1 overflow-auto">
+        <div style={{ flex: 1, overflowY: 'auto' }}>
           {sessions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-gray-500 px-6">
-              <p className="text-sm text-center mb-4">
-                Ask about your leads, brokers, routing rules, or give commands like
-                "pause broker X" or "show today's stats".
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', padding: '0 24px', textAlign: 'center' }}>
+              <div style={{ fontSize: 32, marginBottom: 16 }}>🤖</div>
+              <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6, marginBottom: 20 }}>
+                Ask about your leads, brokers, routing rules, or give commands like "show today's stats" or "pause broker X".
               </p>
-              <button
-                onClick={handleNewSession}
-                className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium hover:bg-brand-700"
-              >
+              <button onClick={handleNewSession} className="btn-primary" style={{ fontSize: 13 }}>
                 Start Conversation
               </button>
             </div>
           ) : (
-            <div className="p-2 space-y-1">
+            <div style={{ padding: 8 }}>
               {sessions.map((session) => (
-                <div
-                  key={session.id}
-                  className="flex items-center justify-between p-2 rounded-lg hover:bg-gray-100 cursor-pointer group"
+                <div key={session.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 10px', borderRadius: 10, cursor: 'pointer', transition: 'background 0.15s' }}
+                  onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.05)'}
+                  onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}
                 >
-                  <div
-                    className="flex-1 min-w-0"
-                    onClick={() => setCurrentSession(session.id)}
-                  >
-                    <div className="text-sm font-medium text-gray-900 truncate">
-                      {session.title}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {session.message_count} messages
-                    </div>
+                  <div style={{ flex: 1, minWidth: 0 }} onClick={() => setCurrentSession(session.id)}>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: 'rgba(255,255,255,0.85)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{session.title}</div>
+                    <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)' }}>{session.message_count} messages</div>
                   </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleDeleteSession(session.id)
-                    }}
-                    className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                  </button>
+                  <button onClick={(e) => { e.stopPropagation(); handleDeleteSession(session.id) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.25)', fontSize: 14, padding: 4 }}>✕</button>
                 </div>
               ))}
             </div>
@@ -184,40 +160,26 @@ export default function AssistantPanel() {
       {/* Chat view */}
       {currentSessionId && (
         <>
-          {/* Back button */}
-          <div className="px-3 py-2 border-b border-gray-100">
-            <button
-              onClick={() => {
-                cancel()
-                setCurrentSession(null)
-                setMessages([])
-              }}
-              className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              All conversations
+          <div style={{ padding: '8px 12px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+            <button onClick={() => { cancel(); setCurrentSession(null); setMessages([]) }}
+              style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}>
+              ← All conversations
             </button>
           </div>
 
-          {/* Messages */}
-          <div className="flex-1 overflow-auto px-3">
+          <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
             {messages.length === 0 && !streamingMessage && (
-              <div className="flex items-center justify-center h-full text-gray-400 text-sm">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'rgba(255,255,255,0.25)', fontSize: 13 }}>
                 Send a message to get started
               </div>
             )}
             {messages.map((msg) => (
               <AssistantMessage key={msg.id} message={msg} />
             ))}
-            {streamingMessage && (
-              <AssistantMessage message={streamingMessage} isStreaming />
-            )}
+            {streamingMessage && <AssistantMessage message={streamingMessage} isStreaming />}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
           <AssistantInput onSend={handleSend} disabled={isStreaming} />
         </>
       )}

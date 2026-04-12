@@ -50,7 +50,7 @@ export default function AssistantInput({ onSend, disabled }: Props) {
   )
 
   return (
-    <div className="border-t border-gray-200 p-3">
+    <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', padding: 12 }}>
       {pendingConfirmation && (
         <ConfirmationBar
           confirmation={pendingConfirmation}
@@ -59,28 +59,38 @@ export default function AssistantInput({ onSend, disabled }: Props) {
         />
       )}
 
-      <div className="flex items-end gap-2">
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
         <textarea
           ref={textareaRef}
           value={input}
           onChange={handleInput}
           onKeyDown={handleKeyDown}
-          placeholder="Ask about your leads, brokers, or give a command..."
+          placeholder="Ask about leads, brokers, or give a command…"
           disabled={disabled}
           rows={1}
-          className="flex-1 resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm
-                     focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
-                     disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{
+            flex: 1, resize: 'none', borderRadius: 12,
+            background: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(255,255,255,0.10)',
+            padding: '9px 12px', fontSize: 13,
+            color: 'rgba(255,255,255,0.88)',
+            fontFamily: 'inherit', outline: 'none',
+            opacity: disabled ? 0.5 : 1,
+          }}
+          onFocus={e => { e.currentTarget.style.borderColor = 'rgba(79,172,254,0.4)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(79,172,254,0.10)' }}
+          onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)'; e.currentTarget.style.boxShadow = 'none' }}
         />
         <button
           onClick={handleSubmit}
           disabled={disabled || !input.trim()}
-          className="px-3 py-2 bg-brand-600 text-white rounded-lg text-sm font-medium
-                     hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed
-                     transition-colors shrink-0"
-        >
-          Send
-        </button>
+          style={{
+            padding: '9px 14px', borderRadius: 12, border: 'none', cursor: 'pointer',
+            background: 'linear-gradient(135deg,#4facfe,#00f2fe)',
+            color: '#fff', fontSize: 13, fontWeight: 600,
+            opacity: disabled || !input.trim() ? 0.4 : 1,
+            flexShrink: 0,
+          }}
+        >↑</button>
       </div>
     </div>
   )
@@ -96,28 +106,18 @@ function ConfirmationBar({
   onCancel: () => void
 }) {
   return (
-    <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-      <div className="text-sm font-medium text-amber-800 mb-1">
-        Confirmation required: {confirmation.toolName}
+    <div style={{ marginBottom: 10, padding: '10px 14px', background: 'rgba(251,191,36,0.10)', border: '1px solid rgba(251,191,36,0.22)', borderRadius: 12 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: '#fbbf24', marginBottom: 4 }}>
+        Confirmation: {confirmation.toolName}
       </div>
       {confirmation.impactAnalysis && (
-        <div className="text-xs text-amber-700 mb-2">
+        <div style={{ fontSize: 12, color: 'rgba(251,191,36,0.7)', marginBottom: 8 }}>
           {(confirmation.impactAnalysis as { description?: string }).description}
         </div>
       )}
-      <div className="flex gap-2">
-        <button
-          onClick={onConfirm}
-          className="px-3 py-1 bg-amber-600 text-white rounded text-xs font-medium hover:bg-amber-700"
-        >
-          Confirm
-        </button>
-        <button
-          onClick={onCancel}
-          className="px-3 py-1 bg-gray-200 text-gray-700 rounded text-xs font-medium hover:bg-gray-300"
-        >
-          Cancel
-        </button>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button onClick={onConfirm} style={{ padding: '5px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'rgba(251,191,36,0.2)', color: '#fbbf24', fontSize: 12, fontWeight: 600 }}>Confirm</button>
+        <button onClick={onCancel} style={{ padding: '5px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>Cancel</button>
       </div>
     </div>
   )
