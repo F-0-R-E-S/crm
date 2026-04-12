@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gambchamp/crm/pkg/messaging"
+	"github.com/gambchamp/crm/pkg/models"
 	"github.com/nats-io/nats.go"
 )
 
@@ -101,23 +102,71 @@ func handleAddIPBlacklist(msg *nats.Msg, store *Store, tenantID string, input []
 		IPs    []string `json:"ips"`
 		Reason string   `json:"reason"`
 	}
-	json.Unmarshal(input, &params)
-	respondData(msg, map[string]interface{}{"added": len(params.IPs)})
+	if err := json.Unmarshal(input, &params); err != nil {
+		respond(msg, false, nil, "invalid input: "+err.Error())
+		return
+	}
+
+	ctx := contextWithTimeout()
+	entries := make([]models.BlacklistEntry, 0, len(params.IPs))
+	for _, ip := range params.IPs {
+		entries = append(entries, models.BlacklistEntry{
+			ListType: "ip",
+			Value:    ip,
+			Reason:   params.Reason,
+			Source:   "manual",
+		})
+	}
+
+	count, err := store.BulkAddBlacklist(ctx, tenantID, entries)
+	if err != nil {
+		respond(msg, false, nil, err.Error())
+		return
+	}
+	respondData(msg, map[string]interface{}{"added": count})
 }
 
 func handleRemoveIPBlacklist(msg *nats.Msg, store *Store, tenantID string, input []byte) {
-	var params struct{ IPs []string `json:"ips"` }
-	json.Unmarshal(input, &params)
-	respondData(msg, map[string]interface{}{"removed": len(params.IPs)})
+	var params struct{ IDs []string `json:"ids"` }
+	if err := json.Unmarshal(input, &params); err != nil {
+		respond(msg, false, nil, "invalid input: "+err.Error())
+		return
+	}
+
+	ctx := contextWithTimeout()
+	removed := 0
+	for _, id := range params.IDs {
+		if err := store.RemoveBlacklistEntry(ctx, tenantID, id); err == nil {
+			removed++
+		}
+	}
+	respondData(msg, map[string]interface{}{"removed": removed})
 }
 
 func handleCheckLeadFraud(msg *nats.Msg, store *Store, input []byte) {
-	var params struct{ LeadID string `json:"lead_id"` }
-	json.Unmarshal(input, &params)
-	respondData(msg, map[string]interface{}{
-		"lead_id": params.LeadID,
-		"status":  "checked",
-	})
+	var params struct {
+		LeadID   string `json:"lead_id"`
+		TenantID string `json:"tenant_id"`
+	}
+	if err := json.Unmarshal(input, &params); err != nil {
+		respond(msg, false, nil, "invalid input: "+err.Error())
+		return
+	}
+
+	ctx := contextWithTimeout()
+	result, err := store.GetFraudCheckResult(ctx, params.TenantID, params.LeadID)
+	if err != nil {
+		respond(msg, false, nil, err.Error())
+		return
+	}
+	if result == nil {
+		respondData(msg, map[string]interface{}{
+			"lead_id": params.LeadID,
+			"status":  "not_found",
+		})
+		return
+	}
+	respondData(msg, result)
 }
 
 func respond(msg *nats.Msg, success bool, data json.RawMessage, errMsg string) {

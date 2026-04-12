@@ -43,3 +43,7 @@ func NewValidationError(detail string) *AppError {
 func NewBadRequest(detail string) *AppError {
 	return &AppError{Code: "BAD_REQUEST", Message: "invalid request", Detail: detail, HTTPStatus: http.StatusBadRequest}
 }
+
+func NewForbiddenError(detail string) *AppError {
+	return &AppError{Code: "FORBIDDEN", Message: "access denied", Detail: detail, HTTPStatus: http.StatusForbidden}
+}

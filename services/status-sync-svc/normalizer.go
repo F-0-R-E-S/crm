@@ -1,6 +1,12 @@
 package main
 
-import "strings"
+import (
+	"context"
+	"strings"
+	"sync"
+
+	"github.com/gambchamp/crm/pkg/models"
+)
 
 // statusGroupMap maps raw broker status strings (lowercased) to standard
 // GambChamp CRM status groups. Brokers send statuses in many different
@@ -94,4 +100,104 @@ func DetectShave(currentStatus, newStatus string) bool {
 	}
 
 	return newRank < currentRank
+}
+
+// ---------------------------------------------------------------------------
+// DB-driven status normalizer
+// ---------------------------------------------------------------------------
+
+// StatusNormalizer provides DB-driven status normalization with an in-memory
+// cache that falls back to the hardcoded statusGroupMap and statusRank.
+type StatusNormalizer struct {
+	store *Store
+	// In-memory cache of broker mappings, refreshed periodically.
+	mu       sync.RWMutex
+	mappings map[string]map[string]string // brokerID -> rawStatus -> groupSlug
+	groups   map[string]models.StatusGroup // slug -> StatusGroup
+}
+
+// NewStatusNormalizer creates a normalizer backed by the given store.
+func NewStatusNormalizer(store *Store) *StatusNormalizer {
+	return &StatusNormalizer{
+		store:    store,
+		mappings: make(map[string]map[string]string),
+		groups:   make(map[string]models.StatusGroup),
+	}
+}
+
+// LoadMappings loads all broker_status_mappings and status_groups from the
+// database into the in-memory cache for the given tenant.
+func (sn *StatusNormalizer) LoadMappings(ctx context.Context, tenantID string) error {
+	// Load status groups.
+	groups, err := sn.store.ListStatusGroups(ctx, tenantID)
+	if err != nil {
+		return err
+	}
+
+	groupMap := make(map[string]models.StatusGroup, len(groups))
+	for _, g := range groups {
+		groupMap[g.Slug] = g
+	}
+
+	// Load all broker mappings.
+	mappings, err := sn.store.GetAllMappings(ctx, tenantID)
+	if err != nil {
+		return err
+	}
+
+	sn.mu.Lock()
+	sn.groups = groupMap
+	sn.mappings = mappings
+	sn.mu.Unlock()
+
+	return nil
+}
+
+// NormalizeForBroker normalizes a raw status using broker-specific DB mappings
+// first, then falls back to the hardcoded statusGroupMap.
+func (sn *StatusNormalizer) NormalizeForBroker(brokerID, rawStatus string) string {
+	key := strings.ToLower(strings.TrimSpace(rawStatus))
+
+	sn.mu.RLock()
+	if brokerMappings, ok := sn.mappings[brokerID]; ok {
+		if slug, ok := brokerMappings[key]; ok {
+			sn.mu.RUnlock()
+			return slug
+		}
+	}
+	sn.mu.RUnlock()
+
+	// Fall back to the hardcoded map.
+	return NormalizeStatus(rawStatus)
+}
+
+// GetStatusRank returns the rank for a given status group slug. It checks DB
+// groups first, then falls back to the hardcoded statusRank map.
+func (sn *StatusNormalizer) GetStatusRank(slug string) int {
+	sn.mu.RLock()
+	if g, ok := sn.groups[slug]; ok {
+		sn.mu.RUnlock()
+		return g.Rank
+	}
+	sn.mu.RUnlock()
+
+	if rank, ok := statusRank[slug]; ok {
+		return rank
+	}
+	return 0
+}
+
+// DetectShaveEnhanced checks for shave with more context than the old
+// DetectShave function. It uses DB-driven ranks when available.
+func (sn *StatusNormalizer) DetectShaveEnhanced(currentStatus, newStatus string) (isShave bool, oldRank, newRank int) {
+	oldRank = sn.GetStatusRank(currentStatus)
+	newRank = sn.GetStatusRank(newStatus)
+
+	// Only flag regressions where both statuses are in the normal funnel
+	// (positive rank). Terminal/negative statuses have rank <= 0.
+	if oldRank <= 0 || newRank <= 0 {
+		return false, oldRank, newRank
+	}
+
+	return newRank < oldRank, oldRank, newRank
 }

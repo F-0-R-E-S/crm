@@ -43,6 +43,12 @@ const (
 
 	AuditRead Permission = "audit:read"
 
+	ComplianceRead  Permission = "compliance:read"
+	ComplianceWrite Permission = "compliance:write"
+
+	SecurityRead  Permission = "security:read"
+	SecurityWrite Permission = "security:write"
+
 	SettingsRead  Permission = "settings:read"
 	SettingsWrite Permission = "settings:write"
 
@@ -62,6 +68,8 @@ var AllPermissions = []Permission{
 	FraudRead, FraudWrite,
 	NotificationsRead, NotificationsWrite,
 	AuditRead,
+	ComplianceRead, ComplianceWrite,
+	SecurityRead, SecurityWrite,
 	SettingsRead, SettingsWrite,
 	BillingRead, BillingWrite,
 }
@@ -81,6 +89,8 @@ var rolePermissions = map[models.Role][]Permission{
 		FraudRead, FraudWrite,
 		NotificationsRead, NotificationsWrite,
 		AuditRead,
+		ComplianceRead, ComplianceWrite,
+		SecurityRead, SecurityWrite,
 		SettingsRead, SettingsWrite,
 	},
 
@@ -119,6 +129,7 @@ var rolePermissions = map[models.Role][]Permission{
 		AnalyticsRead, AnalyticsExport,
 		BillingRead, BillingWrite,
 		AuditRead,
+		ComplianceRead,
 	},
 }
 

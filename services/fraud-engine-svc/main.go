@@ -50,7 +50,11 @@ func main() {
 
 	// --- Wire up store, checker, and handler ---
 	store := NewStore(db)
-	checker := NewFraudChecker(rdb, logger, cfg.MaxMindKey, cfg.IPQSKey)
+	checker := NewFraudChecker(rdb, store, logger, cfg.MaxMindKey, cfg.IPQSKey)
+	velocityEngine := NewVelocityEngine(rdb, store, logger)
+	behavioralHandler := NewBehavioralHandler(store, logger)
+	intelligenceHandler := NewIntelligenceHandler(store, logger)
+	experimentHandler := NewExperimentHandler(store, logger)
 	h := NewHandler(logger, checker, store)
 
 	if nc != nil {
@@ -59,6 +63,22 @@ func main() {
 
 	mux := http.NewServeMux()
 	h.Register(mux)
+
+	// Register additional handlers
+	mux.HandleFunc("POST /api/v1/fraud/behavioral", behavioralHandler.IngestEvents)
+	mux.HandleFunc("POST /api/v1/fraud/intelligence/contribute", intelligenceHandler.Contribute)
+	mux.HandleFunc("GET /api/v1/fraud/intelligence/check", intelligenceHandler.Check)
+	mux.HandleFunc("GET /api/v1/fraud/experiments", experimentHandler.List)
+	mux.HandleFunc("POST /api/v1/fraud/experiments", experimentHandler.Create)
+	mux.HandleFunc("PUT /api/v1/fraud/experiments/{id}", experimentHandler.Update)
+	mux.HandleFunc("GET /api/v1/fraud/experiments/{id}/results", experimentHandler.GetResults)
+
+	// PDF verification card
+	pdfHandler := NewPDFHandler(store, logger)
+	mux.HandleFunc("GET /api/v1/fraud/checks/{lead_id}/pdf", pdfHandler.GenerateVerificationCard)
+
+	// Velocity engine is available for the checker to use
+	_ = velocityEngine
 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")

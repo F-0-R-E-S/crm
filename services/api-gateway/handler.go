@@ -54,6 +54,19 @@ func (h *Handler) Register(mux *http.ServeMux) {
 	mux.Handle("/api/v1/notifications", h.cors(h.requireAuth(h.proxyTo(h.cfg.NotificationAddr))))
 	mux.Handle("/api/v1/notifications/", h.cors(h.requireAuth(h.proxyTo(h.cfg.NotificationAddr))))
 
+	// Fraud engine — auth required
+	mux.Handle("/api/v1/fraud/", h.cors(h.requireAuth(h.proxyTo(h.cfg.FraudEngineAddr))))
+
+	// Status groups & analytics — auth required
+	mux.Handle("/api/v1/status-groups/", h.cors(h.requireAuth(h.proxyTo(h.cfg.StatusSyncAddr))))
+	mux.Handle("/api/v1/status-groups", h.cors(h.requireAuth(h.proxyTo(h.cfg.StatusSyncAddr))))
+	mux.Handle("/api/v1/status-analytics/", h.cors(h.requireAuth(h.proxyTo(h.cfg.StatusSyncAddr))))
+	mux.Handle("/api/v1/shave-detection/", h.cors(h.requireAuth(h.proxyTo(h.cfg.StatusSyncAddr))))
+
+	// Compliance & security — auth required
+	mux.Handle("/api/v1/compliance/", h.cors(h.requireAuth(h.proxyTo(h.cfg.IdentityAddr))))
+	mux.Handle("/api/v1/security/", h.cors(h.requireAuth(h.proxyTo(h.cfg.IdentityAddr))))
+
 	// AI Assistant — auth required, SSE needs streaming support
 	mux.Handle("/api/v1/assistant/", h.cors(h.requireAuth(h.proxyTo(h.cfg.AssistantAddr))))
 
