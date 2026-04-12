@@ -22,23 +22,23 @@ EXPECTED_DOCS = {
     "technical": {
         "architecture.md": {
             "title": "Архитектура системы",
-            "covers": "Стек, схема, потоки данных, мультитенантность",
+            "covers": "Стек, схема, 13 сервисов, потоки данных, мультитенантность",
         },
         "services.md": {
             "title": "Микросервисы",
-            "covers": "11 сервисов, порты, функции, файлы",
+            "covers": "13 сервисов, порты, функции, файлы",
         },
         "database.md": {
             "title": "База данных",
-            "covers": "PostgreSQL, ClickHouse, RLS, SQLC, миграции",
+            "covers": "PostgreSQL, ClickHouse, RLS, SQLC, 6 миграций",
         },
         "api.md": {
             "title": "API Reference",
-            "covers": "Эндпоинты, аутентификация, форматы, статусы",
+            "covers": "REST API, аутентификация, assistant, smart-routing, UAD",
         },
         "events.md": {
             "title": "Система событий",
-            "covers": "NATS JetStream, потоки, паттерны",
+            "covers": "NATS JetStream, потоки, cmd_handler паттерны",
         },
         "ci-cd.md": {
             "title": "CI/CD",
@@ -46,11 +46,23 @@ EXPECTED_DOCS = {
         },
         "deployment.md": {
             "title": "Деплой",
-            "covers": "Docker Compose, prod, мониторинг",
+            "covers": "Docker Compose, prod, deploy.yml, мониторинг",
         },
         "pipeline.md": {
             "title": "Видео-пайплайн",
             "covers": "7 стадий, параметры, выходные данные",
+        },
+        "frontend.md": {
+            "title": "Фронтенд",
+            "covers": "React 18, 15 страниц, Liquid Glass UI, stores, hooks",
+        },
+        "mobile.md": {
+            "title": "Мобильное приложение",
+            "covers": "Expo React Native, iOS/Android, 7 экранов",
+        },
+        "assistant.md": {
+            "title": "AI Assistant",
+            "covers": "Claude API, 40+ tools, RBAC, SSE streaming",
         },
     },
     "product": {
@@ -64,17 +76,17 @@ EXPECTED_DOCS = {
         },
         "roadmap.md": {
             "title": "Дорожная карта",
-            "covers": "23 эпика, P0–P3, метрики",
+            "covers": "23 эпика, 6 потоков, прогресс реализации",
         },
     },
     "guides": {
         "getting-started.md": {
             "title": "Быстрый старт",
-            "covers": "Установка, запуск, проверка",
+            "covers": "Установка, запуск, бэкенд, фронтенд, мобайл",
         },
         "configuration.md": {
             "title": "Конфигурация",
-            "covers": "Переменные, секреты, порты",
+            "covers": "Переменные, секреты, порты, external APIs",
         },
         "pipeline-usage.md": {
             "title": "Видео-пайплайн",
@@ -101,12 +113,14 @@ EXPECTED_SERVICES = [
     ("notification-svc", 8008),
     ("identity-svc", 8010),
     ("analytics-svc", 8011),
+    ("assistant-svc", 8012),
+    ("smart-routing-svc", 8013),
 ]
 
 EXPECTED_PACKAGES = [
-    "cache", "database", "e164", "errors", "events",
-    "idempotency", "messaging", "middleware", "models",
-    "phone", "telemetry",
+    "cache", "database", "e164", "email", "errors", "events",
+    "geoip", "idempotency", "messaging", "middleware", "models",
+    "rbac", "telemetry",
 ]
 
 COMPETITORS = [
@@ -157,16 +171,35 @@ def check_frontend_pages() -> list[str]:
     return [f.stem for f in pages_dir.glob("*.tsx")]
 
 
+def check_mobile_screens() -> list[str]:
+    tabs_dir = REPO_ROOT / "mobile" / "app" / "(tabs)"
+    screens = []
+    if tabs_dir.is_dir():
+        screens.extend(f.stem for f in tabs_dir.glob("*.tsx") if f.stem != "_layout")
+    other = REPO_ROOT / "mobile" / "app"
+    if other.is_dir():
+        screens.extend(f.stem for f in other.glob("*.tsx") if f.stem != "_layout")
+    lead_dir = REPO_ROOT / "mobile" / "app" / "lead"
+    if lead_dir.is_dir():
+        screens.extend(f"lead/{f.stem}" for f in lead_dir.glob("*.tsx"))
+    return screens
+
+
 def check_infra_files() -> dict[str, bool]:
     checks = {
         "migrations/001_initial_schema.up.sql": False,
-        "migrations/002_clickhouse_schema.sql": False,
+        "migrations/002_rbac_sessions_invites.up.sql": False,
+        "migrations/004_assistant_schema.up.sql": False,
+        "migrations/006_streams_2_to_6.up.sql": False,
         "docker-compose.yml": False,
-        "docker-compose.prod.yml": False,
+        "docker-compose.deploy.yml": False,
         ".github/workflows/ci.yml": False,
         ".github/workflows/deploy.yml": False,
         "deploy/prometheus/prometheus.yml": False,
         "Makefile": False,
+        "contracts/lead-schema.yaml": False,
+        "STREAMS.md": False,
+        "PRODUCT_BACKLOG_v1.md": False,
     }
     for path in checks:
         checks[path] = (REPO_ROOT / path).exists()
@@ -187,13 +220,11 @@ def generate_matrix() -> str:
 
     total_docs = 0
     total_filled = 0
-    category_stats = {}
 
     for category, docs in EXPECTED_DOCS.items():
         count = len(docs)
         filled = sum(1 for f in docs if check_doc_exists(category, f)[0])
         pct = round(filled / count * 100) if count > 0 else 0
-        category_stats[category] = (count, filled, pct)
         total_docs += count
         total_filled += filled
         lines.append(f"| {CATEGORY_NAMES[category]} | {count} | {filled} | {pct}% |")
@@ -237,40 +268,72 @@ def generate_matrix() -> str:
     lines.append("### Пакеты (pkg/)\n")
     lines.append("| Пакет | Существует | Документация |")
     lines.append("|-------|:----------:|:------------:|")
+    documented_pkgs = {
+        "cache": "architecture.md", "database": "database.md", "e164": "api.md",
+        "email": "services.md", "events": "events.md", "geoip": "services.md",
+        "idempotency": "api.md", "messaging": "events.md", "middleware": "api.md",
+        "models": "database.md", "rbac": "assistant.md", "telemetry": "deployment.md",
+    }
     for pkg in EXPECTED_PACKAGES:
         exists = check_package_exists(pkg)
         exist_icon = "✅" if exists else "❌"
-        documented = pkg != "errors"
-        doc_icon = "✅" if documented else "⚠️"
+        doc_ref = documented_pkgs.get(pkg)
+        if doc_ref:
+            doc_icon = f"✅ ({doc_ref})"
+        elif pkg == "errors":
+            doc_icon = "⚠️"
+        else:
+            doc_icon = "⚠️"
         lines.append(f"| {pkg} | {exist_icon} | {doc_icon} |")
     lines.append("")
 
     # Frontend pages
     lines.append("### Фронтенд (web/src/pages/)\n")
     pages = check_frontend_pages()
+    frontend_doc = check_doc_exists("technical", "frontend.md")[0]
     if pages:
         lines.append("| Страница | Существует | Документация |")
         lines.append("|----------|:----------:|:------------:|")
         for page in sorted(pages):
-            lines.append(f"| {page} | ✅ | ⚠️ |")
+            doc_icon = "✅" if frontend_doc else "⚠️"
+            lines.append(f"| {page} | ✅ | {doc_icon} |")
     else:
         lines.append("*Директория web/src/pages/ не найдена*")
+    lines.append("")
+
+    # Mobile screens
+    lines.append("### Мобильное приложение (mobile/app/)\n")
+    mobile_screens = check_mobile_screens()
+    mobile_doc = check_doc_exists("technical", "mobile.md")[0]
+    if mobile_screens:
+        lines.append("| Экран | Существует | Документация |")
+        lines.append("|-------|:----------:|:------------:|")
+        for screen in sorted(mobile_screens):
+            doc_icon = "✅" if mobile_doc else "⚠️"
+            lines.append(f"| {screen} | ✅ | {doc_icon} |")
+    else:
+        lines.append("*Директория mobile/app/ не найдена*")
     lines.append("")
 
     # Infrastructure
     lines.append("### Инфраструктура\n")
     infra = check_infra_files()
-    lines.append("| Компонент | Существует | Документация |")
+    lines.append("| Компонент | Существует | Док��ментация |")
     lines.append("|-----------|:----------:|:------------:|")
     infra_doc_map = {
         "migrations/001_initial_schema.up.sql": "database.md",
-        "migrations/002_clickhouse_schema.sql": "database.md",
+        "migrations/002_rbac_sessions_invites.up.sql": "database.md",
+        "migrations/004_assistant_schema.up.sql": "assistant.md",
+        "migrations/006_streams_2_to_6.up.sql": "database.md",
         "docker-compose.yml": "deployment.md",
-        "docker-compose.prod.yml": "deployment.md",
+        "docker-compose.deploy.yml": "deployment.md",
         ".github/workflows/ci.yml": "ci-cd.md",
         ".github/workflows/deploy.yml": "ci-cd.md",
         "deploy/prometheus/prometheus.yml": "deployment.md",
         "Makefile": "getting-started.md",
+        "contracts/lead-schema.yaml": "roadmap.md",
+        "STREAMS.md": "roadmap.md",
+        "PRODUCT_BACKLOG_v1.md": "roadmap.md",
     }
     for path, exists in infra.items():
         exist_icon = "✅" if exists else "❌"
@@ -279,7 +342,7 @@ def generate_matrix() -> str:
     lines.append("")
 
     # Competitors
-    lines.append("### Конкурентные данные\n")
+    lines.append("### Конкурентные д��нные\n")
     lines.append(
         "| Конкурент | competitor_analysis | overview | analysis_web | В документации | В стратегическом отчёте |"
     )
@@ -308,14 +371,6 @@ def generate_matrix() -> str:
             if not exists:
                 gaps.append(f"❌ **{info['title']}** (`{category}/{filename}`) — файл отсутствует или пуст")
 
-    if not check_frontend_pages():
-        gaps.append("⚠️ **Фронтенд-страницы** — директория web/src/pages/ не найдена")
-    else:
-        gaps.append("⚠️ **Детальное описание фронтенд-страниц** — нет отдельного гайда по UI-компонентам")
-
-    gaps.append("⚠️ **Описание pkg/errors** — пакет обработки ошибок не задокументирован отдельно")
-    gaps.append("⚠️ **Zustand stores** — стейт-менеджмент фронтенда не описан")
-
     comps_not_in_report = [c["name"] for c in COMPETITORS if c["folder"] not in IN_STRATEGIC_REPORT]
     if comps_not_in_report:
         names = ", ".join(comps_not_in_report)
@@ -328,10 +383,10 @@ def generate_matrix() -> str:
         lines.append("")
 
     lines.append("### 📋 Рекомендации\n")
-    lines.append("- [ ] Добавить `docs/technical/frontend.md` с описанием UI-компонентов и stores")
     lines.append("- [ ] Включить GetLinked и Trackbox в `strategic_analysis_report.md`")
     lines.append("- [ ] Добавить ADR (Architecture Decision Records) для ключевых решений")
     lines.append("- [ ] Создать раздел с runbook-ами для on-call (инциденты, восстановление)")
+    lines.append("- [ ] Документировать Liquid Glass UI дизайн-систему (токены, компоненты)")
     lines.append("")
 
     return "\n".join(lines)

@@ -1,6 +1,6 @@
 # Микросервисы
 
-GambChamp CRM состоит из 11 микросервисов, каждый с выделенной ответственностью.
+GambChamp CRM состоит из 13 микросервисов, каждый с выделенной ответственностью.
 
 ## Обзор сервисов
 
@@ -13,10 +13,12 @@ GambChamp CRM состоит из 11 микросервисов, каждый с
 | Fraud Engine | 8004 | Антифрод-скоринг |
 | Status Sync | 8005 | Нормализация статусов |
 | Autologin | 8006 | Автологин-сессии |
-| UAD | 8007 | Повторная дистрибуция |
+| UAD | 8007 | Повторная дистрибуция (сценарии) |
 | Notification | 8008 | Telegram, Email, Webhook |
-| Identity | 8010 | JWT, аутентификация |
+| Identity | 8010 | JWT, RBAC, onboarding, сессии |
 | Analytics | 8011 | ClickHouse агрегации |
+| Assistant | 8012 | AI-ассистент (Claude API + tools) |
+| Smart Routing | 8013 | ML-оптимизация весов маршрутизации |
 
 ---
 
@@ -49,7 +51,7 @@ GambChamp CRM состоит из 11 микросервисов, каждый с
 - Публикация события `lead.created` в NATS
 - Вызов Fraud Engine для скоринга
 
-**Файлы:** `main.go`, `config.go`, `handler.go`, `store.go`
+**Файлы:** `main.go`, `config.go`, `handler.go`, `store.go`, `cmd_handler.go`
 
 ---
 
@@ -69,7 +71,7 @@ GambChamp CRM состоит из 11 микросервисов, каждый с
 - Affiliate source restrictions
 - Quality score thresholds
 
-**Файлы:** `main.go`, `config.go`, `handler.go`, `store.go`, `router.go`
+**Файлы:** `main.go`, `config.go`, `handler.go`, `store.go`, `router.go`, `cmd_handler.go`
 
 ---
 
@@ -84,7 +86,7 @@ GambChamp CRM состоит из 11 микросервисов, каждый с
 - Retry-логика с backoff
 - Логирование request/response в `lead_events`
 
-**Файлы:** `main.go`, `config.go`, `handler.go`, `store.go`, `template.go`, `deliverer.go`
+**Файлы:** `main.go`, `config.go`, `handler.go`, `store.go`, `template.go`, `deliverer.go`, `cmd_handler.go`
 
 ---
 
@@ -101,7 +103,7 @@ GambChamp CRM состоит из 11 микросервисов, каждый с
 - `quality_score` (0–100)
 - `fraud_card` (JSON с деталями проверок)
 
-**Файлы:** `main.go`, `config.go`, `handler.go`
+**Файлы:** `main.go`, `config.go`, `handler.go`, `store.go`, `cmd_handler.go`
 
 ---
 
@@ -114,8 +116,10 @@ GambChamp CRM состоит из 11 микросервисов, каждый с
 - Маппинг брокер-специфичных статусов в стандартные (New → Contacted → FTD → Redeposit / Rejected)
 - Обновление статуса лида в PostgreSQL
 - Публикация события `status.updated`
+- Postback worker для фоновой обработки
+- NATS subscriber для событий брокеров
 
-**Файлы:** `main.go`, `config.go`, `handler.go`, `store.go`, `normalizer.go`
+**Файлы:** `main.go`, `config.go`, `handler.go`, `store.go`, `normalizer.go`, `postback_worker.go`, `subscriber.go`
 
 ---
 
@@ -129,7 +133,7 @@ GambChamp CRM состоит из 11 микросервисов, каждый с
 - Отслеживание стадий автологина
 - Proxy-интеграция
 
-**Файлы:** `main.go`, `config.go`, `handler.go`
+**Файлы:** `main.go`, `config.go`, `handler.go`, `cmd_handler.go`
 
 ---
 
@@ -138,12 +142,14 @@ GambChamp CRM состоит из 11 микросервисов, каждый с
 Unsold Affiliate Distribution — повторная дистрибуция непроданных лидов.
 
 **Функции:**
-- Очередь непроданных лидов (`uad_queue`)
-- Реинъекция лидов в routing engine
-- Настраиваемые правила повторной маршрутизации
-- TTL для устаревших лидов
+- Управление сценариями реинъекции (batch, continuous, scheduled)
+- Движок реинъекции (`engine.go`) с фильтрацией по статусу, стране, возрасту лида
+- Очередь с мониторингом (depth, processing, completed, failed)
+- Настраиваемые target-брокеры с весами
+- Overflow pool для лидов без подходящего брокера
+- Throttle rate и batch size контроль
 
-**Файлы:** `main.go`, `config.go`, `handler.go`
+**Файлы:** `main.go`, `config.go`, `handler.go`, `store.go`, `engine.go`, `cmd_handler.go`
 
 ---
 
@@ -152,28 +158,36 @@ Unsold Affiliate Distribution — повторная дистрибуция не
 Рассылка нотификаций по различным каналам.
 
 **Каналы:**
-- **Telegram** — основной канал для медиабайеров (17+ типов событий)
-- **Email** — SMTP-интеграция
-- **Webhook** — кастомные HTTP-коллбэки
+- **Telegram** — Telegram Bot API (`telegram.go`), основной канал для медиабайеров
+- **Email** — SendGrid API (`email.go`)
+- **Webhook** — кастомные HTTP-коллбэки (`webhook.go`)
 
-**События:**
-- Новый лид, изменение статуса, cap reached, fraud alert, FTD и др.
+**Функции:**
+- Event router (`router.go`) — маршрутизация событий по каналам
+- Настройка предпочтений пользователя (каналы, типы событий, фильтры по affiliate/country)
+- NATS consumer для асинхронных событий
+- Store для персистентных нотификаций с mark read/unread
 
-**Файлы:** `main.go`, `config.go`, `handler.go`
+**Файлы:** `main.go`, `config.go`, `handler.go`, `store.go`, `router.go`, `telegram.go`, `email.go`, `webhook.go`, `cmd_handler.go`
 
 ---
 
 ## Identity Service (`services/identity-svc`, :8010)
 
-Аутентификация и управление JWT-токенами.
+Аутентификация, RBAC и управление пользователями.
 
 **Функции:**
 - Генерация Access Token (TTL: 15 мин) и Refresh Token (TTL: 7 дней)
-- Валидация токенов
-- Аутентификация пользователей (email + bcrypt password)
-- Управление refresh token rotation
+- Валидация токенов с refresh rotation
+- RBAC — 6 ролей (super_admin, network_admin, affiliate_manager, team_lead, media_buyer, finance_manager)
+- 32 разрешения (leads.read/write, affiliates.*, brokers.*, routing.*, analytics.*, users.*, и др.)
+- Управление сессиями (multi-device, revoke)
+- Приглашения пользователей (email invite + accept flow)
+- Сброс пароля (token-based)
+- Onboarding wizard (`onboarding.go`) — 6-шаговый мастер с шаблонами
+- Permissions middleware (`permissions.go`)
 
-**Файлы:** `main.go`, `config.go`, `handler.go`, `store.go`, `jwt.go`
+**Файлы:** `main.go`, `config.go`, `handler.go`, `store.go`, `jwt.go`, `onboarding.go`, `permissions.go`
 
 ---
 
@@ -188,4 +202,4 @@ Unsold Affiliate Distribution — повторная дистрибуция не
 - Autologin performance метрики
 - Time-series данные для дашбордов
 
-**Файлы:** `main.go`, `config.go`, `handler.go`
+**Файлы:** `main.go`, `config.go`, `handler.go`, `cmd_handler.go`

@@ -33,10 +33,14 @@
 
 | Переменная | Назначение | Требуется для |
 |------------|------------|---------------|
-| `MAXMIND_KEY` | MaxMind GeoIP / proxy detection | Fraud Engine |
+| `MAXMIND_ACCOUNT_ID` | MaxMind Account ID | Fraud Engine, GeoIP |
+| `MAXMIND_LICENSE_KEY` | MaxMind License Key | Fraud Engine, GeoIP |
 | `IPQS_KEY` | IPQualityScore — IP reputation | Fraud Engine |
-| `TELEGRAM_TOKEN` | Telegram Bot API | Notification Service |
+| `TELEGRAM_BOT_TOKEN` | Telegram Bot API | Notification Service |
+| `SENDGRID_API_KEY` | SendGrid Email API | Notification Service |
 | `TWILIO_SID` / `TWILIO_TOKEN` | Twilio phone validation | Fraud Engine |
+| `ANTHROPIC_API_KEY` | Claude API | Assistant Service |
+| `ASSISTANT_MODEL` | Модель Claude (default: claude-sonnet-4-20250514) | Assistant Service |
 
 ## CORS
 
@@ -86,3 +90,5 @@ type Config struct {
 | `NOTIFICATION_ADDR` | `notification-svc:8008` |
 | `IDENTITY_ADDR` | `identity-svc:8010` |
 | `ANALYTICS_ADDR` | `analytics-svc:8011` |
+| `ASSISTANT_ADDR` | `assistant-svc:8012` |
+| `SMART_ROUTING_ADDR` | `smart-routing-svc:8013` |

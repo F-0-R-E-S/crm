@@ -9,62 +9,70 @@ GambChamp CRM — мультитенантная платформа дистри
 | Слой | Технология | Назначение |
 |------|------------|------------|
 | API Gateway | Go + Chi router | Маршрутизация запросов, JWT-валидация, rate limiting |
-| Микросервисы | Go 1.25 | 11 специализированных сервисов |
+| Микросервисы | Go 1.25 | 13 специализированных сервисов |
+| AI Assistant | Go + Claude API (Sonnet) | Интерактивный AI-ассистент с tool calling |
+| Smart Routing | Go + ML optimizer | ML-оптимизация весов маршрутизации |
 | База данных | PostgreSQL 16 | Основное хранилище с RLS |
 | Кэш | Redis 7 | Кэширование, rate limiting, сессии |
 | Событийная шина | NATS JetStream 2.10 | Асинхронная коммуникация между сервисами |
 | Аналитика | ClickHouse 24.1 | OLAP-запросы, агрегации |
-| Фронтенд | React 18 + TypeScript + Vite | SPA с Tailwind CSS |
+| Фронтенд | React 18 + TypeScript + Vite | SPA с Tailwind CSS (Liquid Glass UI) |
+| Мобильное приложение | Expo (React Native) | iOS/Android мониторинг |
 | Мониторинг | Prometheus + Grafana + Loki | Метрики, дашборды, логи |
 
 ## Схема взаимодействия
 
 ```
-                    ┌─────────────┐
-                    │  Web UI     │
-                    │  (React)    │
-                    └──────┬──────┘
-                           │ HTTP
-                    ┌──────▼──────┐
-  Affiliates ──────►│ API Gateway │◄────── Broker Postbacks
-    (REST API)      │   :8080     │
-                    └──────┬──────┘
-                           │
-         ┌─────────────────┼─────────────────┐
-         │                 │                  │
-  ┌──────▼──────┐  ┌──────▼──────┐  ┌───────▼──────┐
-  │ Lead Intake │  │  Identity   │  │   Status     │
-  │   :8001     │  │   :8010     │  │   Sync :8005 │
-  └──────┬──────┘  └─────────────┘  └──────────────┘
-         │
-         │ NATS
-  ┌──────▼──────┐
-  │Fraud Engine │
-  │   :8004     │
-  └──────┬──────┘
-         │
-  ┌──────▼──────┐
-  │  Routing    │
-  │  Engine     │
-  │   :8002     │
-  └──────┬──────┘
-         │
-  ┌──────▼──────┐     ┌──────────────┐
-  │   Broker    │────►│  Внешние     │
-  │  Adapter    │     │  брокеры     │
-  │   :8003     │◄────│              │
-  └──────┬──────┘     └──────────────┘
-         │
-    ┌────┴────┐
-    │         │
-┌───▼───┐ ┌──▼──────┐
-│  UAD  │ │Autologin│
-│ :8007 │ │  :8006  │
-└───────┘ └─────────┘
+  ┌─────────────┐  ┌─────────────┐
+  │  Web UI     │  │ Mobile App  │
+  │  (React)    │  │  (Expo RN)  │
+  └──────┬──────┘  └──────┬──────┘
+         │                │
+         └────────┬───────┘
+                  │ HTTP
+           ┌──────▼──────┐
+ Affiliates►│ API Gateway │◄────── Broker Postbacks
+  (REST API)│   :8080     │
+           └──────┬──────┘
+                  │
+    ┌─────────────┼─────────────────┐
+    │             │                  │
+ ┌──▼──────┐ ┌───▼───────┐ ┌───────▼──────┐
+ │  Lead   │ │ Identity  │ │   Status     │
+ │ Intake  │ │  :8010    │ │   Sync :8005 │
+ │ :8001   │ │ +RBAC     │ └──────────────┘
+ └──┬──────┘ │ +Onboard  │
+    │        └───────────┘
+    │ NATS
+ ┌──▼──────┐
+ │  Fraud  │
+ │ Engine  │
+ │ :8004   │
+ └──┬──────┘
+    │
+ ┌──▼──────┐     ┌───────────────┐
+ │ Routing │────►│Smart Routing  │
+ │ Engine  │     │  AI :8013     │
+ │ :8002   │◄────│ (ML optimizer)│
+ └──┬──────┘     └───────────────┘
+    │
+ ┌──▼──────┐     ┌──────────────┐
+ │ Broker  │────►│  Внешние     │
+ │ Adapter │     │  брокеры     │
+ │ :8003   │◄────│              │
+ └──┬──────┘     └──────────────┘
+    │
+  ┌─┴─────┐
+  │       │
+┌─▼───┐ ┌▼────────┐
+│ UAD │ │Autologin│
+│:8007│ │  :8006  │
+└─────┘ └─────────┘
 
 Параллельные потоки:
   ├── Notification Svc :8008 (Telegram, Email, Webhook)
-  └── Analytics Svc :8011 (ClickHouse агрегации)
+  ├── Analytics Svc :8011 (ClickHouse агрегации)
+  └── Assistant Svc :8012 (Claude AI + Tool Calling)
 ```
 
 ## Поток обработки лида
@@ -78,6 +86,8 @@ GambChamp CRM — мультитенантная платформа дистри
 7. **Автологин** — Autologin Service управляет сессиями автологина для конвертированных лидов
 8. **Нотификации** — Notification Service рассылает алерты через Telegram/Email/Webhook
 9. **Аналитика** — Analytics Service агрегирует события в ClickHouse
+10. **Smart Routing** — ML-оптимизатор анализирует 7-дневные метрики брокеров и рекомендует оптимальные веса
+11. **AI-ассистент** — Assistant Service обрабатывает запросы через Claude API с 40+ tool definitions для управления системой
 
 ## Мультитенантность
 
@@ -89,6 +99,8 @@ GambChamp CRM — мультитенантная платформа дистри
 
 - **Синхронная:** HTTP REST между API Gateway и сервисами
 - **Асинхронная:** NATS JetStream для событий (lead.created, lead.scored, lead.routed, lead.delivered, status.updated)
+- **Command Handlers:** Каждый сервис имеет `cmd_handler.go` — NATS request/reply для AI-ассистента (40+ команд)
+- **SSE/WebSocket:** Assistant Service стримит ответы через SSE, WebSocket для real-time событий
 - **Идемпотентность:** Idempotency key на уровне Lead Intake предотвращает дублирование
 
 ## Структура кода
@@ -114,15 +126,20 @@ internal/               Приватные пакеты
 pkg/                    Общие библиотеки
   cache/                Redis-клиент
   database/             PostgreSQL пул
-  e164/                 Парсинг номеров
+  e164/                 Парсинг и валидация телефонов (E.164)
+  email/                Валидация email (MX, disposable, нормализация)
   errors/               Обработка ошибок
   events/               Определения событий + publisher
+  geoip/                GeoIP (MaxMind API + fallback)
   idempotency/          Ключи идемпотентности
   messaging/            NATS JetStream клиент
   middleware/            Shared auth + rate limiting
   models/               Доменные модели
-  phone/                Утилиты для телефонов
+  rbac/                 RBAC (6 ролей, 32 разрешения)
   telemetry/            Prometheus метрики + логирование
 
-services/               11 микросервисов (каждый: main.go, config.go, handler.go)
+services/               13 микросервисов (каждый: main.go, config.go, handler.go)
+
+mobile/                 Expo React Native мобильное приложение
+contracts/              API-контракты (OpenAPI/YAML)
 ```

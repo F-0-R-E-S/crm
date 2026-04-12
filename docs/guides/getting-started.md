@@ -119,6 +119,23 @@ npm run build
 npm run lint
 ```
 
+## Мобильное приложение
+
+```bash
+cd mobile
+
+# Установка зависимостей
+npm install
+
+# iOS
+npx expo start --ios
+
+# Android
+npx expo start --android
+```
+
+Требуется Expo CLI: `npm install -g expo-cli`
+
 ## Миграции базы данных
 
 ```bash

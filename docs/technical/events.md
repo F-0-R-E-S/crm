@@ -89,12 +89,55 @@
 }
 ```
 
+## Command Handlers (NATS Request/Reply)
+
+Каждый микросервис реализует `cmd_handler.go` — набор NATS request/reply обработчиков для AI assistant. Assistant Service отправляет запросы, cmd_handler возвращает результат.
+
+### Сервисы с cmd_handler
+
+| Сервис | Subject prefix | Примеры команд |
+|--------|---------------|----------------|
+| lead-intake-svc | `cmd.leads.*` | search, get_detail, export |
+| routing-engine-svc | `cmd.routing.*` | list_rules, create_rule, update_rule, delete_rule |
+| broker-adapter-svc | `cmd.brokers.*` | list, test, update, get_stats |
+| fraud-engine-svc | `cmd.fraud.*` | check_lead, get_stats, update_profile |
+| uad-svc | `cmd.uad.*` | list_scenarios, create, toggle |
+| notification-svc | `cmd.notify.*` | get_preferences, update_preferences |
+| autologin-svc | `cmd.autologin.*` | list_sessions, get_status |
+| analytics-svc | `cmd.analytics.*` | get_dashboard, get_conversions, get_caps |
+
+### Формат Request
+
+```json
+{
+  "tenant_id": "uuid",
+  "user_id": "uuid",
+  "command": "search_leads",
+  "params": {
+    "country": "UA",
+    "date_from": "2026-04-12",
+    "limit": 20
+  }
+}
+```
+
+### Формат Response
+
+```json
+{
+  "success": true,
+  "data": { ... },
+  "error": null
+}
+```
+
 ## Паттерны
 
 - **At-least-once delivery** — потребители должны быть идемпотентными
 - **Consumer groups** — каждый сервис использует durable consumer для гарантии доставки при рестартах
 - **Acknowledgement** — явный ACK после успешной обработки, NACK при ошибках с retry
 - **Dead letter** — после N неуспешных попыток сообщение переносится в DLQ для ручного разбора
+- **Request/Reply** — cmd_handler паттерн для синхронных запросов от AI assistant
 
 ## Мониторинг
 

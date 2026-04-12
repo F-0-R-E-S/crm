@@ -9,20 +9,32 @@
 | Таблица | Назначение | Партиционирование |
 |---------|------------|-------------------|
 | `tenants` | Тенанты / компании | — |
-| `users` | Пользователи (мультитенантные) | — |
+| `users` | Пользователи (мультитенантные, custom_permissions JSONB) | — |
 | `api_keys` | API-ключи с rate limit и IP whitelist | — |
 | `refresh_tokens` | JWT refresh tokens | — |
-| `affiliates` | Аккаунты аффилейтов | — |
-| `broker_templates` | Shared-шаблоны интеграций брокеров | — |
+| `sessions` | Multi-device сессии (token_hash, ip, device_name) | — |
+| `user_invites` | Email-приглашения с expiry | — |
+| `password_resets` | Token-based сброс пароля | — |
+| `affiliates` | Аккаунты аффилейтов (иерархия, тиры, трафик-лимиты) | — |
+| `broker_templates` | Shared-шаблоны (+ marketplace: rating, tags, author) | — |
 | `brokers` | Per-tenant инстансы брокеров | — |
 | `distribution_rules` | Правила маршрутизации | — |
-| `leads` | Записи лидов | BY RANGE (created_at), помесячно |
+| `leads` | Записи лидов (+ sub_params aff_sub1..10) | BY RANGE (created_at), помесячно |
 | `lead_events` | Аудит-трейл событий лида | — |
 | `fraud_profiles` | Per-affiliate настройки антифрода | — |
 | `autologin_sessions` | Сессии автологина | — |
 | `uad_queue` | Очередь повторной дистрибуции | — |
+| `uad_scenarios` | Сценарии реинъекции (batch/continuous/scheduled) | — |
 | `notifications` | Системные нотификации | — |
 | `notification_preferences` | Каналы нотификации пользователя | — |
+| `conversions` | Конверсии (FTD, deposit, trade) с P&L | — |
+| `compliance_checks` | Compliance проверки и аудит | — |
+| `billing_plans` | Тарифные планы (features, limits) | — |
+| `subscriptions` | Подписки тенантов (Stripe integration) | — |
+| `onboarding_progress` | Прогресс onboarding wizard | — |
+| `assistant_sessions` | AI assistant сессии | — |
+| `assistant_messages` | Сообщения AI assistant | — |
+| `assistant_action_log` | Аудит tool executions AI assistant | — |
 | `audit_log` | Append-only аудит | — |
 
 ### Ключевые таблицы — детали
@@ -121,9 +133,15 @@ API Gateway устанавливает `app.tenant_id` в контексте Pos
 |------|------------|
 | `001_initial_schema.up.sql` | Полная начальная схема (все таблицы, RLS, индексы) |
 | `001_initial_schema.down.sql` | Откат начальной схемы |
+| `002_rbac_sessions_invites.up.sql` | Sessions, user_invites, password_resets, custom_permissions |
 | `002_clickhouse_schema.sql` | Справочная схема ClickHouse |
 | `003_seed_broker_templates.up.sql` | Начальные шаблоны брокеров |
-| `003_seed_broker_templates.down.sql` | Откат шаблонов |
+| `003_affiliate_hierarchy_postbacks.up.sql` | Иерархия аффилейтов (parent_id, tier, manager_id, tracking_domain) |
+| `004_add_lead_sub_params.up.sql` | Sub-параметры лидов (aff_sub1..10), UTM-поля |
+| `004_assistant_schema.up.sql` | AI assistant (sessions, messages, action_log + RLS) |
+| `004_onboarding_wizard.up.sql` | Onboarding progress |
+| `005_uad_scenarios.up.sql` | UAD сценарии реинъекции |
+| `006_streams_2_to_6.up.sql` | Conversions, compliance, billing_plans, subscriptions, marketplace |
 
 Миграции управляются через Atlas (`atlas.hcl`).
 

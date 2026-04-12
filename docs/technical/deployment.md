@@ -23,6 +23,8 @@ docker compose ps
 |--------|------|-----|
 | API Gateway | 8080 | http://localhost:8080 |
 | Web UI | 80 | http://localhost:80 |
+| Assistant Service | 8012 | AI ассистент (Claude API) |
+| Smart Routing | 8013 | ML-оптимизация |
 | PostgreSQL | 5432 | postgres://gambchamp:***@localhost:5432/gambchamp |
 | Redis | 6379 | redis://localhost:6379 |
 | NATS | 4222 / 8222 | nats://localhost:4222 |
@@ -47,14 +49,19 @@ loki_data         — логи Loki
 
 ### Docker Compose Production
 
-Файл: `docker-compose.prod.yml`
+Два файла для продакшна:
+- `docker-compose.prod.yml` — базовая prod-конфигурация
+- `docker-compose.deploy.yml` — полный деплой (13 сервисов + инфраструктура)
 
 Отличия от development:
 - Resource limits (CPU, memory)
 - Restart policies (`unless-stopped`)
-- Health checks
+- Health checks (pg_isready, redis-cli ping)
 - Оптимизированные настройки PostgreSQL и ClickHouse
-- TLS/SSL конфигурация
+- Redis max-memory 256MB с allkeys-lru
+- JSON logging (max 10MB/file, 3 files rotation)
+- Все 13 Go-сервисов (включая assistant и smart-routing)
+- Single Dockerfile с SERVICE build arg
 
 ### Deploy script
 
@@ -110,6 +117,8 @@ atlas schema apply --env production
 - notification-svc:8008
 - identity-svc:8010
 - analytics-svc:8011
+- assistant-svc:8012
+- smart-routing-svc:8013
 
 ### Grafana
 
