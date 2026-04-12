@@ -1,0 +1,15 @@
+index,filename,timestamp_seconds,segment_index,segment_start,segment_end,segment_text,visual_group,is_representative,representative_filename,group_size,group_start_seconds,group_end_seconds
+0,frame_000001.jpg,0.0,0,0.0,2.0,Hello?,0,True,frame_000001.jpg,1,0.0,0.0
+1,frame_000002.jpg,2.5,1,2.0,4.0,Hello?,1,True,frame_000002.jpg,2,2.5,5.0
+2,frame_000004.jpg,5.0,2,4.0,6.0,Hi.,2,True,frame_000004.jpg,1,7.5,7.5
+3,frame_000005.jpg,7.5,3,6.0,8.0,Can you hear me?,3,True,frame_000005.jpg,1,10.0,10.0
+4,frame_000006.jpg,10.0,4,8.0,10.0,Yes.,4,True,frame_000006.jpg,1,12.5,12.5
+5,frame_000007.jpg,12.5,6,12.0,14.0,"Yes, how are you?",5,True,frame_000007.jpg,19,15.0,60.0
+6,frame_000026.jpg,15.0,7,14.0,16.0,Yes.,6,True,frame_000026.jpg,1,62.5,62.5
+7,frame_000027.jpg,17.5,8,16.0,18.0,Pink.,7,True,frame_000027.jpg,44,65.0,172.5
+8,frame_000071.jpg,20.0,9,18.0,20.0,Hello?,8,True,frame_000071.jpg,11,175.0,200.0
+9,frame_000082.jpg,22.5,11,22.0,24.0,Pink.,9,True,frame_000082.jpg,5,202.5,212.5
+10,frame_000087.jpg,25.0,12,24.0,26.0,Pink.,10,True,frame_000087.jpg,317,215.0,1005.0
+11,frame_000404.jpg,27.5,13,26.0,28.0,Pink.,11,True,frame_000404.jpg,7,1007.5,1022.5
+12,frame_000411.jpg,30.0,14,28.0,30.0,Hello?,12,True,frame_000411.jpg,124,1025.0,1332.5
+13,frame_000535.jpg,32.5,16,32.0,34.0,Yes.,13,True,frame_000535.jpg,1,1335.0,1335.0

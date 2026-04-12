@@ -1,0 +1,870 @@
+{
+  "analysis_meta": {
+    "date": "2026-04-12",
+    "source_video": "Демо CRM GetLinked.mov",
+    "transcript_language": "RU/EN (presenter Gal speaks English; prospect Alex speaks English with Russian accent; UI is English; meeting pre-join screen is Russian)",
+    "frames_examined": [
+      "frame_000001.jpg",
+      "frame_000002.jpg",
+      "frame_000004.jpg",
+      "frame_000005.jpg",
+      "frame_000006.jpg",
+      "frame_000007.jpg",
+      "frame_000026.jpg",
+      "frame_000027.jpg",
+      "frame_000071.jpg",
+      "frame_000082.jpg",
+      "frame_000087.jpg",
+      "frame_000404.jpg",
+      "frame_000411.jpg",
+      "frame_000535.jpg"
+    ],
+    "total_unique_frames": 14,
+    "notes": "Only 14 unique visual states out of 535 total frames — the recording is 22 minutes but most of the time is spent on a handful of static screens. The most significant technical issue: the CRM dashboard was stuck on a loading spinner for approximately 13 minutes (frames 215s–1005s), meaning large portions of the product were described verbally rather than shown visually. A Cloudflare bot-protection challenge also interrupted the demo briefly. The Whisper ASR transcript has moderate noise: 'sense status' likely means 'send status' or 'lead status'; 'SLEED' is likely 'lead' or 'CPL'; 'eBrit' is likely 'hybrid' commission type; 'Mediavine' in prospect context likely means 'media buying'. Pricing details are not shown — presenter states he already sent them. The demo environment IP resolves to Israel (IL), suggesting the presenter and/or server are Israel-based."
+  },
+
+  "product_identification": {
+    "product_name": "Getlinked Platform",
+    "product_url": "demo.getlinked.io (frontend) / demo-server.getlinked.io (backend API)",
+    "company_name": "Getlinked",
+    "product_version": "not shown in recording",
+    "product_category": "White-label Affiliate Network CRM / Performance Marketing Management Platform",
+    "positioning": "A turnkey white-label SaaS platform that lets media buyers and affiliate networks manage affiliates, advertisers, lead distribution, finance, and reporting from a single system. Presented as a complete infrastructure layer that scales from solo media buyer to full affiliate network.",
+    "target_market": "Media buyers scaling to affiliate networks; affiliate network operators; performance marketing companies running Crypto/Forex, gambling, and other direct-response verticals. Entry point is a single operator managing their own media buys; growth path is a full affiliate network with sub-affiliates.",
+    "pricing_model": "SaaS with one-time setup fee. Recurring subscription pricing. Three custom domains required from the client (network login domain, auto-login domain, API domain). Pricing details were sent separately before the demo and are not shown in the recording.",
+    "pricing_details": "Setup fee paid upfront before onboarding. Recurring subscription (terms not disclosed in recording). Presenter confirms prices were already emailed to the prospect. No plan tiers, pricing pages, or specific amounts visible in any frame.",
+    "ui_language": "English",
+    "competitors_mentioned": [],
+    "prospect_pain_points": [
+      "Starting as a media buyer (single operator) and planning to scale to a full affiliate network within ~3 months — needs a platform that handles both stages without migration",
+      "Wants to manage all traffic sources, advertisers, leads, and finances from a single centralized platform rather than using disconnected spreadsheets or tools",
+      "Operating in Crypto/Forex and testing gambling verticals — needs flexible multi-vertical support with per-vertical reporting",
+      "Needs robust lead distribution/rotation logic with prioritization, fallback tiers, and per-country control — asked about this specifically",
+      "Needs visibility into rejected leads and advertiser-side errors to diagnose integration and conversion issues",
+      "Needs FTD (First Time Deposit) tracking as a primary conversion event distinct from raw lead submissions",
+      "Needs bulk lead injection capability to handle re-sending or importing leads from external sources",
+      "Concerned about integration complexity with advertisers — wants support team to handle technical integrations rather than doing it in-house",
+      "Needs CRG (Cost per Registration Guarantee) deal management to automatically track and invoice advertisers when conversion rates fall below agreed guarantees",
+      "Wants granular team permission controls to manage future staff access as the business grows"
+    ]
+  },
+
+  "feature_map": {
+    "Dashboard — Main": {
+      "description": "Primary analytics overview screen. Shows aggregate performance metrics and charts for a selected time period, with filters by advertiser, traffic source (affiliate), offer, and geo.",
+      "sub_features": {
+        "Date Range Filter": {
+          "description": "Allows selecting the time period for all dashboard metrics. Preset tabs for common ranges plus a custom date picker.",
+          "ui_elements": [
+            "Today", "Yesterday", "This Week", "Last Week", "This Month", "Last Month", "Custom",
+            "From: [datetime]", "To: [datetime]", "Previous / Next navigation arrows"
+          ],
+          "notes": "Date range shown in demo was 2026-03-13 00:00:00 to 2026-03-13 23:59:59. Three icon buttons visible below tabs (likely Refresh, Column settings, Clear/Reset)."
+        },
+        "Metric Summary Cards": {
+          "description": "Row of KPI cards showing the most important performance numbers for the selected period.",
+          "ui_elements": [
+            "Financials", "Clicks", "Applies", "Leads", "FTD per Lead (%)", "Commissions"
+          ],
+          "notes": "Each card shows absolute number and percentage change. Demo data shows: Clicks with sub-metric '46 per Click = 491 (46%)'; Leads showing multi-line values like 1,037 / 2,127 / 1,240 (46%) / 1,003 (65%); FTD per Lead shown as 6.81%. Presenter also mentions Financials includes income, cost, profit."
+        },
+        "Clicks, Applies, Leads and Conversions Chart": {
+          "description": "Multi-line time-series chart tracking the conversion funnel over the selected period.",
+          "ui_elements": [
+            "Clicks (line)", "Applies (line)", "Lead (line)", "Conversions (line)", "Conversion Rate (line)",
+            "X-axis: time intervals", "Y-axis: count", "Legend at bottom"
+          ],
+          "notes": "Chart uses distinct line colors for each metric. Conversion Rate appears as a secondary metric plotted alongside absolute counts. Funnel visualization allows spotting drop-off points across stages."
+        },
+        "System Status Panel": {
+          "description": "Health dashboard showing the number of active issues categorized by severity.",
+          "ui_elements": [
+            "Critical: [N] Issues", "Danger: [N] Issues", "Admin: [N] Issues", "OK: [N] updates"
+          ],
+          "notes": "All counts were zero in the demo environment. Purpose appears to be surfacing integration errors, failed conversions, or configuration issues requiring admin attention."
+        },
+        "Top Affiliates Table": {
+          "description": "Summary table showing affiliate performance ranked by a key metric.",
+          "ui_elements": [
+            "Affiliate (column)", "Clicks (column)", "Lead Views (column)", "Commissions (column)"
+          ],
+          "notes": "Table visible at bottom of dashboard in demo. Sample data shows affiliates 'Mary Leann' and 'Crystal Geraldine' with numerical values in the 242–647 range. Additional columns partially visible."
+        }
+      }
+    },
+
+    "Dashboard — Task": {
+      "description": "Secondary dashboard view for task or operations management. Visible in the left navigation but not demonstrated in the recording.",
+      "sub_features": {
+        "Task View": {
+          "description": "Not shown in demo.",
+          "ui_elements": ["Task (nav link under Dashboards)"],
+          "notes": "Visible in left sidebar navigation as a sub-item under Dashboards. Content not shown."
+        }
+      }
+    },
+
+    "Affiliates": {
+      "description": "Full affiliate (traffic source) management module. Controls who sends traffic, under what conditions, and tracks their earnings and wallet balances.",
+      "sub_features": {
+        "Affiliate Profile Management": {
+          "description": "Create and manage affiliate accounts with detailed configuration.",
+          "ui_elements": ["Affiliates (nav link)"],
+          "notes": "Described verbally: control copying (caps), geos, limits, automations. Supports multiple affiliate hierarchy levels: standard affiliate, affiliate manager, master affiliate."
+        },
+        "Affiliate Wallet": {
+          "description": "Virtual wallet tracking how much the network owes to each affiliate and exposure levels.",
+          "ui_elements": ["Wallet (mentioned verbally)"],
+          "notes": "Described as 'virtual wallet' — tracks money owed, money exposed. Helps manage financial exposure risk per affiliate."
+        },
+        "Affiliate Hierarchy / Levels": {
+          "description": "Supports tiered affiliate structures for networks with sub-affiliates.",
+          "ui_elements": [],
+          "notes": "Levels mentioned: standard affiliate, affiliate manager, master affiliate. Relevant when the client grows from media buyer to full network."
+        },
+        "Affiliate Automation Rules": {
+          "description": "Rule-based automation system for affiliate management — restrictions, triggers, automated actions.",
+          "ui_elements": [],
+          "notes": "Presenter says 'a lot of automation regarding the affiliates with rules and restrictions and everything.' Not shown on screen."
+        }
+      }
+    },
+
+    "Advertisers": {
+      "description": "Full advertiser (broker/brand) management module. Controls which advertisers receive leads, under what commission terms, and tracks their transactions.",
+      "sub_features": {
+        "Advertiser Profile Management": {
+          "description": "Create and configure advertiser accounts including accepted geos, custom fields, and downtime controls.",
+          "ui_elements": ["Advertisers (nav link)", "Geos (configuration)", "Custom fields"],
+          "notes": "Presenter shows this verbally: 'you can control the downtime when you don't want to accept traffic.' Copy settings available at the advertising level."
+        },
+        "Advertiser Wallet": {
+          "description": "Financial exposure tracking per advertiser to prevent over-sending leads without payment.",
+          "ui_elements": ["Wallet (mentioned verbally for advertiser)"],
+          "notes": "'You don't want to be too exposed with the advertiser.' Wallet shows all transactions with this broker/advertiser."
+        },
+        "Commission Configuration": {
+          "description": "Flexible commission model setup per advertiser with support for multiple commission types and events.",
+          "ui_elements": [],
+          "notes": "Commission types supported: Fix, Dynamic, Revenue Share, Hybrid [corrected from: 'eBrit']. Commission events: Lead (CPL), FTD, Referral. Different currencies supported. Commission can be configured for almost any event."
+        }
+      }
+    },
+
+    "Lead Distribution (Rotation)": {
+      "description": "Core lead routing engine. Distributes incoming leads from traffic sources to advertisers using a bucket-based priority and rotation system with country-level granularity.",
+      "sub_features": {
+        "Country-Level Rotation View": {
+          "description": "Overview matrix showing all countries, their assigned advertisers, and rotation status (active/paused).",
+          "ui_elements": [
+            "Country selector (e.g., United Kingdom)",
+            "Traffic sources panel (shows sources sending to that country with their rules)",
+            "Rotation status indicator (line-through = out of rotation, with reason)"
+          ],
+          "notes": "Demo was shown with empty demo data. Designed for quick operational visibility across the entire geo portfolio."
+        },
+        "Bucket System": {
+          "description": "Hierarchical lead allocation system where each bucket contains advertisers with assigned percentage weights. Multiple buckets provide tiered fallback routing.",
+          "ui_elements": [
+            "Bucket (tier container)",
+            "Advertiser entries within bucket",
+            "Percentage priority input (e.g., 40%, 25%, 10%, 0%)",
+            "In-rotation / Out-of-rotation indicator",
+            "Reason for out-of-rotation (tooltip/label)"
+          ],
+          "notes": "Allocation logic considers copying (caps), statistics, and the percentage weights. Unlimited buckets can be created. Common pattern: Bucket 1 = best advertisers, Bucket 2 = secondary fallbacks, etc. Presenter analogy: 'A bucket is like a bucket of water.'"
+        },
+        "Per-Bucket Optimization": {
+          "description": "Each bucket can have its own rotation and performance optimization rules.",
+          "ui_elements": ["Add bucket action", "Advertiser rotation within bucket"],
+          "notes": "Allows running A/B-style optimization at bucket level. Specific optimization algorithm not detailed."
+        }
+      }
+    },
+
+    "Finance": {
+      "description": "Complete financial management system for commissions, invoicing, and special deal tracking. Covers both incoming commissions from advertisers and outgoing payments to affiliates.",
+      "sub_features": {
+        "Commission Management": {
+          "description": "Tracks all commissions earned and owed across the network.",
+          "ui_elements": ["Finance (nav link)", "Commissions (sub-nav)", "Advertiser Commissions (sub-nav)", "Affiliate Commissions (sub-nav)"],
+          "notes": "Visible in left sidebar sub-navigation. Separate tracking for commissions received from advertisers vs. paid to affiliates."
+        },
+        "Invoicing": {
+          "description": "Automatic invoice generation for commission settlements.",
+          "ui_elements": ["Invoicing (sub-nav under Finance)", "Payment (sub-nav)"],
+          "notes": "Fully automated — system generates invoices based on commission data without manual work."
+        },
+        "Special Deals / CRG (Conversion Rate Guarantee)": {
+          "description": "Automated CRG deal tracker that calculates whether an advertiser met their guaranteed conversion rate and auto-generates top-up invoices when they fall short.",
+          "ui_elements": [
+            "Special Deals (sub-nav under Finance)",
+            "Deal name (field)",
+            "Guarantee % (field)",
+            "Payment cycle date (field)",
+            "Working hours / days (configuration)",
+            "Statuses (configuration)"
+          ],
+          "notes": "Presenter example: Advertiser guarantees 13% CR. If they deliver 10%, system calculates the delta and issues an invoice for the shortfall automatically. Supports back-to-back deals (network can apply same logic to its own affiliates). Called 'Conversions Guarantee' in the UI. Currently described as the first Special Deal type — implies more types may follow."
+        },
+        "Transactions": {
+          "description": "Full transaction log per advertiser and affiliate.",
+          "ui_elements": ["Transactions (sub-nav under Finance)"],
+          "notes": "Visible in sidebar. Detailed content not demonstrated."
+        },
+        "Payment Management": {
+          "description": "Payment processing and tracking module.",
+          "ui_elements": ["Payment (sub-nav under Finance)", "Payments (sub-nav)"],
+          "notes": "Mentioned in sidebar. Specific payment methods or integrations not shown."
+        }
+      }
+    },
+
+    "Reports": {
+      "description": "Multi-format reporting suite covering leads, conversions, and aggregated performance. Includes advanced filtering, re-injection capability, and a new AI-based lead scoring feature.",
+      "sub_features": {
+        "Leads Report": {
+          "description": "Primary report showing all lead events with full lifecycle data including status history, rotation history, and re-registration capability.",
+          "ui_elements": [
+            "Reports (nav link)",
+            "Leads (sub-nav)",
+            "Status column (with history on hover/expand)",
+            "Lead Score (new feature column)",
+            "Rotation history (visible per lead)",
+            "Re-register action button",
+            "Advanced field terms filter (include / exclude)",
+            "Auto-refresh toggle",
+            "Time frame filter (days of week selector — can exclude weekends)",
+            "Date range selector"
+          ],
+          "notes": "Most data-rich report. Rotation history helps diagnose routing bugs. Re-register allows injecting a failed lead to same or different advertiser/white-label. Presenter: 'If something fails, why it fails... you can click over here and you can re-register them from here. It's like injection.'"
+        },
+        "Lead Score": {
+          "description": "AI-based scoring feature that assigns a quality score to each lead and explains the scoring factors.",
+          "ui_elements": ["Lead Score (column in Leads Report)"],
+          "notes": "Described by presenter as 'a very, very nice feature' that is new and not yet populated with data in the demo. Will show score + full explanation of why the lead received that score. Not yet visible in the demo UI."
+        },
+        "Conversion Report": {
+          "description": "Same structure as the Leads Report but scoped to conversion events (FTDs, etc.) rather than raw leads.",
+          "ui_elements": ["Conversions (sub-nav under Reports)"],
+          "notes": "Presenter: 'Conversion report. It's basically the same just conversions.' FTD-focused use case."
+        },
+        "Generic Report": {
+          "description": "Flexible cross-dimensional report with three configurable layers for slicing data.",
+          "ui_elements": [
+            "Generic Report (sub-nav under Reports)",
+            "Layer 1 selector (e.g., Affiliate)",
+            "Layer 2 selector (e.g., Advertiser)",
+            "Layer 3 selector (e.g., Country)"
+          ],
+          "notes": "Presenter calls it 'a very good report that gives you basically to cut three layers.' Used for custom aggregation by any combination of affiliate / advertiser / country / other dimensions."
+        },
+        "Aggregation Report": {
+          "description": "Pre-built aggregate performance report.",
+          "ui_elements": ["Aggregation Report (sub-nav under Reports)"],
+          "notes": "Mentioned as 'good aggregation report' but not demonstrated in detail."
+        },
+        "Bulk Lead Injection (Import Leads)": {
+          "description": "Allows uploading a CSV list of leads for bulk injection into the system, routing them to a specified source and advertiser.",
+          "ui_elements": [
+            "Import Leads (action/sub-nav)",
+            "Source selector (which affiliate/source)",
+            "Offer / Advertiser selector",
+            "File upload (CSV list of leads)",
+            "Queue option (immediate or queued injection)",
+            "Rules configuration"
+          ],
+          "notes": "Presenter: 'you can also upload the list and you know, inject... you can do with the queue so it won't be injection immediately.' Used for re-processing leads, cross-injections, or migrating leads from other systems."
+        }
+      }
+    },
+
+    "Permissions": {
+      "description": "Granular role-based access control system. Every feature, column, data field, and action in the platform can be independently allowed or denied per user role.",
+      "sub_features": {
+        "Permission Groups List": {
+          "description": "Manage named permission groups (roles) that are assigned to user accounts.",
+          "ui_elements": [
+            "Permissions (nav link)",
+            "Groups (breadcrumb/sub-nav)",
+            "Add new (button — blue)",
+            "Edit (button — green)",
+            "Delete (button — red)",
+            "CSV export (button)",
+            "PDF export (button)"
+          ],
+          "notes": "Background list in demo shows groups including: Administration, Affiliate management, Advertiser, Collaboration, Commissions, Marketing, Payment, Reporting. URL: demo.getlinked.io/permissions.php"
+        },
+        "Edit Permissions Modal": {
+          "description": "Per-group permission matrix where every individual permission can be toggled Allow or Deny.",
+          "ui_elements": [
+            "Edit permissions - [Group Name] (modal title)",
+            "Permissions (column header)",
+            "Translate (column header)",
+            "Actions (column header)",
+            "Allow (green button per row)",
+            "Deny (red button per row)",
+            "Scrollable permission rows list"
+          ],
+          "notes": "Two modal variants seen: 'Edit permissions - Administration' (compact view, frame_000404) and 'Edit permissions - Administrators' (expanded scrollable list, frame_000411). Some rows highlighted in pink/red indicating currently denied permissions. Presenter: 'you can see really thousands of permissions, everything is with permissions... every column, every data, every feature.' The demo showed this section for approximately 5 minutes (1025s–1335s), suggesting the prospect had specific interest."
+        }
+      }
+    },
+
+    "Marketing Tools": {
+      "description": "Alert and notification system that triggers automated messages based on conversion events and configurable conditions.",
+      "sub_features": {
+        "Alert System": {
+          "description": "Create rule-based triggers that fire notifications to Telegram and/or email when specified events and conditions are met.",
+          "ui_elements": ["Marketing Tools (nav link)", "Alert system (sub-feature)"],
+          "notes": "Presenter: 'marketing tool catalog alert system, you can create different triggers and you get them into telegram, email, conversion and different conditions. Very good alert system.' Specific UI not demonstrated."
+        }
+      }
+    },
+
+    "Messages": {
+      "description": "Internal messaging or communication module visible in the left navigation.",
+      "sub_features": {
+        "Messages": {
+          "description": "Not demonstrated in the recording.",
+          "ui_elements": ["Messages (nav link)"],
+          "notes": "Present in sidebar navigation but not shown or described in demo."
+        }
+      }
+    },
+
+    "Tools & Settings": {
+      "description": "System configuration and administrative tools section.",
+      "sub_features": {
+        "Tools & Settings": {
+          "description": "Not demonstrated in the recording.",
+          "ui_elements": ["Tools & Settings (nav link)"],
+          "notes": "Present in sidebar navigation. Content not shown."
+        }
+      }
+    },
+
+    "Whitelabel": {
+      "description": "White-label customization module allowing clients to brand the platform with their own logo and color scheme.",
+      "sub_features": {
+        "Logo & Branding": {
+          "description": "Replace the Getlinked logo with the client's own logo. Customize colors.",
+          "ui_elements": [
+            "YOUR LOGO HERE powered by link (placeholder shown in demo header)",
+            "Whitelabel (nav link)"
+          ],
+          "notes": "Demo environment shows placeholder text 'YOUR LOGO HERE powered by link' in the top-left where the client's logo would appear. Presenter: 'you put your logo here, you can control colors.' Three separate domains are required: network login domain, auto-login domain, API domain."
+        }
+      }
+    },
+
+    "Knowledge Base": {
+      "description": "Internal documentation or help content for platform users.",
+      "sub_features": {
+        "Knowledge Base": {
+          "description": "Not demonstrated in the recording.",
+          "ui_elements": ["Knowledge Base (nav link)"],
+          "notes": "Present in sidebar navigation."
+        }
+      }
+    },
+
+    "Release Notes": {
+      "description": "Changelog or version history for the platform.",
+      "sub_features": {
+        "Release Notes": {
+          "description": "Not demonstrated in the recording.",
+          "ui_elements": ["Release Notes (nav link)"],
+          "notes": "Present at the bottom of the left sidebar navigation."
+        }
+      }
+    }
+  },
+
+  "ux_ui": {
+    "design_style": "Enterprise SaaS — functional, data-dense, minimal decoration. Classic admin panel aesthetic with fixed left sidebar, breadcrumb navigation, and tabular data layouts. Not a modern consumer-style UI.",
+    "navigation_pattern": "Fixed left sidebar with collapsible sections; breadcrumb bar in page header; date-range filter tab row at top of content area; modal dialogs for editing/creating records.",
+    "color_scheme": "Primary: Dark forest green (#2d6a4f range) — sidebar background, logo, loading spinner. Accent: Bright green (#52b788 range) — active nav items, Allow buttons, loading indicator. Danger: Red — Deny buttons, Delete actions. Action: Blue — Add/primary actions. Background: White main content area, light-grey sidebar.",
+    "framework_hints": "PHP backend (all page URLs end in .php: dashboard.php, permissions.php). Frontend appears to be a custom Bootstrap-based admin theme or a framework like AdminLTE — standard grid layout, modal pattern, button color conventions (btn-success green, btn-danger red, btn-primary blue) are consistent with Bootstrap.",
+    "key_screens": [
+      {
+        "screen_name": "CRM Dashboard — Full View",
+        "frame_ref": "frame_000071.jpg",
+        "timestamp_seconds": 175,
+        "description": "Main dashboard screen showing the complete analytics overview: metric cards (Financials, Clicks, Applies, Leads, FTD per Lead, Commissions), multi-line Clicks/Applies/Leads/Conversions chart, System Status panel with severity categories, Top Affiliates table, and the full left navigation sidebar. White-label logo placeholder visible in top-left.",
+        "notable_elements": [
+          "YOUR LOGO HERE powered by link (white-label placeholder)",
+          "Date filter tabs: Today / Yesterday / This Week / Last Week / This Month / Last Month / Custom",
+          "Date range: From 2026-03-13 00:00:00 To 2026-03-13 23:59:59",
+          "Metric cards: Financials, Clicks, Applies, Leads, FTD per Lead %, Commissions",
+          "Multi-line chart: Clicks, Applies, Lead, Conversions, Conversion Rate",
+          "System Status: Critical / Danger / Admin / OK",
+          "Top Affiliates table with Clicks, Lead Views, Commissions columns",
+          "Full left sidebar with all navigation sections visible"
+        ]
+      },
+      {
+        "screen_name": "Dashboard Loading State with Security Banner",
+        "frame_ref": "frame_000087.jpg",
+        "timestamp_seconds": 215,
+        "description": "Dashboard page at demo.getlinked.io/dashboard.php showing the security/phishing warning banner and a green loading spinner. This state persisted for ~13 minutes during the demo, representing a significant technical disruption.",
+        "notable_elements": [
+          "Attention banner: 'Attention: Getlinked Support Team communicates ONLY in its Official Chats or Groups. Make sure you are on the right one. (Click Here)'",
+          "Green loading spinner with 'Loading...' text",
+          "Dashboard breadcrumb",
+          "Date range filter tabs visible but content area empty",
+          "Footer: 'Link. All rights reserved.'",
+          "Collapsed left sidebar"
+        ]
+      },
+      {
+        "screen_name": "Cloudflare Browser Security Check",
+        "frame_ref": "frame_000082.jpg",
+        "timestamp_seconds": 202,
+        "description": "Cloudflare bot-protection challenge modal overlaying the CRM while navigating to the backend at demo-server.getlinked.io. Reveals the two-domain architecture (frontend at demo.getlinked.io, backend API at demo-server.getlinked.io). Also reveals the presenter's IP (109.64.46.251, Country: IL/Israel) and browser (Chrome 145 on Windows 10).",
+        "notable_elements": [
+          "Checking your browser before accessing demo-server.getlinked.io",
+          "IP: 109.64.46.251 / Country: IL",
+          "Chrome/145.0.0.0 on Windows NT 10.0",
+          "Background affiliate table: Rank 1 Mary Leann (450 clicks), Rank 2 Crystal Geraldine (647 clicks)",
+          "Full left sidebar visible behind modal"
+        ]
+      },
+      {
+        "screen_name": "Permissions — Edit Permissions Modal (Administrators, expanded)",
+        "frame_ref": "frame_000411.jpg",
+        "timestamp_seconds": 1025,
+        "description": "The Permissions module with the 'Edit permissions - Administrators' modal open, showing a scrollable list of individual permissions each with Allow (green) and Deny (red) buttons. This screen occupied ~5 minutes of the demo.",
+        "notable_elements": [
+          "Edit permissions - Administrators (modal title)",
+          "Columns: Permissions / Translate / Actions",
+          "Allow (green) and Deny (red) buttons per permission row",
+          "Some rows highlighted in pink/red (indicating denied state)",
+          "Background list shows permission groups: Admin, Affiliate management, Advertiser, Collaboration, Commissions, Marketing, Payment, Reporting",
+          "URL: demo.getlinked.io/permissions.php"
+        ]
+      },
+      {
+        "screen_name": "Permissions — Edit Permissions Modal (Administration, compact)",
+        "frame_ref": "frame_000404.jpg",
+        "timestamp_seconds": 1007,
+        "description": "Initial permissions modal view with a more compact grid of Allow/Deny buttons across multiple rows, showing the breadth of the permission matrix at a glance.",
+        "notable_elements": [
+          "Edit permissions - Administration (modal title)",
+          "Dense matrix of green Allow / red Deny button pairs",
+          "Action buttons on page: Add new, Edit, Delete, CSV, PDF",
+          "URL: demo.getlinked.io/permissions.php"
+        ]
+      }
+    ]
+  },
+
+  "user_scenarios": [
+    {
+      "scenario_name": "Onboarding a new client from purchase to live system",
+      "actor": "Getlinked sales rep + client",
+      "steps": [
+        "Step 1: Sales rep sends pricing details via email/messaging before the demo call",
+        "Step 2: Demo call conducted (this recording) to walk through platform capabilities",
+        "Step 3: Client decides to proceed; sales rep opens a group with the accounting team",
+        "Step 4: Accounting sends client a link to fill in company details for the digital contract",
+        "Step 5: Client pays the setup fee",
+        "Step 6: Getlinked opens a Telegram support group with the client",
+        "Step 7: Client purchases 3 domains (network login domain, auto-login domain, API domain)",
+        "Step 8: Getlinked team sets up the system (1-2 hours after domains are provided)",
+        "Step 9: Client begins advertiser and affiliate integrations with support team assistance"
+      ],
+      "outcome": "Client has a live white-label affiliate CRM at their own domain, with support team available Monday–Friday 9am–10pm GMT+2 and limited Sunday support."
+    },
+    {
+      "scenario_name": "Configuring lead distribution (rotation) for a new country",
+      "actor": "Admin / network operator",
+      "steps": [
+        "Step 1: Navigate to the Lead Distribution module",
+        "Step 2: Select the target country (e.g., United Kingdom) from the country view",
+        "Step 3: Review which traffic sources are sending to this country and their rules (shown in the convenience panel)",
+        "Step 4: In Bucket 1 (default), add top-priority advertisers and set percentage weights (e.g., 40%, 25%, 10%)",
+        "Step 5: Create additional buckets for fallback advertisers",
+        "Step 6: Monitor rotation status — out-of-rotation advertisers are shown with strikethrough and a reason",
+        "Step 7: Adjust percentages to optimize based on conversion performance"
+      ],
+      "outcome": "Leads from the selected country are distributed across advertisers according to the configured bucket priorities, with automatic fallback if primary advertisers are at capacity or out of rotation."
+    },
+    {
+      "scenario_name": "Setting up and tracking a CRG (Conversion Rate Guarantee) deal",
+      "actor": "Admin / finance manager",
+      "steps": [
+        "Step 1: Navigate to Finance > Special Deals",
+        "Step 2: Create a new deal of type 'Conversions Guarantee'",
+        "Step 3: Enter: deal name, advertiser, guarantee percentage (e.g., 13%), payment cycle date, working hours/days/statuses",
+        "Step 4: System tracks the advertiser's actual conversion rate over the payment cycle",
+        "Step 5: At end of payment cycle, system automatically calculates whether the guarantee was met",
+        "Step 6: If conversion rate fell short (e.g., 10% vs. 13% guarantee), system generates an invoice for the delta",
+        "Step 7: Invoice is issued to the advertiser with full explanation of the calculation"
+      ],
+      "outcome": "Automated financial reconciliation for CRG deals without manual spreadsheet calculations. Optional back-to-back deals can mirror this guarantee to affiliates."
+    },
+    {
+      "scenario_name": "Diagnosing and re-injecting failed leads",
+      "actor": "Admin / operations manager",
+      "steps": [
+        "Step 1: Navigate to Reports > Leads",
+        "Step 2: Filter by failed/rejected status",
+        "Step 3: Expand a lead to see its send status history and rotation history",
+        "Step 4: Review Lead Score (if available) for quality assessment",
+        "Step 5: Identify why the lead failed (advertiser rejection, routing error, etc.)",
+        "Step 6: Click the re-register action on the lead",
+        "Step 7: Choose target: same white-label or different, same advertiser or different, with applicable rules",
+        "Step 8: Lead is re-sent; or use Import Leads for bulk re-injection of a CSV list"
+      ],
+      "outcome": "Failed leads are recovered and re-processed, reducing revenue leakage. Full audit trail maintained."
+    },
+    {
+      "scenario_name": "Configuring role-based access for a new team member",
+      "actor": "Admin",
+      "steps": [
+        "Step 1: Navigate to Permissions",
+        "Step 2: Select or create a permission group appropriate for the new role",
+        "Step 3: Open 'Edit permissions' modal for that group",
+        "Step 4: For each permission row, click Allow or Deny",
+        "Step 5: Save the permission group",
+        "Step 6: Assign the permission group to the new user account"
+      ],
+      "outcome": "New team member has precisely scoped access — specific features, columns, and data fields are visible or hidden based on their role."
+    }
+  ],
+
+  "technology_stack": {
+    "frontend": "Custom PHP-rendered HTML with likely Bootstrap-based admin template (AdminLTE or similar). Standard modal/table/button patterns consistent with Bootstrap 3/4.",
+    "backend": "PHP (server-side rendered pages at .php URLs). Backend API hosted separately at demo-server.getlinked.io, protected by Cloudflare.",
+    "database": "not mentioned",
+    "integrations": [
+      "Google (tracking/tag integrations — mentioned for affiliate traffic source setup)",
+      "Facebook (tracking integrations — mentioned for affiliate traffic source setup)",
+      "Telegram (support team communication channel; alert system notification destination)",
+      "Email (alert system notification destination)",
+      "Cloudflare (bot protection on backend API domain demo-server.getlinked.io)"
+    ],
+    "infrastructure": "Hosted at getlinked.io domain. Cloudflare CDN/protection layer on backend. Server IP 109.64.46.251 (Israel-based based on country code IL in Cloudflare request details).",
+    "api_type": "REST (inferred — separate backend API domain, standard web app architecture)"
+  },
+
+  "recording_analysis": {
+    "recording_type": "sales_demo",
+    "presenter_role": "Sales representative / product demonstrator for Getlinked Platform. Name: Gal. Based in Israel (inferred from server IP country code IL). Self-described as not an operator of an affiliate network — presents the platform but does not use it daily.",
+    "audience_role": "Prospect — Alex, from Russia. Starting a media buying operation (Crypto/Forex + testing gambling), planning to scale to a full affiliate network in ~3 months. Pre-demo: prices already received. Call purpose: technical product evaluation before purchase decision.",
+    "structure_summary": "1. (0–65s) Pre-call and connection setup on Google Meet. 2. (65–175s) Introductions — presenter (Gal) and prospect (Alex) exchange background; Alex's context established (Russia, Crypto/Forex, starting media buying then network). 3. (175–215s) Screen share begins — Dashboard overview shown at small scale while Gal describes it verbally. 4. (215–1005s) Dashboard loading spinner — major technical interruption; Gal continues verbal tour of Affiliates, Advertisers, Lead Distribution (rotation), Finance (CRG/Special Deals), Reports (leads, conversions, injection), Alert System. 5. (1005–1335s) Dashboard load or navigation — Permissions module shown in detail with the Edit Permissions modal for ~5 minutes. 6. (1335s) Screen share ends; closing conversation about onboarding steps, domains, contract, and next steps.",
+    "key_selling_points": [
+      "Complete white-label turnkey platform — client owns the brand, Getlinked provides the infrastructure",
+      "Bucket-based lead distribution with unlimited tiers, priority weighting, and fallback chains",
+      "Automated CRG / Conversions Guarantee deal management with auto-invoicing",
+      "Granular permission system — 'thousands of permissions, every column, every data, every feature'",
+      "Dedicated Telegram support team responding in minutes (not hours), Monday–Friday 9am–10pm GMT+2",
+      "Full failure tracking — 'we are collecting all the failings for you, you are not losing them'",
+      "Lead re-registration and bulk injection capabilities",
+      "New lead scoring feature (AI-based quality assessment with explanations)",
+      "Support team handles all third-party integrations (Google, Facebook, etc.) on behalf of the client",
+      "Scales from solo media buyer to full affiliate network without changing platforms"
+    ],
+    "acknowledged_weaknesses": [
+      "Demo environment had no real data ('It's a demo account without data') — limited ability to show actual reports and charts",
+      "Lead Score is a new feature with no demo data and not yet fully delivered ('I will tell them to add me, I just didn't get me done') [corrected from: 'I will tell them to add me that I just didn't get me done']",
+      "Presenter could not clearly show where to find rejected advertiser errors in the UI when Alex asked directly — deflected to support team",
+      "Presenter admits not using the platform day-to-day ('I'm not managing a network so I'm not using it on the day to day') — may affect depth of operational questions",
+      "Backend server (demo-server.getlinked.io) triggered a Cloudflare bot-protection challenge during the demo — indicates demo environment instability",
+      "Dashboard took approximately 13 minutes to load in the demo — severe performance issue on the demo server",
+      "Support hours have a gap: Sunday is 'limited support' and there are holidays"
+    ],
+    "audience_questions_and_reactions": [
+      "Alex asked specifically about lead distribution/rotation — this was clearly a priority feature for him",
+      "Alex asked where to see which advertisers were rejected and what errors they returned",
+      "Alex asked to see FTDs specifically",
+      "Alex asked about bulk lead injection",
+      "Alex was positive about the CRG / Special Deals feature — confirmed understanding the guarantee logic",
+      "Alex had no questions about the Affiliates or Advertisers sections ('No, affiliate section, no questions')",
+      "Alex was satisfied after the bulk injection explanation ('I think I don't have questions')",
+      "Alex mentioned he is also talking to other systems and will make a decision ('Also other systems and talking with team and making decision about the system')"
+    ],
+    "objection_handling": [
+      "Alex is evaluating competing systems — Gal's response was to emphasize the support team quality and comprehensiveness of features: 'I'm sure everything that you need we will have' and 'you've got our team with you on a daily basis'",
+      "Alex asked about error visibility — Gal acknowledged the limitation indirectly ('I'm not using it on the day to day') and redirected to the support team as the operational safety net",
+      "Demo technical issues (loading spinner, Cloudflare) — Gal navigated around them by continuing verbal description rather than acknowledging them as a product issue"
+    ]
+  },
+
+  "key_quotes": [
+    {
+      "speaker": "presenter (Gal)",
+      "quote": "We are working with the bucket system. A bucket is like a bucket of water. In any bucket, this is starting by the default. You are putting rotations of advertisers.",
+      "context": "Explaining the lead distribution rotation system",
+      "significance": "Core product metaphor for the routing engine. Reveals the mental model used to explain the product to non-technical prospects."
+    },
+    {
+      "speaker": "presenter (Gal)",
+      "quote": "We have a dedicated support team, they work on the telegram, they are answering in minutes, not one hour, two hours, in minutes.",
+      "context": "Describing the support model after explaining affiliate integrations",
+      "significance": "Support speed is positioned as a primary differentiator — the key answer to integration complexity concerns."
+    },
+    {
+      "speaker": "presenter (Gal)",
+      "quote": "We are collecting all the failings for you. Ok, you are not losing them.",
+      "context": "Describing the Dashboard's lead failure tracking capability",
+      "significance": "Directly addresses a core pain point for affiliate networks — failed lead recovery. Revenue leakage from failed postbacks is a common operational problem."
+    },
+    {
+      "speaker": "presenter (Gal)",
+      "quote": "You can see really thousands of permissions, everything is with permissions. You decide what are your users will use. Every column, every data, every feature.",
+      "context": "Introducing the Permissions module",
+      "significance": "Signals enterprise-grade configurability as a selling point — important for networks that need to onboard staff with restricted access."
+    },
+    {
+      "speaker": "presenter (Gal)",
+      "quote": "It's basically called special deal. And any special, we have got right now the first one conversions guarantee. The system checks it and calculates it automatically. And it's issuing for you an invoice with explanation how much you need to get and with all the explanation, all automatically.",
+      "context": "Demonstrating the CRG/Special Deals finance feature",
+      "significance": "Automated CRG reconciliation is a high-value operational feature for networks with guaranteed deal structures — manual CRG calculation is a major pain point."
+    },
+    {
+      "speaker": "prospect (Alex)",
+      "quote": "Firstly, we start new project and want to start from Mediavine [media buying], around 3 months. And after 3 months, connect network. And we want to manage all of this project from one place.",
+      "context": "Alex explaining his business model to Gal at the start of the demo",
+      "significance": "Reveals the primary prospect use case: a staged growth model from solo media buyer to full affiliate network, with single-platform continuity as a key requirement."
+    },
+    {
+      "speaker": "prospect (Alex)",
+      "quote": "Also other systems and talking with team and making decision about the system.",
+      "context": "Near end of call, Alex explaining his evaluation process",
+      "significance": "Confirms competitive evaluation in progress — Getlinked is not the only platform being considered."
+    },
+    {
+      "speaker": "presenter (Gal)",
+      "quote": "We have a lead score, which is very — it's a new feature. I don't have data for it. But basically it will show — it will give a score to the lead. And it will show you everything, why he got this score.",
+      "context": "Demonstrating the Leads Report section",
+      "significance": "Reveals a roadmap/in-development feature (AI lead scoring) that is being pre-announced in demos before it is fully delivered."
+    }
+  ],
+
+  "functional_breakdown": {
+    "functions": [
+      {
+        "function_name": "Bucket-Based Lead Distribution",
+        "purpose": "Routes incoming leads from affiliate traffic sources to the most appropriate advertiser based on country, capacity (caps), real-time statistics, and configured priority weights. Prevents revenue loss from out-of-rotation advertisers by falling back through tiered buckets.",
+        "data_flow": [
+          "Step 1: Lead arrives from affiliate/traffic source with geo, offer, and source metadata",
+          "Step 2: System checks the target country's rotation configuration — evaluates which bucket to route to, checks advertiser caps, applies percentage-based allocation, considers live statistics",
+          "Step 3: Lead is dispatched to the selected advertiser; if rejected/at capacity, falls through to next bucket tier. Result and rotation decision are logged for reporting."
+        ],
+        "user_steps": [
+          "Navigate to Lead Distribution module",
+          "Select target country",
+          "Add advertisers to buckets and assign percentage weights",
+          "Create additional buckets for fallback tiers",
+          "Monitor rotation status; investigate out-of-rotation reasons as needed"
+        ],
+        "configuration_options": [
+          "Country-level targeting",
+          "Unlimited buckets per country",
+          "Per-advertiser percentage priority weights",
+          "Caps (copying) per advertiser",
+          "Geo restrictions per advertiser"
+        ],
+        "automation_level": "Semi-automatic — admin configures weights and buckets; routing decisions are fully automatic at runtime",
+        "ui_complexity": "Moderate — the bucket/priority concept requires training but the UI makes it visual. Country-level overview is helpful for operations.",
+        "edge_cases_handled": [
+          "Out-of-rotation detection with reason codes",
+          "Cap enforcement per advertiser",
+          "Multi-country configurability",
+          "Unlimited fallback tiers"
+        ],
+        "verdict": "The bucket system is well-designed for the use case — it provides operational control without requiring complex rule logic. The geo-first view is practical. However, the demo environment had no data, so performance of the allocation algorithm under real load could not be assessed. The UI could benefit from a visual flow diagram rather than the current table-based representation."
+      },
+      {
+        "function_name": "CRG / Conversions Guarantee Auto-Invoicing (Special Deals)",
+        "purpose": "Eliminates manual spreadsheet reconciliation for CRG deals by automatically tracking whether an advertiser met their guaranteed conversion rate and generating invoices for any shortfall at the end of each payment cycle.",
+        "data_flow": [
+          "Step 1: Admin creates a Special Deal with advertiser name, guarantee %, payment cycle date, and working hours/days",
+          "Step 2: System continuously compares actual conversion rate vs. guaranteed rate throughout the payment cycle",
+          "Step 3: At end of payment cycle, system calculates the delta and auto-generates an invoice with full breakdown if the guarantee was not met"
+        ],
+        "user_steps": [
+          "Navigate to Finance > Special Deals",
+          "Create new deal: select 'Conversions Guarantee' type",
+          "Enter deal name, advertiser, guarantee %, payment cycle date, working hours/days/statuses",
+          "Save; system handles tracking and invoicing automatically"
+        ],
+        "configuration_options": [
+          "Deal type (Conversions Guarantee; described as 'the first one', implying more types planned)",
+          "Guarantee percentage threshold",
+          "Payment cycle date",
+          "Working hours, working days",
+          "Status filters"
+        ],
+        "automation_level": "Fully automatic — tracking, calculation, and invoice generation require no manual intervention",
+        "ui_complexity": "Simple — minimal input fields for deal setup; all calculation is system-driven",
+        "edge_cases_handled": [
+          "Scenario where advertiser exceeds guarantee (no invoice triggered)",
+          "Scenario where advertiser falls short (invoice generated for delta)",
+          "Back-to-back deal support (mirror guarantee to own affiliates)"
+        ],
+        "verdict": "Strong competitive differentiator for networks running CRG deals. Fully automated invoice generation saves significant manual work and reduces disputes. The back-to-back deal feature enables networks to hedge their own guarantee exposure."
+      },
+      {
+        "function_name": "Lead Lifecycle Reporting & Re-injection",
+        "purpose": "Provides full visibility into each lead's journey from submission through conversion (or failure), and allows failed leads to be re-processed without data loss.",
+        "data_flow": [
+          "Step 1: Lead event is received and stored with full metadata (source, offer, geo, timestamp, advertiser response)",
+          "Step 2: System tracks all status changes, send attempts, rotation decisions, and quality score as the lead progresses",
+          "Step 3: Admin views the complete lead record in the Leads Report; can re-register failed leads to a new destination directly from the report"
+        ],
+        "user_steps": [
+          "Navigate to Reports > Leads",
+          "Filter by status, date, affiliate, advertiser, geo as needed",
+          "Expand a lead row to see send status history and rotation history",
+          "For failed leads, click the re-register action",
+          "Configure re-injection target (same/different advertiser, same/different white-label, with rules)"
+        ],
+        "configuration_options": [
+          "Advanced field filters (include / exclude)",
+          "Date/time range with day-of-week exclusions (e.g., remove weekends)",
+          "Auto-refresh toggle",
+          "Re-injection target: advertiser, white-label, rules"
+        ],
+        "automation_level": "Semi-automatic — tracking is automatic; re-injection requires manual initiation (or bulk CSV upload)",
+        "ui_complexity": "Moderate — the standard list view is straightforward but the expanded per-lead detail (status history, rotation history, lead score) adds depth that requires training",
+        "edge_cases_handled": [
+          "Full failed lead capture ('not losing them')",
+          "Re-injection to alternative advertiser or white-label",
+          "Bulk injection via CSV for large-scale re-processing",
+          "Weekend exclusion in reporting date ranges"
+        ],
+        "verdict": "Lead re-injection is a high-value operational feature that directly addresses revenue recovery. The rotation history per lead is excellent for debugging routing issues. The Lead Score feature (currently in development) could become a significant differentiator if the scoring model is accurate and actionable."
+      },
+      {
+        "function_name": "Granular Role-Based Permissions",
+        "purpose": "Allows administrators to precisely control what each team member role can see and do in the platform — down to individual data columns, report sections, and action buttons.",
+        "data_flow": [
+          "Step 1: Admin opens Permissions module and selects or creates a role/group",
+          "Step 2: For each of thousands of individual permissions, admin sets Allow or Deny",
+          "Step 3: Role is assigned to user accounts; all UI elements respect the permission configuration at render time"
+        ],
+        "user_steps": [
+          "Navigate to Permissions",
+          "Select permission group (e.g., Administration, Affiliate management, Reporting)",
+          "Open Edit Permissions modal",
+          "Toggle Allow/Deny per permission row",
+          "Save; assign group to users"
+        ],
+        "configuration_options": [
+          "Per-permission Allow/Deny toggle",
+          "Translate column (purpose not fully visible in demo)",
+          "Multiple named groups/roles",
+          "Export to CSV/PDF"
+        ],
+        "automation_level": "Fully manual — each permission must be explicitly set",
+        "ui_complexity": "Complex — 'thousands of permissions' in a modal list is operationally intensive to configure from scratch. The matrix is comprehensive but lacks search/filter within the modal, making initial setup time-consuming.",
+        "edge_cases_handled": [
+          "Per-column data visibility control",
+          "Per-feature access control",
+          "Multiple separate role groups"
+        ],
+        "verdict": "Enterprise-grade in scope but potentially overwhelming for new clients. The breadth is a genuine differentiator for teams needing strict access controls. However, the lack of visible search/filter within the permission modal could make managing thousands of permissions tedious. A role template system or inheritance hierarchy would reduce setup time."
+      },
+      {
+        "function_name": "White-label Platform Delivery",
+        "purpose": "Delivers the entire platform as a brandable product under the client's own domain and visual identity, enabling them to present it to their affiliates and advertisers as their own proprietary technology.",
+        "data_flow": [
+          "Step 1: Client purchases and configures 3 domains (network, auto-login, API)",
+          "Step 2: Getlinked team provisions the white-label instance using the client's domains (1-2 hour setup)",
+          "Step 3: Client uploads their logo and configures colors via the Whitelabel module",
+          "Step 4: Affiliates and advertisers interact with the platform at the client's branded domain"
+        ],
+        "user_steps": [
+          "Purchase 3 domains",
+          "Provide domains to Getlinked support",
+          "After provisioning, navigate to Whitelabel module",
+          "Upload logo, configure color scheme"
+        ],
+        "configuration_options": [
+          "Logo upload",
+          "Color customization",
+          "Custom domain configuration (3 domains)"
+        ],
+        "automation_level": "Semi-automatic — domain provisioning handled by Getlinked team; branding self-serve",
+        "ui_complexity": "Simple — basic logo/color configuration",
+        "edge_cases_handled": [
+          "Separate domain for auto-login (SSO/deeplink use case)",
+          "Separate API domain (for advertiser integrations)"
+        ],
+        "verdict": "Standard white-label delivery model. The 3-domain requirement is a friction point for non-technical clients (they need to understand DNS and wait for propagation). The 1-2 hour provisioning claim is competitive if accurate."
+      }
+    ],
+    "cross_function_insights": [
+      "Lead data flows from the Affiliates module (source) through Lead Distribution (routing) to Advertisers (destination), and all events are captured in Reports — the data model is coherent end-to-end.",
+      "Finance and Reports are tightly coupled: Special Deals pull conversion rate data from the same events tracked in the Conversion Report.",
+      "Permissions gate visibility into all other modules — a restricted user role would see a substantially different platform. This means the demo (shown with full admin access) may not reflect what end-affiliates or staff users actually see.",
+      "The Alert System (Marketing Tools) is positioned as a monitoring layer over the entire platform — it can trigger on conversion events that span Affiliates, Advertisers, and Reports modules.",
+      "The support team is positioned as a functional component of the product, not just an add-on — integration complexity that would normally require product UI is offloaded to the support team."
+    ],
+    "notable_ux_patterns": [
+      "The date-range filter tabs (Today/Yesterday/This Week/Last Week/This Month/Last Month/Custom) are a clean and common pattern that appears to be consistently applied across modules — good discoverability.",
+      "The Cloudflare challenge on the backend domain is a significant UX friction point during the demo and would be disruptive in production if triggered for legitimate users.",
+      "The 13-minute dashboard loading time in the demo environment severely undermines confidence in platform performance, even if the production environment is faster.",
+      "The bucket-based rotation UI (with priority percentages and in/out-of-rotation status) is a domain-specific UX pattern that effectively visualizes a complex routing concept.",
+      "The Allow/Deny button matrix in Permissions is functional but does not scale well visually — 'thousands of permissions' as a flat scrollable list in a modal creates navigation friction.",
+      "The anti-phishing banner ('Attention: Getlinked Support Team communicates ONLY in its Official Chats or Groups') signals a real security concern in the affiliate marketing space — competitors or scammers impersonate support."
+    ]
+  },
+
+  "scorecard": {
+    "feature_completeness": {
+      "score": 8,
+      "max": 10,
+      "notes": "Covers all major pillars of affiliate network management: affiliate management, advertiser management, lead distribution, finance/invoicing, reporting, permissions, white-labeling, and alerting. CRG auto-invoicing and lead scoring are differentiating features. Gaps: lead scoring not yet fully delivered; FTD visibility required some navigation; no visible A/B testing or predictive routing; messaging module not shown."
+    },
+    "ux_quality": {
+      "score": 5,
+      "max": 10,
+      "notes": "Functional enterprise admin UI with consistent navigation patterns and color-coded actions. However: the permissions modal scales poorly, the demo had severe loading performance issues, the white-label placeholder is visually unprofessional in a sales demo, and the UI is dated (PHP-rendered, Bootstrap-era aesthetic). Not designed for modern mobile or responsive use."
+    },
+    "tech_sophistication": {
+      "score": 6,
+      "max": 10,
+      "notes": "Bucket-based routing algorithm, automated CRG calculation, Cloudflare protection, and in-development lead scoring show real engineering depth. However: PHP-based stack, no visible API documentation, no mention of webhooks or event streaming, and the backend architecture is opaque. The demo environment performance issues suggest infrastructure that hasn't been optimized for demo scenarios."
+    },
+    "demo_effectiveness": {
+      "score": 4,
+      "max": 10,
+      "notes": "The presenter is knowledgeable and personable, and covered the main features verbally. However: 13-minute loading spinner, Cloudflare challenge, no real data in demo environment, and presenter's own admission of not being a daily operator all undermined the live demonstration. Several features (FTDs, rejected advertiser errors) were not clearly shown when asked. The verbal description of features that couldn't be loaded is a significant weakness."
+    },
+    "innovation": {
+      "score": 7,
+      "max": 10,
+      "notes": "Automated CRG deal reconciliation and invoicing is genuinely differentiating in the affiliate CRM space — manual CRG tracking in spreadsheets is a widespread pain point. Lead scoring with explainability (when delivered) could be a strong differentiator. The bucket system with unlimited tiers is a clean abstraction for a complex routing problem."
+    },
+    "overall_score": 6,
+    "summary": "Getlinked Platform is a mature, feature-comprehensive affiliate network CRM with genuine product strengths in lead distribution (bucket system), automated financial reconciliation (CRG Special Deals), and granular permissions. The product covers the full operational lifecycle from media buying to full affiliate network management, and the white-label delivery model is well-positioned for its target market. However, the demo was significantly hampered by technical infrastructure issues (13-minute loading, Cloudflare challenge, empty demo data) that undermine confidence, and the UI aesthetic is enterprise-functional rather than modern. The support team is a core part of the value proposition — positioned as a daily operational partner rather than just a helpdesk — which compensates for UI/UX complexity but raises questions about scalability. The prospect (Alex) is actively evaluating competing platforms, suggesting the market has viable alternatives.",
+    "key_strengths": [
+      "Automated CRG / Conversions Guarantee deal tracking and invoicing — eliminates manual spreadsheet reconciliation for a common and painful workflow",
+      "Bucket-based lead rotation with unlimited tiers and priority weighting — provides granular control over revenue optimization without complex rule syntax",
+      "Granular permission system covering 'thousands' of individual access controls — enterprise-grade for teams with strict data access requirements",
+      "Full lead failure capture and re-injection capability — prevents revenue leakage from failed conversions",
+      "Rapid Telegram-based support team as an embedded operational partner — reduces time-to-live for integrations and resolves operational questions in minutes",
+      "Scales from solo media buyer to full affiliate network without platform migration"
+    ],
+    "key_weaknesses": [
+      "Demo environment performance is unreliable — 13-minute loading time and Cloudflare challenge during a sales call are critical credibility issues",
+      "UI is dated (PHP/Bootstrap era) and dense — onboarding new users will require substantial training",
+      "Lead scoring feature is being pre-sold before delivery — creates expectation risk",
+      "Presenter cannot demonstrate the full product from operational experience — deflects error-diagnosis questions to the support team",
+      "Three-domain requirement adds technical friction for non-technical clients during onboarding",
+      "No real-time data in demo environment makes it impossible to assess reporting quality, chart accuracy, or system performance under load"
+    ],
+    "features_worth_studying": [
+      "Bucket-based lead rotation UI: the abstraction of routing priority into visual tiers with percentage weights is a clean, explainable mental model worth replicating for any multi-destination routing product",
+      "CRG / Special Deals auto-invoicing: automated financial reconciliation for guarantee-based deals is a workflow that most affiliate platforms leave to manual spreadsheets — building this natively is a strong retention feature",
+      "Lead scoring with explainability: showing not just a score but the specific factors that contributed to it is a best practice in any ML-assisted decision support feature — makes the score actionable rather than opaque",
+      "Anti-phishing security banner in the product UI itself: embedding a 'verify you are in the official support channel' banner directly in the platform header is an interesting approach to social engineering defense for platforms where support impersonation is a known risk",
+      "Per-lead rotation history: storing and exposing the full sequence of routing decisions per lead is excellent for operational debugging — most platforms only show the final outcome",
+      "Support-team-as-product: structuring the support team as a daily operational partner (Telegram, minutes response) rather than a traditional helpdesk is a GTM and retention strategy worth studying — it compensates for UI complexity and reduces churn from frustrated new users"
+    ]
+  }
+}

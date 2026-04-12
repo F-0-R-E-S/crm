@@ -1,0 +1,190 @@
+index,start,end,text
+0,0.0,0.0,"Hello? Hello? Hello? Hi. Can you hear me? Yes. You hear me? Yes, how are you? Yes."
+1,0.0,0.0,"Hello? Hello? Yes, yes, yes, I hear you. Do you hear me? Yes. Nice. I don't hear you very well, but I hope that it's just temporary."
+2,0.0,0.0,"Anyway, my name is Gal. What's your name? Alex? Yeah. Okay, nice to meet you. Nice to meet you. Where are you from? From Russia."
+3,0.0,0.0,"Russia? Okay. Okay, let me share the screen and I will make you show you the system. I don't feel very well today, so I will be quick, but if you have a specific question, just stop me and I will answer, okay?"
+4,0.0,0.0,"Yes, okay, thank you. I have questions. I think all will be good. Okay, you want to ask now or you want to wait? I think in process. Okay, good. Okay, so you see my screen, right? Yes. Okay. You are going to be a network, I assume, right?"
+5,0.0,0.0,"Firstly, we start new project and want to start from Mediavine around three months and after three months, connect network and want to manage all of this project from one place."
+6,0.0,0.0,"Okay, and are you doing only CryptoForex Verticals or also other? Only CryptoForex Try and Gambling, but I think it's tests. It was difficult, yes. Okay, in any case, our system, you can do all the verticals in our system, okay?"
+7,0.0,0.0,"Okay, so you are getting from us a copy of this system. You put your logo here, you can control colors, you can do colors. We have over here the dashboard that you can filter by time, by advertiser, by traffic source, affiliate is like a traffic source. Okay, it's the same thing."
+8,0.0,0.0,"Offers, geos, you can see your financial, we have a finance system inside, I will show you in a minute. So if you use the finance system, you can see income costs, profits, clicks, leads, pay leads, we are collecting what the pay leads for you. Okay, you're not losing them."
+9,0.0,0.0,"A proof conversion, spending conversion, if you want to do it manually or with rules. Okay, some charts over here, system status, some one second, it's for protection."
+10,0.0,0.0,"Some charts, some tables over here, top affiliates, for offers, advertiser and so on. We have different type of views of admin, but that's the main one."
+11,0.0,0.0,"Okay, now you have a full management of traffic sources and affiliates. You can control from copying, geos, limits, automations, whatever you want. We have also like a wallet, a virtual wallet, that you can control how much money you owe or how much money you expose and so on."
+12,0.0,0.0,"We are supporting different levels of affiliates, like if you will have a master affiliate or affiliate manager, we are supporting these levels."
+13,0.0,0.0,"You can create for you a lot of automation regarding the affiliates with rules and restrictions and everything. Okay, any questions regarding the affiliate section?"
+14,0.0,0.0,"No, affiliate section, no questions."
+15,0.0,0.0,"Traffic sources, affiliate section, everything. In any case, just to let you know that all the connections, integrations with Google, Facebook, whatever you need, our team is helping you with this, okay?"
+16,0.0,0.0,"You have a dedicated support team, is working on the telegram, okay, they are answering in minutes, okay, not one hour, two hours in minutes, and if you need integration, you open a group with the support team and with the integration party, everything they are doing."
+17,0.0,0.0,"They are working from Monday to Friday, you have over here all the time, their timetables, okay? Monday to Friday, it's usually from 9 o'clock to 10 o'clock GMT+2 until then 10 o'clock at night, Sunday limited support, and you have holidays, and this is their telegram, okay?"
+18,0.0,0.0,Yes.
+19,0.0,0.0,"Okay, you have advertisement management, okay, so you have a full advertising management system, and also here you have the wallet, this is more important to use, okay, so you don't want to be too exposed with the advertiser."
+20,0.0,0.0,"You can control the downtime when you don't want, they will accept traffic, in the wallet you will see any transaction that they are going with this broker, with this advertiser, commission, we are supporting different type of commission, fix, dynamic, ref share, we also have hybrid, which is not here,"
+21,0.0,0.0,"different type of currencies and you can get commission and you can give commission for almost any event, if it's fleets, fleets, FTD, referral, everything you can give commission."
+22,0.0,0.0,"Gears, opening the gears that the advertiser been accepting, also with different rules and you've got custom fields that you need, copying on the advertising level, and the rest are less important."
+23,0.0,0.0,Any questions regarding this?
+24,0.0,0.0,"Here, no."
+25,0.0,0.0,I'm interested in rotation.
+26,0.0,0.0,"Rotation, I'm going out of rotation."
+27,0.0,0.0,"Okay, so this is the lead distribution setup, okay, and it works like this."
+28,0.0,0.0,"First of all, you can see, second, it's a demo account without data."
+29,0.0,0.0,"Over here, first of all, you have a general view that you can see each country, which advertiser you have, and which are in rotation, which are not rotation."
+30,0.0,0.0,"The way we work with this is that you are starting with the country, okay, let's say United Kingdom."
+31,0.0,0.0,"And for your convenience, okay, for your convenience on the top, okay, you have all the traffic sources that are sending to United Kingdom."
+32,0.0,0.0,And with the rules.
+33,0.0,0.0,"Okay, so this is just for your convenience."
+34,0.0,0.0,Okay.
+35,0.0,0.0,"Over here, you have the general rotation for all of them."
+36,0.0,0.0,So we are working with the bucket system.
+37,0.0,0.0,"A bucket, it's like, you know, bucket of water."
+38,0.0,0.0,Okay.
+39,0.0,0.0,Yes.
+40,0.0,0.0,"And so in any bucket, we, this is starting by the default."
+41,0.0,0.0,You are putting rotations of advertisers.
+42,0.0,0.0,Okay.
+43,0.0,0.0,"If you see, it's like with the line, it means it's out of rotation."
+44,0.0,0.0,You will see what is the reason here.
+45,0.0,0.0,"And on the right side, you can basically prioritize and you say each one, how much do you, do you want from the, you will get from the, from the leads."
+46,0.0,0.0,How much percentage?
+47,0.0,0.0,"It's 40, 25, 10, and zero."
+48,0.0,0.0,"And so they, you know, the lead going according to this prioritization, it takes into consideration the copying and statistics and everything."
+49,0.0,0.0,"And you can create unlimited, another bucket and to put over there also a rotation of advertiser and do optimization per this bucket."
+50,0.0,0.0,"So people usually use it, put the best advertisers on the first bucket and then second, second level of advertising fallbacks and so on."
+51,0.0,0.0,Okay.
+52,0.0,0.0,This is how it is.
+53,0.0,0.0,Okay.
+54,0.0,0.0,Any question?
+55,0.0,0.0,No.
+56,0.0,0.0,Okay.
+57,0.0,0.0,I understand all clear.
+58,0.0,0.0,Okay.
+59,0.0,0.0,Okay.
+60,0.0,0.0,"But other stuff will be interesting at the moment, finances, finance, as I said, we've got, you can manage all the commission that you get and give."
+61,0.0,0.0,"And if you want to work with, you know, with invoicing, it makes you the invoicing automatically."
+62,0.0,0.0,"If you're working with CRG deals, we have a feature that calculates it automatically."
+63,0.0,0.0,And you want to see or it's okay.
+64,0.0,0.0,"Yes, yes, I want to see."
+65,0.0,0.0,Okay.
+66,0.0,0.0,It's basically called special deal.
+67,0.0,0.0,"And any special, we've got right now, the, the first one conversions guarantee."
+68,0.0,0.0,"And you're basically inputting all the deal that you have the name, how much, what is the guarantee."
+69,0.0,0.0,"The payment cycle date, and you can do a walking hours, days, status says, and the end of the payment cycle, the system checks it and calculates it automatically."
+70,0.0,0.0,"And it's issuing for you an invoice with explanation how much you need to get and with all the explanation, all automatically."
+71,0.0,0.0,"As I understand, if a partner have value above 13%, for example, 15, this deal, give him."
+72,0.0,0.0,So it's okay.
+73,0.0,0.0,Right.
+74,0.0,0.0,"No, no, so it's okay."
+75,0.0,0.0,"If the, if the guarantee, if the advertiser gave you guarantee 13%."
+76,0.0,0.0,Okay.
+77,0.0,0.0,And he has done five 15% is okay.
+78,0.0,0.0,But if he converted in 10%.
+79,0.0,0.0,Okay.
+80,0.0,0.0,Then he needs to pay you more.
+81,0.0,0.0,Yes.
+82,0.0,0.0,Yes.
+83,0.0,0.0,Understand.
+84,0.0,0.0,So yes.
+85,0.0,0.0,And you can do back to back.
+86,0.0,0.0,"You can do the deal over here also with your, at the moment it's your media buying, but in the future, when you will be affiliate network, you can do back to back with the affiliate as well."
+87,0.0,0.0,Okay.
+88,0.0,0.0,A report with many reports.
+89,0.0,0.0,I will just show you the most important one is the leads report.
+90,0.0,0.0,"Leads, FTDs."
+91,0.0,0.0,Yes.
+92,0.0,0.0,I think this is the same.
+93,0.0,0.0,"But yeah, I'm sure the FTDs."
+94,0.0,0.0,It's just so the leads report.
+95,0.0,0.0,This is the information that you can see that we are collecting for you.
+96,0.0,0.0,Okay.
+97,0.0,0.0,"We have over here, the sales status says."
+98,0.0,0.0,"And if you're over, you can see also the history of the sales status says we have a lead score, which is very, it's a new feature."
+99,0.0,0.0,I don't have data for it.
+100,0.0,0.0,But basically it will show it will give a score to the lead.
+101,0.0,0.0,"And it will show you everything why, why he got this score."
+102,0.0,0.0,"I will tell them to add me data and I just didn't get me data, but it's a very, very nice feature."
+103,0.0,0.0,"And over here you will see information about what is the rotation of this lead, what was the rotation before helps you to understand a lot of processes."
+104,0.0,0.0,"And bugs and if something fails, why it fails, although you can always ask our team, can you help me to find out why this lead failed?"
+105,0.0,0.0,Okay.
+106,0.0,0.0,"Okay, in any case, so this is the lead report."
+107,0.0,0.0,"By the way, you can also, if some of the leads fail, you can click over here and you can re-register them from here."
+108,0.0,0.0,It's like injection.
+109,0.0,0.0,"Yes, but on a small scale, you can also upload the list and you know, inject."
+110,0.0,0.0,"Yes, but this is the registration of this lead."
+111,0.0,0.0,"You can register them to the same white label, to a different, to the same advertiser, a different advertiser with some rules, you know, you've got whatever you need over here."
+112,0.0,0.0,"And of course, you've got advanced field terms, we'd include and exclude."
+113,0.0,0.0,"You can also, this is the auto refresh, where is I was looking for another over here, you can actually decide which days, which either is also time frame over here, you want to have the reports and everything."
+114,0.0,0.0,You can move the weekend if you want.
+115,0.0,0.0,"Convergence report, it's basically the same, just convergence, okay."
+116,0.0,0.0,"Sorry, where I can see what advertisers was rejected and what errors, what type of here."
+117,0.0,0.0,"You can see on the needs report over here, you will see once again, I'm going back to the, I show it to you."
+118,0.0,0.0,"Okay, it's over here, you will see in the action, you'll see the information here."
+119,0.0,0.0,"Okay, I assume that you will see also it in the API request, probably a lot."
+120,0.0,0.0,"But you can, I told you, you can ask the team, you can ask the team to check for you why."
+121,0.0,0.0,"Okay, whoever we request, there are many places that you can see, I know Leslie, I'm not doing, you know, I'm not managing a network, so I'm not using it on the day to day."
+122,0.0,0.0,"Okay, so a generate report is a very good report that gives you basically to cut three layers."
+123,0.0,0.0,"Okay, for example, affiliate advertiser in country and you can filter between these three layers."
+124,0.0,0.0,"It's also very good report, we've got aggregation report, not many, many reporters, you can see over here."
+125,0.0,0.0,"Permission, if you have a team, okay, everything in our system, you can control everything in our system to decide who will see what."
+126,0.0,0.0,"Everything, every column, every data, every feature, okay."
+127,0.0,0.0,"You decide what are your user will use, of course, as an admin, everything is open for you, but you can do any role, different permissions, okay."
+128,0.0,0.0,"You can see really thousands of permissions, everything is with permissions."
+129,0.0,0.0,"Yeah, marketing tool, catalog, alert system, you can create different triggers and you get them into telegram, email, conversion and different conditions, very good alert system."
+130,0.0,0.0,"This is basically not many other stuff, but this is in general, if you have any question, I'm sure everything that you need, we will have, okay."
+131,0.0,0.0,"Yes, can you show FTDs how it looks?"
+132,0.0,0.0,We move utter leads from leads to other.
+133,0.0,0.0,The conversion reports?
+134,0.0,0.0,"Yes, yes, yes."
+135,0.0,0.0,"It's audio, this is the conversion."
+136,0.0,0.0,"I don't know if I have data over here, but it's very, it's like the lead, just the conversion, you know."
+137,0.0,0.0,"Yes, understand, also important."
+138,0.0,0.0,"One second, let me see, maybe they need to put me in."
+139,0.0,0.0,"Yes, please, yes."
+140,0.0,0.0,Important bulk injections.
+141,0.0,0.0,"Okay, it's over here."
+142,0.0,0.0,Import leads.
+143,0.0,0.0,"You basically, you can decide from which source it's coming, what offer or what advertiser you want it to go."
+144,0.0,0.0,"You upload your list over here, your CSV, you've got some rule over here."
+145,0.0,0.0,"Basically, that's it, you know, it gives you and it puts it everything."
+146,0.0,0.0,"Well, you can do with the queue, so it won't be injection immediately, you can do immediately, whatever you want."
+147,0.0,0.0,"It's good, I think I don't have questions."
+148,0.0,0.0,"I just showed you, we have, listen, we have really a lot, a lot, a lot of features, okay."
+149,0.0,0.0,"Everything that you will need, we, 99% we have it."
+150,0.0,0.0,"And because that it's very, you know, it's very, you've got a lot of features."
+151,0.0,0.0,"So you've got our team with you on a daily basis, okay."
+152,0.0,0.0,"You can ask them everything small to show you, they can even do it for you."
+153,0.0,0.0,"So you are not alone, okay."
+154,0.0,0.0,So we've got really everything that you will need.
+155,0.0,0.0,"Yes, okay."
+156,0.0,0.0,Thank you.
+157,0.0,0.0,"Prices you send me already, yes."
+158,0.0,0.0,"I send you prices, yes, if you want to start, you will tell me, okay."
+159,0.0,0.0,"I will open a group with the accounting, okay."
+160,0.0,0.0,"We will do like, they will do with you, send you a link to put information of your company, whatever you want, you know, for the contract, the digital contract."
+161,0.0,0.0,Then you pay the setup fee and then we open for you a group with the support.
+162,0.0,0.0,And this is the group that you work all the time.
+163,0.0,0.0,"You will need only to buy three domains, okay, they will tell you, the team will tell you."
+164,0.0,0.0,"Three domains, one domain is the domain of the network, from where you log in, your partners will log in and everything."
+165,0.0,0.0,"One domain for auto log in and one domain for API, okay."
+166,0.0,0.0,So they will tell you to buy these three domains.
+167,0.0,0.0,"Once you buy the domains, one hour, two hours, you have the system up."
+168,0.0,0.0,And then you just need to start integration.
+169,0.0,0.0,"Okay, understand."
+170,0.0,0.0,"Okay, so whenever you bear in mind that tomorrow and Sunday, as I said, the team is not working."
+171,0.0,0.0,"But I'm available, I can send you if you will want the link to fill all the details."
+172,0.0,0.0,"Or, you know, in Monday morning, they will set you up the system."
+173,0.0,0.0,"Or if you want, you know, whenever you want to tell me, I will, no rush, okay."
+174,0.0,0.0,"Okay, okay, thank you."
+175,0.0,0.0,We check in also other systems and talking with the team and making decisions about the system.
+176,0.0,0.0,"Okay, very good, fair enough."
+177,0.0,0.0,Keep you informed.
+178,0.0,0.0,"Okay, thank you very much Alex."
+179,0.0,0.0,Thank you.
+180,0.0,0.0,"Thanks, bye bye."
+181,0.0,0.0,"Any questions, you can send me a message, okay?"
+182,0.0,0.0,Yes.
+183,0.0,0.0,Any more questions?
+184,0.0,0.0,Yes.
+185,0.0,0.0,Thank you.
+186,0.0,0.0,Have a nice day.
+187,0.0,0.0,Bye bye.
+188,0.0,0.0,[BLANK_AUDIO]

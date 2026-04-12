@@ -1,0 +1,17 @@
+{
+  "started_at": "2026-04-12T15:41:00",
+  "finished_at": "2026-04-12T15:46:48",
+  "video": "/Users/f0res/Desktop/Gambchamp/CRM-PRD/videos/Демо CRM GetLinked.mov",
+  "interval": 2.5,
+  "dedup_threshold": 10,
+  "image_format": "jpg",
+  "transcription_engine": "whisper-cpp (local)",
+  "whisper_model": "/Users/f0res/.cache/whisper-cpp/ggml-small.bin",
+  "analysis_engine": "claude-cli",
+  "research_engine": "claude-cli + tavily-mcp",
+  "prd_engine": "claude-cli",
+  "frames_total": 535,
+  "frames_unique": 26,
+  "transcript_segments": 189,
+  "transcript_chars": 14025
+}

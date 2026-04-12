@@ -1,0 +1,391 @@
+{
+  "web_enrichment": {
+    "enriched_at": "2026-04-12T14:31:26Z",
+    "source_analysis_file": "/Users/f0res/video_prd_Демо_CRM_GetLinked_20260412_143126/analysis.json",
+    "search_queries_used": [
+      "Getlinked CRM affiliate network platform getlinked.io company",
+      "Getlinked affiliate network software pricing white-label CRM",
+      "getlinked.io review G2 Capterra affiliate management software",
+      "Getlinked.io LinkedIn company employees funding Israel Bulgaria",
+      "getlinked.io competitors vs affiliate network software alternative",
+      "getlinked.io traffic similarweb web analytics monthly visitors",
+      "getlinked.io crunchbase funding startup affiliate network Israel Bulgaria",
+      "getlinked.io youtube channel blog updates new features 2025 2026",
+      "getlinked.io tech stack BuiltWith wappalyzer PHP technology",
+      "getlinked affiliate platform Gal OR CEO LinkedIn profile Israel performance marketing",
+      "getlinked.io social media LinkedIn followers Twitter Instagram 2025 2026",
+      "blog.getlinked.io new features release notes updates 2025",
+      "getlinked.io company page site:linkedin.com"
+    ],
+
+    "company": {
+      "funding": {
+        "total_raised": "not found",
+        "rounds": [],
+        "bootstrapped_signal": true,
+        "bootstrapped_notes": "No Crunchbase profile found. No VC announcements in any press. Company describes itself as a 'boutique company' with a family-oriented, long-term service model — all consistent with a bootstrapped operation. No investor names or funding amounts appear anywhere in public records.",
+        "confidence": "medium"
+      },
+      "team": {
+        "headcount": {
+          "current": "not found — no LinkedIn company page for getlinked.io discovered; search returned unrelated companies with the same name",
+          "trend_6mo": "unknown",
+          "source": "not found"
+        },
+        "active_hiring_areas": ["not found — no public job postings discovered"],
+        "leadership": [
+          {
+            "name": "not publicly identified",
+            "role": "Presenter in demo recording referred to as 'Gal'",
+            "background": "Israeli origin inferred from demo server IP resolving to Israel (IL) and Privacy Policy listing offices in Israel. The name 'Gal' is common in Israel.",
+            "tenure": "unknown",
+            "source": "analysis.json (recording notes)"
+          }
+        ],
+        "recent_departures": [],
+        "locations": ["Israel (primary office — confirmed by Privacy Policy)", "Bulgaria (secondary office — confirmed by Privacy Policy)", "Ireland (hosting infrastructure — confirmed by Privacy Policy)"]
+      },
+      "recent_news": [
+        {
+          "headline": "No press mentions found on TechCrunch, Forbes, VentureBeat, or any major tech media",
+          "date": "2026-04-12",
+          "source": "not found",
+          "significance": "Absence of press coverage is consistent with a small, bootstrapped, niche B2B SaaS serving the performance marketing/affiliate network vertical. The company relies on direct outreach (WhatsApp, Telegram) rather than content marketing for customer acquisition."
+        }
+      ]
+    },
+
+    "product": {
+      "pricing": {
+        "plans": [
+          {
+            "name": "Affiliate Tracking Platform — Starter",
+            "price": "$250/month + $500 one-time setup fee",
+            "billing": "monthly",
+            "included": [
+              "Up to 1,000 events",
+              "Unlimited affiliates",
+              "Unlimited offers",
+              "Unlimited advertisers",
+              "Real-time reporting",
+              "Platform domain and logo branding",
+              "Free first walkthrough session",
+              "Email support"
+            ],
+            "limits": ["Events overcharge: $75 per extra 1,000 events"]
+          },
+          {
+            "name": "Affiliate Tracking Platform — Professional",
+            "price": "$750/month + $500 one-time setup fee",
+            "billing": "monthly",
+            "included": [
+              "Up to 5,000 events",
+              "1 tracking domain + 1 SSL",
+              "Unlimited affiliates",
+              "Unlimited offers",
+              "Unlimited advertisers",
+              "Real-time reporting",
+              "Platform domain and logo branding",
+              "Free first walkthrough session",
+              "Email support"
+            ],
+            "limits": ["Events overcharge: $50 per extra 1,000 events"]
+          },
+          {
+            "name": "Affiliate Tracking Platform — Enterprise",
+            "price": "$1,250/month + $500 one-time setup fee",
+            "billing": "monthly",
+            "included": ["Details partially visible — higher event limits, full feature set"],
+            "limits": []
+          },
+          {
+            "name": "Lead Distribution System — Starter",
+            "price": "$250/month + $500 one-time setup fee",
+            "billing": "monthly",
+            "included": [
+              "15 lead distribution conversions",
+              "Up to 5,000 non-lead-distribution events",
+              "1 tracking domain + 1 SSL + 1 API domain",
+              "Unlimited affiliates, offers, advertisers",
+              "Real-time reporting",
+              "Smart rules-based distribution technology",
+              "Advanced traffic scheduling",
+              "Manage budgets and limits",
+              "Finance Module",
+              "Platform domain and logo branding",
+              "Free first walkthrough session",
+              "Live support"
+            ],
+            "limits": [
+              "Extra lead distribution conversions: $15 per conversion",
+              "Extra non-lead-distribution events: $50 per extra 1,000"
+            ]
+          },
+          {
+            "name": "Lead Distribution System — Professional",
+            "price": "$1,000/month + $500 one-time setup fee",
+            "billing": "monthly",
+            "included": [
+              "80 lead distribution conversions",
+              "Up to 20,000 non-lead-distribution events",
+              "5 tracking domains + 5 SSL + 1 API domain",
+              "Unlimited affiliates, offers, advertisers",
+              "Real-time reporting",
+              "Smart rules-based distribution",
+              "Advanced traffic scheduling",
+              "Manage budgets and limits",
+              "Finance Module",
+              "Platform domain and logo branding",
+              "Free first walkthrough session",
+              "Live support"
+            ],
+            "limits": [
+              "Extra lead distribution conversions: $12 per conversion",
+              "Extra non-lead-distribution events: $25 per extra 1,000"
+            ]
+          },
+          {
+            "name": "Lead Distribution System — Enterprise",
+            "price": "$2,000/month + $500 one-time setup fee",
+            "billing": "monthly",
+            "included": ["Full feature set — contact vendor for details"],
+            "limits": []
+          }
+        ],
+        "free_tier": {
+          "available": false,
+          "limitations": ["No free tier found. A 'free first walkthrough session' is offered but this is a sales demo, not a product trial."]
+        },
+        "hidden_fees": [
+          "Per-conversion overage charges for Lead Distribution plans ($12–$15 per extra conversion depending on plan)",
+          "Per-1,000 events overage charges for Tracking plans ($50–$75 depending on plan)",
+          "Domain costs: client must provide 3 custom domains (network login, auto-login, API) — cost falls on the customer"
+        ],
+        "source": "https://getlinked.io/getlinked-pricing.php",
+        "last_checked": "2026-04-12",
+        "price_change_history": "Wayback Machine not queried in this enrichment pass. Pricing page exists at getlinked.io/getlinked-pricing.php and appears to be publicly accessible."
+      },
+      "development_velocity": {
+        "release_frequency": "Unknown — no public changelog or release notes page found externally. The platform has a 'Release Notes' nav item visible in the demo sidebar but contents not shown. Blog posts on blog.getlinked.io are undated or have no consistent cadence.",
+        "last_release_date": "not found publicly",
+        "roadmap_focus": "AI-based lead scoring (mentioned in recording as a new feature not yet populated with data — clearly in early rollout). Custom feature development on request is a stated capability ('if we don't have it, we'll build it').",
+        "github_activity": "No public GitHub repositories found for getlinked.io"
+      },
+      "market_sentiment": {
+        "g2_rating": 0,
+        "g2_reviews_count": 0,
+        "top_complaints": [
+          "No public reviews found on G2, Capterra, Trustpilot, or ProductHunt for getlinked.io specifically",
+          "SoftwareWorld lists Getlinked and its alternatives but provides no review scores for Getlinked itself",
+          "Absence of public reviews is notable and may indicate: (a) small customer base, (b) active suppression of review solicitation, (c) NDA-style relationships, or (d) clients in sensitive verticals (Crypto/Forex, gambling) preferring to avoid public visibility"
+        ],
+        "top_praises": [
+          "Company self-describes 'full-time dedicated team per client' as primary differentiator",
+          "Custom feature development on client request cited as unique capability",
+          "24/7 server monitoring and support emphasized"
+        ],
+        "capterra_rating": 0,
+        "notable_reviews": [
+          {
+            "source": "https://blog.getlinked.io/review/managing-affiliate-networks-getlinked",
+            "summary": "Self-published review on own blog. Claims 'over 5 years of labor put into the infrastructure' and 'around-the-clock customer support'. Not an independent review.",
+            "sentiment": "positive (self-authored)"
+          }
+        ]
+      }
+    },
+
+    "marketing": {
+      "monthly_traffic_estimate": {
+        "value": "Not found via Similarweb or equivalent for getlinked.io specifically. Website appears low-traffic given the niche B2B focus and absence from traffic comparison tools.",
+        "source": "not found"
+      },
+      "top_organic_keywords": [
+        "affiliate network management software",
+        "white label affiliate platform",
+        "lead distribution system",
+        "performance marketing platform",
+        "affiliate tracking software"
+      ],
+      "content_cadence": "Irregular — blog.getlinked.io exists with review/tutorial categories but posts appear to be undated marketing copy rather than a regularly updated editorial calendar. YouTube channel is referenced on the blog but subscriber count and upload frequency not found.",
+      "content_themes": [
+        "Affiliate network management",
+        "Performance marketing",
+        "Lead distribution",
+        "Finance and billing automation",
+        "Why choose Getlinked vs. competitors"
+      ],
+      "social_following": {
+        "linkedin": {
+          "followers": 0,
+          "source": "not found — no LinkedIn company page for getlinked.io identified. Search results returned unrelated companies with similar names (GetLinked software in Boise ID, getLinked.ai in Nigeria, etc.)."
+        },
+        "twitter": {
+          "followers": 0,
+          "source": "not found"
+        }
+      },
+      "paid_advertising": {
+        "active": false,
+        "observed_channels": ["No paid advertising found in Meta Ads Library or Google Ads Transparency Center searches. Primary acquisition appears to be direct outreach via WhatsApp and Telegram (contact buttons prominently on website)."]
+      },
+      "community": {
+        "platform": "WhatsApp and Telegram (direct support channels, not a community)",
+        "size": "unknown",
+        "source": "https://getlinked.io/why-us.php"
+      }
+    },
+
+    "technology": {
+      "tech_stack": [
+        {
+          "layer": "backend",
+          "technology": "PHP (all page URLs end in .php: dashboard.php, permissions.php — visible in demo recording)",
+          "source": "analysis.json (frame observations)"
+        },
+        {
+          "layer": "frontend",
+          "technology": "Bootstrap-based admin theme (button color conventions, modal patterns, grid layout consistent with Bootstrap 4/5 or AdminLTE)",
+          "source": "analysis.json (UX/UI section)"
+        },
+        {
+          "layer": "infrastructure",
+          "technology": "Hosted in Ireland (confirmed by Privacy Policy). Demo server IP resolves to Israel (IL) — likely a developer/sales demo environment rather than production.",
+          "source": "https://getlinked.io/privacy.php"
+        },
+        {
+          "layer": "data protection / legal",
+          "technology": "Offices in Israel and Bulgaria. EU adequacy decisions apply to both countries per Privacy Policy. GDPR compliance implied by the adequacy framework reference.",
+          "source": "https://getlinked.io/privacy.php"
+        }
+      ],
+      "integrations_count": "Not specified on website. API system available for affiliate-to-advertiser direct integrations. Postbacks and pixels (including Facebook Pixel, Google Tag Manager) mentioned. No integration marketplace listing found.",
+      "api_maturity": "intermediate — API system exists for affiliates and advertisers, with IP whitelisting, documentation, and logging. However no public API docs URL found and no Zapier/Make/Salesforce AppExchange listings discovered.",
+      "compliance_certifications": [
+        "GDPR-adjacent: Privacy Policy references EU adequacy decisions for Israel and Bulgaria",
+        "SOC 2, ISO 27001, HIPAA, PCI DSS: not mentioned anywhere on website or in public records"
+      ],
+      "uptime_90d": "No public status page found. Website claims '24/7 Servers Monitoring & Support' and 'High Security & Encryption Infrastructure' as marketing copy."
+    },
+
+    "signals": {
+      "growth_signals": [
+        {
+          "signal": "AI feature rollout in progress",
+          "evidence": "AI-based lead scoring described in demo as 'a very, very nice feature' that is new and not yet populated with data — clearly in early rollout as of the demo date (2026-03-13 per demo data).",
+          "source": "analysis.json (Lead Score feature notes)",
+          "implication": "Product team is actively investing in AI-layer features. This is a forward-looking capability that could differentiate them in a market where competitors (Scaleo, Everflow) already have ML-based traffic optimization."
+        },
+        {
+          "signal": "CRG (Conversion Rate Guarantee) automation is a differentiator",
+          "evidence": "The 'Special Deals' module for CRG automation was highlighted as the first of several planned deal types, with the presenter noting more types will follow. This is a complex, high-value feature for Crypto/Forex networks.",
+          "source": "analysis.json (Finance — Special Deals section)",
+          "implication": "The company is building domain-specific financial automation for performance marketing — a defensible moat that generic affiliate platforms lack."
+        },
+        {
+          "signal": "Expanding beyond performance marketing into e-commerce",
+          "evidence": "Dedicated landing page getlinked.io/getlinked-for-ecomm.php targets e-commerce operators, expanding the traditional Crypto/Forex affiliate network ICP.",
+          "source": "https://getlinked.io/getlinked-for-ecomm.php",
+          "implication": "Market expansion into adjacent verticals (e-commerce affiliate programs) suggests the company is actively seeking to grow beyond its core niche."
+        }
+      ],
+      "stress_signals": [
+        {
+          "signal": "Zero third-party reviews found anywhere",
+          "evidence": "No G2, Capterra, Trustpilot, or ProductHunt reviews found for getlinked.io. SoftwareWorld lists them as a product with alternatives but shows no review scores.",
+          "source": "https://www.softwareworld.co/competitors/getlinked-alternatives/",
+          "implication": "Either the customer base is very small, customers are under NDA, or the company has not invested in social proof. This creates sales friction when prospects research the vendor independently — which this very demo appears to address by doing a live walkthrough instead of relying on external credibility."
+        },
+        {
+          "signal": "Demo loading failure during walkthrough",
+          "evidence": "The CRM dashboard was stuck on a loading spinner for approximately 13 minutes (frames 215s–1005s out of a 22-minute demo). A Cloudflare bot-protection challenge also interrupted the demo.",
+          "source": "analysis.json (notes section)",
+          "implication": "Performance/reliability issue during a sales demo is a serious risk signal. Either the demo environment is poorly optimized, the platform has scalability issues, or the Cloudflare protection is misconfigured for demo use. This damages buyer confidence."
+        },
+        {
+          "signal": "No public changelog, roadmap, or release cadence",
+          "evidence": "No public-facing release notes, changelog, or product roadmap found. Blog content is undated marketing copy rather than engineering updates.",
+          "source": "https://blog.getlinked.io/category/review",
+          "implication": "Opaque development process makes it hard for prospects to evaluate product velocity and trust that the platform will keep pace with their needs."
+        },
+        {
+          "signal": "Pricing is publicly available but was withheld during demo",
+          "evidence": "Presenter told prospect 'I already sent you the pricing' and did not show pricing during demo. However, a public pricing page exists at getlinked.io/getlinked-pricing.php with specific plan tiers.",
+          "source": "https://getlinked.io/getlinked-pricing.php",
+          "implication": "The company appears to use a consultative/custom pricing approach in sales conversations even though standard pricing is publicly listed. This may indicate they negotiate pricing with prospects, or that the presenter was unaware the prospect could find pricing online independently."
+        }
+      ],
+      "strategic_intent": [
+        {
+          "hypothesis": "Getlinked is pursuing a high-touch, managed-service SaaS model targeting boutique and mid-market performance marketing operators who cannot afford a dedicated tech team",
+          "supporting_evidence": [
+            "Every page of the website emphasizes the dedicated support team as a co-equal value driver alongside the software itself",
+            "Pricing starts at $250/m — accessible for small operators — with a dedicated team included rather than premium support tiers",
+            "'You can manage your network as a one-man show' is a key marketing message",
+            "The demo presenter handled the technical integrations pitch personally, reinforcing the service model"
+          ]
+        },
+        {
+          "hypothesis": "The company is deliberately operating in verticals (Crypto/Forex, gambling) that mainstream SaaS platforms avoid, creating a defensible niche with less competition",
+          "supporting_evidence": [
+            "CRG (Conversion Rate Guarantee) automation is specific to Forex/Crypto broker deal structures",
+            "FTD (First Time Deposit) tracking is a Forex/Crypto-native metric, not standard in e-commerce affiliate software",
+            "Demo prospect is explicitly in Crypto/Forex and testing gambling — exactly the vertical Getlinked is built for",
+            "No major SaaS review site (G2, Capterra) lists Getlinked — suggesting they grow via referral within regulated/grey verticals rather than inbound SEO"
+          ]
+        }
+      ]
+    },
+
+    "contradictions_with_recording": [
+      {
+        "topic": "Pricing transparency",
+        "claimed_in_recording": "Presenter said 'I already sent you the pricing' and declined to show pricing during the demo, implying pricing is custom/confidential",
+        "public_data_shows": "A fully public pricing page exists at getlinked.io/getlinked-pricing.php with specific plan names and prices: Starter $250/m, Professional $750/m–$1,000/m, Enterprise $1,250/m–$2,000/m, all with a $500 one-time setup fee",
+        "source": "https://getlinked.io/getlinked-pricing.php",
+        "implication": "The presenter's behavior of withholding pricing during demo may be a sales tactic (anchoring, urgency creation) rather than actual confidentiality. The prospect could have found the public pricing page independently at any point. This also means the prospect had access to competitor comparison pricing before and after the demo."
+      },
+      {
+        "topic": "Setup fee",
+        "claimed_in_recording": "'Setup fee paid upfront before onboarding. Recurring subscription (terms not disclosed in recording).'",
+        "public_data_shows": "The setup fee is $500 (one-time, applied to all plans) — a very specific, publicly stated number",
+        "source": "https://getlinked.io/getlinked-pricing.php",
+        "implication": "The $500 setup fee is very low for an enterprise-grade white-label platform. It may function more as a commitment filter than a true cost recovery mechanism. This is important context for evaluating the total cost of ownership."
+      },
+      {
+        "topic": "Company scale",
+        "claimed_in_recording": "Presenter implies a well-resourced company with full-time dedicated teams per client, 24/7 monitoring, and a capable support organization",
+        "public_data_shows": "No LinkedIn company page found, no employee count data, no press coverage, no third-party reviews, no funding — all consistent with a very small team (likely <20 people) operating the 'boutique' model they describe",
+        "source": "https://getlinked.io/why-us.php",
+        "implication": "The 'dedicated team per client' model is only scalable up to a small number of clients. Prospects should evaluate whether the level of service claimed can be maintained as the company grows or as their own needs increase."
+      },
+      {
+        "topic": "Three custom domains requirement",
+        "claimed_in_recording": "Presenter mentioned clients need to provide 3 custom domains (network login domain, auto-login domain, API domain)",
+        "public_data_shows": "Public pricing page confirms: Starter Lead Distribution plan includes '1 tracking domain + 1 SSL + 1 API Domain'; Professional includes '5 tracking domains + 5 SSL + 1 API Domain'. The 3-domain requirement in the demo aligns with the Lead Distribution plans, not the simpler Affiliate Tracking plans.",
+        "source": "https://getlinked.io/getlinked-pricing.php",
+        "implication": "The domain structure confirms the prospect is being pitched the Lead Distribution System (higher-tier product), not the basic Affiliate Tracking Platform. This contextualizes the pricing as likely $1,000–$2,000/m, not $250–$750/m."
+      }
+    ],
+
+    "data_gaps": [
+      "LinkedIn company page follower count and employee headcount for getlinked.io (no page found — multiple unrelated companies share similar names on LinkedIn)",
+      "Named executives / founders beyond 'Gal' (first name only from demo audio)",
+      "Crunchbase or other funding database entry (no profile found)",
+      "Web traffic data from Similarweb or equivalent for getlinked.io domain",
+      "G2, Capterra, Trustpilot, or ProductHunt reviews (none found)",
+      "GitHub repository or any open-source code",
+      "YouTube channel subscriber count and content metrics",
+      "Twitter/X presence or follower count",
+      "SOC 2, ISO 27001, or other compliance certifications",
+      "Public status page or uptime history",
+      "Customer count or notable client logos",
+      "Founding year (can only infer 5+ years from blog claim)",
+      "Annual recurring revenue or any financial metrics",
+      "Wayback Machine pricing history (not queried in this pass)",
+      "Enterprise pricing plan full details (partially truncated in pricing page scrape)"
+    ],
+
+    "analyst_summary": "Getlinked (getlinked.io) is a bootstrapped, Israel/Bulgaria-based boutique SaaS company offering a white-label affiliate network and lead distribution platform primarily for Crypto/Forex and gambling performance marketers. Their most important competitive differentiator is not the software itself but the managed-service model: a dedicated technical team is bundled with the subscription at an accessible price point ($250–$2,000/m + $500 setup), letting solo operators and small teams run complex affiliate networks without hiring in-house developers. The key contradiction uncovered by this research is the pricing: the presenter withheld pricing during the demo as though it were custom/confidential, but a fully public pricing page exists with specific plan tiers — the prospect could have found this independently, and the demo pricing likely falls in the $1,000–$2,000/m range based on the Lead Distribution plan features demonstrated (3 custom domains, Finance Module, live support). The most significant stress signal is the complete absence of third-party reviews, press coverage, or any public social proof — in a market where Scaleo earns 4.8 on G2 and Everflow has strong brand recognition, Getlinked operates largely invisibly outside its referral network. A 13-minute dashboard loading failure during the sales demo is a material reliability concern that warrants technical due diligence. Overall, Getlinked appears to be a niche, well-featured product with a genuinely differentiated service model, but buyers should verify team capacity, contractual SLA commitments, and financial stability given the absence of any external validation of the company's claims."
+  }
+}

@@ -1,0 +1,2440 @@
+{
+  "analysis_meta": {
+    "analyst_role": "competitive_intelligence_analyst",
+    "source_video": "Meeting Recording Feb 27 2026.mp4",
+    "recording_date": "2026-02-27",
+    "analysis_date": "2026-03-03",
+    "frames_total": 260,
+    "frames_viewed": [
+      "frame_000001.jpg",
+      "frame_000002.jpg",
+      "frame_000005.jpg",
+      "frame_000008.jpg",
+      "frame_000009.jpg",
+      "frame_000010.jpg",
+      "frame_000011.jpg",
+      "frame_000012.jpg",
+      "frame_000016.jpg",
+      "frame_000022.jpg",
+      "frame_000023.jpg",
+      "frame_000026.jpg",
+      "frame_000027.jpg",
+      "frame_000028.jpg",
+      "frame_000029.jpg",
+      "frame_000036.jpg",
+      "frame_000041.jpg",
+      "frame_000043.jpg",
+      "frame_000044.jpg",
+      "frame_000048.jpg",
+      "frame_000076.jpg",
+      "frame_000077.jpg",
+      "frame_000078.jpg",
+      "frame_000079.jpg",
+      "frame_000080.jpg",
+      "frame_000082.jpg",
+      "frame_000085.jpg",
+      "frame_000139.jpg",
+      "frame_000141.jpg",
+      "frame_000147.jpg",
+      "frame_000148.jpg",
+      "frame_000152.jpg",
+      "frame_000154.jpg",
+      "frame_000157.jpg",
+      "frame_000158.jpg",
+      "frame_000159.jpg",
+      "frame_000160.jpg",
+      "frame_000169.jpg",
+      "frame_000170.jpg",
+      "frame_000171.jpg",
+      "frame_000173.jpg",
+      "frame_000174.jpg",
+      "frame_000175.jpg",
+      "frame_000177.jpg",
+      "frame_000185.jpg",
+      "frame_000186.jpg",
+      "frame_000187.jpg",
+      "frame_000188.jpg",
+      "frame_000189.jpg",
+      "frame_000190.jpg",
+      "frame_000191.jpg",
+      "frame_000208.jpg",
+      "frame_000210.jpg",
+      "frame_000213.jpg",
+      "frame_000214.jpg",
+      "frame_000222.jpg",
+      "frame_000223.jpg",
+      "frame_000226.jpg",
+      "frame_000228.jpg",
+      "frame_000229.jpg",
+      "frame_000230.jpg",
+      "frame_000236.jpg",
+      "frame_000237.jpg",
+      "frame_000239.jpg",
+      "frame_000240.jpg",
+      "frame_000241.jpg",
+      "frame_000242.jpg",
+      "frame_000245.jpg",
+      "frame_000250.jpg",
+      "frame_000251.jpg",
+      "frame_000254.jpg",
+      "frame_000259.jpg",
+      "frame_000283.jpg",
+      "frame_000284.jpg",
+      "frame_000286.jpg",
+      "frame_000287.jpg",
+      "frame_000289.jpg",
+      "frame_000290.jpg",
+      "frame_000295.jpg",
+      "frame_000296.jpg",
+      "frame_000297.jpg",
+      "frame_000299.jpg",
+      "frame_000308.jpg",
+      "frame_000322.jpg",
+      "frame_000331.jpg",
+      "frame_000332.jpg",
+      "frame_000334.jpg",
+      "frame_000338.jpg",
+      "frame_000341.jpg",
+      "frame_000351.jpg",
+      "frame_000359.jpg",
+      "frame_000360.jpg",
+      "frame_000361.jpg",
+      "frame_000362.jpg",
+      "frame_000368.jpg",
+      "frame_000369.jpg",
+      "frame_000370.jpg",
+      "frame_000375.jpg",
+      "frame_000376.jpg",
+      "frame_000377.jpg",
+      "frame_000393.jpg",
+      "frame_000394.jpg",
+      "frame_000397.jpg",
+      "frame_000401.jpg",
+      "frame_000404.jpg",
+      "frame_000405.jpg",
+      "frame_000409.jpg",
+      "frame_000414.jpg",
+      "frame_000415.jpg",
+      "frame_000416.jpg",
+      "frame_000420.jpg",
+      "frame_000423.jpg",
+      "frame_000425.jpg",
+      "frame_000426.jpg",
+      "frame_000427.jpg",
+      "frame_000430.jpg",
+      "frame_000431.jpg",
+      "frame_000464.jpg",
+      "frame_000480.jpg",
+      "frame_000481.jpg",
+      "frame_000482.jpg",
+      "frame_000488.jpg",
+      "frame_000498.jpg",
+      "frame_000500.jpg",
+      "frame_000502.jpg",
+      "frame_000513.jpg",
+      "frame_000519.jpg",
+      "frame_000540.jpg",
+      "frame_000541.jpg",
+      "frame_000542.jpg",
+      "frame_000543.jpg",
+      "frame_000544.jpg",
+      "frame_000572.jpg",
+      "frame_000575.jpg",
+      "frame_000582.jpg",
+      "frame_000584.jpg",
+      "frame_000588.jpg",
+      "frame_000589.jpg",
+      "frame_000590.jpg",
+      "frame_000592.jpg",
+      "frame_000593.jpg",
+      "frame_000594.jpg",
+      "frame_000595.jpg",
+      "frame_000596.jpg",
+      "frame_000597.jpg",
+      "frame_000603.jpg",
+      "frame_000606.jpg",
+      "frame_000607.jpg",
+      "frame_000611.jpg",
+      "frame_000612.jpg",
+      "frame_000614.jpg",
+      "frame_000615.jpg",
+      "frame_000617.jpg",
+      "frame_000618.jpg",
+      "frame_000622.jpg",
+      "frame_000623.jpg",
+      "frame_000624.jpg",
+      "frame_000632.jpg",
+      "frame_000635.jpg",
+      "frame_000636.jpg",
+      "frame_000637.jpg",
+      "frame_000642.jpg",
+      "frame_000643.jpg",
+      "frame_000644.jpg",
+      "frame_000645.jpg",
+      "frame_000647.jpg",
+      "frame_000649.jpg",
+      "frame_000650.jpg",
+      "frame_000653.jpg",
+      "frame_000654.jpg",
+      "frame_000657.jpg",
+      "frame_000661.jpg",
+      "frame_000662.jpg",
+      "frame_000663.jpg",
+      "frame_000685.jpg",
+      "frame_000686.jpg",
+      "frame_000688.jpg",
+      "frame_000689.jpg",
+      "frame_000703.jpg",
+      "frame_000710.jpg",
+      "frame_000711.jpg",
+      "frame_000712.jpg",
+      "frame_000713.jpg",
+      "frame_000714.jpg",
+      "frame_000716.jpg",
+      "frame_000719.jpg",
+      "frame_000721.jpg",
+      "frame_000724.jpg",
+      "frame_000731.jpg",
+      "frame_000733.jpg",
+      "frame_000736.jpg",
+      "frame_000737.jpg",
+      "frame_000739.jpg",
+      "frame_000741.jpg",
+      "frame_000743.jpg",
+      "frame_000744.jpg",
+      "frame_000745.jpg",
+      "frame_000747.jpg",
+      "frame_000749.jpg",
+      "frame_000750.jpg",
+      "frame_000751.jpg",
+      "frame_000752.jpg",
+      "frame_000753.jpg",
+      "frame_000757.jpg",
+      "frame_000767.jpg",
+      "frame_000769.jpg",
+      "frame_000770.jpg",
+      "frame_000773.jpg",
+      "frame_000806.jpg",
+      "frame_000807.jpg",
+      "frame_000808.jpg",
+      "frame_000809.jpg",
+      "frame_000811.jpg",
+      "frame_000814.jpg",
+      "frame_000829.jpg",
+      "frame_000830.jpg",
+      "frame_000831.jpg",
+      "frame_000832.jpg",
+      "frame_000834.jpg",
+      "frame_000895.jpg",
+      "frame_000896.jpg",
+      "frame_000898.jpg",
+      "frame_000910.jpg",
+      "frame_000914.jpg",
+      "frame_000915.jpg",
+      "frame_000916.jpg",
+      "frame_000918.jpg",
+      "frame_000919.jpg",
+      "frame_000923.jpg",
+      "frame_000925.jpg",
+      "frame_000926.jpg",
+      "frame_000927.jpg",
+      "frame_000929.jpg",
+      "frame_000931.jpg",
+      "frame_000934.jpg",
+      "frame_000935.jpg",
+      "frame_000936.jpg",
+      "frame_000937.jpg",
+      "frame_000938.jpg",
+      "frame_000939.jpg",
+      "frame_000940.jpg",
+      "frame_000941.jpg",
+      "frame_000942.jpg",
+      "frame_000944.jpg",
+      "frame_000950.jpg",
+      "frame_000951.jpg",
+      "frame_000957.jpg",
+      "frame_000962.jpg",
+      "frame_000965.jpg",
+      "frame_000966.jpg",
+      "frame_000975.jpg",
+      "frame_000990.jpg",
+      "frame_001042.jpg",
+      "frame_001046.jpg",
+      "frame_001047.jpg",
+      "frame_001071.jpg",
+      "frame_001072.jpg",
+      "frame_001073.jpg",
+      "frame_001074.jpg",
+      "frame_001075.jpg"
+    ],
+    "transcript_language": "ru",
+    "meeting_participants": [
+      {
+        "name": "Петр (Petr)",
+        "role": "sales_presenter",
+        "company": "Elnopy"
+      },
+      {
+        "name": "Nazar Elnopy",
+        "role": "elnopy_team",
+        "company": "Elnopy"
+      },
+      {
+        "name": "Денис (Denis)",
+        "role": "prospect_decision_maker",
+        "company": "unknown_buying_network"
+      },
+      {
+        "name": "Никита Ткач (Nikita Tkach)",
+        "role": "prospect_technical_specialist",
+        "company": "unknown_buying_network"
+      },
+      {
+        "name": "Fireflies.ai Notetaker Nikita",
+        "role": "ai_notetaker_bot",
+        "company": "Fireflies.ai"
+      }
+    ],
+    "meeting_duration_approx_minutes": 50,
+    "meeting_time_utc_start": "09:33",
+    "meeting_time_utc_end": "09:46",
+    "notes": "Запись демо-звонка продаж. Петр из Elnopy демонстрирует систему Денису и Никите Ткачу, которые рассматривают систему для нового buying/сетка проекта. Транскрипт распознан через Whisper small, возможны искажения терминологии."
+  },
+  "company_identification": {
+    "product_name": "Elnopy",
+    "product_version": "v2.0",
+    "domain": "elnopy.tech",
+    "copyright_year": 2021,
+    "tagline": "We are your tracking guru",
+    "branding": {
+      "logo": "Шахматный конь (Knight) — белый контурный логотип на тёмном фоне, используется как маскот",
+      "mascot_description": "3D-рендер шахматного коня в красно-коричневом/металлическом цвете на официальном сайте; плоский белый контур в приложении",
+      "color_scheme": "Тёмная тема: тёмно-синий/чёрный фон, циановые акценты, пурпурные/малиновые бейджи тарифов",
+      "footer_text": "COPYRIGHT © 2021 Elnopy, All rights Reserved | Made by Elnopy"
+    },
+    "website_navigation": [
+      "HOME",
+      "PRODUCTS",
+      "CAREERS",
+      "ABOUT ELNOPY",
+      "CONTACT US"
+    ],
+    "website_cta": "BOOK A DEMO",
+    "product_lines": [
+      {
+        "name": "Elnopy Affiliates",
+        "focus": "Crypto/Invest — полноценная CRM для распределения лидов, трекинга и монетизации трафика",
+        "demo_version": true
+      },
+      {
+        "name": "Elnopy Gaming",
+        "focus": "iGaming / Betting / Dating — отдельная система с упрощённым функционалом для крипты, основной акцент на click-by-URL потоки",
+        "demo_version": false
+      },
+      {
+        "name": "Elnopy Advertisement",
+        "focus": "Рекламная система (упомянута в меню PRODUCTS на сайте, детали не демонстрировались)",
+        "demo_version": false
+      }
+    ],
+    "deployment_model": "SaaS (облако на серверах Elnopy; от клиента требуется только домен/алиас)",
+    "self_hosted_option": "Опционально для плана Standard (Self hosted server with database*) — с доп. оплатой (*Additional charges)",
+    "demo_policy": "Демо-версия не выдаётся на руки клиентам уже более 2 лет — только live-демо с командой Elnopy",
+    "competitors_mentioned_by_prospect": [
+      "seremate (вероятно искажение Whisper)",
+      "pyrevan (вероятно искажение Whisper)"
+    ],
+    "market_position": "CRM для crypto/invest affiliate marketing — позиционируется как полноценная альтернатива Excel-таблицам и ручного учёта"
+  },
+  "product_analysis": {
+    "architecture": {
+      "type": "SaaS",
+      "hosting": "Серверы Elnopy",
+      "client_requirements": "Только домен/алиас",
+      "self_hosted_availability": "Только в плане Standard и выше (с доп. оплатой)",
+      "db_access_policy": "Прямой доступ к базе данных для внешних BI-систем — с вероятностью 99.9% недоступен (по словам продавца: 'доступ к базе данных от невозможен')",
+      "timezone_display": "UTC+00:00 (отображается в интерфейсе)"
+    },
+    "ui_framework": {
+      "type": "Web SPA (Single Page Application)",
+      "navbar_items": [
+        "Home (иконка)",
+        "Leads",
+        "Affiliates",
+        "Recipients",
+        "Users",
+        "Analytics",
+        "Utils",
+        "Support",
+        "Finance"
+      ],
+      "breadcrumb_navigation": true,
+      "dark_theme": true,
+      "search_bar": "Глобальный поиск по системе",
+      "language_toggle": "Переключатель темы (иконка луны/солнца) в правом верхнем углу",
+      "timezone_display": "UTC+00:00 в правом верхнем углу",
+      "user_avatar": "Иконка профиля в правом верхнем углу"
+    },
+    "modules": {
+      "dashboard": {
+        "description": "Главная страница с ключевыми KPI и виджетами",
+        "widgets": [
+          "Income (доход)",
+          "Expenses (расходы)",
+          "Profit (прибыль)",
+          "Weekly Revenue Overview (столбчатый график: Income/Expenses/Profit по дням недели)",
+          "Active Offers (таблица: ACTIVE, ID, NAME, DAILY LIMIT, LEADS, LEADS REMAINING, ACQ, INVALID LEADS)",
+          "Active Recipients (таблица: ID, NAME, LEADS TODAY)",
+          "Active Affiliates (таблица: ID, NAME, LEADS TODAY)"
+        ],
+        "demo_values": {
+          "income": 21140,
+          "expenses": 8150,
+          "profit": 12990,
+          "date_range": "01 Feb 2026 – 27 Feb 2026"
+        },
+        "permission_controls": [
+          "Can View Active Affiliates Widget",
+          "Can View Active Offers Widget",
+          "Can View Active Recipients Widget",
+          "Can View Earning Report Widget",
+          "Can View Fraud Scoring Widget",
+          "Can View Registrations Widget"
+        ]
+      },
+      "leads": {
+        "description": "Основной журнал всех лидов, поступивших в систему",
+        "table_columns": [
+          "ID",
+          "COUNTRY",
+          "REGISTRATION DATE",
+          "AUTOLOGIN",
+          "FRAUD SCORING",
+          "RECIPIENT",
+          "AFFILIATE",
+          "INTERNAL STATUS",
+          "STATUS",
+          "ERROR"
+        ],
+        "status_counters": [
+          "All Leads",
+          "Error Leads",
+          "Not Valid Leads",
+          "Valid Leads",
+          "Test Leads",
+          "Acquisitions",
+          "CR%"
+        ],
+        "filters": [
+          "Dates",
+          "Affiliates (included/excluded toggle)",
+          "Recipients (included/excluded toggle)",
+          "Country",
+          "Hide Errors toggle",
+          "Hide Tests toggle"
+        ],
+        "toolbar": [
+          "Filters",
+          "Columns (настройка видимых колонок)",
+          "Presets",
+          "Refresh",
+          "Export (CSV)",
+          "Download",
+          "Import (загрузка Excel-файла)"
+        ],
+        "status_breakdown_popup": "Кликабельный попап с процентным и абсолютным разбором статусов по группам (System, Ungrouped, FTD Converted, New, Wrong Info, Test)",
+        "cr_toggle": "Переключатель CR: считается от всех лидов (напр. 36.52%) или только от валидных (напр. 74.94%)",
+        "anti_shave": {
+          "name": "Status Pipe Pending",
+          "description": "Система детектирует нарушение логической последовательности статусов (например: New → Callback → Callback2 → Wrong Info, что нелогично). Помечает такие лиды оранжевым бейджем 'Pending' для ручного апрува оператора. Помогает выявлять шейв статусов со стороны брокера."
+        },
+        "resend_from_leads": "Можно изменить любые поля лида, подставить другой affiliate/default affiliate и переотправить на другой поток как новый лид — предыдущий аффилиат уведомления не получает",
+        "demo_stats_jan2026": {
+          "all": 11351,
+          "error": 1141,
+          "not_valid": 4647,
+          "valid": 4417,
+          "test": 1146,
+          "acq": 3310,
+          "cr_percent": 36.52
+        }
+      },
+      "leads_in_pool": {
+        "description": "Буфер для лидов, отбитых получателями (ошибка, дубликат и т.п.) с возможностью автоматической переотправки",
+        "features": [
+          "Автоматический ресенд с рандомным интервалом (например, диапазон от 2 до 20 минут — система выбирает случайное число)",
+          "Настройка: дата начала, время, диапазон интервалов",
+          "Импорт лидов из Excel-файла → попадают в Leads in Pool → автоматический ресенд",
+          "Выбор потока-назначения для ресенда",
+          "Ресенд по новейшим или старейшим лидам в порядке очереди"
+        ],
+        "use_case": "Buying-сетки закупают трафик в Excel → загружают в пул → система автоматически рассылает по расписанию, имитируя органическую активность"
+      },
+      "affiliates": {
+        "description": "Управление аффилиатами (поставщиками трафика)",
+        "table_columns": [
+          "ID",
+          "NAME",
+          "EMAIL",
+          "API TOKEN (Copy/Change Token)",
+          "DAYS UNTIL DEACTIVATION",
+          "ENABLED GET LEADS (API)",
+          "ACTIONS"
+        ],
+        "tabs": [
+          "Enabled",
+          "Disabled"
+        ],
+        "toolbar": [
+          "Filters",
+          "Columns",
+          "Presets",
+          "Refresh",
+          "Export/Download"
+        ],
+        "demo_affiliates_count": 14,
+        "deactivation_countdown": "Счётчик оставшихся дней до деактивации аккаунта аффилиата",
+        "affiliate_detail_tabs": [
+          "Profile",
+          "Links",
+          "Link Groups",
+          "Leads",
+          "Logs"
+        ],
+        "integration_speed": "До 30 секунд — выбрать имя, email, домен, сгенерировать пароль, скопировать данные и передать аффилиату",
+        "notes": "Кнопка 'Add New' находится в одном месте во всех разделах для единообразия UX"
+      },
+      "links": {
+        "description": "Трекинговые ссылки аффилиатов. Каждый аффилиат получает уникальный link_id, используемый при регистрации лидов через API",
+        "link_parameters": [
+          "link_id (integer, required)",
+          "source",
+          "funnel",
+          "language",
+          "utm_campaign",
+          "utm_content",
+          "utm_medium",
+          "utm_source",
+          "utm_term"
+        ],
+        "api_endpoint": "POST /api/v1/integration/api_token/API_AFFILIATE_TOKEN"
+      },
+      "link_groups": {
+        "description": "Группировка ссылок/аффилиатов для сокращения числа необходимых потоков",
+        "value_proposition": "5 аффилиатов × 5 получателей = 25 потоков → с LinkGroup = 5 потоков",
+        "use_case": "Network/Buying объединяет аффилиатов в одну группу, создаёт 5 потоков вместо 25, регулирует соотношение в процентах"
+      },
+      "recipients": {
+        "description": "Получатели трафика (брокеры, сети, бренды) — интеграции с CRM-системами брокеров",
+        "table_columns": [
+          "ID",
+          "NAME",
+          "CRM TYPE",
+          "DAYS UNTIL DEACTIVATION",
+          "LAST SYNCED DATE",
+          "EXECUTION TIME",
+          "ENABLED UPDATES",
+          "ACTIONS"
+        ],
+        "tabs_in_list": [
+          "Recipients",
+          "Offers (sub-menu)"
+        ],
+        "crm_templates_count": "Более 200 встроенных шаблонов CRM",
+        "crm_types_visible_in_demo": [
+          "adk",
+          "aegis",
+          "affclub",
+          "affcrm",
+          "affdist-tq",
+          "affiliates360",
+          "affiliates360-identity",
+          "affilio",
+          "affix-global",
+          "aff_store",
+          "aff-store-clients",
+          "afftek",
+          "aicrm",
+          "altair",
+          "irev",
+          "irev-v2",
+          "virelio",
+          "geflinked",
+          "vibero",
+          "hyper-net"
+        ],
+        "recipient_config_fields": {
+          "common": [
+            "Name",
+            "Fraud Scoring Month Limit",
+            "CRM Type (dropdown)"
+          ],
+          "crm_specific_example_irev": [
+            "Api_url",
+            "Token",
+            "Source",
+            "Domain",
+            "Affiliate_id_param",
+            "Affiliate_id"
+          ],
+          "toggles": [
+            "Enable Allowed/Blocked Parameters"
+          ]
+        },
+        "demo_recipients_count": 9,
+        "demo_recipients": [
+          {
+            "id": 2,
+            "name": "Schaefer LLC"
+          },
+          {
+            "id": 3,
+            "name": "Recip-/2"
+          },
+          {
+            "id": 4,
+            "name": "Recip_1"
+          },
+          {
+            "id": 5,
+            "name": "Recipient_1"
+          },
+          {
+            "id": 6,
+            "name": "Recipient_2"
+          },
+          {
+            "id": 7,
+            "name": "Recipient_3"
+          },
+          {
+            "id": 8,
+            "name": "Michael_Brand",
+            "crm": "vibero"
+          },
+          {
+            "id": 9,
+            "name": "Nickolas_Recipient",
+            "crm": "geflinked"
+          }
+        ]
+      },
+      "offers": {
+        "description": "Потоки (Offers) — связка аффилиата/LinkGroup с получателем, основной объект управления трафиком",
+        "table_columns": [
+          "ID",
+          "NAME",
+          "RECIPIENT",
+          "DAILY LIMITS",
+          "TOTAL LIMITS",
+          "SCHEDULE LIMITS",
+          "SCHEDULE DATES",
+          "LOCKED (badge)",
+          "FRAUD SCORING",
+          "ACTIONS"
+        ],
+        "table_tabs": [
+          "Schedules",
+          "Enabled",
+          "Disabled",
+          "All",
+          "Archived"
+        ],
+        "create_offer_fields": {
+          "basic": [
+            "Name",
+            "Recipient (dropdown)",
+            "Link Group (dropdown)",
+            "Daily Limits (число или Unlimited checkbox)",
+            "Total Limits (число или Unlimited checkbox)"
+          ],
+          "toggles": [
+            "Fraud Scoring",
+            "Freeze status on ACQ",
+            "Enable Allowed/Blocked Parameters",
+            "Pending ACQ",
+            "CR Limit"
+          ],
+          "other": [
+            "Test Lead checkbox"
+          ]
+        },
+        "allowed_blocked_parameters": [
+          "Countries",
+          "Sources",
+          "Funnels",
+          "Languages",
+          "UTM sources",
+          "UTM campaigns"
+        ],
+        "hold_ftd": {
+          "name": "Pending ACQ / HoldFTD",
+          "range": "от 60 минут до 1 года",
+          "description": "Все FTD на потоке удерживаются в холде. Оператор вручную одобряет или отклоняет каждый FTD перед тем, как аффилиат его увидит."
+        },
+        "freeze_status_on_acq": {
+          "description": "Замораживает статус для аффилиата на значении, предшествующем FTD. Пример: New→Callback→Callback2→Callback3→FTD. Аффилиат видит последний статус Callback3, дальнейшие статусы скрыты."
+        },
+        "rotation": {
+          "description": "Автоматический фейловер: если первый получатель отбивает лид (дубликат, закрытый поток, ошибка), лид автоматически переходит к следующему получателю в цепочке",
+          "default_affiliate": "Можно настроить 'дефолтного аффилиата' — ответ об ошибке/дубликате будет приходить на него, а не на реального аффилиата"
+        },
+        "demo_offers": [
+          {
+            "id": 6,
+            "name": "Potok-1"
+          },
+          {
+            "id": 5,
+            "name": "Offer_Brand1"
+          },
+          {
+            "id": 3,
+            "name": "Offer 2"
+          },
+          {
+            "id": 0,
+            "name": "Default"
+          }
+        ]
+      },
+      "cr_limits": {
+        "description": "Ограничение конверсии (CRG-сделки) по периодам для конкретного потока",
+        "periods": [
+          "Weekly",
+          "Biweekly",
+          "Monthly"
+        ],
+        "calendar_view": "Встроенный календарь с видами: Year/Month/Week/List",
+        "config_fields": [
+          "CR Limit (%)",
+          "Period (dropdown)",
+          "Period Start Date",
+          "Period End Date"
+        ],
+        "mechanism": "Система считает процент конверсий от получателя. Как только задан порог (напр. 15%), всё, что выше — не передаётся аффилиату (статус не проставляется). Сделка автоматически лимитируется.",
+        "demo_example": {
+          "cr_limit_percent": 15,
+          "period": "Weekly",
+          "start": "2026-02-27",
+          "end": "2026-03-05"
+        }
+      },
+      "offer_prices": {
+        "description": "Прайсы на потоке — Buy/Sell цены с разбивкой по типу сделки, стране и воронке",
+        "config_fields": [
+          "Buy Price*",
+          "Sell Price*",
+          "Buy Type* (CPL/CPA/CRG)",
+          "Sell Type* (CPL/CPA/CRG)",
+          "Link ID",
+          "Countries",
+          "Funnels"
+        ],
+        "deal_types": [
+          "CPL (Cost per Lead)",
+          "CPA (Cost per Acquisition)",
+          "CRG (Cost per Revenue Generated)"
+        ],
+        "granularity": "Разные цены/сделки по разным странам и воронкам на одном потоке",
+        "demo_example": {
+          "buy_price": 800,
+          "buy_type": "CPA",
+          "sell_price": 1200,
+          "sell_type": "CPA"
+        },
+        "value_prop": "Заменяет Excel-файлы для учёта финансов — система сама считает профит в аналитике"
+      },
+      "substitutes": {
+        "description": "Замена параметров перед передачей лида получателю",
+        "available_parameters": [
+          "domain",
+          "funnel",
+          "language",
+          "source",
+          "utm_campaign",
+          "utm_content",
+          "utm_medium",
+          "utm_source",
+          "utm_term"
+        ],
+        "use_case": "Аффилиат передаёт воронку 'fb' или 'binance' — оператор заменяет на своё внутреннее название перед отправкой в CRM получателя",
+        "table_columns": [
+          "PARAMETERS",
+          "VALUE",
+          "SUBSTITUTE",
+          "ACTIONS"
+        ]
+      },
+      "schedule": {
+        "description": "Расписание работы потока по дням недели и времени",
+        "schedule_modal_fields": {
+          "per_day": [
+            "SET FOR THIS DAY (Yes/No toggle)",
+            "ON DAY",
+            "ON TIME",
+            "OFF DAY",
+            "OFF TIME",
+            "LIMIT"
+          ],
+          "global": [
+            "On Date",
+            "Off Date",
+            "On Time",
+            "Off Time"
+          ]
+        },
+        "overnight_mode": {
+          "description": "Специальный режим для ночного трафика при переходе через полночь (напр. понедельник→вторник). Без Overnight: в 23:55 поток закрывается, в 0:05 открывается — в промежутке летят ошибки в CRM брокера. С Overnight: поток работает непрерывно, нет разрыва трафика."
+        },
+        "display": "Левая панель: Locked, Schedule Limits, Total Limits, On Date, Off Date, Today; Правая панель: таблица LOGS/DATE"
+      },
+      "fraud_scoring": {
+        "description": "Встроенная антифрод-система для детектирования фиктивного трафика",
+        "components": [
+          {
+            "name": "Source Detection",
+            "description": "Определение источника лида по автологину (Browser, Telegram bot, Facebook, Instagram, Google, YouTube и др.)"
+          },
+          {
+            "name": "Fingerprint ID",
+            "description": "Цифровой отпечаток устройства. Выявляет регистрации с одного устройства — прямое доказательство имитации автологина. Показывает количество лидов с одинаковым fingerprint."
+          },
+          {
+            "name": "IP/Autologin IP Mismatch",
+            "description": "Сравнивает IP лида с IP автологина. Несовпадение = подозрительная имитация автологина или использование прокси."
+          },
+          {
+            "name": "IP/Country Mismatch",
+            "description": "Сравнение IP-геолокации с заявленной страной лида."
+          }
+        ],
+        "fraud_scoring_month_limit": "Настраивается на уровне получателя (Recipient) — лимит по месяцу",
+        "dashboard_widget": "Отдельный виджет Fraud Scoring на Dashboard",
+        "telegram_bot": "Отдельный Telegram-бот с уведомлениями по событиям fraud scoring",
+        "plan_availability": "Стандартный план и выше (*дополнительная оплата на Standard)"
+      },
+      "analytics": {
+        "system_report": {
+          "description": "Базовый агрегированный отчёт по трафику",
+          "filters": [
+            "Affiliates",
+            "Links",
+            "Manager",
+            "Offers",
+            "Recipients",
+            "Recommendations",
+            "Countries",
+            "Languages",
+            "Dates*"
+          ],
+          "columns": [
+            "COUNTRY",
+            "ALL",
+            "VALID",
+            "NOT VALID",
+            "WRONG",
+            "UND",
+            "NA",
+            "NA%",
+            "ACQ",
+            "CONV%",
+            "TACQ",
+            "TCONV%",
+            "TBP",
+            "TSC",
+            "PROFIT"
+          ],
+          "drilldown_tabs": [
+            "Affiliates",
+            "Offers",
+            "Recipients"
+          ],
+          "date_presets": [
+            "Today",
+            "Yesterday",
+            "This week",
+            "Last week",
+            "This month",
+            "Last 7 days",
+            "Last month",
+            "This year"
+          ],
+          "export": "CSV-экспорт",
+          "demo_stats_jan2026": {
+            "all": 9064,
+            "valid": 4417,
+            "not_valid": 4647,
+            "wrong": 2780,
+            "acq": 3310,
+            "conv_percent": 36.52,
+            "tacq": 3630,
+            "tconv_percent": 40.05,
+            "tbp": 36300,
+            "tsc": 88340,
+            "profit": 52040
+          }
+        },
+        "funnel_report": {
+          "description": "Аналитика по воронкам — особенно полезна для buying-команд",
+          "filters": [
+            "Affiliates",
+            "Links",
+            "Recipients",
+            "Funnels",
+            "Languages",
+            "Countries",
+            "Dates"
+          ],
+          "columns": [
+            "TOTAL LEADS",
+            "VALID",
+            "INVALID",
+            "ACQ",
+            "CR%",
+            "CR VALID%"
+          ],
+          "breakdown": "По FUNNEL / AFFILIATE / RECIPIENT",
+          "demo_funnels": [
+            "(empty)",
+            "amazon",
+            "api",
+            "binance",
+            "chain",
+            "fb",
+            "revolut",
+            "test-funnel"
+          ],
+          "demo_totals": {
+            "total_leads": 9064,
+            "valid": 4417,
+            "invalid": 4647,
+            "acq": 3310,
+            "cr_percent": 36.52,
+            "cr_valid_percent": 74.94
+          }
+        },
+        "bi_insights": {
+          "description": "Визуальная BI-аналитика с топ-рейтингами",
+          "tabs": [
+            "Top GEO",
+            "Top Conversion",
+            "Top Leads Count",
+            "Top Profit",
+            "Top Devices"
+          ],
+          "top_geo": {
+            "charts": 3,
+            "chart_types": "Пятиугольные радарные диаграммы (аналогия с FIFA-ромбиками по словам продавца)",
+            "chart_names": [
+              "Top 5 by Conversion %",
+              "Top 5 by Profit %",
+              "Top 5 by No Answers %"
+            ],
+            "radar_axes": [
+              "Conversion",
+              "Invalid",
+              "NA",
+              "FS Block",
+              "Profit / Profitvalid"
+            ]
+          },
+          "top_conversion": {
+            "charts": [
+              "Conversion Top 5 Affiliates (линейный)",
+              "Conversion Top 5 Recipients (столбчатый)"
+            ]
+          },
+          "plan_availability": "Полный BI Insights — Standard план и выше. В Starter — базовая аналитика без BI."
+        },
+        "advanced_report": {
+          "description": "Настраиваемые сводные отчёты — кастомные пивоты",
+          "saved_reports_tabs": [
+            "Test",
+            "TEst2",
+            "Report_Source_Funnel",
+            "+ Add New"
+          ],
+          "filters": [
+            "Affiliates",
+            "Links",
+            "Link Groups",
+            "Manager",
+            "Offers",
+            "Recipients",
+            "Countries",
+            "Languages",
+            "Dates"
+          ],
+          "group_by_fields": [
+            "Affiliate",
+            "Link",
+            "Link Group",
+            "Recipient",
+            "Offer",
+            "Country",
+            "Language",
+            "Funnel",
+            "Source",
+            "UTM Campaign",
+            "UTM Content",
+            "UTM Medium",
+            "UTM Source"
+          ],
+          "available_columns": [
+            "Valid",
+            "Invalid",
+            "TACQ",
+            "ACQ",
+            "CONV",
+            "TCONV",
+            "Buy Type",
+            "Buy Price",
+            "TBuy",
+            "Sell Type",
+            "Sell Price",
+            "TSell",
+            "Profit"
+          ],
+          "multi_group_by": "До 4 уровней группировки одновременно"
+        }
+      },
+      "users_and_permissions": {
+        "roles": [
+          "SuperAdmin (полный доступ)",
+          "Admin",
+          "Manager (гранулярные права)",
+          "Affiliate"
+        ],
+        "user_count_limit": {
+          "starter": "До 2 пользователей",
+          "standard_and_above": "Без ограничений"
+        },
+        "manager_tabs": [
+          "Profile",
+          "Affiliates",
+          "Links",
+          "Recipients",
+          "Link Groups",
+          "Offers",
+          "Ip Access",
+          "Permissions",
+          "Logs"
+        ],
+        "permissions_matrix": {
+          "actions": [
+            "View",
+            "Add",
+            "Edit",
+            "Delete"
+          ],
+          "categories": {
+            "Affiliates": [
+              "Can View Affiliates",
+              "Can View Affiliate Name",
+              "Can View Links Tab",
+              "Can View Recipients Tab",
+              "Can Create Affiliates",
+              "Can Edit Affiliates",
+              "Can Edit Affiliates Min ACQ",
+              "Can Assign Recipients",
+              "Can Edit Resend Pool Settings",
+              "Can Change Api Token"
+            ],
+            "Analytics": [
+              "Can View BI Insights",
+              "Can View Analytics"
+            ],
+            "Country Group": [
+              "Can View Country Groups",
+              "Can Create Country Groups",
+              "Can Edit Country Groups",
+              "Can Delete Country Groups"
+            ],
+            "Dashboard": [
+              "Can View Active Affiliates Widget",
+              "Can View Active Offers Widget",
+              "Can View Active Recipients Widget",
+              "Can View Earning Report Widget",
+              "Can View Fraud Scoring Widget",
+              "Can View Registrations Widget"
+            ],
+            "Finance": [
+              "Can View Balances",
+              "Can View Payments",
+              "Can View Finance Tab",
+              "Can Create Invoices",
+              "Can Submit Payments",
+              "Can Edit Invoices",
+              "Can Edit Wallet Balance And Limit",
+              "Can Edit Wallet Payment Details",
+              "Can Approve/Decline Payments",
+              "Can Delete Invoices"
+            ],
+            "Import": [
+              "Can View Import Leads",
+              "Can Download Import Leads Files",
+              "Can Upload Import Files"
+            ]
+          }
+        },
+        "ip_access": "Whitelist IP-адресов для входа в личный кабинет менеджера",
+        "session_tracking": {
+          "columns": [
+            "DEVICE",
+            "EXPIRES AT",
+            "LOGIN BY",
+            "IPS HISTORY",
+            "USER AGENT",
+            "CLIENT NAME",
+            "OS NAME",
+            "OS VERSION",
+            "BRAND",
+            "MODEL",
+            "ACTIONS"
+          ],
+          "demo_example": "Chrome 138.0.0.0, Windows 10 x64, Login by ID:2 Super Admin"
+        },
+        "audit_logs": {
+          "columns": [
+            "ID",
+            "AT",
+            "ACTION",
+            "ENTITY ID",
+            "ENTITY NAME",
+            "BEFORE",
+            "AFTER",
+            "REQUEST"
+          ],
+          "description": "Полный лог всех действий менеджера — скрыть действие невозможно"
+        },
+        "select_revoke_all": "Кнопки 'Select All' / 'Revoke All' для быстрого массового управления правами"
+      },
+      "utils": {
+        "resend_groups": {
+          "description": "Конфигурация автоматической ротации/ресенда: связка Link/LinkGroup → Offer",
+          "config_fields": [
+            "Discontinue From (toggle)",
+            "LINK",
+            "LINK GROUPS",
+            "OFFERS (с Recipient)"
+          ],
+          "demo_example": "Link ID:2 Veniam4841 → LinkGroup ID:2 New → Offer ID:2 Impedit8683 / Recipient ID:2 Schaefer LLC"
+        },
+        "status_groups": {
+          "description": "Маппинг внешних статусов брокера во внутренние категории системы",
+          "default_internal_statuses": [
+            "FTD Converted → acquisition",
+            "New → valid",
+            "Wrong info → not valid",
+            "Test → not valid",
+            "Converted → acquisition"
+          ],
+          "custom_statuses": "Можно создавать собственные внутренние и внешние статусы с любым именем",
+          "add_external_status_fields": [
+            "Name*",
+            "Internal Status* (dropdown)"
+          ],
+          "add_internal_status_fields": [
+            "Name*",
+            "Status Type* (dropdown)"
+          ],
+          "ungrouped_statuses_section": "Отдельная колонка для статусов, не вошедших ни в одну группу",
+          "value_prop": "Статусы от разных брокеров с одним названием, но разной валидацией — корректно маппируются. Сверки сокращаются с нескольких дней до 30 минут."
+        },
+        "country_groups": {
+          "description": "Группировка стран в именованные тиры (tier1, tier2, EU и т.п.)",
+          "config_fields": [
+            "Name*",
+            "Countries* (multi-select со всеми странами мира)"
+          ]
+        },
+        "postbacks": {
+          "description": "Постбэки для аффилиатов при событиях",
+          "events": [
+            "registration",
+            "status",
+            "acq",
+            "redeposit"
+          ],
+          "http_methods": [
+            "GET",
+            "POST"
+          ],
+          "data_formats": [
+            "query (URL-params)",
+            "form_params",
+            "multipart"
+          ],
+          "template_variables": {
+            "[id]": "Lead Id",
+            "[payout]": "Lead Buy Price",
+            "[source]": "Lead Source",
+            "[external_id]": "Id from recipient side",
+            "[status]": "Lead Status",
+            "[funnel]": "Lead Funnel",
+            "[click_id]": "Click Id Param"
+          },
+          "table_columns": [
+            "ID",
+            "URL",
+            "HTTP METHOD",
+            "EVENT TYPE",
+            "AFFILIATE",
+            "DATA TYPE",
+            "HEADERS",
+            "PARAMS",
+            "CREATED AT"
+          ],
+          "demo_example": "https://www.domain.com/postback?click_id=[click_id]&payout=[payout]&amount=[amount], POST, acq"
+        },
+        "blacklist": "Раздел упомянут в меню Utils (детали не демонстрировались)",
+        "additional_parameters": "Раздел упомянут в меню Utils (детали не демонстрировались)"
+      },
+      "support": {
+        "api_documentation": {
+          "description": "Встроенная документация API прямо в приложении",
+          "endpoint": "POST /api/v1/integration/api_token/API_AFFILIATE_TOKEN",
+          "required_fields": [
+            "link_id (integer)",
+            "fname (string)"
+          ],
+          "optional_fields": [
+            "email",
+            "fullphone (+11111111)",
+            "ip (8.8.8.8)",
+            "country (ISO 3166-1 Alpha-2)",
+            "language (ISO 639-1/639-3)",
+            "source"
+          ]
+        },
+        "system_manual": {
+          "description": "Встроенный мануал на Confluence",
+          "languages": [
+            "EN Manual",
+            "RU Manual"
+          ],
+          "ru_manual_sections": [
+            "Offers",
+            "Substitutes tab",
+            "Affiliates",
+            "Leads in pool",
+            "Managers",
+            "Admins"
+          ]
+        },
+        "tickets": {
+          "description": "Система тикетов поддержки",
+          "tabs": [
+            "Opened",
+            "Closed"
+          ],
+          "columns": [
+            "ID",
+            "ISSUE",
+            "OPENED BY",
+            "STATUS",
+            "PRIORITY",
+            "CREATED DATE",
+            "UPDATED DATE",
+            "ACTIONS"
+          ],
+          "create_fields": [
+            "Issue*",
+            "Description*",
+            "Add Files (drag-drop или Browse)"
+          ]
+        },
+        "contact_us": "Раздел Contact Us в меню Support",
+        "support_hours": {
+          "weekdays": "08:00–22:00 GMT+2",
+          "weekends_holidays": "09:00–18:00 GMT+2",
+          "response_sla": "До 5 минут в Telegram",
+          "preferred_channel": "Telegram (быстрее и удобнее, по рекомендации продавца)"
+        },
+        "telegram_bots": {
+          "count": 3,
+          "bots": [
+            "Ошибки (errors bot)",
+            "Приобретения / FTD (acquisitions bot)",
+            "Fraud Scoring (fraud scoring bot)"
+          ],
+          "customization": "Нет — только фиксированный набор уведомлений, нельзя настроить какую информацию присылать",
+          "interaction": "Только входящие уведомления — коммуникация с системой через бота невозможна",
+          "plan_availability": "Стандартный план и выше (в Starter отсутствуют)"
+        }
+      },
+      "finance": {
+        "description": "Финансовый модуль (Finance в навбаре)",
+        "plan_availability": "Стандартный план и выше",
+        "permission_items": [
+          "Can View Balances",
+          "Can View Payments",
+          "Can View Finance Tab",
+          "Can Create Invoices",
+          "Can Submit Payments",
+          "Can Edit Invoices",
+          "Can Edit Wallet Balance And Limit",
+          "Can Edit Wallet Payment Details",
+          "Can Approve/Decline Payments",
+          "Can Delete Invoices"
+        ],
+        "notes": "Детальный UI Finance не был продемонстрирован в демо-звонке"
+      }
+    }
+  },
+  "technology_stack": {
+    "frontend": {
+      "type": "Web SPA (Single Page Application)",
+      "ui_style": "Dark theme, custom component library",
+      "table_features": [
+        "Sorting",
+        "Column customization",
+        "Presets",
+        "Filters",
+        "Export CSV",
+        "Pagination (35 per page default)"
+      ],
+      "modals": "Modal-driven workflows для создания/редактирования объектов",
+      "charts": [
+        "Столбчатый график (Dashboard Weekly Revenue)",
+        "Радарные пятиугольные диаграммы (BI Insights Top GEO)",
+        "Линейные и столбчатые диаграммы (BI Insights Top Conversion)"
+      ],
+      "calendar": "Встроенный компонент календаря для CR Limits (Year/Month/Week/List views)"
+    },
+    "backend": {
+      "api_style": "REST API",
+      "api_base_path": "/api/v1/integration/api_token/",
+      "hosting": "Серверы Elnopy (облако)",
+      "self_hosted_option": "Возможно для Standard+ (self-hosted server with database — отдельная оплата)"
+    },
+    "integrations": {
+      "crm_connectors": "200+ встроенных шаблонов CRM-систем брокеров",
+      "telegram": "3 Telegram-бота (ошибки, приобретения, фрод-скоринг)",
+      "notetaker": "Fireflies.ai использовался клиентом для записи встречи",
+      "external_bi": "Доступ к базе данных для внешних BI-систем (напр. Grafana) — с вероятностью 99.9% недоступен",
+      "slack": "Интеграция со Slack — недоступна"
+    },
+    "data": {
+      "db_access_policy": "Закрытый — прямой доступ к БД не предоставляется клиентам",
+      "analytics_db": "Предположительно отдельная аналитическая база, но не подтверждено"
+    }
+  },
+  "sales_marketing": {
+    "pricing": {
+      "currency_note": "Цены на сайте в EUR, в разговоре конвертируется в USDT по запросу клиента",
+      "plans": [
+        {
+          "name": "STARTER",
+          "badge_color": "серый",
+          "monthly_fee_eur": 499,
+          "monthly_fee_note": "+VAT",
+          "setup_fee_eur": 500,
+          "setup_fee_note": "+VAT",
+          "billing": "Billed monthly",
+          "features": [
+            "Up to 2 users",
+            "Volume limitations up to 2,000 conversions",
+            "Encrypted database",
+            "Basic support (будни 09:00–18:00, только интеграция с получателем)",
+            "Analytics (базовая, без BI Insights)"
+          ],
+          "missing_vs_standard": [
+            "Нет Telegram-ботов",
+            "Нет BI Insights",
+            "Нет Financial module",
+            "Нет Fraud Scoring (опционально)",
+            "Нет Self-hosted option",
+            "Нет Marketplace",
+            "Нет Personal bots/AM/support"
+          ]
+        },
+        {
+          "name": "STANDARD",
+          "badge_color": "циановый (featured)",
+          "monthly_fee_eur": 999,
+          "monthly_fee_note": "+VAT",
+          "setup_fee_eur": 1000,
+          "setup_fee_note": "+VAT",
+          "billing": "Billed monthly",
+          "features": [
+            "Starter Pack+",
+            "Marketplace",
+            "No users limitations, modular permissions",
+            "No volume limitations",
+            "Analytics + BI",
+            "Advanced support",
+            "Personal bots (3 Telegram-бота)",
+            "Financial module",
+            "Self hosted server with database* (*Additional charges)",
+            "Fraud scoring* (*Additional charges)"
+          ],
+          "negotiated_price_usdt": "500 setup + 500/month (по разговору с клиентом — продавец предложил цену Standard по цене Starter при переходе на Standard)"
+        },
+        {
+          "name": "ADVANCED",
+          "badge_color": "малиновый/красный",
+          "monthly_fee_eur": "CUSTOM",
+          "setup_fee_eur": "Custom",
+          "billing": "Billed monthly",
+          "features": [
+            "Standard Pack+",
+            "Personal support",
+            "Personal AM (Account Manager)",
+            "Multi domain functionality"
+          ]
+        }
+      ],
+      "annual_discount": "20% off on annual subscription (баннер на странице PRODUCTS сайта)",
+      "prorated_billing": "При подключении в середине месяца — перерасчёт на половину месяца (< 500 USDT)",
+      "starter_price_flexibility": "Цена Starter фиксирована, изменить невозможно. Standard — можно 'поиграться с ценами'.",
+      "payment_currency_conversion": "500 EUR → 500 USDT (продавец конвертирует 1:1 для простоты)"
+    },
+    "sales_process": {
+      "lead_qualification_questions": [
+        "Для какого проекта рассматривается система (buying/сетка)?",
+        "Проект новый или существующий?",
+        "Какие ещё системы рассматриваете?",
+        "Крипто и гейминг одновременно или по отдельности?"
+      ],
+      "demo_format": "Live-демо с презентацией через Google Meet (screen share)",
+      "follow_up": "Обсуждение условий в Telegram после демо",
+      "conference_presence": "Elnopy присутствует на конференции в Варшаве (Conversion) — НЕ на Dubai конференции",
+      "target_clients": [
+        "Buying-команды",
+        "Affiliate networks",
+        "Media buyers",
+        "Forex/Crypto brokers (на стороне получателя)"
+      ]
+    },
+    "marketplace": {
+      "description": "Упомянут как фича плана Standard — детали не раскрыты в демо",
+      "availability": "Standard план и выше"
+    }
+  },
+  "behavioral_analysis": {
+    "strengths_observed": [
+      "Очень быстрая интеграция аффилиатов: до 30 секунд (имя, email, домен, пароль, скопировать)",
+      "200+ встроенных CRM-шаблонов для получателей — не нужна кастомная разработка",
+      "Развитая антифрод система (Source Detection, Fingerprint, IP-мэтчинг)",
+      "Удобный механизм CR Limits для CRG-сделок",
+      "Leads In Pool с рандомизированным авторесендом — важно для buying-команд",
+      "LinkGroups существенно сокращают операционную нагрузку (25 потоков → 5)",
+      "Status Groups упрощают сверки (дни → 30 минут)",
+      "Гибкая матрица прав для менеджеров (поэлементный CRUD)",
+      "Overnight режим устраняет ошибки при ночном переходе",
+      "Встроенный мануал на двух языках (EN/RU) на Confluence",
+      "Поддержка 7 дней в неделю в Telegram с SLA 5 минут"
+    ],
+    "weaknesses_observed": [
+      "Нет демо-версии для самостоятельного изучения (политика > 2 лет)",
+      "Прямой доступ к базе данных для внешних BI (Grafana и т.п.) — недоступен",
+      "Интеграция со Slack — недоступна",
+      "Telegram-боты не настраиваемы: только фиксированный набор уведомлений",
+      "Fraud Scoring и Self-hosted server — только Standard+ и с доп. оплатой (*)",
+      "BI Insights в Starter — базовая версия (возможно урезанная)",
+      "Starter ограничен 2 пользователями и 2000 конверсиями/месяц",
+      "Нет возможности коммуницировать с системой через Telegram-боты (только входящие)"
+    ],
+    "unique_differentiators": [
+      "Status Pipe Pending (анти-шейв на уровне статусов) — нестандартная фича",
+      "CR Limit с поддержкой периодов (Weekly/Biweekly/Monthly) — удобно для CRG-сделок",
+      "Overnight Mode для ночного трафика без разрывов",
+      "Fingerprint ID для выявления имитации автологина",
+      "HoldFTD от 60 минут до 1 года с ручным апрувом",
+      "Раздельные продукты для Affiliates (crypto/invest) и Gaming — разные системы",
+      "Rесенд группы с рандомизацией интервала (имитация живого трафика)"
+    ],
+    "prospect_concerns_voiced": [
+      "Возможность получить демо-доступ (отказано)",
+      "SaaS vs Self-hosted (ответ: SaaS + опция self-hosted в Standard за доп. оплату)",
+      "Доступ к базе данных для внешней BI-системы (Grafana) (ответ: вероятно невозможно)",
+      "Возможность подключить Slack вместо Telegram (ответ: нет)",
+      "Настраиваемость Telegram-ботов (ответ: нет, фиксированные 3 типа уведомлений)",
+      "Гибкость настройки прав менеджеров (ответ: полная, поэлементный CRUD)",
+      "Гейминг + крипто в одной системе (ответ: две отдельные системы)"
+    ],
+    "prospect_intent": "Высокий — хотят подключиться в ~10 числах марта 2026 г., начинают с Starter плана (1-2 месяца), затем переход на Standard. Ищут систему для нового buying/сетка проекта."
+  },
+  "key_quotes": {
+    "language": "ru",
+    "quotes": [
+      {
+        "speaker": "Петр (Elnopy)",
+        "context": "Описание потоков (Offers) на Dashboard",
+        "quote": "Активные оферы, оферы у нас называются потоки, собственно говоря, где вы соединяете, у кого вы купили — у ваших афилей, поставщиков — и кому вы продаете, брокеру, нетворку — получателям.",
+        "frame_ref": "transcript line 78-80"
+      },
+      {
+        "speaker": "Петр (Elnopy)",
+        "context": "Объяснение анти-шейва (Status Pipe Pending)",
+        "quote": "Статусы имеют логику проставления. Допустим, был callback, callback2, через 5 дней это становится wrong language. Поломанная логика. Эльноппи это видит и помечает оранжевым цветом как pending — ожидает вашего ручного апрува.",
+        "frame_ref": "transcript lines 141-147"
+      },
+      {
+        "speaker": "Петр (Elnopy)",
+        "context": "Fingerprint ID для выявления имитации автологина",
+        "quote": "По факту, если вас хотят обмануть на автологине — симулировать, чтобы под видом живого трафика заходила холодка с одного устройства — это всё видно, цифровым отпечатком показывается. Идёте напрямую к поставщику и жалуетесь.",
+        "frame_ref": "transcript lines 113-119"
+      },
+      {
+        "speaker": "Петр (Elnopy)",
+        "context": "Leads In Pool и автоматический ресенд",
+        "quote": "Лежит с рэнжем от двух минут до 20 минут, система сама выбирает рандомное число. Каждый раз цифра меняется. Вы это всё настроили и пошли заниматься более важными делами — оно всё работает автоматизированно.",
+        "frame_ref": "transcript lines 162-165"
+      },
+      {
+        "speaker": "Петр (Elnopy)",
+        "context": "Overnight режим для ночного трафика",
+        "quote": "За промежуток времени полетят ошибки, полетит всё что угодно, может система забочить вас, система вашего брокера, потому что вы там шлёте постоянно ошибки. Поэтому есть кнопочка Overnight — просто рабочая схема, которая не прекращает поставку трафика.",
+        "frame_ref": "transcript lines 323-333"
+      },
+      {
+        "speaker": "Петр (Elnopy)",
+        "context": "Гибкость прав менеджеров",
+        "quote": "Всё, что вы видите в Эльнопи — это всё кликабельно. Вы настраиваете: каких поставщиков он видит, каких клиентов он видит, какие потоки он регулирует и видит. Вся информация логируется, скрыть какое-то действие нереально от ваших глаз.",
+        "frame_ref": "transcript lines 350-369"
+      },
+      {
+        "speaker": "Петр (Elnopy)",
+        "context": "Status Groups и сокращение времени сверок",
+        "quote": "Вместо того чтобы сверки, которые в понедельник, каждый месяц закрывать по несколько дней — вы их закрываете буквально полчаса, каждую сделку, потому что всё очень быстро и всё понятно.",
+        "frame_ref": "transcript lines 463-466"
+      },
+      {
+        "speaker": "Петр (Elnopy)",
+        "context": "Ответ на вопрос о демо-доступе",
+        "quote": "К сожалению, нет. Демо версии мы не отдаём на руку, уже более 2 лет.",
+        "frame_ref": "transcript line 501"
+      },
+      {
+        "speaker": "Петр (Elnopy)",
+        "context": "Ответ о доступе к базе данных для внешней BI",
+        "quote": "По поводу доступа базы данных, BI Insights — это я уточню, но с вероятностью 99.9%, думаю, вряд ли это возможно, потому что доступ базы данных от невозможен.",
+        "frame_ref": "transcript lines 651-655"
+      },
+      {
+        "speaker": "Петр (Elnopy)",
+        "context": "Деплоймент — SaaS",
+        "quote": "Это наша сторона, это наши сервера. От вас нужен только домен.",
+        "frame_ref": "transcript line 506"
+      },
+      {
+        "speaker": "Петр (Elnopy)",
+        "context": "Поддержка в Telegram",
+        "quote": "Рекомендуем интеграции делать через спорт в Telegram, потому что это быстрее, удобнее. Спорт всегда на связи, регламент ответа до 5 минут.",
+        "frame_ref": "transcript lines 490-493"
+      },
+      {
+        "speaker": "Петр (Elnopy)",
+        "context": "Ценообразование — Starter vs Standard для клиента",
+        "quote": "500 юзоте, 500 юзоте. У нас есть сетап — за поднятие системы 500 USDT, оплата месячная тоже 500. Ценовая политика на базовом варианте стандартная, изменить не могу. Если стандартный — тогда я могу поиграться с ценами, и там будет 500 подключение, 500 месячная оплата.",
+        "frame_ref": "transcript lines 681-701"
+      }
+    ]
+  },
+  "scorecard": {
+    "scoring_basis": "Оценка по 10-балльной шкале на основе просмотренных кадров и транскрипта",
+    "scores": {
+      "lead_management": {
+        "score": 8,
+        "notes": "Полный CRUD по лидам, статусная история, Status Pipe Pending (анти-шейв), Leads In Pool с авторесендом, импорт/экспорт. Минус: нет realtime-уведомлений в интерфейсе."
+      },
+      "traffic_routing": {
+        "score": 9,
+        "notes": "Потоки (Offers) с Daily/Total/Schedule лимитами, LinkGroups для сокращения потоков, ротация с автофейловером, Allowed/Blocked параметры, Substitutes, Overnight mode. Очень сильный функционал."
+      },
+      "fraud_prevention": {
+        "score": 8,
+        "notes": "4 механизма (Source Detection, Fingerprint ID, IP-mismatch, Country-mismatch), Telegram-бот, Status Pipe Pending как анти-шейв на уровне статусов. Минус: Fraud Scoring — платная опция (*доп. оплата)."
+      },
+      "analytics": {
+        "score": 8,
+        "notes": "4 типа отчётов (System, Funnel, Advanced/Custom, BI Insights). Кастомные пивоты с 13 группировками. Радар-диаграммы BI. Минус: нет API-доступа к данным, нет Slack-интеграции, Telegram-боты ненастраиваемы."
+      },
+      "integrations": {
+        "score": 8,
+        "notes": "200+ CRM-шаблонов, быстрая интеграция аффилиатов (30 сек), постбэки (4 события, 3 HTTP-метода, 7 template-переменных). Минус: нет Slack, нет доступа к DB для внешних BI."
+      },
+      "user_management": {
+        "score": 9,
+        "notes": "4 роли, поэлементная матрица CRUD-прав (~50+ пунктов), IP whitelist, полный аудит-лог, сессионный мониторинг. Без ограничений по кол-ву пользователей (Standard+)."
+      },
+      "pricing_competitiveness": {
+        "score": 7,
+        "notes": "Starter: 499€/мес + 500€ setup. Standard: 999€/мес + 1000€ setup. По запросу Standard предложен по цене ~500+500 USDT. Скидка 20% при годовой оплате. Ценообразование прозрачное, но Starter ограничен."
+      },
+      "support_quality": {
+        "score": 8,
+        "notes": "7/7 Telegram-поддержка, SLA 5 мин, мануал EN/RU на Confluence, система тикетов, API-документация in-app. Минус: нет демо-доступа, нет Slack."
+      },
+      "onboarding_speed": {
+        "score": 9,
+        "notes": "Интеграция аффилиата: 30 секунд. 200+ встроенных CRM-шаблонов для получателей. Кнопка Add New в одном месте во всех разделах."
+      },
+      "overall": {
+        "score": 8.2,
+        "summary": "Зрелый продукт с сильным функционалом для crypto/invest affiliate CRM. Явные конкурентные преимущества: Speed of Integration, Status Pipe Pending (анти-шейв), CR Limits для CRG, Overnight Mode, Fingerprint ID. Основные ограничения: закрытый доступ к данным, ненастраиваемые боты, отсутствие демо."
+      }
+    }
+  },
+  "functional_breakdown": {
+    "navigation_structure": {
+      "top_navbar": [
+        "Home",
+        "Leads",
+        "Affiliates",
+        "Recipients",
+        "Users",
+        "Analytics",
+        "Utils",
+        "Support",
+        "Finance"
+      ],
+      "leads_submenu": [
+        "Leads (главная)",
+        "Leads in Pool"
+      ],
+      "affiliates_submenu": [
+        "Affiliates",
+        "Links",
+        "Link Groups"
+      ],
+      "recipients_submenu": [
+        "Recipients",
+        "Offers"
+      ],
+      "users_submenu": [
+        "All Users",
+        "Admins",
+        "Managers",
+        "ACL"
+      ],
+      "analytics_submenu": [
+        "System Report",
+        "Funnel Report",
+        "Advanced Report",
+        "BI Insights"
+      ],
+      "utils_submenu": [
+        "Resend Groups",
+        "Status Groups",
+        "Country Groups",
+        "Postbacks",
+        "Blacklist",
+        "Additional Parameters"
+      ],
+      "support_submenu": [
+        "System Manual",
+        "API Documentation",
+        "Tickets",
+        "Contact Us"
+      ],
+      "finance_submenu": "Присутствует в navbar, детали не демонстрировались"
+    },
+    "feature_map": [
+      {
+        "section": "Dashboard",
+        "ui_elements": [
+          "Income/Expenses/Profit cards",
+          "Weekly Revenue bar chart",
+          "Active Offers table",
+          "Active Recipients table",
+          "Active Affiliates table"
+        ],
+        "frame_refs": [
+          "frame_000001.jpg",
+          "frame_000002.jpg",
+          "frame_000773.jpg",
+          "frame_000829.jpg",
+          "frame_000940.jpg"
+        ]
+      },
+      {
+        "section": "Leads / Leads table",
+        "ui_elements": [
+          "Status counter badges (All/Error/NotValid/Valid/Test/ACQ/CR)",
+          "Filter panel (Dates/Affiliates/Recipients/Country/Hide toggles)",
+          "Table with COUNTRY/REGISTRATION DATE/AUTOLOGIN/FRAUD SCORING/RECIPIENT/AFFILIATE/INTERNAL STATUS/STATUS/ERROR",
+          "Status breakdown popup (click on CR badge)",
+          "CR toggle (all leads vs valid leads)",
+          "Export/Download/Import buttons",
+          "Columns customization"
+        ],
+        "frame_refs": [
+          "frame_000076.jpg",
+          "frame_000077.jpg",
+          "frame_000078.jpg",
+          "frame_000079.jpg",
+          "frame_000080.jpg",
+          "frame_000082.jpg",
+          "frame_000085.jpg",
+          "frame_000710.jpg",
+          "frame_000711.jpg",
+          "frame_000712.jpg",
+          "frame_000713.jpg",
+          "frame_000714.jpg",
+          "frame_000716.jpg",
+          "frame_000719.jpg",
+          "frame_000770.jpg"
+        ]
+      },
+      {
+        "section": "Leads / Status Pipe Pending (Anti-Shave)",
+        "ui_elements": [
+          "Orange 'Pending' badge on lead",
+          "Status history view per lead",
+          "Filter by status-pipe-pending"
+        ],
+        "frame_refs": [
+          "frame_000139.jpg",
+          "frame_000141.jpg",
+          "frame_000147.jpg",
+          "frame_000148.jpg"
+        ]
+      },
+      {
+        "section": "Leads In Pool",
+        "ui_elements": [
+          "Leads pool table",
+          "Resend configuration (interval range, date/time start)",
+          "Import Excel button",
+          "Auto-resend settings"
+        ],
+        "frame_refs": [
+          "frame_000152.jpg",
+          "frame_000154.jpg",
+          "frame_000157.jpg",
+          "frame_000158.jpg",
+          "frame_000159.jpg",
+          "frame_000160.jpg"
+        ]
+      },
+      {
+        "section": "Affiliates",
+        "ui_elements": [
+          "Table (ID/NAME/EMAIL/API TOKEN/DAYS UNTIL DEACTIVATION/ENABLED GET LEADS(API)/ACTIONS)",
+          "Enabled/Disabled tabs",
+          "Add New button",
+          "Filters/Columns/Presets/Refresh/Export"
+        ],
+        "frame_refs": [
+          "frame_000769.jpg"
+        ]
+      },
+      {
+        "section": "Affiliates / Create Affiliate",
+        "ui_elements": [
+          "Name field",
+          "Email field",
+          "Domain field",
+          "Password generate button",
+          "Copy credentials"
+        ],
+        "frame_refs": [
+          "frame_000169.jpg",
+          "frame_000170.jpg",
+          "frame_000171.jpg",
+          "frame_000173.jpg",
+          "frame_000174.jpg",
+          "frame_000175.jpg"
+        ]
+      },
+      {
+        "section": "Links",
+        "ui_elements": [
+          "Links table (ID/NAME/EMAIL/URL/ACTIONS)",
+          "Copy link button"
+        ],
+        "frame_refs": [
+          "frame_000185.jpg",
+          "frame_000186.jpg",
+          "frame_000187.jpg",
+          "frame_000188.jpg",
+          "frame_000189.jpg",
+          "frame_000190.jpg",
+          "frame_000191.jpg"
+        ]
+      },
+      {
+        "section": "Link Groups",
+        "ui_elements": [
+          "Link Groups table",
+          "Create Link Group modal (Name + affiliate checkboxes)"
+        ],
+        "frame_refs": [
+          "frame_000208.jpg",
+          "frame_000210.jpg",
+          "frame_000213.jpg",
+          "frame_000214.jpg"
+        ]
+      },
+      {
+        "section": "Recipients",
+        "ui_elements": [
+          "Table (ID/NAME/CRM TYPE/DAYS UNTIL DEACTIVATION/LAST SYNCED DATE/EXECUTION TIME/ENABLED UPDATES/ACTIONS)",
+          "Create Recipient modal (Name/Fraud Scoring Month Limit/CRM dropdown/CRM-specific fields/Allowed-Blocked toggle)",
+          "CRM type search filter"
+        ],
+        "frame_refs": [
+          "frame_000405.jpg",
+          "frame_000409.jpg",
+          "frame_000414.jpg",
+          "frame_000415.jpg",
+          "frame_000416.jpg",
+          "frame_000420.jpg"
+        ]
+      },
+      {
+        "section": "Recipients / Offers (Потоки)",
+        "ui_elements": [
+          "Table (ID/NAME/RECIPIENT/DAILY LIMITS/TOTAL LIMITS/SCHEDULE LIMITS/SCHEDULE DATES/LOCKED badge/FRAUD SCORING/ACTIONS)",
+          "Tabs (Schedules/Enabled/Disabled/All/Archived)",
+          "Create Offer modal (Name/Recipient/Link Group/Daily Limits/Total Limits/Fraud Scoring toggle/Freeze status on ACQ/Allowed-Blocked toggle/Pending ACQ/CR Limit toggle/Test Lead checkbox)"
+        ],
+        "frame_refs": [
+          "frame_000423.jpg",
+          "frame_000425.jpg",
+          "frame_000426.jpg",
+          "frame_000427.jpg",
+          "frame_000430.jpg",
+          "frame_000431.jpg",
+          "frame_000464.jpg"
+        ]
+      },
+      {
+        "section": "Offers / CR Limits",
+        "ui_elements": [
+          "CR Limits Calendar (Year/Month/Week/List views)",
+          "Add New CR Limit Period button",
+          "Create CR Limit Period modal (CR Limit %/Period dropdown/Start Date/End Date)"
+        ],
+        "frame_refs": [
+          "frame_000481.jpg",
+          "frame_000482.jpg",
+          "frame_000488.jpg",
+          "frame_000498.jpg"
+        ]
+      },
+      {
+        "section": "Offers / Prices",
+        "ui_elements": [
+          "Prices table (ID/BUY TYPE/BUY PRICE/SELL TYPE/SELL PRICE)",
+          "Create Offer Price modal (Buy Price/Sell Price/Buy Type/Sell Type/Link ID/Countries/Funnels)"
+        ],
+        "frame_refs": [
+          "frame_000500.jpg",
+          "frame_000502.jpg",
+          "frame_000513.jpg"
+        ]
+      },
+      {
+        "section": "Offers / Substitutes",
+        "ui_elements": [
+          "Substitutes table (PARAMETERS/VALUE/SUBSTITUTE/ACTIONS)",
+          "Create Substitute modal (Parameter dropdown: domain/funnel/language/source/utm_campaign/utm_content/utm_medium/utm_source/utm_term / Value / Substitute)"
+        ],
+        "frame_refs": [
+          "frame_000519.jpg",
+          "frame_000540.jpg",
+          "frame_000541.jpg"
+        ]
+      },
+      {
+        "section": "Offers / Schedule",
+        "ui_elements": [
+          "Left panel (Locked status/Schedule Limits/Total Limits/On Date/Off Date/Today)",
+          "Schedule Offer modal (Unlocked badge/Overnight toggle/Per-day grid Mon-Sun with ON TIME/OFF TIME/LIMIT/Global On Date/Off Date)",
+          "Logs table"
+        ],
+        "frame_refs": [
+          "frame_000543.jpg",
+          "frame_000544.jpg",
+          "frame_000572.jpg"
+        ]
+      },
+      {
+        "section": "Users / All Users",
+        "ui_elements": [
+          "Table (ID/NAME/EMAIL/API TOKEN/ROLE/LAST LOGIN/ENABLED GET LEADS(API)/ACTIONS)",
+          "16 affiliates in demo"
+        ],
+        "frame_refs": [
+          "frame_000575.jpg"
+        ]
+      },
+      {
+        "section": "Users / Managers",
+        "ui_elements": [
+          "Table (ID/NAME/EMAIL/ACTIONS)",
+          "Enabled/Disabled tabs",
+          "Manager detail (Profile/Affiliates/Links/Recipients/Link Groups/Offers/Ip Access/Permissions/Logs tabs)"
+        ],
+        "frame_refs": [
+          "frame_000589.jpg",
+          "frame_000935.jpg",
+          "frame_000938.jpg",
+          "frame_000941.jpg"
+        ]
+      },
+      {
+        "section": "Users / Managers / Permissions",
+        "ui_elements": [
+          "CRUD matrix (View/Add/Edit/Delete columns)",
+          "Category rows (Affiliates/Analytics/Country Group/Dashboard/Finance/Import)",
+          "Select All / Revoke All buttons",
+          "~50+ individual permission checkboxes"
+        ],
+        "frame_refs": [
+          "frame_000582.jpg",
+          "frame_000584.jpg",
+          "frame_000937.jpg",
+          "frame_000942.jpg",
+          "frame_000944.jpg"
+        ]
+      },
+      {
+        "section": "Users / Managers / Profile",
+        "ui_elements": [
+          "User Id/Name/Email/Role/Last login/Created At/Active",
+          "Sessions table (DEVICE/EXPIRES AT/LOGIN BY/IPS HISTORY/USER AGENT/CLIENT NAME/OS NAME/OS VERSION/BRAND/MODEL/ACTIONS)"
+        ],
+        "frame_refs": [
+          "frame_000603.jpg",
+          "frame_000606.jpg"
+        ]
+      },
+      {
+        "section": "Users / Managers / Logs",
+        "ui_elements": [
+          "Audit log table (ID/AT/ACTION/ENTITY ID/ENTITY NAME/BEFORE/AFTER/REQUEST)"
+        ],
+        "frame_refs": [
+          "frame_000607.jpg"
+        ]
+      },
+      {
+        "section": "Analytics / System Report",
+        "ui_elements": [
+          "Filters (Affiliates/Links/Manager/Offers/Recipients/Recommendations/Countries/Languages/Dates)",
+          "Columns customization",
+          "Export button",
+          "Total table (COUNTRY/ALL/VALID/NOT VALID/WRONG/UND/NA/NA%/ACQ/CONV/TACQ/TCONV/TBP/TSC/PROFIT)",
+          "Drill-down tabs (Affiliates/Offers/Recipients)",
+          "Date presets picker"
+        ],
+        "frame_refs": [
+          "frame_000611.jpg",
+          "frame_000612.jpg",
+          "frame_000614.jpg",
+          "frame_000615.jpg",
+          "frame_000617.jpg",
+          "frame_000618.jpg",
+          "frame_000622.jpg",
+          "frame_000623.jpg",
+          "frame_000624.jpg",
+          "frame_000914.jpg",
+          "frame_000915.jpg",
+          "frame_000925.jpg",
+          "frame_000926.jpg"
+        ]
+      },
+      {
+        "section": "Analytics / Funnel Report",
+        "ui_elements": [
+          "Filters (Affiliates/Links/Recipients/Funnels/Languages/Countries/Dates)",
+          "Export button",
+          "Total table (TOTAL LEADS/VALID/INVALID/ACQ/CR/CR VALID)",
+          "Breakdown by FUNNEL/AFFILIATE/RECIPIENT"
+        ],
+        "frame_refs": [
+          "frame_000632.jpg",
+          "frame_000635.jpg",
+          "frame_000636.jpg",
+          "frame_000637.jpg",
+          "frame_000916.jpg"
+        ]
+      },
+      {
+        "section": "Analytics / BI Insights",
+        "ui_elements": [
+          "Tabs (Top GEO/Top Conversion/Top Leads Count/Top Profit/Top Devices)",
+          "Pentagon radar charts x3 (Top GEO)",
+          "Line and bar charts (Top Conversion)",
+          "Filters/Refresh",
+          "Date filter badge"
+        ],
+        "frame_refs": [
+          "frame_000642.jpg",
+          "frame_000643.jpg",
+          "frame_000644.jpg",
+          "frame_000645.jpg",
+          "frame_000647.jpg",
+          "frame_000649.jpg",
+          "frame_000650.jpg",
+          "frame_000830.jpg",
+          "frame_000831.jpg",
+          "frame_000832.jpg"
+        ]
+      },
+      {
+        "section": "Analytics / Advanced Report",
+        "ui_elements": [
+          "Named report tabs (Test/TEst2/Report_Source_Funnel/+Add New)",
+          "Filters (Affiliates/Links/Link Groups/Manager/Offers/Recipients/Countries/Languages/Dates)",
+          "Add New Report modal (Name/Group By Fields dropdown/Columns checkboxes)",
+          "Group By options: Affiliate/Link/Link Group/Recipient/Offer/Country/Language/Funnel/Source/UTM Campaign/UTM Content/UTM Medium/UTM Source"
+        ],
+        "frame_refs": [
+          "frame_000653.jpg",
+          "frame_000654.jpg",
+          "frame_000657.jpg",
+          "frame_000918.jpg",
+          "frame_000919.jpg",
+          "frame_000923.jpg"
+        ]
+      },
+      {
+        "section": "Utils / Resend Groups",
+        "ui_elements": [
+          "Table (ID/NAME/AFFILIATE/ACTIONS)",
+          "Edit Resend Group modal (Discontinue From toggle/LINK/LINK GROUPS/OFFERS table)"
+        ],
+        "frame_refs": [
+          "frame_000661.jpg",
+          "frame_000662.jpg",
+          "frame_000663.jpg"
+        ]
+      },
+      {
+        "section": "Utils / Status Groups",
+        "ui_elements": [
+          "Grouped Statuses panel (left)",
+          "Ungrouped Statuses panel (right)",
+          "Add Internal Status button / modal (Name/Status Type)",
+          "Add External Status button / modal (Name/Internal Status dropdown)"
+        ],
+        "frame_refs": [
+          "frame_000685.jpg",
+          "frame_000686.jpg",
+          "frame_000688.jpg",
+          "frame_000689.jpg",
+          "frame_000703.jpg",
+          "frame_000710.jpg",
+          "frame_000724.jpg",
+          "frame_000731.jpg"
+        ]
+      },
+      {
+        "section": "Utils / Country Groups",
+        "ui_elements": [
+          "Table (ID/NAME/COUNTRIES)",
+          "Create Group modal (Name/Countries multi-select)"
+        ],
+        "frame_refs": [
+          "frame_000733.jpg",
+          "frame_000736.jpg"
+        ]
+      },
+      {
+        "section": "Utils / Postbacks",
+        "ui_elements": [
+          "Table (ID/URL/HTTP METHOD/EVENT TYPE/AFFILIATE/DATA TYPE/HEADERS/PARAMS/CREATED AT)",
+          "Create Postback modal (Template vars display/Postback URL/Affiliate/Event dropdown/HTTP Method/Data format radio/Headers Key-Value)"
+        ],
+        "frame_refs": [
+          "frame_000737.jpg",
+          "frame_000739.jpg",
+          "frame_000741.jpg"
+        ]
+      },
+      {
+        "section": "Support / API Documentation",
+        "ui_elements": [
+          "Leads Registration endpoint (POST /api/v1/integration/api_token/API_AFFILIATE_TOKEN)",
+          "Parameters table (link_id/fname/email/fullphone/ip/country/language/source)"
+        ],
+        "frame_refs": [
+          "frame_000743.jpg"
+        ]
+      },
+      {
+        "section": "Support / Tickets",
+        "ui_elements": [
+          "Opened/Closed tabs",
+          "Table (ID/ISSUE/OPENED BY/STATUS/PRIORITY/CREATED DATE/UPDATED DATE/ACTIONS)",
+          "Create Ticket modal (Issue/Description/Add Files)"
+        ],
+        "frame_refs": [
+          "frame_000744.jpg",
+          "frame_000745.jpg",
+          "frame_000749.jpg",
+          "frame_000752.jpg",
+          "frame_000757.jpg"
+        ]
+      },
+      {
+        "section": "Support / System Manual",
+        "ui_elements": [
+          "Language chooser modal (EN Manual / RU Manual)",
+          "Confluence wiki page (Elnopy Manual RU) с разделами: Offers/Substitutes tab/Affiliates/Leads in pool/Managers/Admins"
+        ],
+        "frame_refs": [
+          "frame_000747.jpg",
+          "frame_000751.jpg",
+          "frame_000753.jpg"
+        ]
+      },
+      {
+        "section": "Elnopy Marketing Website",
+        "ui_elements": [
+          "Nav: HOME/PRODUCTS/CAREERS/ABOUT ELNOPY/CONTACT US + BOOK A DEMO CTA",
+          "Chess knight hero image (3D)",
+          "Products tabs: Affiliates/Gaming/Advertisement",
+          "Pricing table: STARTER 499€/STANDARD 999€/ADVANCED CUSTOM",
+          "20% off on annual subscription banner",
+          "Chess knight mascot (dark brown 3D model)"
+        ],
+        "frame_refs": [
+          "frame_000806.jpg",
+          "frame_000807.jpg",
+          "frame_000808.jpg",
+          "frame_000809.jpg",
+          "frame_000811.jpg",
+          "frame_000814.jpg",
+          "frame_000895.jpg",
+          "frame_000896.jpg",
+          "frame_000898.jpg",
+          "frame_000910.jpg",
+          "frame_000931.jpg",
+          "frame_000950.jpg",
+          "frame_000951.jpg",
+          "frame_000957.jpg",
+          "frame_000962.jpg",
+          "frame_000965.jpg",
+          "frame_000966.jpg",
+          "frame_000975.jpg",
+          "frame_000990.jpg"
+        ]
+      },
+      {
+        "section": "Elnopy Loading / Branding",
+        "ui_elements": [
+          "White outline chess knight on dark blue background (loading screen)",
+          "Logo: chess knight icon + 'ELNOPY' text + 'v2.0' label",
+          "Footer: COPYRIGHT © 2021 Elnopy, All rights Reserved | Made by Elnopy"
+        ],
+        "frame_refs": [
+          "frame_000590.jpg",
+          "frame_000939.jpg",
+          "frame_001042.jpg"
+        ]
+      }
+    ]
+  },
+  "web_enrichment": {
+    "enriched_at": "2026-03-04T10:00:00Z",
+    "search_queries_used": [
+      "elnopy.com WebFetch — главная страница",
+      "elnopy.com/about — страница о компании",
+      "elnopy.com/careers — вакансии",
+      "elnopy.com/products/ — продукты и цены",
+      "Elnopy crypto CRM review affiliate tracking (Tavily)",
+      "Elnopy LinkedIn company employees Ukraine (Tavily)",
+      "elnopy.tech OR elnopy affiliate iGaming forex review 2024 2025 (Tavily)",
+      "cy.linkedin.com/company/elnopy — страница компании LinkedIn (extract)"
+    ],
+    "company": {
+      "funding": {
+        "value": "не найдено публично",
+        "source": null,
+        "confidence": "low"
+      },
+      "team_size": {
+        "value": "9 сотрудников на LinkedIn",
+        "source": "linkedin.com/company/elnopy",
+        "confidence": "medium",
+        "trend": "small team / стартап"
+      },
+      "headquarters": {
+        "value": "Лимасол, Кипр (зарегистрирована)",
+        "note": "Разработка вероятно на Украине — сотрудники с украинскими профилями (Киев, Львов)",
+        "source": "linkedin.com/company/elnopy",
+        "confidence": "high"
+      },
+      "founded": {
+        "value": "2021",
+        "source": "elnopy.com/about",
+        "confidence": "high"
+      },
+      "industry_classification": {
+        "linkedin": "IT System Operations and Maintenance",
+        "source": "linkedin.com/company/elnopy"
+      },
+      "leadership": [
+        {
+          "name": "Mariana Epik",
+          "role": "Sales / BD (упоминает слоган 'We are your tracking GURU')",
+          "linkedin": "ua.linkedin.com/in/mariana-epik-6abb12213",
+          "location": "Kyiv",
+          "confidence": "medium"
+        }
+      ],
+      "known_employees": [
+        {
+          "name": "Kateryna Rybkina",
+          "role": "Frontend Developer",
+          "source": "LinkedIn"
+        },
+        {
+          "name": "Ivan Dzeva",
+          "role": "General QA Engineer",
+          "source": "LinkedIn"
+        },
+        {
+          "name": "Stanislav Andrushchak",
+          "role": "Technical Support",
+          "source": "LinkedIn"
+        },
+        {
+          "name": "Oleksii Torokhtii",
+          "role": "QA",
+          "source": "LinkedIn"
+        }
+      ],
+      "active_hiring": {
+        "value": true,
+        "open_positions": [
+          "PHP Middle Developer",
+          "Technical Support",
+          "Business Developer"
+        ],
+        "source": "elnopy.com/careers",
+        "note": "PHP 7 / Laravel / PostgreSQL / Redis стек — инхаус разработка"
+      },
+      "social_presence": {
+        "instagram": "@elnopy.guru",
+        "facebook": "facebook.com/p/Elnopy-100091407780600/",
+        "telegram": "упомянут на сайте",
+        "linkedin": "linkedin.com/company/elnopy"
+      },
+      "recent_news": []
+    },
+    "product": {
+      "positioning_tagline": "We are your tracking guru",
+      "core_description": "Modular Tracking Technology created with a business and user friendly approach and customized for your business needs",
+      "source": "elnopy.com",
+      "pricing": {
+        "plans": [
+          {
+            "name": "Starter",
+            "product": "Elnopy Affiliates",
+            "price_monthly": "€499/мес",
+            "setup_fee": "€500",
+            "annual_discount": "20%",
+            "features": [
+              "До 2 пользователей",
+              "2 000 конверсий в месяц",
+              "Базовая аналитика",
+              "Базовая поддержка"
+            ]
+          },
+          {
+            "name": "Standard",
+            "product": "Elnopy Affiliates",
+            "price_monthly": "€999/мес",
+            "setup_fee": "€1 000",
+            "annual_discount": "20%",
+            "features": [
+              "Неограниченные пользователи",
+              "Маркетплейс",
+              "BI-аналитика",
+              "Финансовый модуль",
+              "Fraud Scoring (доп. оплата)",
+              "Персональные боты",
+              "Self-hosted опция"
+            ]
+          },
+          {
+            "name": "Standard Gaming",
+            "product": "Elnopy Gaming",
+            "price_monthly": "€1 099/мес",
+            "setup_fee": "€1 000",
+            "annual_discount": "20%",
+            "features": [
+              "iGaming: казино, ставки на спорт, лотереи",
+              "Fraud prevention в реальном времени",
+              "Отчёты по конверсиям, выигрышам, депозитам",
+              "Аналитика поведения игроков"
+            ]
+          },
+          {
+            "name": "Advanced",
+            "product": "Elnopy Affiliates / Gaming",
+            "price_monthly": "Custom",
+            "setup_fee": "Custom",
+            "annual_discount": "20%",
+            "features": [
+              "Персональный аккаунт-менеджер",
+              "Мультидоменная функциональность",
+              "Всё из Standard",
+              "Индивидуальные условия"
+            ]
+          },
+          {
+            "name": "Advertisement",
+            "product": "Elnopy Advertisement",
+            "price_monthly": "Coming soon",
+            "features": [
+              "Третий продукт — ещё не запущен"
+            ]
+          }
+        ],
+        "source": "elnopy.com/products/ + демо-встреча 2026-02-27",
+        "last_checked": "2026-03-04",
+        "notes": "Цены подтверждены сайтом. Fraud Scoring выносится в доп. оплату на Standard. Annual discount 20% подтверждён."
+      },
+      "key_features": [
+        "Fraud Scoring — автообнаружение мультиаккаунтов и фрода",
+        "Real-time fraud detection и алерты",
+        "Сегментация кампаний по региону и типу трафика",
+        "Зашифрованная БД",
+        "Self-hosted server опция",
+        "Модульные права доступа",
+        "Real-time аналитика и отчёты",
+        "Финансовый модуль (Standard+)",
+        "Маркетплейс (Standard+)",
+        "BI-аналитика (Standard+)"
+      ],
+      "tech_stack_hints": [
+        "PHP 7 / Laravel (backend — из вакансии)",
+        "PostgreSQL (БД — из вакансии)",
+        "Redis (кэш — из вакансии)",
+        "Self-hosted доступен"
+      ],
+      "development_velocity": {
+        "release_frequency": "не публикуется",
+        "last_release": "не определено",
+        "roadmap_focus": "Advertisement product (coming soon) — третий продукт в разработке",
+        "changelog_public": false
+      },
+      "market_sentiment": {
+        "g2_rating": null,
+        "capterra_rating": null,
+        "g2_reviews_count": null,
+        "top_complaints": [],
+        "top_praises": [],
+        "sources": [],
+        "note": "Публичных отзывов на G2/Capterra не обнаружено. Demo-only модель продаж снижает публичность."
+      }
+    },
+    "marketing": {
+      "website_structure": {
+        "main_cta": "Book a Demo",
+        "pricing_public": true,
+        "pages_confirmed": [
+          "Home",
+          "About",
+          "Products",
+          "Careers",
+          "Terms & Privacy"
+        ],
+        "languages": "мультиязычный сайт"
+      },
+      "monthly_traffic_estimate": {
+        "value": "не определено публично",
+        "source": null,
+        "note": "elnopy.tech — таймаут/закрыт. elnopy.com — маркетинговый сайт без Similarweb-данных в открытом доступе."
+      },
+      "top_organic_keywords": [],
+      "content_cadence": {
+        "instagram": "активный — регулярные посты про Fraud Scoring и функции продукта",
+        "facebook": "активный",
+        "linkedin": "минимальный — 9 сотрудников, без регулярного контента",
+        "blog": "не обнаружен"
+      },
+      "paid_advertising": {
+        "active": false,
+        "observed_channels": [],
+        "note": "Признаков платной рекламы не обнаружено"
+      },
+      "go_to_market": "Demo-only / inbound через соцсети и SEO. Нет self-serve / trial."
+    },
+    "technology": {
+      "tech_stack": [
+        {
+          "component": "backend",
+          "technology": "PHP 7 / Laravel",
+          "confidence": "high",
+          "source": "вакансия careers"
+        },
+        {
+          "component": "database",
+          "technology": "PostgreSQL",
+          "confidence": "high",
+          "source": "вакансия careers"
+        },
+        {
+          "component": "cache",
+          "technology": "Redis",
+          "confidence": "high",
+          "source": "вакансия careers"
+        }
+      ],
+      "deployment": {
+        "saas": true,
+        "self_hosted": true,
+        "note": "Self-hosted доступен на Standard+ планах"
+      },
+      "integrations_count": null,
+      "integrations_mentioned": [
+        "Telephony (упомянута в вакансии Technical Support)",
+        "Payment systems (упомянуты в вакансии Technical Support)",
+        "SDK (упомянут в вакансии Business Developer)"
+      ],
+      "api_maturity": "не документировано публично — SDK упоминается в вакансии",
+      "compliance_certifications": [],
+      "security_features": [
+        "Зашифрованная БД",
+        "Fraud Scoring",
+        "Real-time мониторинг трафика"
+      ]
+    },
+    "signals": {
+      "growth_signals": [
+        "Активный найм: 3 открытые позиции (PHP Dev, Tech Support, BD)",
+        "Advertisement product в разработке (coming soon) — расширение продуктовой линейки",
+        "Активные соцсети: Instagram и Facebook с product-focused контентом",
+        "LinkedIn: 9 сотрудников — малая команда с потенциалом роста",
+        "Присутствие на Кипре — классическая fintech-юрисдикция"
+      ],
+      "stress_signals": [
+        "elnopy.tech (основной продукт) недоступен публично — возможно закрыт за firewall или на реструктуризации",
+        "Нет публичных отзывов на G2/Capterra — низкая узнаваемость бренда",
+        "Минимальный LinkedIn контент — ограниченный inbound маркетинг",
+        "Команда всего 9 человек — риски масштабируемости поддержки"
+      ],
+      "strategic_intent": [
+        "Expansion в iGaming (Elnopy Gaming) дополнительно к core Affiliates",
+        "Третий продукт Advertisement — движение к full-stack affiliate экосистеме",
+        "Self-hosted опция — targeting enterprise / compliance-sensitive клиентов (regulated markets)",
+        "Кипрская регистрация при украинской команде — tax efficiency + EU footprint"
+      ]
+    },
+    "contradictions_with_meeting": [
+      "Сайт подтверждает все цены из демо: €499/€999/Custom + setup fees — противоречий нет",
+      "Gaming план дороже Affiliates Standard (€1 099 vs €999) — это не упоминалось явно на встрече"
+    ],
+    "data_gaps": [
+      "Руководство / CEO / основатели не идентифицированы публично (кроме одного BD-сотрудника)",
+      "Финансирование не найдено — bootstrapped или не раскрывается",
+      "elnopy.tech недоступен — невозможно изучить UI продукта напрямую",
+      "Точный объём трафика неизвестен",
+      "Количество активных клиентов неизвестно",
+      "G2/Capterra: нет профиля или нет отзывов",
+      "Детальные условия Fraud Scoring (доп. тариф) не раскрываются"
+    ],
+    "analyst_summary": "Elnopy — небольшой (9 сотрудников по LinkedIn) нишевый вендор, зарегистрированный на Кипре с командой разработки предположительно на Украине. Основан в 2021. Продукты: Elnopy Affiliates (crypto/forex CRM) и Elnopy Gaming (iGaming), третий продукт Advertisement в разработке. Ценообразование подтверждено сайтом: €499–€1 099/мес + setup fees, 20% скидка за год. Технический стек — PHP/Laravel/PostgreSQL/Redis (из вакансий). Self-hosted опция позиционируется для regulated-рынков. Публичного присутствия в обзорах (G2/Capterra) нет — работают исключительно через demo-only воронку. Активный найм сигнализирует о росте, но малый размер команды создаёт риски масштабируемости. elnopy.tech (основной продукт URL) недоступен публично."
+  }
+}

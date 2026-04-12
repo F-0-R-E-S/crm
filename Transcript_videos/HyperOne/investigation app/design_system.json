@@ -1,0 +1,264 @@
+{
+  "meta": {
+    "product": "HyperOne CRM",
+    "version": "4.0.136",
+    "framework": "Angular 16.2.12 + Angular Material",
+    "extracted_date": "2026-03-03",
+    "source": "demo.hypernet.pro"
+  },
+
+  "color_palette": {
+    "background": {
+      "page": "#100e1f",
+      "page_rgb": "rgb(16, 14, 31)",
+      "sidebar": "#181726",
+      "sidebar_rgb": "rgb(24, 23, 38)",
+      "card": "#252434",
+      "card_rgb": "rgb(37, 36, 52)",
+      "input": "#3a374a",
+      "input_rgb": "rgb(58, 55, 74)",
+      "table_row_hover": "rgba(255,255,255,0.04)",
+      "table_header": "#1e1d2e"
+    },
+    "text": {
+      "primary": "#ffffff",
+      "secondary": "rgba(255,255,255,0.6)",
+      "muted": "rgba(255,255,255,0.4)",
+      "label": "rgba(255,255,255,0.7)",
+      "placeholder": "rgba(255,255,255,0.35)"
+    },
+    "brand": {
+      "gradient_cta": "linear-gradient(92.69deg, rgb(254,160,76) 0%, rgb(229,80,138) 100%)",
+      "gradient_start": "#fea04c",
+      "gradient_end": "#e5508a",
+      "logo_text": "#fea04c"
+    },
+    "status": {
+      "success_green": "#4caf50",
+      "success_text": "#4caf50",
+      "error_red": "#f44336",
+      "warning_orange": "#ff9800",
+      "info_blue": "#2196f3",
+      "neutral_gray": "rgba(255,255,255,0.4)"
+    },
+    "badge": {
+      "valid_bg": "rgba(76,175,80,0.15)",
+      "valid_text": "#4caf50",
+      "invalid_bg": "rgba(244,67,54,0.15)",
+      "invalid_text": "#f44336",
+      "deposit_bg": "rgba(76,175,80,0.2)",
+      "deposit_text": "#4caf50",
+      "refusal_bg": "rgba(244,67,54,0.2)",
+      "refusal_text": "#f44336"
+    },
+    "border": {
+      "default": "rgba(255,255,255,0.08)",
+      "focused": "rgba(254,160,76,0.6)",
+      "card": "rgba(255,255,255,0.06)"
+    }
+  },
+
+  "typography": {
+    "font_family": "'Montserrat', sans-serif",
+    "font_family_fallback": "sans-serif",
+    "weights": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+    "sizes": {
+      "page_title": "20px / 600",
+      "section_title": "16px / 600",
+      "body": "14px / 400",
+      "body_small": "13px / 400",
+      "label": "12px / 500",
+      "caption": "11px / 400",
+      "code": "12px / monospace"
+    }
+  },
+
+  "spacing": {
+    "sidebar_width_expanded": "250px",
+    "sidebar_width_collapsed": "56px",
+    "header_height": "56px",
+    "content_padding": "24px",
+    "card_padding": "20px",
+    "form_field_gap": "16px",
+    "table_row_height": "52px",
+    "table_header_height": "48px"
+  },
+
+  "layout": {
+    "type": "fixed_sidebar_top_header",
+    "sidebar": {
+      "position": "left",
+      "expandable": true,
+      "toggle_icon": "chevron",
+      "logo_area": "top of sidebar",
+      "logout_button": "bottom of sidebar",
+      "active_item_indicator": "left border accent gradient"
+    },
+    "header": {
+      "position": "top-right overlay",
+      "content": "current datetime (timezone Europe/Berlin), user name, role badge, avatar button"
+    },
+    "main_content": {
+      "layout": "full width with padding",
+      "page_title_bar": "sticky top with page title, result count, toolbar actions"
+    }
+  },
+
+  "components": {
+    "button_primary": {
+      "background": "linear-gradient(92.69deg, #fea04c 0%, #e5508a 100%)",
+      "text_color": "#ffffff",
+      "border_radius": "6px",
+      "padding": "8px 24px",
+      "font_weight": 600,
+      "hover": "opacity 0.9",
+      "examples": ["Створити бренд", "Зберегти", "Застосувати"]
+    },
+    "button_secondary": {
+      "background": "transparent",
+      "text_color": "rgba(255,255,255,0.7)",
+      "border": "1px solid rgba(255,255,255,0.2)",
+      "border_radius": "6px",
+      "padding": "8px 24px",
+      "examples": ["Скасувати", "Повернутись"]
+    },
+    "button_icon": {
+      "background": "rgba(255,255,255,0.06)",
+      "size": "36px",
+      "border_radius": "6px",
+      "icon_color": "rgba(255,255,255,0.7)",
+      "tooltip": "always present",
+      "examples": ["Refresh", "Filter", "Export", "Back"]
+    },
+    "table": {
+      "header_bg": "#1e1d2e",
+      "header_text": "rgba(255,255,255,0.6)",
+      "header_font_weight": 500,
+      "row_bg": "#252434",
+      "row_bg_hover": "rgba(255,255,255,0.04) overlay",
+      "row_border": "1px solid rgba(255,255,255,0.05) bottom",
+      "sortable_indicator": "arrow icon on sorted column",
+      "pagination": "mat-paginator at bottom",
+      "page_sizes": [10, 25, 50, 100],
+      "actions": "settings gear icon opens context menu per row"
+    },
+    "form_field": {
+      "background": "#3a374a",
+      "border_radius": "6px",
+      "border": "1px solid rgba(255,255,255,0.1)",
+      "border_focused": "1px solid rgba(254,160,76,0.6)",
+      "label_position": "above field (not floating)",
+      "text_color": "#ffffff",
+      "placeholder_color": "rgba(255,255,255,0.35)"
+    },
+    "mat_select": {
+      "arrow": "keyboard_arrow_down Material icon",
+      "panel_bg": "#252434",
+      "option_hover": "rgba(255,255,255,0.08)",
+      "option_selected": "rgba(254,160,76,0.15)"
+    },
+    "toggle_switch": {
+      "on_color": "#fea04c",
+      "off_color": "rgba(255,255,255,0.2)",
+      "size": "standard mat-slide-toggle"
+    },
+    "checkbox": {
+      "checked_color": "#fea04c",
+      "border": "rgba(255,255,255,0.4)"
+    },
+    "radio_button": {
+      "selected_color": "#fea04c",
+      "usage": "Вертикалі list — single row selection"
+    },
+    "badge_chip": {
+      "variants": ["valid/green", "invalid/red", "deposit/green", "refusal/red", "test/gray"],
+      "border_radius": "4px",
+      "padding": "2px 8px",
+      "font_size": "12px"
+    },
+    "profile_card": {
+      "bg": "#252434",
+      "border_radius": "8px",
+      "padding": "20px",
+      "header": "section title + optional gear/settings icon"
+    },
+    "tabs": {
+      "type": "mat-tab-group / custom router-linked tabs",
+      "active_indicator": "bottom border gradient",
+      "text_active": "#ffffff",
+      "text_inactive": "rgba(255,255,255,0.5)"
+    },
+    "tooltip": {
+      "trigger": "hover on icon buttons and filter-chips",
+      "bg": "#3a374a",
+      "text": "#ffffff",
+      "border_radius": "4px"
+    },
+    "search_bar": {
+      "position": "top of table card",
+      "icon": "search (magnifying glass)",
+      "placeholder": "Пошук",
+      "full_width": false,
+      "behavior": "debounced filter on API"
+    },
+    "sidebar_item": {
+      "normal": "icon + label, rgba(255,255,255,0.5) text",
+      "active": "icon + label, white text, gradient left border",
+      "icon_set": "custom SVG icons (Stockholm-icons set)",
+      "collapse_toggle": "chevron button at top of sidebar"
+    },
+    "system_indicator": {
+      "pattern": "colored dot + title + description + optional toggle",
+      "green_dot": "active/positive state",
+      "red_dot": "inactive/negative state",
+      "toggle": "mat-slide-toggle for on/off states"
+    },
+    "stat_widget": {
+      "usage": "Metrics page dashboard",
+      "bg": "#252434",
+      "border_radius": "8px",
+      "has_chart": true,
+      "chart_library": "inferred from bundle (likely Chart.js or ng2-charts)"
+    }
+  },
+
+  "icons": {
+    "library": "Stockholm Icons (SVG sprites, Created with Sketch)",
+    "material_icons": "Material Icons font (Google CDN)",
+    "usage": {
+      "sidebar": "custom SVG per module",
+      "table_row": "settings gear (context menu), search (fraud filter), copy (UUID copy)",
+      "toolbar": "add (+), refresh (↻), back (←), filter (funnel), upload (cloud↑)",
+      "form_fields": "calendar (date), keyboard_arrow_down (select), call_missed (postback)"
+    }
+  },
+
+  "code_prefixes": {
+    "BR": "Brand (Бренд)",
+    "AFF": "Affiliate (Афілейт)",
+    "BX": "Hub (Хаб)",
+    "BI": "Brand Integration (Інтеграція бренду)",
+    "SCN": "Scenario (UAD Сценарій)",
+    "FP": "Fraud Profile (Фрод профіль)",
+    "VT": "Vertical Template (Вертикаль)"
+  },
+
+  "animations": {
+    "page_transition": "fade-in, Angular route animation",
+    "sidebar_expand": "width transition 200ms ease",
+    "dialog_open": "mat-dialog slide-in from bottom",
+    "loading": "mat-spinner (orange brand color)"
+  },
+
+  "responsive": {
+    "breakpoints": "Angular Material defaults (xs/sm/md/lg/xl)",
+    "sidebar_behavior": "manual toggle only, not auto-responsive",
+    "table": "horizontal scroll on small screens",
+    "min_recommended_width": "1280px"
+  }
+}

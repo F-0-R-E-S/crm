@@ -1,0 +1,34 @@
+────────────────────────────────────────────────────────────────
+  stage0_visual_overview  ·  Запись экрана 2026-03-12 в 12.39.14.mov
+  started: 2026-04-12 14:49:14
+────────────────────────────────────────────────────────────────
+
+The overview has been written to `/Users/f0res/video_prd_Запись_экрана_2026-03-12_в_12_39_14_20260412_144841/overview.json`.
+
+Here's a summary of what was found:
+
+**Product: trackbox**
+- Identified from the splash/loading screen (frame_000717.jpg) showing the "trackbox" wordmark with a green "b" logo
+- The same blue "b" icon appears in the top-left sidebar across all dashboard screens
+
+**What the video shows:**
+A Google Meet call (room `ede-hxjp-uod`) where participant "Gari Zeldich" demonstrates the trackbox application to "adi koren" and "Петр Белов".
+
+**Product category:** Affiliate/performance marketing CRM and lead management platform
+
+**Sections demonstrated (in order of screen time):**
+1. **Leads** — the dominant section (~60% of video); browsing, filtering, bulk-selecting, and drilling into individual lead detail modals with fraud scoring and API push data
+2. **Statistics** — performance analytics table with customizable columns, affiliate filters, and per-affiliate insights charts
+3. **Security** — 2FA compliance tracking, logins from new locations, password resets
+4. **Falcon** — FTD (First-Time Deposit) records tracking
+5. **Distribution** — lead routing rules
+6. **Replace Params** — parameter replacement rules
+7. **System Settings** — branding, theme, and feature toggles
+8. **Employees** — team member management
+9. **Dashboard** — KPI overview with finance, traffic, and conversion metrics
+
+**UI:** Dark-mode enterprise design, left icon sidebar, orange primary action buttons, 139 unique visual states across 810 total frames (~33.7 minutes of video).
+
+────────────────────────────────────────────────────────────────
+  finished: 2026-04-12 14:59:17
+────────────────────────────────────────────────────────────────

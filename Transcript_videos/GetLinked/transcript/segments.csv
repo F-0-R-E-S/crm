@@ -1,0 +1,243 @@
+index,start,end,text
+0,0.0,2.0,Hello?
+1,2.0,4.0,Hello?
+2,4.0,6.0,Hi.
+3,6.0,8.0,Can you hear me?
+4,8.0,10.0,Yes.
+5,10.0,12.0,You hear me?
+6,12.0,14.0,"Yes, how are you?"
+7,14.0,16.0,Yes.
+8,16.0,18.0,Pink.
+9,18.0,20.0,Hello?
+10,20.0,22.0,"Yes, yes."
+11,22.0,24.0,Pink.
+12,24.0,26.0,Pink.
+13,26.0,28.0,Pink.
+14,28.0,30.0,Hello?
+15,30.0,32.0,"Yes, yes, yes. I hear you. Do you hear me?"
+16,32.0,34.0,Yes.
+17,34.0,36.0,Nice.
+18,36.0,40.0,"I don't hear you very well, but I hope that it's just tempo early."
+19,40.0,44.0,"Anyway, my name is Gal. What's your name? Alex?"
+20,44.0,46.0,Yeah.
+21,46.0,48.0,"Ok, nice to meet you."
+22,48.0,50.0,Nice to meet you. Where are you from?
+23,50.0,52.0,From Russia.
+24,52.0,54.0,Russia? Ok.
+25,54.0,60.0,"Ok, let me share the screen and I will make you show you the system."
+26,60.0,64.0,I don't feel very well today.
+27,64.0,72.0,"So, I will be quick, but if you have a specific question, just stop me and I will answer."
+28,72.0,76.0,"Yes, ok, thank you. I have questions. I think it will be good."
+29,76.0,80.0,"Ok, you want to ask now or you want to wait?"
+30,80.0,84.0,I think in process.
+31,84.0,86.0,"Ok, good."
+32,86.0,90.0,"Ok, so you see my screen, right?"
+33,90.0,92.0,Yes.
+34,92.0,96.0,"You are going to be a network, I assume, right?"
+35,96.0,104.0,"Firstly, we start new project and want to start from Mediavine, around 3 months."
+36,104.0,108.0,"And after 3 months, connect network."
+37,108.0,114.0,And we want to manage all of this project from one place.
+38,114.0,120.0,"Ok, and are you doing only CryptoForex Verticals or something like that?"
+39,120.0,128.0,"Only CryptoForex, try and gambling, but I think it's tests."
+40,128.0,130.0,"It was difficult, yes."
+41,130.0,138.0,"Ok, in any case, our system, you can do all the verticals in our system."
+42,138.0,148.0,"Ok, so you are getting from us a copy of this system."
+43,148.0,152.0,"You put your logo here, you can control colors, you can do colors."
+44,152.0,160.0,"We have over here the dashboard that you can filter by time, by advertiser, by traffic source."
+45,160.0,164.0,"Affiliate is like a traffic source. Ok, it's the same thing."
+46,164.0,174.0,"Offers, geos, you can see your financial, we have a finance system inside."
+47,174.0,176.0,I will show you in a minute.
+48,176.0,184.0,"So if you use the finance system, you can see income, cost, profits, clicks, leads, failings."
+49,184.0,188.0,"We are collecting all the failings for you. Ok, you are not losing them."
+50,188.0,196.0,"Approve conversions, pending conversions, if you want to do it manually or with rules."
+51,196.0,204.0,"Ok, some charts over here, system status, some, one second."
+52,204.0,218.0,It's for protection.
+53,218.0,226.0,"Some charts, some tables over here to affiliates, for offers, advertiser and so on."
+54,226.0,230.0,"We have different type of views of admin, but that's the main one."
+55,230.0,236.0,"Ok, now you have full management of traffic sources and affiliates."
+56,236.0,248.0,"You can control from copying, geos, limits, automations, whatever you want."
+57,248.0,258.0,"We have also like a wallet, a virtual wallet, that you can control how much money you owe, how much money you expose and so on."
+58,258.0,270.0,"We are supporting different levels of affiliates, like if you will have a master affiliate or affiliate manager, we are supporting these levels."
+59,270.0,282.0,You can create for you a lot of automation regarding the affiliates with rules and restrictions and everything.
+60,282.0,290.0,"Ok, any questions regarding the affiliate section?"
+61,290.0,294.0,"No, affiliate section, no questions."
+62,294.0,308.0,"Traffic sources, affiliate section, everything. In any case, just to let you know that all the connections, integrations with Google, Facebook, whatever you need, our team is helping you with this."
+63,308.0,322.0,"You have a dedicated support team, they work on the telegram, they are answering in minutes, not one hour, two hours, in minutes."
+64,322.0,334.0,"If you need integration, you open a group with the support team and with the integration party, everything they are doing, they are working from Monday to Friday."
+65,334.0,348.0,"You have over here all the time their timetables. Monday to Friday, it's usually from 9 o'clock to 10 o'clock GMT plus 2 until then 10 o'clock at night."
+66,348.0,354.0,Sunday limited support and we have holidays and this is their telegram.
+67,354.0,372.0,"Ok, you have advertisement management. You have a full advertising management system. Also here you have the wallet, this is more important to use."
+68,372.0,382.0,You don't want to be too exposed with the advertiser. You can control the downtime when you don't want to accept traffic.
+69,382.0,396.0,"In the wallet you will see any transaction going with this broker, with this advertiser, commission. We are supporting different types of commission, fix, dynamic, ref share."
+70,396.0,406.0,We also have eBrit which is not here. Different types of currencies and you can get commission and you can give commission for almost any event.
+71,406.0,412.0,"If it's SLEED, FTD, referral, everything you can give commission."
+72,412.0,424.0,"Gears, opening the gears that the advertiser is accepting, also with different rules and you've got custom fields if you need."
+73,424.0,432.0,Copy on the advertising level and the rest are less important. Any questions regarding this?
+74,432.0,436.0,"Here, no. I'm interested in rotation."
+75,436.0,440.0,"Rotation, I'm going out of rotation."
+76,440.0,447.0,This is the lead distribution setup. It works like this.
+77,447.0,452.0,"First of all, you can see..."
+78,456.0,460.0,It's a demo account without data.
+79,460.0,470.0,"First of all, you have a general view that you can see each country, which advertiser you have and which are in rotation and which are not rotation."
+80,470.0,477.0,The way we work with this is that you are starting with the country. Let's say United Kingdom.
+81,477.0,482.0,And for your convenience...
+82,490.0,500.0,Okay.
+83,500.0,509.0,"For your convenience on the top, you have all the traffic sources that are sending to United Kingdom and with the rules."
+84,509.0,512.0,This is just for your convenience.
+85,512.0,520.0,"Over here, you have the general rotation for all of them."
+86,520.0,526.0,We are working with the bucket system. A bucket is like a bucket of water.
+87,526.0,536.0,"In any bucket, this is starting by the default. You are putting rotations of advertisers."
+88,536.0,543.0,"If you see it with the line, it means it's out of rotation, you will see what is the reason here."
+89,543.0,547.0,"And on the right side, you can basically prioritize."
+90,547.0,556.0,"You say, how much do you want from the leads? How much percentage?"
+91,556.0,560.0,"It's 40, 25, 10, and zero."
+92,560.0,571.0,"So the lead going according to this prioritization, it takes into consideration the copying and statistics and everything."
+93,571.0,582.0,And you can create unlimited another bucket and to put over there also a rotation of an advertiser and do optimization per this bucket.
+94,582.0,592.0,"So people usually use it, put the best advertisers on the first bucket and then second level of advertiser fallbacks and so on."
+95,592.0,599.0,"Okay, this is how it is."
+96,599.0,601.0,"Okay, any question?"
+97,601.0,602.0,No.
+98,602.0,604.0,"Okay, I understand."
+99,604.0,607.0,"Okay, okay."
+100,607.0,611.0,But other stuff will be interesting at the moment.
+101,611.0,620.0,"Finances, finance, as I said, we've got, you can manage all the commission that you get and give."
+102,620.0,626.0,"And if you want to work with invoicing, it makes you the invoicing automatically."
+103,626.0,634.0,"If you're working with CRG deals, we have a feature that calculates it automatically."
+104,634.0,636.0,And you want to see or it's okay?
+105,636.0,639.0,"Yes, yes, I want to see."
+106,639.0,640.0,Okay.
+107,640.0,643.0,It's basically called special deal.
+108,643.0,649.0,"And any special, we have got right now the first one conversions guarantee."
+109,649.0,657.0,"And you're basically inputting all the deal that you have the name, how much what is the guarantee."
+110,657.0,660.0,What is the payment cycle date.
+111,660.0,669.0,"And you can do a working hours, days, statuses, and the end of the payment cycle."
+112,669.0,673.0,The system checks it and calculates it automatically.
+113,673.0,683.0,"And it's issuing for you an invoice with explanation how much you need to get and with all the explanation, all automatically."
+114,683.0,699.0,"As I understand, if a partner have value above 13%, for example, 15, this deal give him."
+115,699.0,700.0,So it's okay.
+116,700.0,701.0,Right?
+117,701.0,703.0,"No, no, so it's okay."
+118,703.0,709.0,"If the guarantee, if the advertiser gave you guarantee 13%, okay."
+119,709.0,713.0,And he has done 5% 15% is okay.
+120,713.0,716.0,But if he converted in 10%.
+121,716.0,718.0,"Okay, then he needs to pay you more."
+122,718.0,720.0,"Yes, yes, understand."
+123,720.0,722.0,"So yes, and you can do back to back."
+124,722.0,727.0,You can do the deal over here also with your at the moment is your media buyer.
+125,727.0,738.0,"But in the future, when you will be affiliate network, you can do back to back with the affiliate as well."
+126,738.0,741.0,"Okay, reports with many reports."
+127,741.0,746.0,And we just show you the most important one is the leads report.
+128,746.0,748.0,"Leads, FTDs."
+129,748.0,753.0,"Yes, I think that's a but yeah, I'm sure the FTDs."
+130,753.0,755.0,It's just so the leads report.
+131,755.0,764.0,This is the information that you can see that we are collecting for you.
+132,764.0,766.0,Okay.
+133,766.0,771.0,We have over here the sense status says
+134,771.0,780.0,"And if you move, you can see also the history of the sense status says we have a lead score, which is very it's a new feature."
+135,780.0,782.0,I don't have data for it.
+136,782.0,789.0,But basically it will show it will give a score to the lead.
+137,789.0,797.0,And it will show you everything why why he got this score.
+138,797.0,801.0,I will tell them to add me that I just didn't get me done.
+139,801.0,804.0,"But it's a very, very nice feature."
+140,804.0,811.0,And over here you will see information about what is the rotation of this lead.
+141,811.0,816.0,What was the rotation before helps you to understand a lot of processes and bugs.
+142,816.0,825.0,"And if something fails, why it fails, although you can always ask our team, can you help me to find out why this lead failed."
+143,825.0,827.0,Okay.
+144,827.0,831.0,"Okay, in any case, so this is the lead report."
+145,831.0,841.0,"By the way, you can also if some of the leads fail, you can click over here and you can read register them from here."
+146,841.0,843.0,It's like injection.
+147,843.0,849.0,"Yes, yes, but on a small scale, you can also upload the least and you know, inject."
+148,849.0,852.0,"Yes, but this is the registry registration of this lead."
+149,852.0,866.0,"You can you can register them to the same white label to a different to the same advertiser a different advertiser with some rules, you know, you've got whatever you need over here."
+150,866.0,875.0,"And of course, you've got advanced field terms with include and exclude."
+151,875.0,880.0,You can also this is the auto refresh.
+152,880.0,889.0,"Well, is I was looking for another over here, you can actually decide which days which there is also time frame over here."
+153,889.0,897.0,You want to have the reports and everything so you can remove the weekend if you want.
+154,897.0,902.0,Conversion report. It's basically the same just convergence.
+155,902.0,903.0,Okay.
+156,903.0,914.0,"Sorry, where I can see what advertisers was rejected and what errors."
+157,914.0,918.0,What type of here you can see on the needs report over here.
+158,918.0,926.0,You will see once I can I'm going back to the I show it to you.
+159,926.0,933.0,"Okay, it's over here you will see in the action you'll see the information here."
+160,933.0,944.0,"Okay, I assume that you will see also it in the API request probably a lot, but you can I told you you can ask the team."
+161,944.0,947.0,You can ask the team to check for you why.
+162,947.0,955.0,"Okay, wherever we request, there are many places that you can see I I just I know Leslie."
+163,955.0,963.0,I'm not doing a you know I'm not managing a network so I'm not using it on the day to day.
+164,963.0,978.0,"Okay, so do you have a generic report is a very good reports that gives you a basically to cut a three layers."
+165,978.0,987.0,"Okay, for example, affiliate advertiser in country and you can filter between these three layers."
+166,987.0,990.0,Also very good report.
+167,990.0,999.0,"We've got a good aggregation report, but many, many reporters you can see only permission and if you have a team."
+168,999.0,1012.0,"Okay, everything in our system you can control everything in our system to decide who will see what everything every column, every data, every feature."
+169,1012.0,1014.0,Okay.
+170,1014.0,1025.0,"You decide what are your user will use, of course, as an admin everything is open for you, but you can, where you can do any role different permissions."
+171,1025.0,1027.0,Okay.
+172,1027.0,1033.0,You can see really thousands of permissions everything is with permissions.
+173,1033.0,1051.0,"Yeah, marketing tool catalog alert system, you can create different triggers and you get them into telegram, email, conversion and different conditions."
+174,1051.0,1055.0,Very good alert system.
+175,1055.0,1065.0,"This is basically what many other stuff but this is in general if you have any question. Yes, I'm sure everything that you need we will have."
+176,1065.0,1074.0,"Yes, can you show FTDs how it's look."
+177,1074.0,1080.0,We move utter leads from leads to the conversion reports.
+178,1080.0,1082.0,"Yes, yes, yes."
+179,1082.0,1085.0,I saw this is the conversions.
+180,1085.0,1093.0,"I don't know if I have data over here, but it's I don't know but it's very it's like the lead just the conversion you know."
+181,1093.0,1095.0,"Yes, understand also important."
+182,1095.0,1103.0,I got one second let me see maybe I need to put me in.
+183,1103.0,1104.0,"Yes, please."
+184,1104.0,1110.0,"Yes, important bulk injections."
+185,1110.0,1114.0,"Okay, it's over here."
+186,1114.0,1116.0,Import leads.
+187,1116.0,1126.0,"You basically, you can decide a, which source it's coming what offer or what advertiser you wanted to go."
+188,1126.0,1129.0,You upload your list of areas.
+189,1129.0,1132.0,You got some rule over here.
+190,1132.0,1134.0,"Basically, that's it."
+191,1134.0,1139.0,"You know, it gives you an edit and it puts it everything."
+192,1139.0,1154.0,You can do with the queue so it won't be injection immediately you can do immediately whatever you want.
+193,1154.0,1158.0,It's good. I think I don't have questions.
+194,1158.0,1165.0,I just showed you we have listen we have really a lot a lot a lot of features.
+195,1165.0,1166.0,Okay.
+196,1166.0,1178.0,Everything that you will need we 99% we have it and because that it's very you know it's very you've got a lot of features.
+197,1178.0,1182.0,So you've got our team with you on a daily basis.
+198,1182.0,1189.0,"Okay, you can ask them everything small to show you they can even do it for you."
+199,1189.0,1192.0,So you're not alone.
+200,1192.0,1194.0,Okay.
+201,1194.0,1199.0,So it was good really everything that you will need.
+202,1199.0,1203.0,Yes. Okay.
+203,1203.0,1206.0,Thank you.
+204,1206.0,1208.0,Okay.
+205,1208.0,1211.0,prices you send me already.
+206,1211.0,1213.0,I send you prices.
+207,1213.0,1216.0,"Yes. If you want to start, you will tell me."
+208,1216.0,1218.0,Okay.
+209,1218.0,1221.0,I will open a group with the accounting.
+210,1221.0,1223.0,Okay.
+211,1223.0,1234.0,We will do like they will do with you and send you a link to put information of your company whatever you want you know for the contract the digital contract.
+212,1234.0,1240.0,Then you pay the setup fee and then we open for you a group with the support.
+213,1240.0,1245.0,And this is the group that you work all the time.
+214,1245.0,1249.0,You will need only to buy three domains.
+215,1249.0,1265.0,"Okay, they will tell you the team will tell you but three domains one domain is the domain of the network for where you log in your your partners will log in and everything one domain for auto log in and one domain for API."
+216,1265.0,1269.0,"Okay, so they will tell you to buy these three domains."
+217,1269.0,1279.0,"Once you buy the domains, a one hour two hours you have the system up and then you just need to start integration."
+218,1279.0,1280.0,Okay.
+219,1280.0,1283.0,Understand.
+220,1283.0,1289.0,"Okay, so whenever you very mind that the."
+221,1289.0,1299.0,"Tomorrow and Sunday they said the team is not working, but I'm available I can send you if you will want the link to fill all the details."
+222,1299.0,1304.0,"Oh, you know, when Monday morning they will set you up the system."
+223,1304.0,1308.0,"Or if you want, you know, whenever you want to tell me I will know rush."
+224,1308.0,1309.0,Okay.
+225,1309.0,1310.0,Okay.
+226,1310.0,1311.0,Thank you.
+227,1311.0,1319.0,And also other systems and talking with team and making decision about the system.
+228,1319.0,1321.0,"Okay, very, very, very nice."
+229,1321.0,1323.0,Keep you keep you informed.
+230,1323.0,1324.0,Okay.
+231,1324.0,1325.0,Okay.
+232,1325.0,1326.0,Thank you very much.
+233,1326.0,1327.0,Thank you.
+234,1327.0,1328.0,Thank you.
+235,1328.0,1330.0,Any question you can send me a message.
+236,1330.0,1331.0,Okay.
+237,1331.0,1332.0,Yes.
+238,1332.0,1333.0,Yes.
+239,1333.0,1334.0,Thank you.
+240,1334.0,1335.0,Have a nice day.
+241,1335.0,1336.0,Thank you.

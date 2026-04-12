@@ -1,0 +1,472 @@
+{
+  "meta": {
+    "product": "HyperOne CRM",
+    "version": "4.0.136",
+    "base_host": "https://demo.hypernet.pro",
+    "extracted_date": "2026-03-03",
+    "discovery_method": "network traffic interception via browser devtools",
+    "notes": "No public API docs (/swagger, /redoc, /openapi.json all return 404). All endpoints discovered empirically."
+  },
+
+  "auth": {
+    "type": "Bearer Session UUID",
+    "header": "Authorization: Bearer <uuid>",
+    "token_format": "UUID v4 (NOT JWT — no dot-separated structure)",
+    "storage": "localStorage key 'InNlc3Npb25LZXki' (base64 for '\"sessionKey\"'), value is base64-encoded JSON string",
+    "decode": "atob(localStorage.getItem('InNlc3Npb25LZXki')) → JSON.parse → UUID string",
+    "session_key_b64": "InNlc3Npb25LZXki",
+    "active_company_key_b64": "ImFjdGl2ZUNvbXBhbnlJZCI=",
+    "expiry": "sessions expire mid-usage requiring re-login (no visible refresh token)",
+    "login_flow": "Angular reactive form POST to auth service → session UUID returned and stored in localStorage"
+  },
+
+  "microservices": [
+    {
+      "name": "tracker",
+      "prefix": "/api/tracker/",
+      "purpose": "Core CRM: leads, brands, hubs, affiliates, accounts, metrics, fraud, conversions"
+    },
+    {
+      "name": "auth",
+      "prefix": "/api/auth/",
+      "purpose": "Authentication and user/company profile management"
+    },
+    {
+      "name": "injector",
+      "prefix": "/api/injector/",
+      "purpose": "UAD (User Action Director) — automated lead re-injection scenarios"
+    },
+    {
+      "name": "geo",
+      "prefix": "/api/geo/",
+      "purpose": "Geographic reference data: countries, languages, timezones"
+    }
+  ],
+
+  "conventions": {
+    "pagination": "?skip=N&take=N (default take=10)",
+    "sorting": "?sort[fieldName]=asc|desc",
+    "filtering": "?filter[fieldName]=value OR ?filter[fieldName][gte]=value &filter[fieldName][lte]=value",
+    "filter_operators": ["gte", "lte", "eq", "ne", "in", "like"],
+    "list_vs_paginated": {
+      "/list": "Returns full unfiltered/unpaginated array (used for select dropdowns)",
+      "no-/list": "Returns paginated response with skip/take"
+    },
+    "entity_codes": "Short human-readable codes with prefix (BR-, BX-, AFF-, BI-, SCN-, FP-, VT-)"
+  },
+
+  "endpoints": {
+
+    "auth": [
+      {
+        "method": "GET",
+        "path": "/api/auth/account/my/profile",
+        "description": "Get current user profile",
+        "response_sample": { "email": "billionaire@demo.com", "firstName": "Billionaire", "lastName": "Billionaire", "role": "trackerAdmin" }
+      },
+      {
+        "method": "GET",
+        "path": "/api/auth/account/my/portal-settings",
+        "description": "Get UI/portal settings for current user (language, sidebar state, etc.)"
+      }
+    ],
+
+    "company": [
+      {
+        "method": "GET",
+        "path": "/api/tracker/company/{companyId}",
+        "description": "Get company info",
+        "note": "companyId from localStorage 'ImFjdGl2ZUNvbXBhbnlJZCI=' key"
+      }
+    ],
+
+    "leads": [
+      {
+        "method": "GET",
+        "path": "/api/tracker/lead",
+        "description": "List leads (paginated)",
+        "params": "skip, take, sort[field], filter[isTest], filter[affiliateId], filter[createdAt][gte/lte], filter[status]",
+        "default": "filter[isTest]=false"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/lead/{id}",
+        "description": "Get lead by ID"
+      },
+      {
+        "method": "POST",
+        "path": "/api/tracker/lead",
+        "description": "Create new lead",
+        "body": { "affiliateId": "uuid", "verticalTemplateId": "uuid", "ip": "string", "landingName": "string", "landingUrl": "string", "country": "ISO2", "language": "ISO2", "landingLanguage": "ISO2", "utmId": "string", "utmMedium": "string", "utmSource": "string", "utmCampaign": "string", "subId": "string", "subIdA-F": "string", "profile": { "email": "string", "phone": "string", "firstName": "string", "lastName": "string", "password": "string" } }
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/tracker/lead/{id}",
+        "description": "Update lead fields (inline edit on profile)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/lead/{id}/registration",
+        "description": "Get lead registrations (brand assignments history)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/lead/{id}/event",
+        "description": "Get lead event history",
+        "params": "skip, take, sort[createdAt]=desc"
+      }
+    ],
+
+    "brands": [
+      {
+        "method": "GET",
+        "path": "/api/tracker/broker",
+        "description": "List brands (paginated)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/broker/list",
+        "description": "List all brands (no pagination, for dropdowns)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/broker/{id}",
+        "description": "Get brand by ID"
+      },
+      {
+        "method": "POST",
+        "path": "/api/tracker/broker",
+        "description": "Create brand",
+        "body": { "name": "string", "url": "string", "description": "string", "isSynchronized": "boolean", "isSending": "boolean", "isPostback": "boolean" }
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/tracker/broker/{id}",
+        "description": "Update brand"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/broker/integration/crm/list",
+        "description": "List all brand CRM integrations (for rotation dropdowns)",
+        "note": "134 public integration templates available"
+      }
+    ],
+
+    "hubs": [
+      {
+        "method": "GET",
+        "path": "/api/tracker/box",
+        "description": "List hubs (paginated)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/box/list",
+        "description": "List all hubs (no pagination, for dropdowns)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/box/{id}",
+        "description": "Get hub by ID"
+      },
+      {
+        "method": "POST",
+        "path": "/api/tracker/box",
+        "description": "Create hub",
+        "body": { "name": "string", "verticalTemplateId": "uuid", "description": "string", "isSending": "boolean" }
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/tracker/box/{id}",
+        "description": "Update hub"
+      }
+    ],
+
+    "affiliates": [
+      {
+        "method": "GET",
+        "path": "/api/tracker/affiliate",
+        "description": "List affiliates (paginated)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/affiliate/list",
+        "description": "List all affiliates (no pagination, for dropdowns)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/affiliate/{id}",
+        "description": "Get affiliate by ID"
+      },
+      {
+        "method": "POST",
+        "path": "/api/tracker/affiliate",
+        "description": "Create affiliate",
+        "body": { "name": "string", "description": "string" }
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/tracker/affiliate/{id}",
+        "description": "Update affiliate settings"
+      }
+    ],
+
+    "accounts": [
+      {
+        "method": "GET",
+        "path": "/api/tracker/account",
+        "description": "List accounts (paginated)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/account/{id}",
+        "description": "Get account by ID"
+      },
+      {
+        "method": "POST",
+        "path": "/api/tracker/account",
+        "description": "Create account",
+        "body": { "email": "string", "firstName": "string", "lastName": "string", "phone": "string", "affiliateId": "uuid", "geo": "ISO2" }
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/account/resources/botSubscriber",
+        "description": "List Telegram bot subscribers",
+        "params": "skip, take, sort[updatedAt]=desc"
+      },
+      {
+        "method": "POST",
+        "path": "/api/tracker/account/resources/botSubscriber",
+        "description": "Add Telegram bot",
+        "body": { "botToken": "string", "chatId": "string", "events": ["array of event type strings"] }
+      }
+    ],
+
+    "rotations": [
+      {
+        "method": "GET",
+        "path": "/api/tracker/box/brokerAttachment",
+        "description": "List stream rotations (Hub→Brand Integration)",
+        "params": "skip, take, sort[createdAt]=desc"
+      },
+      {
+        "method": "POST",
+        "path": "/api/tracker/box/brokerAttachment",
+        "description": "Create stream rotation",
+        "body": { "boxId": "uuid", "brokerIntegrationId": "uuid", "countries": ["ISO2"], "offers": ["strings"], "weight": 1000, "priority": 1, "totalCap": 100, "isSending": true }
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/tracker/box/brokerAttachment/{id}",
+        "description": "Update stream rotation"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/box/affiliateAttachment",
+        "description": "List hub rotations (Affiliate→Hub)",
+        "params": "skip, take"
+      },
+      {
+        "method": "POST",
+        "path": "/api/tracker/box/affiliateAttachment",
+        "description": "Create hub rotation",
+        "body": { "affiliateId": "uuid", "boxId": "uuid", "countries": ["ISO2"], "weight": 1000, "priority": 1, "isSending": true }
+      }
+    ],
+
+    "status_groups": [
+      {
+        "method": "GET",
+        "path": "/api/tracker/statusGroup/group",
+        "description": "List status groups (paginated)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/statusGroup/group/list",
+        "description": "List all status groups (for dropdowns)"
+      },
+      {
+        "method": "POST",
+        "path": "/api/tracker/statusGroup",
+        "description": "Create status group",
+        "body": { "name": "string", "statusIds": ["uuids"], "qualityScore": 0, "isValid": true }
+      }
+    ],
+
+    "geo": [
+      {
+        "method": "GET",
+        "path": "/api/geo/countries",
+        "description": "List all countries (ISO2 codes + names + flags)"
+      },
+      {
+        "method": "GET",
+        "path": "/api/geo/languages",
+        "description": "List all languages"
+      },
+      {
+        "method": "GET",
+        "path": "/api/geo/timezones",
+        "description": "List all timezones"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/countryGroup/group",
+        "description": "List GEO groups (paginated)"
+      },
+      {
+        "method": "POST",
+        "path": "/api/tracker/countryGroup",
+        "description": "Create GEO group",
+        "body": { "name": "string", "countryIds": ["ISO2"] }
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/tracker/countryGroup/{id}",
+        "description": "Update GEO group"
+      }
+    ],
+
+    "fraud": [
+      {
+        "method": "GET",
+        "path": "/api/tracker/company/resources/fraudProfile",
+        "description": "List fraud profiles",
+        "params": "skip, take, sort[updatedAt]=desc"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/company/resources/fraudProfile/{id}",
+        "description": "Get fraud profile by ID"
+      },
+      {
+        "method": "POST",
+        "path": "/api/tracker/company/resources/fraudProfile",
+        "description": "Create fraud profile",
+        "body": { "name": "string", "description": "string", "isEnabled": true, "rules": {} }
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/tracker/company/resources/fraudProfile/{id}",
+        "description": "Update fraud profile"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/company/resources/fraudScoringConfig/{companyId}",
+        "description": "Get fraud scoring configuration"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/tracker/company/resources/fraudScoringConfig/{companyId}",
+        "description": "Update fraud scoring configuration",
+        "body": { "threshold": 0, "mlCoefficient": 1, "fieldWeights": {} }
+      }
+    ],
+
+    "conversions": [
+      {
+        "method": "GET",
+        "path": "/api/tracker/company/resources/conversionHold",
+        "description": "Get conversion hold configuration"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/tracker/company/resources/conversionHold",
+        "description": "Update conversion hold (timer + stop statuses)"
+      }
+    ],
+
+    "scenarios_uad": [
+      {
+        "method": "GET",
+        "path": "/api/injector/scenario",
+        "description": "List UAD scenarios (paginated)",
+        "microservice": "injector"
+      },
+      {
+        "method": "GET",
+        "path": "/api/injector/scenario/{id}",
+        "description": "Get UAD scenario by ID",
+        "microservice": "injector"
+      },
+      {
+        "method": "POST",
+        "path": "/api/injector/scenario",
+        "description": "Create UAD scenario",
+        "microservice": "injector",
+        "body": { "name": "string", "triggerEvent": "string", "conditions": {}, "actions": {} }
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/injector/scenario/{id}",
+        "description": "Update UAD scenario",
+        "microservice": "injector"
+      }
+    ],
+
+    "verticals": [
+      {
+        "method": "GET",
+        "path": "/api/tracker/verticalTemplate",
+        "description": "List vertical templates",
+        "params": "skip, take, sort[createdAt]=desc",
+        "note": "Read-only. Only 'Base' vertical exists (VT-HP8XSRMKVS6E7, created 2022-08-03). Defines lead profile schema."
+      }
+    ],
+
+    "statistics": [
+      {
+        "method": "GET",
+        "path": "/api/tracker/statistic/statusGroup",
+        "description": "Status group breakdown stats",
+        "params": "skip, take, filter[createdAt][gte/lte], statusGroup=brandStatusGroup|affiliateStatusGroup"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/statistic/geo",
+        "description": "GEO breakdown stats"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/statistic/leads",
+        "description": "Lead volume over time",
+        "params": "filter[createdAt][gte/lte], scale=month|week|day"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/statistic/affiliates",
+        "description": "Top affiliates by deposit",
+        "params": "sort[deposited]=desc, filter[createdAt][gte/lte], statusGroup"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/statistic/brands",
+        "description": "Top brands by deposit"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/statistic/hubs",
+        "description": "Top hubs by deposit"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/statistic/status",
+        "description": "Status breakdown stats"
+      },
+      {
+        "method": "GET",
+        "path": "/api/tracker/statistic/attribute/{attribute}",
+        "description": "Breakdown by any attribute dimension",
+        "attributes": ["subId_a", "utmId", "autologinStatus", "funnel", "lang", "and 22 more"],
+        "total_dimensions": 27
+      }
+    ]
+  },
+
+  "undocumented_discovery": {
+    "swagger_endpoints": ["GET /api/swagger → 404", "GET /api/tracker/swagger → 404", "GET /api/docs → 404", "GET /openapi.json → 404"],
+    "spa_false_positives": "/ and all hash routes return HTTP 200 with Angular SPA HTML regardless of existence",
+    "no_versioning": "No /v1/ prefix observed — all paths are flat under /api/tracker/",
+    "rate_limiting": "Not detected within normal usage session",
+    "cors": "Same-origin only observed; Cloudflare handles CDN/WAF"
+  }
+}

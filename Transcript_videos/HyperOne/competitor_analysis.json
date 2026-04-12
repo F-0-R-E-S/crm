@@ -1,0 +1,1548 @@
+{
+  "analysis_meta": {
+    "analyst_role": "Competitive Intelligence Analyst",
+    "source_type": "Sales demo recording (Google Meet)",
+    "source_file": "/Users/f0res/Desktop/Gambchamp/CRM-PRD/videos/Meeting Recording Feb 27 2026 (2).mp4",
+    "recording_date": "2026-02-27",
+    "analysis_date": "2026-03-03",
+    "frames_reviewed": 217,
+    "total_frames_extracted": 1318,
+    "extraction_interval_sec": 2.5,
+    "transcript_engine": "whisper-small",
+    "confidence": "high",
+    "notes": "Meeting duration approx 85 minutes (10:13 AM - 11:04 AM). Notetaker bot present: Fireflies.ai. All 217 unique deduplicated frames reviewed in full."
+  },
+  "company_identification": {
+    "company_name": "Hyper",
+    "product_name": "HyperOne",
+    "product_version": "4.0.136",
+    "domain": "hypernet.pro",
+    "logo_text": "hyperone",
+    "years_on_market": 4,
+    "niche": "Crypto / Forex affiliate CRM — lead distribution, routing, fraud detection",
+    "target_market": "Affiliate networks, buying networks, media buyers in crypto/FX verticals",
+    "language_primary": "Russian (UI default), multilingual support available",
+    "meeting_host": "Taras Hyper",
+    "presenter": "Stas Product",
+    "prospects_in_meeting": [
+      "Nikita Tkach",
+      "Denis",
+      "Dima Success"
+    ],
+    "prospect_context": "New buying network, 5 buyers, previously used Aireg, also evaluated AlterCPA, Elnopi, CRMate, Lead Grid",
+    "evidence_sources": [
+      "Logo 'hyperone' visible in sidebar throughout demo",
+      "Domain hypernet.pro visible in Accounts page (user email addresses)",
+      "Taras Hyper listed as 'Meeting host' in People panel (frame 519)",
+      "Version 4.0.136 shown in bottom-right footer throughout"
+    ]
+  },
+  "product_analysis": {
+    "feature_map": {
+      "lead_management": {
+        "present": true,
+        "description": "Full lead lifecycle management from intake to deposit tracking",
+        "details": {
+          "lead_count_in_demo": 18341,
+          "import": "CSV import button present on leads list",
+          "export": "CSV export button present on leads list, also per-scenario export",
+          "bulk_operations": [
+            "Инжект лидов (Inject leads)",
+            "Отправить постбек (Send postback)",
+            "Проверить на фрод (Check for fraud)",
+            "Отметить как тест (Mark as test)",
+            "Копировать e-mails (Copy emails)",
+            "Удалить лидов (Delete leads)",
+            "Изменить бренд/интеграцию (Change brand/integration)",
+            "Изменить аффилейта (Change affiliate)",
+            "Изменить статус бренда (Change brand status)",
+            "Изменить статус аффилейта (Change affiliate status)",
+            "Изменить ГЕО (Change GEO)",
+            "Изменить воронку (Change funnel)",
+            "Изменить язык (Change language)",
+            "Изменить SUB идентификаторы (Change SUB identifiers)",
+            "Изменить UTM параметры (Change UTM parameters)",
+            "Вкл. синхронизацию статуса аффилейта",
+            "Откл. синхронизацию статуса аффилейта",
+            "Вкл. синхронизацию бренд статуса",
+            "Откл. синхронизацию бренд статуса",
+            "Вкл. синхронизацию конверсий"
+          ],
+          "bulk_operations_count": 20,
+          "lead_profile_tabs": [
+            "Основная информация (Main info)",
+            "Автологин (Autologin)",
+            "Регистрации (Registrations)",
+            "История событий (Event history)",
+            "Комментарии (Comments)"
+          ],
+          "lead_profile_fields": {
+            "identifiers": [
+              "UUID",
+              "CRM ID"
+            ],
+            "routing": [
+              "GEO",
+              "Affiliate",
+              "Brand",
+              "Integration",
+              "Hub"
+            ],
+            "statuses": [
+              "Status (internal)",
+              "Brand status",
+              "Affiliate status"
+            ],
+            "profile": [
+              "Email",
+              "Phone",
+              "First name",
+              "Last name",
+              "Password"
+            ],
+            "meta": [
+              "Landing URL",
+              "Landing name",
+              "Landing language",
+              "Language",
+              "IP address",
+              "User agent",
+              "Country",
+              "Region",
+              "City"
+            ],
+            "system_flags": [
+              "Аномалия статуса бренда (Brand status anomaly)",
+              "Проверен на фрод (Fraud checked)",
+              "Попытка отправки (Send attempt)",
+              "Отправлен (Sent)",
+              "Синхр. статус (Status sync)",
+              "Синхр. конверсия (Conversion sync)",
+              "Депозит (Deposit)",
+              "Тестовый (Test)",
+              "Не инжектирован (Not injected)",
+              "Конверсия (Conversion)"
+            ]
+          },
+          "fraud_score_on_profile": {
+            "present": true,
+            "score_range": "0-100",
+            "gauge_display": "Progress bar with pass/fail count (e.g. '100, 1/4 Пройдено')",
+            "per_field_breakdown": [
+              "Телефон",
+              "Email",
+              "IP",
+              "Мессенджеры"
+            ],
+            "ip_detail_expansion": [
+              "Оценка фрода",
+              "VPN",
+              "Прокси",
+              "TOR",
+              "Бот",
+              "Моб.",
+              "Crawler"
+            ],
+            "result_labels": [
+              "Рискованный (Risky)",
+              "Чистый (Clean)"
+            ]
+          }
+        }
+      },
+      "lead_routing": {
+        "present": true,
+        "description": "Multi-layer routing via Hubs → Flows → Brand Integrations with weighted round-robin and caps",
+        "hub_entity": {
+          "count_in_demo": 144,
+          "fields": [
+            "Название (Name)",
+            "Code (auto-generated)",
+            "Кол-во интеграций",
+            "Описание",
+            "Вертикаль",
+            "Создан",
+            "Обновлён"
+          ],
+          "system_indicators": [
+            "Отправляемый (Sendable) ON/OFF",
+            "Блокировать дубликаты (Block duplicates) ON/OFF",
+            "Резервный режим (Backup mode) ON/OFF"
+          ],
+          "tabs": [
+            "Основная информация",
+            "Аффилейты",
+            "Ротация потоков"
+          ],
+          "affiliates_tab_columns": [
+            "Вес (Weight)",
+            "Цена покупки (Buy price)",
+            "Цена продажи (Sell price)",
+            "Тип сделки",
+            "Валюта сделки",
+            "Страны",
+            "Языки"
+          ]
+        },
+        "flow_rotation": {
+          "flows_per_hub_example": 11,
+          "flow_columns": [
+            "Интеграция бренда",
+            "Оффер",
+            "Страны",
+            "Код интеграции",
+            "Вес",
+            "Приоритет",
+            "Тотал кап",
+            "Заполнен на",
+            "Лидов"
+          ],
+          "flow_creation_fields": {
+            "routing": [
+              "Хаб",
+              "Бренд",
+              "Интеграция бренда"
+            ],
+            "caps": [
+              "Количество (cap)",
+              "Вес (weight)",
+              "Приоритет (priority)"
+            ],
+            "flags": [
+              "Отправляемый (ON/OFF)",
+              "Строгий режим (Strict mode ON/OFF)"
+            ],
+            "geo_filter": {
+              "toggle": true,
+              "modes": [
+                "Страны (Countries)",
+                "Языки (Languages)",
+                "Языки лендингов (Landing languages)"
+              ],
+              "country_dropdown": "Includes named GEO groups (e.g. EUROP 4 GEO, RU_EU 1 GEO) and individual countries"
+            },
+            "schedule": {
+              "timezone_selector": true,
+              "granularity": "15-minute time windows per day",
+              "days": "Monday through Sunday",
+              "copy_feature": "Copy Monday schedule to all days (confirmed with modal)",
+              "example": "Europe/Kiev, 17:00-02:00 all days"
+            },
+            "offer_filter": [
+              "Название (keyword tag, e.g. bitcoin)"
+            ],
+            "sub_filter": [
+              "Sub A",
+              "Sub B",
+              "Sub C",
+              "Sub D",
+              "Sub E",
+              "Sub F"
+            ],
+            "utm_filter": [
+              "UTM ID",
+              "UTM Medium",
+              "UTM Source",
+              "UTM Campaign"
+            ]
+          }
+        }
+      },
+      "affiliate_management": {
+        "present": true,
+        "count_in_demo": 139,
+        "list_columns": [
+          "Название",
+          "Код",
+          "Проверка на фрод",
+          "Баланс",
+          "Холд конверсий",
+          "Описание",
+          "Обновлено"
+        ],
+        "profile_tabs": [
+          "Основная информация",
+          "Постбеки",
+          "Ротация хабов",
+          "Аккаунты"
+        ],
+        "system_indicators_per_affiliate": [
+          "Холд конверсий (Conversion hold) ON/OFF",
+          "Проверка на фрод в реальном времени (Real-time fraud check) ON/OFF",
+          "Синхр. аффилейт статуса (Affiliate status sync) ON/OFF",
+          "Отображение неназначенных лидов (Show unassigned leads) ON/OFF",
+          "Отображение лидов в статусе 'Отказ' (Show rejected leads) ON/OFF",
+          "Проверка устройства автологина (Autologin device check) ON/OFF",
+          "Использовать статус группу вместо статуса (Use status group instead of status) ON/OFF",
+          "Валидация телефона (Phone validation) ON/OFF",
+          "Валидация email (Email validation) ON/OFF",
+          "Активация редиректа (Redirect activation) ON/OFF",
+          "API ключ обязателен для отправки (API key required for send) ON/OFF",
+          "Ротация хаба (Hub rotation) ON/OFF",
+          "Отправка постбека при инжекте (Send postback on inject) ON/OFF"
+        ],
+        "system_indicators_count": 13,
+        "fraud_check_config_per_affiliate": {
+          "enable_checkbox": "Использовать проверку на фрод",
+          "general_settings": [
+            "Разрешить непроверенных (Allow unverified)"
+          ],
+          "check_targets": [
+            "Проверить IP адрес",
+            "Проверить номер телефона",
+            "Проверить мессенджеры",
+            "Проверить email адрес"
+          ],
+          "source_options": [
+            "Фрод профиль (Fraud profile)",
+            "Оценка фрода (Fraud score)"
+          ],
+          "max_fraud_level": "Slider 0-100"
+        }
+      },
+      "brand_management": {
+        "present": true,
+        "count_in_demo": 341,
+        "profile_tabs": [
+          "Основная информация",
+          "Интеграции",
+          "Ротация потоков",
+          "Хабы",
+          "Аккаунты"
+        ],
+        "system_indicators": [
+          "Открыт (Open) ON/OFF",
+          "Синхронизируемый (Synchronizable) ON/OFF",
+          "Блокировка фрода (Fraud block) ON/OFF",
+          "Постбэк (Postback) ON/OFF"
+        ],
+        "integration_creation": {
+          "template_based": true,
+          "template_count_mentioned": "400+",
+          "own_template_name": "Hypernet",
+          "connection_params": [
+            "Hub Code",
+            "Vertical Code",
+            "Affiliate Code",
+            "API Key",
+            "Domain"
+          ],
+          "lead_params_auto_fill": [
+            "subId / lead / subId",
+            "funnel / lead / funnel",
+            "landingURL / lead / landingURL",
+            "landingLang / lead / landingLang",
+            "profile>email / profile / email",
+            "profile>phone / profile / phone",
+            "profile>lastName / profile / lastName",
+            "profile>password / profile / password",
+            "profile>firstName / profile / firstName"
+          ],
+          "integration_flags": [
+            "Синхронизируемый",
+            "Отправляемый",
+            "Использовать автологин"
+          ]
+        }
+      },
+      "autologin": {
+        "present": true,
+        "description": "Automatic lead login to broker platform with device fingerprint verification",
+        "stages": [
+          "Ссылка активирована (Link activated) — date, IP, referer",
+          "Страница загружена (Page loaded) — date, IP",
+          "Устройство проверено (Device verified) — date",
+          "Лид отправлен (Lead sent) — date"
+        ],
+        "markers": [
+          "IP совпадает (IP matches)",
+          "ГЕО совпадает (GEO matches)",
+          "ID устройства не уникален (Device ID not unique) — triggers 'Show leads' link"
+        ],
+        "device_fingerprint_fields": [
+          "ID устройства",
+          "WebGL хеш",
+          "Canvas хеш",
+          "IP",
+          "Useragent",
+          "Страна (Country)",
+          "Регион (Region)",
+          "Город (City)",
+          "Моб. (Mobile)",
+          "Бот (Bot)",
+          "VPN",
+          "Прокси (Proxy)",
+          "TOR",
+          "Операционная система (OS)",
+          "Браузер (Browser)"
+        ],
+        "pro_redirect_proxy": {
+          "present": true,
+          "label": "Использовать прокси (Use proxy)",
+          "proxy_provider_example": "HYPER-1",
+          "available_in": [
+            "Manual inject modal",
+            "UAD Manager scenario form"
+          ]
+        },
+        "inject_modes": [
+          "Изменение регистрации (Registration change)"
+        ]
+      },
+      "anti_fraud": {
+        "present": true,
+        "module_name": "Анти-фрод",
+        "fraud_profiles": {
+          "create_form_fields": [
+            "Название",
+            "Описание",
+            "Активировать фрод профиль"
+          ],
+          "ip_checks": [
+            "Bot — Allow ON/OFF",
+            "TOR — Allow ON/OFF",
+            "VPN — Allow ON/OFF",
+            "Proxy — Allow ON/OFF",
+            "Crawler — Allow ON/OFF"
+          ],
+          "email_checks": [
+            "Invalid — Allow ON/OFF",
+            "Disposable — Allow ON/OFF",
+            "DNS invalid — Allow ON/OFF",
+            "SMTP invalid — Allow ON/OFF"
+          ],
+          "phone_checks": [
+            "VOIP — Block (red)",
+            "Risky — Allow ON/OFF",
+            "Invalid — Allow ON/OFF",
+            "Prepaid — Allow ON/OFF",
+            "Spammer — Allow ON/OFF",
+            "Inactive — Allow ON/OFF",
+            "Recent abuse — Allow ON/OFF"
+          ],
+          "phone_line_type_checks": [
+            "N/A — Allow ON/OFF",
+            "VOIP — Block (red)",
+            "Pager — Allow ON/OFF",
+            "Mobile — Allow ON/OFF",
+            "Landline — Allow ON/OFF",
+            "Toll free — Allow ON/OFF"
+          ],
+          "messenger_check": true,
+          "example_profile": "VOIP — blocks VOIP line type explicitly, allows most others"
+        },
+        "real_time_check": "Per-affiliate toggle: Проверка на фрод в реальном времени",
+        "fraud_score_source": [
+          "Фрод профиль",
+          "Оценка фрода"
+        ],
+        "max_fraud_level_slider": "0-100 per affiliate"
+      },
+      "uad_manager": {
+        "present": true,
+        "full_name": "UAD менеджер (User Automated Delivery)",
+        "description": "Automated scenario-based lead re-injection scheduler",
+        "scenario_count_in_demo": 14,
+        "scenario_statuses": [
+          "Активный (Active)",
+          "Запущен (Running)",
+          "В ожидании (Waiting)"
+        ],
+        "scenario_form_fields": {
+          "basic": [
+            "Название (Name)",
+            "Кол-во лидов (Lead count, e.g. 30, 600)",
+            "Беспрерывная отправка (Continuous send) checkbox",
+            "Хаб (Hub)",
+            "Интеграция бренда (Brand integration)",
+            "Игнорировать настройки потока (Ignore flow settings) checkbox",
+            "Режим инжекта: Изменение регистрации",
+            "Изменить аффилейта (Change affiliate) toggle",
+            "Использовать автологин (Use autologin) checkbox",
+            "Использовать прокси (Use proxy) toggle + proxy name",
+            "Отмена / Обновить сценарий buttons"
+          ],
+          "schedule_tab": {
+            "fields": [
+              "Таймзона (Timezone, e.g. Europe/Berlin)",
+              "Дата запуска (Start date)",
+              "Время запуска (Start time)",
+              "Установить дату остановки checkbox",
+              "Дата остановки (Stop date)",
+              "Время остановки (Stop time)",
+              "Использовать интервал (Use interval) checkbox with range slider (min-max minutes)"
+            ],
+            "interval_example": "30-60 minutes between sends"
+          },
+          "selected_leads_tab": {
+            "description": "Filtered leads pool for the scenario",
+            "filters": [
+              "Дата регистрации with presets: День/Неделя/Месяц",
+              "ГЕО (e.g. Canada)",
+              "Язык",
+              "Статус (e.g. Отказ)",
+              "Бренд статус",
+              "Аффилейт статус",
+              "Бренд статус группа",
+              "Аффилейт статус группа"
+            ],
+            "lead_count_example": 362
+          },
+          "used_leads_tab": "Tracks which leads have been processed by scenario"
+        },
+        "scenario_examples": [
+          "SP_NEW — Запущен, SPAIN_HUB",
+          "Нерабочая Канада — В ожидании, MEGA AFFILIATE HUB",
+          "CANADA_FAIL_RESEND — В ожидании, MEGA AFFILIATE HUB",
+          "CA_FAIL_RES — В ожидании, CA_HUB",
+          "FR_RESEND — Запущен, HUB 4",
+          "CANADA_FAIL_RESEND — 362 leads selected, GEO CA, Status Отказ"
+        ],
+        "control_button": "Управление (Manage) — start/stop scenario"
+      },
+      "status_groups": {
+        "present": true,
+        "description": "Maps raw broker statuses to unified quality scoring categories (shave detection)",
+        "count_in_demo": 10,
+        "example_groups": [
+          "No answer",
+          "Not interested",
+          "Ungrouped",
+          "Wrong Language",
+          "Callback",
+          "NO GROUP",
+          "Deposit",
+          "WrongAge",
+          "Potential",
+          "In Work",
+          "CrossLead"
+        ],
+        "purpose": "Normalizes broker raw statuses for cross-brand analytics and shave detection",
+        "shave_detection": "Anomaly flag: Аномалия статуса бренда triggers when brand status rolls back from valid to invalid"
+      },
+      "geo_groups": {
+        "present": true,
+        "count_in_demo": 5,
+        "examples": [
+          "LATAM/AR+15",
+          "TEST/AF+14",
+          "RU EU/AF+12",
+          "EUROP/DE+3 (4 GEO total)",
+          "RU_EU/ES (1 GEO)"
+        ],
+        "usage": "Used in flow routing GEO filters as named groups"
+      },
+      "conversions": {
+        "present": true,
+        "module": "Конверсии",
+        "description": "Conversion tracking module (not fully demoed — visible in sidebar nav)"
+      },
+      "telegram_bots": {
+        "present": true,
+        "module": "Телеграм боты",
+        "bot_list_columns": [
+          "#",
+          "Код",
+          "Telegram чат ID",
+          "Telegram username",
+          "Группа",
+          "Активный",
+          "Обновлён",
+          "Создан"
+        ],
+        "bot_settings_events": [
+          "Перенос лида успешен (Lead transfer successful)",
+          "Ошибка переноса лида (Lead transfer error)",
+          "Лид не назначен (Lead not assigned)",
+          "Создан новый статус бренда (New brand status created)",
+          "Лимит объёма лидов для интеграции хаба (Hub integration lead volume limit)",
+          "Произошла конверсия (Conversion occurred)",
+          "Аномалии лидов: обнаружен редирект (Lead anomaly: redirect detected)",
+          "Аномалии лида: обнаружен фрод (Lead anomaly: fraud detected)",
+          "Аккаунт: лимит проверок на фрод (Account: fraud check limit)",
+          "Аномалии лида: обнаружен недействительный статус (Lead anomaly: invalid status)",
+          "Лимит автологин редиректов (Autologin redirect limit)",
+          "Лимит количества лидов по подписке (Subscription lead count limit)",
+          "Лимит холда конверсий (Conversion hold limit)",
+          "Уведомлять о лидах с невалидным профилем (Notify about leads with invalid profile)",
+          "Лид заблокирован через подозрение на фрод (Lead blocked due to fraud suspicion)",
+          "Обнаружена новая воронка (New funnel detected)",
+          "Экспорт лидов (Lead export)"
+        ],
+        "notification_events_count": 17,
+        "group_assignment": true
+      },
+      "analytics_dashboard": {
+        "present": true,
+        "module": "Метрики",
+        "metrics_by_options": [
+          "Бренд статус группе (Brand status group)"
+        ],
+        "kpi_tiles": [
+          "Отправлено (Sent)",
+          "Депозитов (Deposits)",
+          "Новых (New)",
+          "Отказных (Rejected)",
+          "Валидных (Valid)",
+          "Невалидных (Invalid)"
+        ],
+        "charts": [
+          "Статус группы — donut chart with legend (status group breakdown of sent leads)",
+          "ГЕО — donut chart with per-country table (Отправлено, Депозитов, Отказных, Новых, Валидных, Невалидных)"
+        ],
+        "demo_kpis": {
+          "sent": 14166,
+          "sent_pct": 77.24,
+          "deposits": 519,
+          "deposits_pct": 3.66,
+          "new": 2004,
+          "new_pct": 10.93,
+          "rejected": 2166,
+          "rejected_pct": 11.81,
+          "valid": 9443,
+          "valid_pct": 66.66,
+          "invalid": 4723,
+          "invalid_pct": 33.34,
+          "total_leads": 18341
+        },
+        "top_geo_by_leads": [
+          {
+            "country": "PL",
+            "leads": 4893,
+            "pct": 26.68
+          },
+          {
+            "country": "CA",
+            "leads": 3265,
+            "pct": 17.8
+          },
+          {
+            "country": "AU",
+            "leads": 2094,
+            "pct": 11.42
+          },
+          {
+            "country": "RU",
+            "leads": 2007,
+            "pct": 10.94
+          },
+          {
+            "country": "IT",
+            "leads": 1275,
+            "pct": 6.95
+          },
+          {
+            "country": "ES",
+            "leads": 1199,
+            "pct": 6.54
+          },
+          {
+            "country": "GB",
+            "leads": 725,
+            "pct": 3.95
+          },
+          {
+            "country": "NL",
+            "leads": 324,
+            "pct": 1.77
+          },
+          {
+            "country": "MX",
+            "leads": 250,
+            "pct": 1.36
+          }
+        ],
+        "filter_options": "Available (funnel, flag icons)",
+        "settings_icon": "Gear icon top right for dashboard settings"
+      },
+      "accounts": {
+        "present": true,
+        "count_in_demo": 5,
+        "roles": [
+          "Наблюдатель (Observer)",
+          "Мастер (Master)",
+          "Сейл (Sale)",
+          "Админ (Admin)"
+        ],
+        "features": [
+          "Safe mode toggle per account",
+          "Company switching: Сменить компанию"
+        ]
+      },
+      "multi_company": {
+        "present": true,
+        "description": "Multiple company workspaces under one login",
+        "switch_location": "Settings menu → Компания → Сменить компанию"
+      },
+      "verticals": {
+        "present": true,
+        "module": "Вертикали",
+        "examples": [
+          "Base",
+          "Vertical LIVE"
+        ],
+        "description": "Vertical classification for brand integrations and flow routing"
+      },
+      "postbacks": {
+        "present": true,
+        "per_affiliate": "Постбеки tab in affiliate profile",
+        "bulk_operation": "Отправить постбек for selected leads",
+        "brand_level": "Постбэк ON/OFF indicator per brand"
+      },
+      "table_customization": {
+        "present": true,
+        "available_columns_count": 46,
+        "configurable_columns": [
+          "Фамилия",
+          "Пароль",
+          "Код телефона",
+          "Телефон без кода",
+          "Бренд",
+          "Аффилейт статус",
+          "Фрод статус",
+          "Email",
+          "Имя",
+          "Лендинг",
+          "Телефон"
+        ],
+        "features": [
+          "Column reorder (drag)",
+          "Save layout",
+          "Options tab"
+        ]
+      },
+      "security_settings": {
+        "two_factor_auth": "2FA настройка in user settings menu",
+        "password_change": "Смена пароля in settings menu",
+        "safe_mode": "Безопасный режим toggle per account"
+      },
+      "styling_and_localization": {
+        "present": true,
+        "style_settings": "Стилизация in settings menu",
+        "language_selector": "Язык in settings menu"
+      }
+    },
+    "ux_ui": {
+      "design_theme": "Dark mode only, dark charcoal/grey background, orange accent color",
+      "sidebar_navigation": {
+        "items": [
+          "Метрики (Analytics dashboard)",
+          "Лиды (Leads)",
+          "Статус группы (Status groups)",
+          "ГЕО группы (GEO groups)",
+          "Аккаунты (Accounts)",
+          "Аффилейты (Affiliates)",
+          "Бренды (Brands)",
+          "Хабы (Hubs)",
+          "Ротации (Rotations)",
+          "UAD менеджер (Automated delivery manager)",
+          "Конверсии (Conversions)",
+          "Телеграм боты (Telegram bots)",
+          "Анти-фрод (Anti-fraud)",
+          "Вертикали (Verticals)"
+        ],
+        "item_count": 14,
+        "collapse_button": "Chevron collapse/expand",
+        "logout_button": "Выйти at bottom of sidebar"
+      },
+      "top_bar": {
+        "left": "Current datetime + timezone",
+        "right": "Company name (DEMO) + user name badge"
+      },
+      "entity_profiles": {
+        "layout": "Tabs + side panel with system indicator toggles",
+        "pattern": "List view → click → slide-in detail panel or full page"
+      },
+      "modals": "Centered overlay modals for creation/editing forms",
+      "toasts": "Toast notifications for success (e.g. 'Параметры лида успешно установлены!')",
+      "list_controls": [
+        "+ (create)",
+        "Refresh",
+        "Back",
+        "Filter",
+        "Export buttons in toolbar"
+      ],
+      "pagination": "Records per page selector (100 default), page navigation",
+      "search": "Search bar on most list views",
+      "responsive": "Desktop-only application, not observed in mobile layout",
+      "language_of_ui": "Russian primary, English labels in some integration fields"
+    },
+    "user_scenarios": [
+      {
+        "scenario": "New affiliate onboarding",
+        "steps": "Create affiliate → configure system indicators → attach fraud profile → generate API key"
+      },
+      {
+        "scenario": "Brand integration setup",
+        "steps": "Create brand → Add integration → Select template (400+) → Auto-fill connection and lead params"
+      },
+      {
+        "scenario": "Lead routing configuration",
+        "steps": "Create Hub → Add affiliate weights → Create flows with GEO/schedule/offer filters → set caps and priorities"
+      },
+      {
+        "scenario": "Manual lead injection",
+        "steps": "Select lead(s) → Массовые операции → Инжект лидов → Choose hub, mode, autologin, proxy → Инжект"
+      },
+      {
+        "scenario": "Automated lead re-injection (resend failures)",
+        "steps": "UAD Manager → Create scenario → Set lead filter (status=Отказ, GEO=CA) → Configure schedule (interval, timezone) → Enable proxy → Launch"
+      },
+      {
+        "scenario": "Fraud investigation on a lead",
+        "steps": "Open lead profile → Основная информация → check fraud score gauge → expand IP/phone/email results → Автологин tab → review device fingerprint"
+      },
+      {
+        "scenario": "Analytics review",
+        "steps": "Метрики → Select group-by metric → review KPI tiles → read status group donut → review GEO donut with country table"
+      },
+      {
+        "scenario": "Telegram alert setup",
+        "steps": "Телеграм боты → Add bot with Telegram chat ID and username → Настройки бота → select notification events"
+      }
+    ]
+  },
+  "technology_stack": {
+    "frontend": {
+      "framework": "Unknown — likely React or Vue.js based on SPA behavior",
+      "ui_style": "Custom design system, dark theme, orange accents",
+      "icons": "Custom icon set",
+      "charts": "Donut charts for status and GEO analytics"
+    },
+    "backend": {
+      "api": "REST API (evidenced by API Key fields in integrations and affiliates)",
+      "autologin_tech": "Browser fingerprinting: WebGL hash, Canvas hash, IP, User-Agent, device ID",
+      "fraud_data_sources": "Third-party fraud intelligence APIs for IP, phone, email, messenger scoring"
+    },
+    "hosting": {
+      "domain": "hypernet.pro",
+      "deployment": "SaaS, cloud-hosted",
+      "timezone_support": "Multiple timezone support (Europe/Berlin, Europe/Kiev demonstrated)"
+    },
+    "integrations": {
+      "broker_integrations": "400+ templates",
+      "proxy_service": "Own ProRedirect service (HYPER-1 proxy shown)",
+      "telegram": "Native Telegram Bot API integration",
+      "notetaker": "Fireflies.ai bot present in meeting"
+    }
+  },
+  "sales_marketing": {
+    "pricing": {
+      "model": "Flat monthly subscription (no revenue share, no setup fee)",
+      "taglines": [
+        "NO REVENUE SHARE",
+        "NO SET-UP FEE"
+      ],
+      "page_headline": "Найдите Идеальный Тариф для Ваших Потребностей",
+      "page_subheadline": "Гибкие планы, адаптированные для аффилятов, сетей и медиабайеров для эффективного масштабирования",
+      "tiers": [
+        {
+          "name": "Стартовый (Starter)",
+          "tagline": "Лучшее решение для начинающих",
+          "price_usd_monthly": 499,
+          "companies": 1,
+          "pro_redirect_limit": 50,
+          "fraud_check_limit": 100,
+          "dedicated_ip": false,
+          "telegram_bot": "Unlimited",
+          "setup_fee": false,
+          "addon_limits": false,
+          "new_clients_only_restriction": true,
+          "lead_send_limit": true
+        },
+        {
+          "name": "Базовый (Basic)",
+          "tagline": "Лучшее решение для команд",
+          "price_usd_monthly": 999,
+          "companies": 2,
+          "pro_redirect_limit": 500,
+          "fraud_check_limit": 2000,
+          "dedicated_ip": false,
+          "telegram_bot": "Unlimited",
+          "setup_fee": false,
+          "addon_limits": true,
+          "new_clients_only_restriction": false,
+          "lead_send_limit": false
+        },
+        {
+          "name": "Продвинутый (Advanced)",
+          "tagline": "Лучшее решение для компаний",
+          "price_usd_monthly": 1499,
+          "companies": 3,
+          "pro_redirect_limit": 1000,
+          "fraud_check_limit": 4000,
+          "dedicated_ip": true,
+          "telegram_bot": "Unlimited",
+          "setup_fee": false,
+          "addon_limits": true,
+          "highlighted": true,
+          "fire_badge": true
+        },
+        {
+          "name": "Корпоративный (Corporate)",
+          "tagline": "Лучшее решение для больших компаний",
+          "price_usd_monthly": null,
+          "price_display": "****",
+          "note": "Лимиты обсуждаются индивидуально согласно потребностям клиента, сумма устанавливается на базе выбранных лимитов."
+        }
+      ],
+      "feature_comparison_table": "Below pricing cards: Функция vs Стартовый / Базовый / Продвинутый / Корпоративный",
+      "addon_availability": "Basic and Advanced tiers allow purchasing additional limits"
+    },
+    "sales_process": {
+      "demo_format": "Live demo over Google Meet with screenshare",
+      "demo_length_minutes": 85,
+      "presenter": "Stas Product (product manager)",
+      "host": "Taras Hyper",
+      "sales_technique": "Feature walkthrough, answering specific prospect questions in real time",
+      "meeting_tool": "Google Meet (ezu-rbhm-ymv)",
+      "notetaker": "Fireflies.ai Notetaker Nikita"
+    },
+    "competitive_positioning": {
+      "mentioned_competitors": [
+        "Aireg",
+        "AlterCPA",
+        "Elnopi",
+        "CRMate",
+        "Lead Grid"
+      ],
+      "prospect_prior_tool": "Aireg",
+      "differentiation_claims": [
+        "4 years in crypto/FX CRM market",
+        "No revenue share model",
+        "No setup fee",
+        "ProRedirect (own proxy service for autologin)",
+        "400+ broker integration templates",
+        "Real-time fraud check per affiliate",
+        "UAD Manager for automated scenario-based resending",
+        "14 toggleable system flags per affiliate",
+        "Device fingerprint (WebGL + Canvas) in autologin verification"
+      ],
+      "target_persona": "Buying networks with 5+ buyers, affiliates, media buyers in crypto/forex"
+    },
+    "onboarding": {
+      "concierge_setup_mentioned": true,
+      "concierge_tier": "Basic and above",
+      "self_service": "Starter tier (no concierge, limited to new clients)"
+    }
+  },
+  "behavioral_analysis": {
+    "demo_structure": [
+      "1. Introduction and company overview",
+      "2. Lead list overview and bulk operations demo",
+      "3. Lead profile deep-dive (fraud score, autologin tab, device fingerprint)",
+      "4. GEO groups configuration",
+      "5. Accounts and roles",
+      "6. Affiliates: system indicators, fraud profile configuration",
+      "7. Anti-fraud profiles: VOIP blocking configuration",
+      "8. Brands: list overview, integration creation with template",
+      "9. Hubs: overview, affiliate weights, flow rotation",
+      "10. Flow creation: GEO filter, schedule, offer filter, UTM, SUB",
+      "11. UAD Manager: scenarios list, CANADA_FAIL_RESEND scenario deep-dive",
+      "12. Telegram bots: list, bot settings event selection",
+      "13. Analytics dashboard: KPI tiles, status group donut, GEO donut",
+      "14. Pricing page walkthrough"
+    ],
+    "prospect_questions_notable": [
+      "Questions about ProRedirect (proxy autologin feature)",
+      "Questions about injection modes",
+      "Questions about fraud profile customization",
+      "Questions about pricing and tier differences"
+    ],
+    "presenter_behavior": [
+      "Uses live demo data with real lead volumes (18341 leads, 341 brands, 144 hubs)",
+      "Shows actual scenario names (CANADA_FAIL_RESEND, FR_RESEND) suggesting these are real client configs in demo account",
+      "Demonstrates copy-Monday-schedule-to-all feature in real time",
+      "Shows toast notifications and confirmation modals as they appear",
+      "Explicitly calls out features like 'Беспрерывная отправка' by toggling them on during demo"
+    ],
+    "product_maturity_signals": [
+      "Version 4.0.136 — suggests mature versioning cycle",
+      "14 scenarios in UAD Manager with real historical data dates back to 2023",
+      "341 brands, 139 affiliates, 144 hubs suggest active large-scale client",
+      "18341 leads in demo account indicates substantial data volume",
+      "400+ broker integration templates — significant partner ecosystem"
+    ]
+  },
+  "key_quotes": [
+    {
+      "speaker": "Stas Product",
+      "quote": "HyperOne — это CRM-система для крипто и форекс ниш, мы на рынке уже 4 года",
+      "context": "Opening product introduction",
+      "significance": "Company age and niche positioning"
+    },
+    {
+      "speaker": "Stas Product",
+      "quote": "У нас нет revenue share, нет setup fee — только фиксированная подписка",
+      "context": "Pricing model explanation",
+      "significance": "Key differentiator vs revenue-share competitors"
+    },
+    {
+      "speaker": "Stas Product",
+      "quote": "ProRedirect — это наш собственный прокси-сервис для автологина",
+      "context": "During inject modal demo showing 'Использовать прокси' toggle",
+      "significance": "Confirms ProRedirect is a proprietary proxy service, not third-party"
+    },
+    {
+      "speaker": "Stas Product",
+      "quote": "Более 400 шаблонов интеграций с брокерами",
+      "context": "During brand integration creation demo",
+      "significance": "Competitive depth of broker connectivity"
+    },
+    {
+      "speaker": "Stas Product",
+      "quote": "UAD менеджер позволяет автоматически переотправлять лиды по расписанию с интервалом",
+      "context": "UAD Manager scenario schedule tab demo",
+      "significance": "Core automation capability for lead resend workflows"
+    }
+  ],
+  "scorecard": {
+    "scoring_method": "1-10 per dimension based on observed features vs crypto/forex CRM best practices",
+    "dimensions": {
+      "lead_management_depth": {
+        "score": 9,
+        "rationale": "20 bulk operations, 5-tab lead profile, full fraud score with per-field breakdown, device fingerprint, CSV import/export, event history"
+      },
+      "routing_sophistication": {
+        "score": 9,
+        "rationale": "3-tier Hub/Flow/Integration routing, weighted round-robin with priority, per-flow GEO/schedule/offer/sub/UTM filters, named GEO groups, backup mode"
+      },
+      "fraud_detection": {
+        "score": 9,
+        "rationale": "Configurable fraud profiles per affiliate, 4 check dimensions (IP/Email/Phone/Messenger), line-type blocking, real-time toggle, score slider, device fingerprint with WebGL+Canvas hashes"
+      },
+      "autologin_capability": {
+        "score": 9,
+        "rationale": "4-stage autologin pipeline, device verification with full fingerprint, own ProRedirect proxy service, anomaly markers, stage-by-stage timestamp logging"
+      },
+      "automation": {
+        "score": 9,
+        "rationale": "UAD Manager with scenario-based automated resend, interval scheduling, date range, status/GEO lead filtering, continuous mode, proxy integration"
+      },
+      "analytics_reporting": {
+        "score": 6,
+        "rationale": "Dashboard present with KPI tiles, status group and GEO donuts; however limited to one grouping mode visible, no time-series charts, no affiliate-level analytics dashboard visible"
+      },
+      "integrations_ecosystem": {
+        "score": 9,
+        "rationale": "400+ broker templates, own proxy service, Telegram bot native integration with 17 event types, postback system"
+      },
+      "ux_usability": {
+        "score": 7,
+        "rationale": "Dark theme, consistent sidebar navigation, tabs+panels pattern; dense information per screen; no mobile view; table column customizer is a positive; onboarding complexity appears high"
+      },
+      "multi_tenancy": {
+        "score": 7,
+        "rationale": "Multi-company support confirmed, 4 account roles; however only visible at company level, not clear on sub-tenant isolation"
+      },
+      "pricing_value": {
+        "score": 7,
+        "rationale": "$499-$1499/mo flat with no rev-share is transparent and predictable; Starter has meaningful restrictions (lead send limit, new clients only); fraud check caps per tier may be limiting at scale"
+      },
+      "overall": {
+        "score": 8.1,
+        "rationale": "Feature-complete crypto/forex CRM with strong routing, fraud, autologin and automation capabilities. Analytics and UX lag slightly. Mature product (v4) with demonstrated real-scale usage."
+      }
+    }
+  },
+  "functional_breakdown": {
+    "lead_intake_and_validation": {
+      "module": "Лиды",
+      "description": "Lead capture from affiliate via API (API key required flag per affiliate), phone and email validation toggles, profile validity indicator, CSV import",
+      "key_features": [
+        "Per-affiliate API key generation",
+        "Phone validation toggle (Валидация телефона)",
+        "Email validation toggle (Валидация email)",
+        "Profile validity shown as 'Валидный' badge on lead profile",
+        "Redirect detection anomaly flag"
+      ]
+    },
+    "lead_routing_engine": {
+      "module": "Хабы + Ротации",
+      "description": "Hub-centric routing with flow-based weighted distribution to brand integrations",
+      "entities": {
+        "Hub": "Top-level routing container; has sendable/dedup/backup flags; links affiliates with weights and pricing",
+        "Flow": "Routing rule inside Hub; points to brand integration; has weight, priority, cap, GEO filter, schedule, offer filter, sub filter, UTM filter",
+        "Brand Integration": "Connector to broker platform; template-based; has autologin toggle and field mapping"
+      },
+      "routing_algorithm": "Weighted round-robin with strict mode option; priority field for fallback ordering",
+      "deduplication": "Hub-level 'Блокировать дубликаты' toggle",
+      "backup_mode": "Hub 'Резервный режим' for failover"
+    },
+    "affiliate_management_module": {
+      "module": "Аффилейты",
+      "description": "Comprehensive affiliate management with per-affiliate behavioral controls",
+      "key_capabilities": [
+        "13 system indicator toggles per affiliate",
+        "Per-affiliate anti-fraud profile assignment",
+        "Affiliate hub rotation assignment",
+        "Postback configuration tab",
+        "Sub-account management tab",
+        "Conversion hold toggle",
+        "Affiliate status sync control"
+      ]
+    },
+    "brand_and_integration_module": {
+      "module": "Бренды",
+      "description": "Broker brand management with template-based integration creation",
+      "key_capabilities": [
+        "341 brands in demo",
+        "Per-brand: Открыт/Синхронизируемый/Блокировка фрода/Постбэк flags",
+        "Integration templates (400+) auto-fill connection and lead field mapping",
+        "Own 'Hypernet' template available",
+        "Multi-integration per brand",
+        "Brand-level hub rotation view",
+        "Copy connection data button"
+      ]
+    },
+    "fraud_prevention_system": {
+      "module": "Анти-фрод",
+      "description": "Multi-layer fraud prevention: profile-based rules + real-time score check",
+      "layers": [
+        "Layer 1: Per-affiliate fraud profile (IP/Email/Phone/Messenger rule sets with Allow/Block per type)",
+        "Layer 2: Real-time fraud score check with max score slider (0-100)",
+        "Layer 3: Lead profile fraud score display with per-field breakdown",
+        "Layer 4: Device fingerprint in autologin (Bot/VPN/Proxy/TOR detection)",
+        "Layer 5: Anomaly flags on lead profile (status anomaly, redirect anomaly)"
+      ],
+      "phone_line_type_blocking": "VOIP blocking specifically highlighted as key use case",
+      "messenger_check": "Messenger validity check available"
+    },
+    "autologin_and_proxy": {
+      "module": "Автологин + ProRedirect",
+      "description": "Automated broker platform login with device fingerprint verification and own proxy network",
+      "pipeline": [
+        "1. Autologin link generated and sent",
+        "2. Lead clicks link (Ссылка активирована)",
+        "3. Browser loads autologin page (Страница загружена)",
+        "4. Device fingerprint captured and verified (Устройство проверено)",
+        "5. Lead submitted to broker (Лид отправлен)"
+      ],
+      "anomaly_detection": [
+        "IP match verification",
+        "GEO match verification",
+        "Device ID uniqueness check (detects shared devices)"
+      ],
+      "proxy_service": "HYPER-1 proxy available for masking autologin origin IP"
+    },
+    "automated_delivery_module": {
+      "module": "UAD менеджер",
+      "description": "Scenario engine for automated, scheduled, rule-based lead re-injection",
+      "use_cases": [
+        "Resend failed/rejected leads on a schedule",
+        "Process leads with specific GEO/status combinations automatically",
+        "Run time-bound campaigns (start/stop dates)",
+        "Distributed delivery with interval (e.g. 30-60 min between batches)"
+      ],
+      "differentiator": "Continuous resend mode (Беспрерывная отправка) for perpetual processing of lead pools"
+    },
+    "notification_system": {
+      "module": "Телеграм боты",
+      "description": "Telegram bot integration for real-time operational alerts",
+      "trigger_events": 17,
+      "key_alert_types": [
+        "Lead transfer success/failure",
+        "Fraud detection alerts",
+        "Conversion events",
+        "Hub integration volume limits",
+        "Autologin redirect limits",
+        "Invalid profile notifications",
+        "New funnel detected"
+      ]
+    },
+    "analytics_and_reporting": {
+      "module": "Метрики",
+      "description": "Operational analytics dashboard with KPI summary and geo/status breakdown",
+      "capabilities": [
+        "6 KPI tiles with counts and percentages",
+        "Status group distribution donut chart",
+        "GEO distribution donut chart with per-country table",
+        "Group-by metric selector",
+        "Export from leads list (CSV)",
+        "Per-scenario lead tracking (selected/used tabs in UAD Manager)"
+      ],
+      "gaps_observed": [
+        "No time-series trend charts visible",
+        "No affiliate-level performance comparison dashboard",
+        "No hub-level ROI analytics visible",
+        "No revenue/cost tracking visible in analytics"
+      ]
+    },
+    "status_normalization": {
+      "module": "Статус группы",
+      "description": "Mapping layer between raw broker statuses and standardized quality categories",
+      "purpose": "Enables cross-broker comparison, shave detection, and quality-based routing decisions",
+      "shave_detection_mechanism": "Аномалия статуса бренда flag triggers when broker reports a previously valid status as invalid — signals broker-side shaving"
+    },
+    "lead_table_configurability": {
+      "module": "Настройки таблицы",
+      "description": "46-column customizable table for lead list with drag-to-reorder and save",
+      "benefit": "Adapts to different team workflows (buyers vs support vs admins)"
+    }
+  },
+  "web_enrichment": {
+    "enriched_at": "2026-03-04T12:00:00Z",
+    "search_queries_used": [
+      "WebFetch https://hyperone.pro/ (homepage UA)",
+      "WebFetch https://hyperone.pro/en (homepage EN)",
+      "WebFetch https://hyperone.pro/en/blog (blog)",
+      "WebFetch https://hyperone.pro/en/about/ (about)",
+      "Tavily: hyperone.pro OR hypernet.pro CRM review forex crypto affiliate 2024 2025",
+      "Tavily: hyperone.pro linkedin company OR site:linkedin.com hyperone hypernet"
+    ],
+    "company": {
+      "official_name": "Hyperone (formerly Hypernet)",
+      "founding_year": 2021,
+      "rebrand_year": 2023,
+      "history_timeline": [
+        {
+          "year": 2021,
+          "event": "Founded as Hypernet, focus on traffic automation"
+        },
+        {
+          "year": 2022,
+          "event": "Three-layer anti-fraud system added; scaling for affiliate networks"
+        },
+        {
+          "year": 2023,
+          "event": "Rebranded to Hyperone, functionality expanded"
+        },
+        {
+          "year": 2024,
+          "event": "UAD scripts launched for traffic distribution automation"
+        },
+        {
+          "year": 2025,
+          "event": "Operating in 12+ countries: Finance, Gambling, Nutra verticals"
+        }
+      ],
+      "geography_markets": "12+ countries (Finance, Gambling, Nutra) as of 2025 per About page",
+      "funding": {
+        "value": "Not found — no funding rounds, no investors on LinkedIn / Crunchbase",
+        "source": "LinkedIn company page (linkedin.com/company/hypernetpro)",
+        "confidence": "medium",
+        "interpretation": "Bootstrapped or non-disclosed private funding"
+      },
+      "team_size": {
+        "value": "11-50 employees",
+        "linkedin_associated_members": 4,
+        "source": "LinkedIn: https://www.linkedin.com/company/hypernetpro",
+        "confidence": "high"
+      },
+      "leadership": [
+        {
+          "name": "Taras Hyper",
+          "role": "Meeting Host / founder (pseudonym)",
+          "linkedin": null,
+          "background": "Identified as Meeting Host in Feb 2026 demo; no public LinkedIn found"
+        }
+      ],
+      "contacts": {
+        "email": "info@hyperone.pro",
+        "telegram_news_en": "t.me/hyperone_news_en",
+        "linkedin": "https://www.linkedin.com/company/hypernetpro",
+        "instagram": "instagram.com/hyperone.eu"
+      },
+      "recent_news": [
+        {
+          "headline": "Rebrand Hypernet to Hyperone (2023), domain hypernet.pro to hyperone.pro",
+          "date": "2023",
+          "source": "https://hyperone.pro/en/about/",
+          "significance": "Strategic rebrand for international expansion"
+        },
+        {
+          "headline": "Reached 12+ markets in Finance/Gambling/Nutra by 2025",
+          "date": "2025",
+          "source": "https://hyperone.pro/en/about/",
+          "significance": "Confirms international growth trajectory"
+        }
+      ]
+    },
+    "product": {
+      "public_positioning": "Affiliate Marketing & Lead Distribution Software",
+      "tagline_en": "Automate traffic distribution, detect fraud and gain real-time insights to maximize ROI",
+      "target_audience_public": "Affiliate marketers, networks, and media buyers",
+      "key_claims": [
+        "Setup and traffic launch within one hour (API + pre-built templates)",
+        "200+ pre-built broker integration templates (public site); 400+ claimed in demo",
+        "ML-based real-time fraud detection",
+        "Free data migration from existing systems",
+        "24/7 personal support manager (Advanced+ plans)",
+        "No setup fee, no revenue share"
+      ],
+      "pricing": {
+        "model": "Fixed monthly subscription (no revenue share, no setup fee)",
+        "plans": [
+          {
+            "name": "Starter",
+            "price_usd_monthly": 499,
+            "companies": 1,
+            "pro_redirect_limit": 50,
+            "note": "Lead send limits; new clients only restriction (per demo)"
+          },
+          {
+            "name": "Basic",
+            "price_usd_monthly": 999,
+            "companies": 2,
+            "pro_redirect_limit": 500,
+            "fraud_check_limit": 2000,
+            "note": "Addon limits available"
+          },
+          {
+            "name": "Advanced",
+            "price_usd_monthly": 1499,
+            "companies": 3,
+            "pro_redirect_limit": 1000,
+            "fraud_check_limit": 4000,
+            "dedicated_ip": true,
+            "support": "24/7 personal account manager",
+            "note": "Highlighted plan (Fire badge); addon limits available"
+          },
+          {
+            "name": "Corporate / Enterprise",
+            "price_usd_monthly": null,
+            "price_display": "Custom",
+            "note": "Limits negotiated individually"
+          }
+        ],
+        "source": "Demo meeting Feb 2026 + https://hyperone.pro/en (confirmed)",
+        "last_checked": "2026-03-04",
+        "discrepancy_note": "Site claims 200+ integration templates; demo presenter said 400+. Likely 200+ is public figure, 400+ includes custom/internal templates."
+      },
+      "development_velocity": {
+        "release_frequency": "Monthly (version 4.0.136 in Feb 2026 demo)",
+        "last_known_release": "4.0.136 (Feb 2026)",
+        "roadmap_focus": "UAD Manager, ML anti-fraud, integrations, UAD scripts (2024)",
+        "product_age_years": 4,
+        "blog_publishing_cadence": "Active — 6+ articles published Feb 24 2026; latest article Mar 3 2026"
+      },
+      "market_sentiment": {
+        "g2_rating": null,
+        "capterra_rating": null,
+        "independent_review_platforms": "Not found — not on G2, Capterra, Trustpilot",
+        "testimonials_on_site": [
+          {
+            "company": "Storm",
+            "date": "2025-04-10",
+            "language": "Ukrainian + English",
+            "key_praise": "Support always reachable, fast responses. Intuitive tools that genuinely ease daily work."
+          },
+          {
+            "company": "Atlas Partners",
+            "date": "2025-05-20",
+            "language": "English",
+            "key_praise": "HyperOne TOP 1! Platform improves every month, work is getting more comfortable and productive."
+          },
+          {
+            "company": "StreamMedia",
+            "date": "2025-06-01",
+            "language": "English",
+            "key_praise": "Runs fast and stable even under heavy loads. Updates released regularly."
+          },
+          {
+            "company": "Atom Media",
+            "date": "2025-06-10",
+            "language": "English",
+            "key_praise": "Lightning-fast support response regardless of time of day."
+          },
+          {
+            "company": "Pride",
+            "date": "2025-06-10",
+            "language": "English",
+            "key_praise": "Flexible stream settings, built-in analytics, and lead tracking tools."
+          }
+        ],
+        "testimonial_themes": [
+          "Platform speed and stability",
+          "24/7 support quality and response speed",
+          "Regular product updates",
+          "Settings flexibility",
+          "Best functionality among CRM systems on market (per client statements)"
+        ]
+      }
+    },
+    "marketing": {
+      "monthly_traffic_estimate": {
+        "value": "Unknown — Similarweb/Semrush not checked",
+        "source": null,
+        "confidence": "unknown"
+      },
+      "seo_blog": {
+        "active": true,
+        "language": "English primary",
+        "url": "https://hyperone.pro/en/blog/",
+        "recent_articles": [
+          {
+            "title": "Instagram Affiliate Marketing: Build an Ecosystem That Converts",
+            "date": "2026-03-03"
+          },
+          {
+            "title": "Ad Fraud & Click Spam Statistics 2026: Global Losses, Rates, and Industry Benchmarks",
+            "date": "2026-02-24"
+          },
+          {
+            "title": "AI-Driven Marketing Optimization Statistics Report (2026 Edition)",
+            "date": "2026-02-24"
+          },
+          {
+            "title": "6 Performance Marketing Dashboards That Actually Drive ROI",
+            "date": "2026-02-24"
+          },
+          {
+            "title": "How to Generate Quality Traffic for Affiliate Marketing",
+            "date": "2026-02-24"
+          },
+          {
+            "title": "5 Paid Traffic Sources & Tools to Control ROI and Fraud",
+            "date": "2026-02-24"
+          },
+          {
+            "title": "How to Measure Incrementality in Affiliate Campaigns",
+            "date": "2026-02-24"
+          },
+          {
+            "title": "How Much Does It Cost to Start Affiliate Marketing?",
+            "date": null
+          }
+        ],
+        "topics": [
+          "affiliate marketing",
+          "fraud detection",
+          "UAD / traffic automation",
+          "performance dashboards",
+          "AI in marketing",
+          "paid traffic sources"
+        ]
+      },
+      "social_presence": {
+        "linkedin": {
+          "url": "https://www.linkedin.com/company/hypernetpro",
+          "followers_approx": 26,
+          "note": "Page slug is hypernetpro (old brand name retained)"
+        },
+        "telegram": {
+          "channel": "t.me/hyperone_news_en",
+          "note": "English-language news channel"
+        },
+        "instagram": {
+          "url": "instagram.com/hyperone.eu"
+        }
+      },
+      "paid_advertising": {
+        "active": false,
+        "observed_channels": [],
+        "note": "No paid traffic signals found — SEO content strategy focus"
+      }
+    },
+    "technology": {
+      "tech_stack_inferred": [
+        "SPA frontend (Vue.js or React)",
+        "REST API",
+        "ML-based fraud detection engine",
+        "Real-time routing engine"
+      ],
+      "integrations_count_public": "200+ (claimed on website)",
+      "integrations_count_demo": "400+ (claimed by presenter in demo)",
+      "api_maturity": "Advanced — API-first positioning, one-hour setup claim",
+      "proxy_service": "ProRedirect — proprietary proxy service (HYPER-1 shown in demo)",
+      "compliance_certifications": []
+    },
+    "signals": {
+      "growth_signals": [
+        {
+          "signal": "Rebrand Hypernet to Hyperone (2023), domain migration hypernet.pro to hyperone.pro",
+          "evidence": "About page confirms: founded 2021 as Hypernet, rebranded 2023",
+          "source": "https://hyperone.pro/en/about/"
+        },
+        {
+          "signal": "International expansion: 12+ countries, Finance/Gambling/Nutra verticals by 2025",
+          "evidence": "Public statement on About page (2025)",
+          "source": "https://hyperone.pro/en/about/"
+        },
+        {
+          "signal": "Aggressive SEO blog on English: 6+ articles published in a single day (Feb 24 2026)",
+          "evidence": "Mass content publication on affiliate, fraud, AI topics",
+          "source": "https://hyperone.pro/en/blog/"
+        },
+        {
+          "signal": "5 client testimonials with specific dates April-June 2025",
+          "evidence": "Storm, Atlas Partners, StreamMedia, Atom Media, Pride — all with exact dates",
+          "source": "https://hyperone.pro/en"
+        },
+        {
+          "signal": "LinkedIn company page: 11-50 employees — consistent with funded SaaS startup scale",
+          "evidence": "LinkedIn company page linkedin.com/company/hypernetpro",
+          "source": "https://www.linkedin.com/company/hypernetpro"
+        }
+      ],
+      "stress_signals": [
+        {
+          "signal": "No presence on independent review platforms (G2, Capterra, Trustpilot)",
+          "evidence": "All reviews only on own website — no verified external ratings",
+          "source": null
+        },
+        {
+          "signal": "LinkedIn: only ~26 followers and 4 associated employees",
+          "evidence": "Low LinkedIn activity despite 4+ years in market",
+          "source": "https://www.linkedin.com/company/hypernetpro"
+        },
+        {
+          "signal": "Integration count discrepancy: 200+ on site vs 400+ in demo",
+          "evidence": "Public site says 200+, sales presenter said 400+ — potential sales exaggeration or outdated site copy",
+          "source": "Demo Feb 2026 + https://hyperone.pro/en"
+        }
+      ],
+      "strategic_intent": [
+        {
+          "hypothesis": "Aggressive push into English-language international market via SEO content",
+          "supporting_evidence": [
+            "English blog with mass publication (6+ articles in one day Feb 24 2026)",
+            "Domain rebrand to hyperone.pro with international positioning",
+            "Telegram channel in English: t.me/hyperone_news_en",
+            "Instagram with European slug: hyperone.eu",
+            "12+ countries by 2025 (Finance, Gambling, Nutra)"
+          ]
+        },
+        {
+          "hypothesis": "Vertical diversification beyond crypto/forex",
+          "supporting_evidence": [
+            "Publicly declared verticals: Finance, Gambling, Nutra (demo pitched only crypto/forex)",
+            "Blog topics cover performance marketing broadly, no crypto-specific language"
+          ]
+        }
+      ]
+    },
+    "contradictions_with_meeting": [
+      {
+        "topic": "Integration templates count",
+        "claimed_in_meeting": "400+ broker integration templates (presenter Stas Product)",
+        "public_data_shows": "200+ on public website hyperone.pro",
+        "source": "https://hyperone.pro/en",
+        "implication": "Either 400+ includes undocumented/custom templates, or sales presenter inflates numbers for prospects"
+      },
+      {
+        "topic": "Primary product domain",
+        "claimed_in_meeting": "Demo on hypernet.pro (visible in account email addresses)",
+        "public_data_shows": "Primary site is hyperone.pro; hypernet.pro appears to mirror the same content",
+        "source": "https://hyperone.pro/en/about/",
+        "implication": "2023 rebrand — internal systems may have retained old domain in email addresses"
+      },
+      {
+        "topic": "Target verticals",
+        "claimed_in_meeting": "Positioned as crypto/forex CRM (demo context)",
+        "public_data_shows": "Publicly claims Finance, Gambling, Nutra — broader positioning",
+        "source": "https://hyperone.pro/en/about/",
+        "implication": "Sales team adapts pitch to audience (crypto/forex prospect); public positioning is wider"
+      }
+    ],
+    "data_gaps": [
+      "Real leadership names not identified — Taras Hyper is a pseudonym, no personal LinkedIn found",
+      "Funding not found — presumed bootstrapped",
+      "Monthly site traffic not determined (Similarweb/Semrush not checked)",
+      "Client companies Storm, Atlas Partners, StreamMedia, Atom Media, Pride not independently verified",
+      "Actual revenue and paying customer count unknown",
+      "hypernet.pro mirror status not confirmed by direct check"
+    ],
+    "analyst_summary": "HyperOne (ex. Hypernet, founded 2021, rebranded 2023) is the most publicly active competitor in the analysis. Company (11-50 employees, likely bootstrapped) is aggressively entering the international market: active English SEO blog, Telegram channel, Instagram. Pricing at $499-$1499/mo positions it as mid-market. Client testimonials (5 companies, Apr-Jun 2025) praise stability, support speed, and regular updates. Key threats to our product: (1) rich feature set (UAD, 3-layer anti-fraud, ProRedirect, autologin) at competitive prices; (2) active SEO expansion into English-language markets; (3) vertical diversification into Gambling/Nutra reduces crypto/forex dependency. Key weaknesses: no independent reviews on G2/Capterra, low LinkedIn presence, analytics limited vs enterprise solutions."
+  }
+}

@@ -1,0 +1,429 @@
+{
+  "meta": {
+    "product": "HyperOne CRM",
+    "version": "4.0.136",
+    "extracted_date": "2026-03-03",
+    "source": "demo.hypernet.pro",
+    "notes": "All forms use Angular Reactive Forms. Labels are in Ukrainian. Dropdowns call /api/tracker/{entity}/list for options."
+  },
+
+  "forms": {
+
+    "brand_create": {
+      "title": "Створення бренду",
+      "route": "#/dashboard/brands/create",
+      "api_endpoint": "POST /api/tracker/broker",
+      "breadcrumb": "Всі бренди",
+      "fields": [
+        { "name": "name", "label": "Ім'я", "type": "text", "placeholder": "John Doe", "required": true },
+        { "name": "url", "label": "URL", "type": "text", "placeholder": "https://keenthe.com/some/any?id=1", "required": false },
+        { "name": "description", "label": "Опис", "type": "textarea", "placeholder": "...", "required": false },
+        { "name": "isSynchronized", "label": "Синхронізований", "type": "checkbox", "default": false },
+        { "name": "isSending", "label": "Надсилається", "type": "checkbox", "default": false },
+        { "name": "isPostback", "label": "Постбек", "type": "checkbox", "default": false }
+      ],
+      "actions": [
+        { "label": "Скасувати", "type": "secondary", "action": "navigate_back" },
+        { "label": "Створити бренд", "type": "primary", "action": "submit" }
+      ]
+    },
+
+    "brand_edit": {
+      "title": "Редагування бренду",
+      "route": "#/dashboard/brands/{id}/primary",
+      "api_endpoint": "PATCH /api/tracker/broker/{id}",
+      "fields": [
+        { "name": "name", "label": "Ім'я", "type": "text", "inline_edit": true },
+        { "name": "url", "label": "URL", "type": "text", "inline_edit": true },
+        { "name": "description", "label": "Опис", "type": "textarea", "inline_edit": true },
+        { "name": "isSynchronized", "label": "Синхронізований", "type": "toggle", "inline": true },
+        { "name": "isSending", "label": "Надсилається", "type": "toggle", "inline": true },
+        { "name": "isPostback", "label": "Постбек", "type": "toggle", "inline": true },
+        { "name": "isFraudBlocking", "label": "Блокування фрода", "type": "toggle", "inline": true }
+      ],
+      "notes": "Edit done inline on profile page via pencil icon or Управління button"
+    },
+
+    "hub_create": {
+      "title": "Створення хаба",
+      "route": "#/dashboard/hubs/create",
+      "api_endpoint": "POST /api/tracker/box",
+      "breadcrumb": "Всі хаби",
+      "fields": [
+        { "name": "name", "label": "Назва", "type": "text", "placeholder": "John Doe", "required": true },
+        { "name": "verticalTemplateId", "label": "Вертикаль", "type": "mat-select", "placeholder": "Base", "source": "GET /api/tracker/verticalTemplate", "required": true },
+        { "name": "description", "label": "Опис", "type": "textarea", "placeholder": "...", "required": false },
+        { "name": "isSending", "label": "Надсилається", "type": "checkbox", "default": true }
+      ],
+      "actions": [
+        { "label": "Скасувати", "type": "secondary", "action": "navigate_back" },
+        { "label": "Створити хаб", "type": "primary", "action": "submit" }
+      ]
+    },
+
+    "affiliate_create": {
+      "title": "Створення афілейту",
+      "route": "#/dashboard/affiliates/create",
+      "api_endpoint": "POST /api/tracker/affiliate",
+      "breadcrumb": "Всі афілейти",
+      "note_shown": "Після створення афілейту за первинною інформацією - перейдіть до створення postback налаштувань для подальшої інтеграції",
+      "fields": [
+        { "name": "name", "label": "Ім'я", "type": "text", "placeholder": "John Doe", "required": true },
+        { "name": "description", "label": "Опис", "type": "textarea", "placeholder": "John Doe: Any", "required": false }
+      ],
+      "actions": [
+        { "label": "Скасувати", "type": "secondary", "action": "navigate_back" },
+        { "label": "Створити афілейту", "type": "primary", "action": "submit" }
+      ]
+    },
+
+    "affiliate_profile": {
+      "title": "Профіль афілейту",
+      "route": "#/dashboard/affiliates/{id}/primary",
+      "fields": [
+        { "name": "name", "label": "Ім'я", "type": "text", "inline_edit": true },
+        { "name": "code", "label": "Код", "type": "readonly", "format": "AFF-XXXXXXXXXX" },
+        { "name": "description", "label": "Опис", "type": "textarea", "inline_edit": true },
+        { "name": "autologinDomain", "label": "Домен автологіна", "type": "text", "inline_edit": true },
+        { "name": "unassignedLeadPostbackType", "label": "Тип постбеку для непризначених лідів", "type": "select", "options": ["Ліда відхилено"] },
+        { "name": "apiKey", "label": "API ключ", "type": "readonly", "format": "UUID v4" },
+        { "name": "balance", "label": "Баланс", "type": "readonly", "format": "$" }
+      ],
+      "system_indicators": [
+        { "name": "conversionHold", "label": "Холд конверсій", "type": "toggle" },
+        { "name": "realtimeFraudCheck", "label": "Перевірка на фрод у реальному часі", "type": "toggle" },
+        { "name": "affiliateStatusSync", "label": "Синхр. афілейт статусу", "type": "toggle", "depends_on": "conversionHold" },
+        { "name": "showUnassignedLeads", "label": "Відображення непризначених лідів", "type": "toggle" },
+        { "name": "showRefusalLeads", "label": "Відображення лідів у статусі 'Відмова'", "type": "toggle" },
+        { "name": "autologinDeviceCheck", "label": "Перевірка пристрою автологіна", "type": "toggle" },
+        { "name": "useStatusGroupInsteadOfStatus", "label": "Використовувати статус групу замість статусу", "type": "toggle" },
+        { "name": "phoneValidation", "label": "Валідація телефону", "type": "toggle" },
+        { "name": "emailValidation", "label": "Валідація email", "type": "toggle" },
+        { "name": "redirectActivation", "label": "Активація редиректу", "type": "toggle" },
+        { "name": "apiKeyRequired", "label": "API ключ обов'язковий для відправки", "type": "toggle" }
+      ]
+    },
+
+    "lead_create": {
+      "title": "Створення ліда",
+      "route": "#/dashboard/leads/create",
+      "api_endpoint": "POST /api/tracker/lead",
+      "breadcrumb": "Всі ліди",
+      "special_action": { "label": "Згенерувати тест", "action": "auto-fill with random test data" },
+      "sections": {
+        "basic": {
+          "title": "Основна інформація",
+          "fields": [
+            { "name": "affiliateId", "label": "Афілейт", "type": "mat-select", "source": "GET /api/tracker/affiliate/list", "required": true },
+            { "name": "verticalTemplateId", "label": "Вертикаль", "type": "mat-select", "source": "GET /api/tracker/verticalTemplate", "required": true },
+            { "name": "ip", "label": "IP", "type": "text", "placeholder": "192.168.1.1" },
+            { "name": "landingName", "label": "Назва лендінгу", "type": "text", "placeholder": "Keenthe" },
+            { "name": "landingUrl", "label": "URL лендінгу", "type": "text", "placeholder": "https://keenthe.com" }
+          ]
+        },
+        "geo": {
+          "title": "ГЕО",
+          "fields": [
+            { "name": "country", "label": "Країна", "type": "mat-select", "source": "GET /api/geo/countries", "placeholder": "CANADA" },
+            { "name": "language", "label": "Мова", "type": "mat-select", "source": "GET /api/geo/languages", "placeholder": "en, pl, es..." },
+            { "name": "landingLanguage", "label": "Мова лендінгу", "type": "mat-select", "source": "GET /api/geo/languages", "placeholder": "en, pl, es..." }
+          ]
+        },
+        "utm": {
+          "title": "UTM parameters",
+          "fields": [
+            { "name": "utmId", "label": "UTM ID", "type": "text", "placeholder": "c492dbe5" },
+            { "name": "utmMedium", "label": "UTM Medium", "type": "text", "placeholder": "social" },
+            { "name": "utmSource", "label": "UTM Source", "type": "text", "placeholder": "facebook" },
+            { "name": "utmCampaign", "label": "UTM Campaign", "type": "text", "placeholder": "summer-promo" }
+          ]
+        },
+        "sub": {
+          "title": "«SUB» parameters",
+          "fields": [
+            { "name": "subId", "label": "Sub ID", "type": "text", "placeholder": "subId" },
+            { "name": "subIdA", "label": "Sub «A»", "type": "text", "placeholder": "subId_a" },
+            { "name": "subIdB", "label": "Sub «B»", "type": "text", "placeholder": "subId_b" },
+            { "name": "subIdC", "label": "Sub «C»", "type": "text", "placeholder": "subId_c" },
+            { "name": "subIdD", "label": "Sub «D»", "type": "text", "placeholder": "subId_d" },
+            { "name": "subIdE", "label": "Sub «E»", "type": "text", "placeholder": "subId_e" },
+            { "name": "subIdF", "label": "Sub «F»", "type": "text" }
+          ]
+        },
+        "profile": {
+          "title": "Профіль (з'являється після вибору Вертикалі)",
+          "note": "Набір полів змінюється залежно від вертикалі",
+          "fields": [
+            { "name": "email", "label": "Email", "type": "email" },
+            { "name": "phone", "label": "Телефон", "type": "tel" },
+            { "name": "lastName", "label": "Прізвище", "type": "text" },
+            { "name": "password", "label": "Пароль", "type": "text" },
+            { "name": "firstName", "label": "Ім'я", "type": "text" }
+          ]
+        }
+      },
+      "actions": [
+        { "label": "Скасувати", "type": "secondary", "action": "navigate_back" },
+        { "label": "Створити ліда", "type": "primary", "action": "submit" }
+      ]
+    },
+
+    "lead_profile": {
+      "title": "Профіль ліда",
+      "route": "#/dashboard/leads/{id}/primary",
+      "tabs": [
+        { "name": "Основна інформація", "route": "/primary" },
+        { "name": "Автологін", "route": "/autologin" },
+        { "name": "Реєстрації", "route": "/registrations" },
+        { "name": "Історія подій", "route": "/history" },
+        { "name": "Коментарі", "route": "/comments" }
+      ],
+      "primary_tab": {
+        "details_section": [
+          { "name": "id", "label": "ID", "type": "readonly_copiable", "format": "UUID v4" },
+          { "name": "crmId", "label": "CRM ID", "type": "readonly" },
+          { "name": "geo", "label": "ГЕО", "type": "editable_select" },
+          { "name": "affiliateId", "label": "Афілейт", "type": "editable_select" },
+          { "name": "brandId", "label": "Бренд", "type": "readonly" },
+          { "name": "brandIntegrationId", "label": "Інтеграція бренду", "type": "readonly" },
+          { "name": "hubId", "label": "Хаб", "type": "readonly" },
+          { "name": "systemStatus", "label": "Системний статус", "type": "readonly" },
+          { "name": "brandStatus", "label": "Бренд статус", "type": "readonly" },
+          { "name": "brandStatusGroup", "label": "Бренд статус група", "type": "readonly" },
+          { "name": "affiliateStatus", "label": "Афілейт статус", "type": "readonly" },
+          { "name": "affiliateStatusGroup", "label": "Афілейт статус група", "type": "readonly" },
+          { "name": "template", "label": "Шаблон", "type": "readonly" },
+          { "name": "apiComment", "label": "Коментар (API)", "type": "readonly" },
+          { "name": "createdAt", "label": "Створений", "type": "readonly_datetime" },
+          { "name": "registeredAt", "label": "Зареєстровано", "type": "readonly_datetime" },
+          { "name": "synchronizedAt", "label": "Синхронізований", "type": "readonly_datetime" },
+          { "name": "depositDate", "label": "Дата депозиту", "type": "readonly_datetime" }
+        ],
+        "profile_section": {
+          "title": "Профіль",
+          "note": "Валідний / Невалідний badge. Gear icon opens profile field settings.",
+          "fields": [
+            { "name": "email", "label": "Email", "type": "readonly_copiable" },
+            { "name": "phone", "label": "Телефон", "type": "readonly_copiable" },
+            { "name": "lastName", "label": "Прізвище", "type": "readonly_copiable" },
+            { "name": "password", "label": "Пароль", "type": "readonly_copiable" },
+            { "name": "firstName", "label": "Ім'я", "type": "readonly_copiable" }
+          ]
+        },
+        "system_indicators": [
+          { "name": "brandStatusAnomaly", "label": "Аномалія статусу бренду", "states": ["Аномалії не виявлено", "Аномалія виявлена"] },
+          { "name": "fraudCheck", "label": "Не перевірено на фрод", "states": ["Перевірено", "Не перевірено"] },
+          { "name": "sendAttempt", "label": "Спроба відправки", "states": ["Успішно", "Невдало"] },
+          { "name": "sent", "label": "Відправлено", "states": ["Відправлений", "Не відправлений"] },
+          { "name": "statusSync", "label": "Синхроніз. статус", "type": "toggle" },
+          { "name": "conversionSync", "label": "Синхронізація конверсія", "type": "toggle" },
+          { "name": "isDeposit", "label": "Депозит", "states": ["Так", "Ні"] },
+          { "name": "isTest", "label": "Тестовий", "states": ["Так", "Ні"] },
+          { "name": "isInjected", "label": "Не інжектований", "states": ["Інжектований", "Не інжектований"] },
+          { "name": "isConversion", "label": "Конверсія", "states": ["Так", "Ні"] },
+          { "name": "affiliateStatusSync", "label": "Синхр. афілейт статусу", "type": "toggle" }
+        ],
+        "fraud_section": {
+          "title": "Фрод",
+          "note": "Оновлено: Немає даних (if not checked). Detailed fraud analysis per field.",
+          "sub_sections": [
+            { "name": "phone", "label": "Телефон", "checks": ["valid format", "VOIP detection", "country match"] },
+            { "name": "email", "label": "Email", "checks": ["valid format", "disposable detection", "domain check"] }
+          ]
+        },
+        "sub_identifiers_section": {
+          "title": "Sub ідентифікатори",
+          "note": "Додаткові параметри інтеграції. Editable via gear icon."
+        }
+      },
+      "autologin_tab": {
+        "stages": [
+          "Посилання НЕ активоване (Link NOT activated)",
+          "Сторінка НЕ завантажена (Page NOT loaded)",
+          "Пристрій НЕ перевірено (Device NOT checked)",
+          "Лід НЕ відправлений (Lead NOT sent to brand)"
+        ],
+        "markers": "Маркери автологіна — device fingerprint matching indicators"
+      },
+      "registrations_tab": {
+        "columns": ["Бренд", "Бренд статус", "Бренд статус група", "Створений", "Статус", "Афілейт статус", "Афілейт статус група", "Інтеграція бренду", "Хаб", "Активний", "Аномалія статусу бренду", "#"]
+      },
+      "history_tab": {
+        "columns": ["#", "Тип події", "Ініціатор", "Попереднє значення", "Поточне значення", "Дата"],
+        "event_types": ["Спроба інжекту", "Лід конвертований", "Лід інжектований бренду", "Лід створений", "Статус змінено", "ГЕО змінено"]
+      }
+    },
+
+    "account_create": {
+      "title": "Створення облікового запису",
+      "route": "#/dashboard/accounts/create",
+      "api_endpoint": "POST /api/tracker/account",
+      "breadcrumb": "Всі облікові записи",
+      "type": "multi_step_wizard",
+      "steps": [
+        {
+          "step": 1,
+          "title": "Перевірка Email",
+          "note": "Перед створенням облікового запису давайте перевіримо, чи немає в нашій системі облікового запису з таким же e-mail.",
+          "fields": [
+            { "name": "email", "label": "Email", "type": "email", "required": true }
+          ],
+          "action": { "label": "Перевірити e-mail", "api": "GET /api/tracker/account?filter[email]={email}" }
+        },
+        {
+          "step": 2,
+          "title": "Дані облікового запису",
+          "note": "Shown if email not found in step 1",
+          "fields": [
+            { "name": "firstName", "label": "Ім'я", "type": "text", "required": true },
+            { "name": "lastName", "label": "Прізвище", "type": "text", "required": true },
+            { "name": "phone", "label": "Телефон", "type": "tel" },
+            { "name": "affiliateId", "label": "Афілейт", "type": "mat-select", "source": "GET /api/tracker/affiliate/list" },
+            { "name": "geo", "label": "ГЕО", "type": "mat-select", "source": "GET /api/geo/countries" }
+          ]
+        }
+      ]
+    },
+
+    "status_group_create": {
+      "title": "Створення статус групи",
+      "route": "#/dashboard/status-groups/create",
+      "api_endpoint": "POST /api/tracker/statusGroup",
+      "breadcrumb": "Всі статус групи",
+      "fields": [
+        { "name": "name", "label": "Назва", "type": "text", "required": true },
+        { "name": "statusIds", "label": "Статуси", "type": "mat-select-multi", "placeholder": "No answer, callback...", "source": "GET /api/tracker/statusGroup/group/list" },
+        { "name": "qualityScore", "label": "Оцінка якості (0 - 10)", "type": "number", "min": 0, "max": 10 },
+        { "name": "isValid", "label": "Валідний", "type": "toggle", "default": true }
+      ],
+      "actions": [
+        { "label": "Скасувати", "type": "secondary" },
+        { "label": "Створити", "type": "primary" }
+      ]
+    },
+
+    "geo_group_edit": {
+      "title": "Редагування ГЕО групи",
+      "route": "#/dashboard/country-groups",
+      "api_endpoint": "PATCH /api/tracker/countryGroup/{id}",
+      "note": "Edit opened via settings gear per row (inline dialog, not separate page)",
+      "fields": [
+        { "name": "name", "label": "Назва", "type": "text", "required": true },
+        { "name": "countryIds", "label": "ГЕО", "type": "mat-select-multi", "placeholder": "Select countries", "source": "GET /api/geo/countries" }
+      ]
+    },
+
+    "stream_rotation_create": {
+      "title": "Ротація потоку",
+      "route": "#/dashboard/rotations/streams",
+      "api_endpoint": "POST /api/tracker/box/brokerAttachment",
+      "note": "Created via dialog opened from Rotations → Ротації потоків → add button",
+      "fields": [
+        { "name": "hubId", "label": "Хаб", "type": "mat-select", "source": "GET /api/tracker/box/list" },
+        { "name": "brandIntegrationId", "label": "Інтеграція бренду", "type": "mat-select", "source": "GET /api/tracker/broker/integration/crm/list" },
+        { "name": "offers", "label": "Оффер", "type": "text_multi", "note": "Offer labels for this rotation" },
+        { "name": "countries", "label": "Країни", "type": "mat-select-multi", "source": "GET /api/geo/countries" },
+        { "name": "weight", "label": "Вага", "type": "number", "default": 1000 },
+        { "name": "priority", "label": "Пріоритет", "type": "number", "default": 1 },
+        { "name": "totalCap", "label": "Тотал кап", "type": "number", "default": 100 },
+        { "name": "isSending", "label": "Надсилається", "type": "toggle", "default": true }
+      ]
+    },
+
+    "hub_rotation_create": {
+      "title": "Ротація хабу",
+      "route": "#/dashboard/rotations/hubs",
+      "api_endpoint": "POST /api/tracker/box/affiliateAttachment",
+      "fields": [
+        { "name": "affiliateId", "label": "Афілейт", "type": "mat-select", "source": "GET /api/tracker/affiliate/list" },
+        { "name": "hubId", "label": "Хаб", "type": "mat-select", "source": "GET /api/tracker/box/list" },
+        { "name": "countries", "label": "Країни", "type": "mat-select-multi", "source": "GET /api/geo/countries" },
+        { "name": "weight", "label": "Вага", "type": "number", "default": 1000 },
+        { "name": "priority", "label": "Пріоритет", "type": "number", "default": 1 },
+        { "name": "isSending", "label": "Надсилається", "type": "toggle", "default": true }
+      ]
+    },
+
+    "fraud_profile_create": {
+      "title": "Фрод профіль",
+      "route": "#/dashboard/anti-fraud/profiles/create",
+      "api_endpoint": "POST /api/tracker/company/resources/fraudProfile",
+      "fields": [
+        { "name": "name", "label": "Ім'я", "type": "text", "required": true },
+        { "name": "description", "label": "Опис", "type": "textarea" },
+        { "name": "isEnabled", "label": "Увімкнено", "type": "toggle", "default": true },
+        { "name": "rules", "label": "Правила", "type": "complex_rule_builder", "note": "Binary Allow/Block rules per field (phone, email, IP, GEO, device)" }
+      ]
+    },
+
+    "fraud_scoring_config": {
+      "title": "Оцінка фрода (Scoring Config)",
+      "route": "#/dashboard/anti-fraud/scoring",
+      "api_endpoint": "GET/PATCH /api/tracker/company/resources/fraudScoringConfig/{id}",
+      "fields": [
+        { "name": "threshold", "label": "Поріг оцінки", "type": "number", "range": "0-100" },
+        { "name": "mlCoefficient", "label": "ML коефіцієнт", "type": "number", "note": "Weights ML model output" },
+        { "name": "phoneWeight", "label": "Вага телефону", "type": "number" },
+        { "name": "emailWeight", "label": "Вага email", "type": "number" },
+        { "name": "ipWeight", "label": "Вага IP", "type": "number" },
+        { "name": "deviceWeight", "label": "Вага пристрою", "type": "number" }
+      ]
+    },
+
+    "telegram_bot_add": {
+      "title": "Додавання Телеграм бота",
+      "route": "#/dashboard/telegram-bots",
+      "api_endpoint": "POST /api/tracker/account/resources/botSubscriber",
+      "fields": [
+        { "name": "botToken", "label": "Токен бота", "type": "text", "required": true, "note": "BotFather-issued token" },
+        { "name": "chatId", "label": "Chat ID", "type": "text", "required": true },
+        { "name": "events", "label": "События", "type": "mat-select-multi", "note": "Up to 17 event types", "options": [
+          "Лід створений", "Лід відправлений", "Статус змінено", "Депозит отримано",
+          "Фрод виявлено", "Конверсія", "Помилка відправки", "Автологін активовано",
+          "Новий акаунт", "Постбек отримано", "Ліміт кап досягнуто",
+          "Аномалія статусу", "Інжекція виконана", "Сценарій запущено",
+          "Бот підключено", "Бот відключено", "Системна подія"
+        ]}
+      ]
+    },
+
+    "uad_scenario_create": {
+      "title": "UAD Сценарій",
+      "route": "#/dashboard/scenarios/create",
+      "api_endpoint": "POST /api/injector/scenario",
+      "note": "User Action Director — automated lead re-injection engine on separate microservice",
+      "fields": [
+        { "name": "name", "label": "Назва", "type": "text", "required": true },
+        { "name": "code", "label": "Код", "type": "readonly", "format": "SCN-XXXXXXXXXX" },
+        { "name": "triggerEvent", "label": "Тригер подія", "type": "mat-select", "options": ["Статус змінено", "Час без відповіді", "Без депозиту X днів", "Відмова N разів"] },
+        { "name": "conditions", "label": "Умови", "type": "condition_builder", "note": "AND/OR logic for GEO, affiliate, hub, status group filters" },
+        { "name": "actions", "label": "Дії", "type": "action_builder", "note": "Re-inject lead to hub, change status, send notification" },
+        { "name": "isActive", "label": "Активний", "type": "toggle", "default": true }
+      ]
+    },
+
+    "conversion_hold_config": {
+      "title": "Налаштування конверсій",
+      "route": "#/dashboard/conversions",
+      "api_endpoint": "GET/PATCH /api/tracker/company/resources/conversionHold",
+      "fields": [
+        { "name": "holdTimer", "label": "Таймер холду", "type": "number", "unit": "minutes/hours" },
+        { "name": "stopStatuses", "label": "Стоп-статуси", "type": "mat-select-multi", "source": "status list", "note": "Statuses that halt conversion hold" }
+      ]
+    },
+
+    "login": {
+      "title": "Вхід",
+      "route": "#/auth/login",
+      "api_endpoint": "POST /api/auth (via Angular form + redirect)",
+      "fields": [
+        { "name": "email", "label": "Email", "type": "email", "required": true, "placeholder": "email@example.com" },
+        { "name": "password", "label": "Пароль", "type": "password", "required": true }
+      ],
+      "actions": [
+        { "label": "Увійти", "type": "primary" }
+      ],
+      "notes": "Angular reactive form. Cannot use programmatic .value= assignment — must simulate keyboard events. Session UUID stored in localStorage."
+    }
+  }
+}

@@ -1,0 +1,374 @@
+{
+  "meta": {
+    "product": "HyperOne CRM",
+    "version": "4.0.136",
+    "base_url": "https://demo.hypernet.pro",
+    "router_type": "Angular Hash Router (#)",
+    "extracted_date": "2026-03-03",
+    "total_modules": 14
+  },
+
+  "global_layout": {
+    "type": "shell_with_sidebar",
+    "sidebar": {
+      "position": "left",
+      "width_expanded": "250px",
+      "width_collapsed": "56px",
+      "top_section": "HyperOne logo (kangaroo icon + wordmark)",
+      "bottom_section": "Вийти (logout) button with gradient styling",
+      "toggle": "chevron button at top right of sidebar",
+      "items": [
+        { "icon": "lightning", "label": "Метрики", "route": "#/dashboard/metrics" },
+        { "icon": "leads", "label": "Ліди", "route": "#/dashboard/leads" },
+        { "icon": "globe", "label": "ГЕО групи", "route": "#/dashboard/country-groups" },
+        { "icon": "person-group", "label": "Акаунти", "route": "#/dashboard/accounts" },
+        { "icon": "affiliate", "label": "Афілейти", "route": "#/dashboard/affiliates" },
+        { "icon": "brand", "label": "Бренди", "route": "#/dashboard/brands" },
+        { "icon": "hub", "label": "Хаби", "route": "#/dashboard/hubs" },
+        { "icon": "rotation/git", "label": "Ротації", "route": "#/dashboard/rotations" },
+        { "icon": "uad", "label": "UAD менеджер", "route": "#/dashboard/scenarios" },
+        { "icon": "conversions", "label": "Конверсії", "route": "#/dashboard/conversions" },
+        { "icon": "telegram", "label": "Телеграм боти", "route": "#/dashboard/telegram-bots" },
+        { "icon": "shield", "label": "Анти-фрод", "route": "#/dashboard/anti-fraud" },
+        { "icon": "vertical", "label": "Вертикалі", "route": "#/dashboard/verticals" }
+      ],
+      "note": "Статус групи accessible via sidebar (route #/dashboard/status-groups) but was 13th visible item in expanded sidebar scroll"
+    },
+    "header_bar": {
+      "position": "top-right",
+      "content": "datetime (Europe/Berlin timezone), user display name, company name (DEMO badge), avatar button (opens profile menu)"
+    },
+    "page_title_bar": {
+      "position": "sticky top of main content",
+      "content": "page title + result count badge, right-side toolbar icons"
+    }
+  },
+
+  "pages": [
+
+    {
+      "id": "metrics",
+      "module": 1,
+      "title": "Метрики",
+      "route": "#/dashboard/metrics",
+      "api_calls": [
+        "GET /api/tracker/statistic/statusGroup",
+        "GET /api/tracker/statistic/geo",
+        "GET /api/tracker/statistic/leads",
+        "GET /api/tracker/statistic/affiliates",
+        "GET /api/tracker/statistic/brands",
+        "GET /api/tracker/statistic/hubs",
+        "GET /api/tracker/statistic/attribute/subId_a",
+        "GET /api/tracker/statistic/attribute/utmId",
+        "GET /api/tracker/statistic/attribute/autologinStatus",
+        "GET /api/tracker/statistic/attribute/funnel",
+        "GET /api/tracker/statistic/attribute/lang",
+        "GET /api/tracker/statistic/status"
+      ],
+      "layout": "dashboard with filter bar + widget grid",
+      "filter_bar": {
+        "date_range": "preset + custom (gte/lte)",
+        "status_group_selector": "dropdown (statusGroup=brandStatusGroup|affiliateStatusGroup)",
+        "dimensions": "27 total (subId_a, utmId, autologinStatus, funnel, lang, geo, affiliate, brand, hub, etc.)"
+      },
+      "widgets": [
+        { "type": "stat_cards", "metrics": ["total leads", "registered", "deposited", "ftd rate"] },
+        { "type": "line_chart", "data": "leads over time (scale: month/week/day)" },
+        { "type": "table", "data": "top affiliates by deposit" },
+        { "type": "table", "data": "top brands by deposit" },
+        { "type": "table", "data": "top hubs by deposit" },
+        { "type": "table", "data": "breakdown by selected attribute dimension" },
+        { "type": "table", "data": "status group breakdown" },
+        { "type": "table", "data": "GEO breakdown" }
+      ],
+      "toolbar": ["date range filter", "dimension selector", "status group toggle", "refresh", "export"]
+    },
+
+    {
+      "id": "leads_list",
+      "module": 2,
+      "title": "Ліди",
+      "route": "#/dashboard/leads/list",
+      "api_calls": [
+        "GET /api/tracker/lead?skip=0&take=10&sort[createdAt]=desc&filter[isTest]=false"
+      ],
+      "default_filter": "filter[isTest]=false",
+      "columns": [
+        "Афілейт", "ГЕО", "Статус", "Створений", "Депозит", "Бренд статус",
+        "Хаб", "Афілейт статус", "Фрод статус", "Email", "Ім'я", "Лендінг",
+        "Телефон", "Статус автологіна", "Аномалія статусу бренду",
+        "Кіл-ть реєстр.", "Тестовий", "#"
+      ],
+      "total_columns": 18,
+      "toolbar": [
+        { "icon": "+", "tooltip": "Створити ліда", "action": "navigate to #/dashboard/leads/create" },
+        { "icon": "↻", "tooltip": "Оновити" },
+        { "icon": "←", "tooltip": "Назад" },
+        { "icon": "funnel", "tooltip": "Фільтр", "has_badge": true },
+        { "icon": "cloud↑", "tooltip": "Імпорт" }
+      ],
+      "table_features": [
+        "Inline click-to-filter on column values (shows tooltip: 'Застосувати фільтр X за Y')",
+        "Row click → lead profile page (#/dashboard/leads/{id})",
+        "Масові операції (mass operations) button",
+        "Експорт (export) button",
+        "Column selector (checkmark icon)"
+      ],
+      "search": "full-text search bar (Пошук)"
+    },
+
+    {
+      "id": "lead_profile",
+      "module": 2,
+      "title": "Профіль ліда",
+      "route": "#/dashboard/leads/{id}/primary",
+      "api_calls": [
+        "GET /api/tracker/lead/{id}",
+        "GET /api/tracker/lead/{id}/registration",
+        "GET /api/tracker/lead/{id}/event"
+      ],
+      "layout": "profile with tabs",
+      "header": "flag + full name, breadcrumb 'Всі ліди', Управління button",
+      "tabs": [
+        { "name": "Основна інформація", "route": "/primary", "sections": ["Деталі", "Профіль", "Системні індикатори", "Фрод", "Sub ідентифікатори"] },
+        { "name": "Автологін", "route": "/autologin", "sections": ["Етапи автологіна", "Маркери автологіна"] },
+        { "name": "Реєстрації", "route": "/registrations", "sections": ["Registrations table"] },
+        { "name": "Історія подій", "route": "/history", "sections": ["Events table"] },
+        { "name": "Коментарі", "route": "/comments", "sections": ["Comments list"] }
+      ]
+    },
+
+    {
+      "id": "lead_create",
+      "module": 2,
+      "title": "Створення ліда",
+      "route": "#/dashboard/leads/create",
+      "api_calls": ["POST /api/tracker/lead"],
+      "layout": "single-column form",
+      "sections": ["Основна інформація", "ГЕО", "UTM parameters", "«SUB» parameters", "Profile fields (dynamic by vertical)"]
+    },
+
+    {
+      "id": "status_groups",
+      "module": 3,
+      "title": "Статус групи",
+      "route": "#/dashboard/status-groups/list",
+      "api_calls": ["GET /api/tracker/statusGroup/group?skip=0&take=10"],
+      "columns": ["#", "Назва", "Валідний", "Відслідковувати зміни", "Оцінка якості", "Створений"],
+      "toolbar": [
+        { "icon": "+", "tooltip": "Створити статус групу", "action": "navigate to create" }
+      ],
+      "total_records": 10,
+      "sample_entries": ["In Work", "CrossLead", "Potential", "Wrong Language", "Callback", "Ungrouped", "Not interested", "WrongAge", "No answer", "Deposit"]
+    },
+
+    {
+      "id": "geo_groups",
+      "module": 4,
+      "title": "ГЕО групи",
+      "route": "#/dashboard/country-groups/list",
+      "api_calls": [
+        "GET /api/tracker/countryGroup/group?skip=0&take=10",
+        "GET /api/geo/countries"
+      ],
+      "columns": ["#", "Назва", "ГЕО (flags+codes)", "Створений"],
+      "row_actions": "settings gear → opens inline edit dialog",
+      "total_records": 5,
+      "sample_entries": ["LATAM (AR+5)", "TEST (AF+4)", "RU EU (AF+2)", "EUROP (DE+3)", "RU_EU (ES)"]
+    },
+
+    {
+      "id": "accounts_list",
+      "module": 5,
+      "title": "Акаунти",
+      "route": "#/dashboard/accounts/list",
+      "api_calls": ["GET /api/tracker/account?skip=0&take=10&sort[createdAt]=desc"],
+      "columns": ["Ім'я", "Email", "Телефон", "ГЕО", "Афілейт", "Статус", "Підписка бота", "Створений", "#"],
+      "toolbar": [{ "icon": "+", "tooltip": "Створити акаунт" }]
+    },
+
+    {
+      "id": "affiliates_list",
+      "module": 6,
+      "title": "Афілейти",
+      "route": "#/dashboard/affiliates/list",
+      "api_calls": ["GET /api/tracker/affiliate?skip=0&take=10&sort[createdAt]=desc"],
+      "columns": ["Назва", "Код", "Перевірка на фрод", "Баланс", "Холд конверсій", "Опис", "Оновлено", "#", "Створений"],
+      "toolbar": [{ "icon": "+", "tooltip": "Створити афілейт" }]
+    },
+
+    {
+      "id": "affiliate_profile",
+      "module": 6,
+      "title": "Профіль афілейту",
+      "route": "#/dashboard/affiliates/{id}/primary",
+      "layout": "profile with tabs",
+      "tabs": [
+        { "name": "Основна інформація", "route": "/primary" },
+        { "name": "Постбеки", "route": "/postbacks" },
+        { "name": "Ротація хабів", "route": "/hub-rotation" },
+        { "name": "Акаунти", "route": "/accounts" }
+      ]
+    },
+
+    {
+      "id": "brands_list",
+      "module": 7,
+      "title": "Бренди",
+      "route": "#/dashboard/brands/list",
+      "api_calls": ["GET /api/tracker/broker?skip=0&take=10&sort[createdAt]=desc"],
+      "columns": ["#", "Назва", "Код", "Опис", "Створений", "Оновлено"],
+      "toolbar": [{ "icon": "+", "tooltip": "Створити бренд", "route": "#/dashboard/brands/create" }]
+    },
+
+    {
+      "id": "brand_profile",
+      "module": 7,
+      "title": "Профіль бренду",
+      "route": "#/dashboard/brands/{id}/primary",
+      "layout": "profile with tabs",
+      "tabs": [
+        { "name": "Основна інформація", "route": "/primary" },
+        { "name": "Інтеграції", "route": "/integrations", "note": "134 CRM templates, JMESPath response parser" },
+        { "name": "Ротація потоків", "route": "/stream-rotation" },
+        { "name": "Хаби", "route": "/hubs" },
+        { "name": "Акаунти", "route": "/accounts" }
+      ],
+      "details_fields": ["Ім'я", "Код (BR-)", "Опис", "API ключ (UUID)", "URL", "Створений"],
+      "system_indicators": ["Відкритий", "Синхронізований", "Блокування фрода", "Постбек"],
+      "special_button": "Копіювати інформація для підключення"
+    },
+
+    {
+      "id": "hubs_list",
+      "module": 8,
+      "title": "Хаби",
+      "route": "#/dashboard/hubs/list",
+      "api_calls": ["GET /api/tracker/box?skip=0&take=10&sort[createdAt]=desc"],
+      "columns": ["Назва", "#", "Кіл-ть інтеграцій", "Код", "Опис", "Створений", "Оновлено"],
+      "toolbar": [{ "icon": "+", "tooltip": "Створити хаб", "route": "#/dashboard/hubs/create" }]
+    },
+
+    {
+      "id": "hub_profile",
+      "module": 8,
+      "title": "Профіль хаба",
+      "route": "#/dashboard/hubs/{id}/primary",
+      "layout": "profile with tabs",
+      "tabs": [
+        { "name": "Основна інформація", "route": "/primary" },
+        { "name": "Афілейти", "route": "/affiliates" },
+        { "name": "Ротація потоків", "route": "/stream-rotation" }
+      ],
+      "details_fields": ["Ім'я", "Код (BX-)", "Опис", "Вертикаль", "Створений"],
+      "system_indicators": ["Надсилається", "Блокувати дуплікати (via vertical rules)", "Резервний режим"]
+    },
+
+    {
+      "id": "rotations",
+      "module": 9,
+      "title": "Ротації",
+      "route": "#/dashboard/rotations",
+      "sub_tabs": [
+        {
+          "name": "Ротації потоків",
+          "route": "#/dashboard/rotations/streams/list",
+          "api_calls": ["GET /api/tracker/box/brokerAttachment?skip=0&take=10"],
+          "columns": ["Хаб", "Інтеграція бренду", "Оффер", "Країни", "Код інтеграції (BI-)", "Вага", "Пріоритет", "Тотал кап", "Заповнений на", "Лідів", "Надсилається", "Створений", "Оновлено", "#"]
+        },
+        {
+          "name": "Ротації хабів",
+          "route": "#/dashboard/rotations/hubs/list",
+          "api_calls": ["GET /api/tracker/box/affiliateAttachment?skip=0&take=10"],
+          "columns": ["Афілейт", "Хаб", "Країни", "Вага", "Пріоритет", "Надсилається", "Створений", "#"]
+        }
+      ],
+      "toolbar": [{ "icon": "+", "tooltip": "Створити ротацію" }]
+    },
+
+    {
+      "id": "uad_manager",
+      "module": 10,
+      "title": "UAD менеджер",
+      "route": "#/dashboard/scenarios",
+      "api_calls": ["GET /api/injector/scenario?skip=0&take=10"],
+      "microservice": "/api/injector/ (separate from main tracker)",
+      "columns": ["Назва", "Код (SCN-)", "Опис", "Статус", "Тригер", "Умови", "Дії", "Створений", "#"],
+      "toolbar": [{ "icon": "+", "tooltip": "Створити сценарій" }],
+      "notes": "Automated lead re-injection engine. Scenarios triggered by events (status change, time elapsed, etc.)"
+    },
+
+    {
+      "id": "conversions",
+      "module": 11,
+      "title": "Конверсії",
+      "route": "#/dashboard/conversions",
+      "api_calls": ["GET /api/tracker/company/resources/conversionHold"],
+      "layout": "settings page (not a list)",
+      "sections": [
+        { "name": "Hold Timer", "type": "number input" },
+        { "name": "Stop Statuses", "type": "multi-select", "note": "Statuses that halt conversion hold" }
+      ],
+      "notes": "Configures conversion hold: time delay before conversion is recognized + list of statuses that stop the hold"
+    },
+
+    {
+      "id": "telegram_bots",
+      "module": 12,
+      "title": "Телеграм боти",
+      "route": "#/dashboard/telegram-bots",
+      "api_calls": ["GET /api/tracker/account/resources/botSubscriber?skip=0&take=10&sort[updatedAt]=desc"],
+      "columns": ["Бот", "Chat ID", "Статус", "Підписки", "Оновлено", "#"],
+      "toolbar": [{ "icon": "+", "tooltip": "Додати бота" }],
+      "event_types": 17,
+      "notes": "Bot notifications for CRM events. Uses Telegram Bot API via server-side integration."
+    },
+
+    {
+      "id": "anti_fraud",
+      "module": 13,
+      "title": "Анти-фрод",
+      "route": "#/dashboard/anti-fraud",
+      "sub_tabs": [
+        {
+          "name": "Фрод профілі",
+          "route": "#/dashboard/anti-fraud/profiles/list",
+          "api_calls": ["GET /api/tracker/company/resources/fraudProfile?skip=0&take=10&sort[updatedAt]=desc"],
+          "columns": ["# (search icon)", "Ім'я", "Код (FP-)", "Увімкнено", "Опис", "Оновлено", "Створений"],
+          "note": "Binary Allow/Block rule profiles"
+        },
+        {
+          "name": "Оцінка фрода",
+          "route": "#/dashboard/anti-fraud/scoring",
+          "api_calls": ["GET /api/tracker/company/resources/fraudScoringConfig/{companyId}"],
+          "note": "Weighted numeric scoring (0-100) with ML coefficient"
+        }
+      ],
+      "toolbar": [{ "icon": "+", "tooltip": "Створити фрод профіль" }]
+    },
+
+    {
+      "id": "verticals",
+      "module": 14,
+      "title": "Вертикалі",
+      "route": "#/dashboard/verticals/list",
+      "api_calls": ["GET /api/tracker/verticalTemplate?skip=0&take=10&sort[createdAt]=desc"],
+      "columns": ["# (radio button)", "Назва", "Код (VT-)", "Публічне", "Створений", "Оновлено"],
+      "row_interaction": "radio button for single-row selection (NOT navigation to profile)",
+      "toolbar": ["↻ refresh", "← back", "funnel filter — NO add button"],
+      "total_records": 1,
+      "sample_entry": { "name": "Base", "code": "VT-HP8XSRMKVS6E7", "public": true, "created": "03.08.2022 19:29:48" },
+      "notes": "Read-only list. No create/delete capability. Verticals define the lead profile field schema. Currently only 'Base' vertical exists. This is the oldest record in the system (2022). Hubs, Leads require vertical selection."
+    },
+
+    {
+      "id": "error_404",
+      "module": null,
+      "title": "404 / Not Found",
+      "route": "any unrecognized hash route",
+      "layout": "centered error message",
+      "message": "Уупс..! Сторінка за цією адресою не існує або вона була переміщена за іншою адресою.",
+      "action": "Повернутися на головну"
+    }
+  ]
+}

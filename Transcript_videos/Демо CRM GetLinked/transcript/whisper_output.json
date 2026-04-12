@@ -1,0 +1,2111 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | Metal : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | DOTPROD = 1 | ACCELERATE = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": true,
+		"vocab": 51865,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/f0res/.cache/whisper-cpp/ggml-small.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:25,560"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 25560
+			},
+			"text": " Hello? Hello? Hello? Hi. Can you hear me? Yes. You hear me? Yes, how are you? Yes."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:25,560",
+				"to": "00:00:39,000"
+			},
+			"offsets": {
+				"from": 25560,
+				"to": 39000
+			},
+			"text": " Hello? Hello? Yes, yes, yes, I hear you. Do you hear me? Yes. Nice. I don't hear you very well, but I hope that it's just temporary."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:39,000",
+				"to": "00:00:50,400"
+			},
+			"offsets": {
+				"from": 39000,
+				"to": 50400
+			},
+			"text": " Anyway, my name is Gal. What's your name? Alex? Yeah. Okay, nice to meet you. Nice to meet you. Where are you from? From Russia."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:50,400",
+				"to": "00:01:12,120"
+			},
+			"offsets": {
+				"from": 50400,
+				"to": 72120
+			},
+			"text": " Russia? Okay. Okay, let me share the screen and I will make you show you the system. I don't feel very well today, so I will be quick, but if you have a specific question, just stop me and I will answer, okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:12,120",
+				"to": "00:01:35,040"
+			},
+			"offsets": {
+				"from": 72120,
+				"to": 95040
+			},
+			"text": " Yes, okay, thank you. I have questions. I think all will be good. Okay, you want to ask now or you want to wait? I think in process. Okay, good. Okay, so you see my screen, right? Yes. Okay. You are going to be a network, I assume, right?"
+		},
+		{
+			"timestamps": {
+				"from": "00:01:35,040",
+				"to": "00:01:54,960"
+			},
+			"offsets": {
+				"from": 95040,
+				"to": 114960
+			},
+			"text": " Firstly, we start new project and want to start from Mediavine around three months and after three months, connect network and want to manage all of this project from one place."
+		},
+		{
+			"timestamps": {
+				"from": "00:01:54,960",
+				"to": "00:02:18,040"
+			},
+			"offsets": {
+				"from": 114960,
+				"to": 138040
+			},
+			"text": " Okay, and are you doing only CryptoForex Verticals or also other? Only CryptoForex Try and Gambling, but I think it's tests. It was difficult, yes. Okay, in any case, our system, you can do all the verticals in our system, okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:02:18,040",
+				"to": "00:02:44,040"
+			},
+			"offsets": {
+				"from": 138040,
+				"to": 164040
+			},
+			"text": " Okay, so you are getting from us a copy of this system. You put your logo here, you can control colors, you can do colors. We have over here the dashboard that you can filter by time, by advertiser, by traffic source, affiliate is like a traffic source. Okay, it's the same thing."
+		},
+		{
+			"timestamps": {
+				"from": "00:02:44,040",
+				"to": "00:03:07,040"
+			},
+			"offsets": {
+				"from": 164040,
+				"to": 187040
+			},
+			"text": " Offers, geos, you can see your financial, we have a finance system inside, I will show you in a minute. So if you use the finance system, you can see income costs, profits, clicks, leads, pay leads, we are collecting what the pay leads for you. Okay, you're not losing them."
+		},
+		{
+			"timestamps": {
+				"from": "00:03:07,040",
+				"to": "00:03:26,040"
+			},
+			"offsets": {
+				"from": 187040,
+				"to": 206040
+			},
+			"text": " A proof conversion, spending conversion, if you want to do it manually or with rules. Okay, some charts over here, system status, some one second, it's for protection."
+		},
+		{
+			"timestamps": {
+				"from": "00:03:37,040",
+				"to": "00:03:50,040"
+			},
+			"offsets": {
+				"from": 217040,
+				"to": 230040
+			},
+			"text": " Some charts, some tables over here, top affiliates, for offers, advertiser and so on. We have different type of views of admin, but that's the main one."
+		},
+		{
+			"timestamps": {
+				"from": "00:03:50,040",
+				"to": "00:04:17,040"
+			},
+			"offsets": {
+				"from": 230040,
+				"to": 257040
+			},
+			"text": " Okay, now you have a full management of traffic sources and affiliates. You can control from copying, geos, limits, automations, whatever you want. We have also like a wallet, a virtual wallet, that you can control how much money you owe or how much money you expose and so on."
+		},
+		{
+			"timestamps": {
+				"from": "00:04:17,040",
+				"to": "00:04:30,040"
+			},
+			"offsets": {
+				"from": 257040,
+				"to": 270040
+			},
+			"text": " We are supporting different levels of affiliates, like if you will have a master affiliate or affiliate manager, we are supporting these levels."
+		},
+		{
+			"timestamps": {
+				"from": "00:04:30,040",
+				"to": "00:04:50,040"
+			},
+			"offsets": {
+				"from": 270040,
+				"to": 290040
+			},
+			"text": " You can create for you a lot of automation regarding the affiliates with rules and restrictions and everything. Okay, any questions regarding the affiliate section?"
+		},
+		{
+			"timestamps": {
+				"from": "00:04:50,040",
+				"to": "00:04:54,040"
+			},
+			"offsets": {
+				"from": 290040,
+				"to": 294040
+			},
+			"text": " No, affiliate section, no questions."
+		},
+		{
+			"timestamps": {
+				"from": "00:04:54,040",
+				"to": "00:05:09,040"
+			},
+			"offsets": {
+				"from": 294040,
+				"to": 309040
+			},
+			"text": " Traffic sources, affiliate section, everything. In any case, just to let you know that all the connections, integrations with Google, Facebook, whatever you need, our team is helping you with this, okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:05:09,040",
+				"to": "00:05:32,040"
+			},
+			"offsets": {
+				"from": 309040,
+				"to": 332040
+			},
+			"text": " You have a dedicated support team, is working on the telegram, okay, they are answering in minutes, okay, not one hour, two hours in minutes, and if you need integration, you open a group with the support team and with the integration party, everything they are doing."
+		},
+		{
+			"timestamps": {
+				"from": "00:05:32,040",
+				"to": "00:05:54,040"
+			},
+			"offsets": {
+				"from": 332040,
+				"to": 354040
+			},
+			"text": " They are working from Monday to Friday, you have over here all the time, their timetables, okay? Monday to Friday, it's usually from 9 o'clock to 10 o'clock GMT+2 until then 10 o'clock at night, Sunday limited support, and you have holidays, and this is their telegram, okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:05:54,040",
+				"to": "00:05:55,040"
+			},
+			"offsets": {
+				"from": 354040,
+				"to": 355040
+			},
+			"text": " Yes."
+		},
+		{
+			"timestamps": {
+				"from": "00:05:55,040",
+				"to": "00:06:16,040"
+			},
+			"offsets": {
+				"from": 355040,
+				"to": 376040
+			},
+			"text": " Okay, you have advertisement management, okay, so you have a full advertising management system, and also here you have the wallet, this is more important to use, okay, so you don't want to be too exposed with the advertiser."
+		},
+		{
+			"timestamps": {
+				"from": "00:06:16,040",
+				"to": "00:06:38,040"
+			},
+			"offsets": {
+				"from": 376040,
+				"to": 398040
+			},
+			"text": " You can control the downtime when you don't want, they will accept traffic, in the wallet you will see any transaction that they are going with this broker, with this advertiser, commission, we are supporting different type of commission, fix, dynamic, ref share, we also have hybrid, which is not here,"
+		},
+		{
+			"timestamps": {
+				"from": "00:06:38,040",
+				"to": "00:06:52,040"
+			},
+			"offsets": {
+				"from": 398040,
+				"to": 412040
+			},
+			"text": " different type of currencies and you can get commission and you can give commission for almost any event, if it's fleets, fleets, FTD, referral, everything you can give commission."
+		},
+		{
+			"timestamps": {
+				"from": "00:06:52,040",
+				"to": "00:07:10,040"
+			},
+			"offsets": {
+				"from": 412040,
+				"to": 430040
+			},
+			"text": " Gears, opening the gears that the advertiser been accepting, also with different rules and you've got custom fields that you need, copying on the advertising level, and the rest are less important."
+		},
+		{
+			"timestamps": {
+				"from": "00:07:10,040",
+				"to": "00:07:13,040"
+			},
+			"offsets": {
+				"from": 430040,
+				"to": 433040
+			},
+			"text": " Any questions regarding this?"
+		},
+		{
+			"timestamps": {
+				"from": "00:07:13,040",
+				"to": "00:07:14,040"
+			},
+			"offsets": {
+				"from": 433040,
+				"to": 434040
+			},
+			"text": " Here, no."
+		},
+		{
+			"timestamps": {
+				"from": "00:07:14,040",
+				"to": "00:07:17,040"
+			},
+			"offsets": {
+				"from": 434040,
+				"to": 437040
+			},
+			"text": " I'm interested in rotation."
+		},
+		{
+			"timestamps": {
+				"from": "00:07:17,040",
+				"to": "00:07:19,040"
+			},
+			"offsets": {
+				"from": 437040,
+				"to": 439040
+			},
+			"text": " Rotation, I'm going out of rotation."
+		},
+		{
+			"timestamps": {
+				"from": "00:07:19,040",
+				"to": "00:07:27,040"
+			},
+			"offsets": {
+				"from": 439040,
+				"to": 447040
+			},
+			"text": " Okay, so this is the lead distribution setup, okay, and it works like this."
+		},
+		{
+			"timestamps": {
+				"from": "00:07:27,040",
+				"to": "00:07:40,040"
+			},
+			"offsets": {
+				"from": 447040,
+				"to": 460040
+			},
+			"text": " First of all, you can see, second, it's a demo account without data."
+		},
+		{
+			"timestamps": {
+				"from": "00:07:40,040",
+				"to": "00:07:51,040"
+			},
+			"offsets": {
+				"from": 460040,
+				"to": 471040
+			},
+			"text": " Over here, first of all, you have a general view that you can see each country, which advertiser you have, and which are in rotation, which are not rotation."
+		},
+		{
+			"timestamps": {
+				"from": "00:07:51,040",
+				"to": "00:07:58,040"
+			},
+			"offsets": {
+				"from": 471040,
+				"to": 478040
+			},
+			"text": " The way we work with this is that you are starting with the country, okay, let's say United Kingdom."
+		},
+		{
+			"timestamps": {
+				"from": "00:07:58,040",
+				"to": "00:08:27,040"
+			},
+			"offsets": {
+				"from": 478040,
+				"to": 507040
+			},
+			"text": " And for your convenience, okay, for your convenience on the top, okay, you have all the traffic sources that are sending to United Kingdom."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:27,040",
+				"to": "00:08:29,040"
+			},
+			"offsets": {
+				"from": 507040,
+				"to": 509040
+			},
+			"text": " And with the rules."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:29,040",
+				"to": "00:08:31,040"
+			},
+			"offsets": {
+				"from": 509040,
+				"to": 511040
+			},
+			"text": " Okay, so this is just for your convenience."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:31,040",
+				"to": "00:08:32,040"
+			},
+			"offsets": {
+				"from": 511040,
+				"to": 512040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:32,040",
+				"to": "00:08:39,040"
+			},
+			"offsets": {
+				"from": 512040,
+				"to": 519040
+			},
+			"text": " Over here, you have the general rotation for all of them."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:39,040",
+				"to": "00:08:43,040"
+			},
+			"offsets": {
+				"from": 519040,
+				"to": 523040
+			},
+			"text": " So we are working with the bucket system."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:43,040",
+				"to": "00:08:45,040"
+			},
+			"offsets": {
+				"from": 523040,
+				"to": 525040
+			},
+			"text": " A bucket, it's like, you know, bucket of water."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:45,040",
+				"to": "00:08:46,040"
+			},
+			"offsets": {
+				"from": 525040,
+				"to": 526040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:46,040",
+				"to": "00:08:47,040"
+			},
+			"offsets": {
+				"from": 526040,
+				"to": 527040
+			},
+			"text": " Yes."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:47,040",
+				"to": "00:08:51,040"
+			},
+			"offsets": {
+				"from": 527040,
+				"to": 531040
+			},
+			"text": " And so in any bucket, we, this is starting by the default."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:51,040",
+				"to": "00:08:55,040"
+			},
+			"offsets": {
+				"from": 531040,
+				"to": 535040
+			},
+			"text": " You are putting rotations of advertisers."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:55,040",
+				"to": "00:08:56,040"
+			},
+			"offsets": {
+				"from": 535040,
+				"to": 536040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:08:56,040",
+				"to": "00:09:00,040"
+			},
+			"offsets": {
+				"from": 536040,
+				"to": 540040
+			},
+			"text": " If you see, it's like with the line, it means it's out of rotation."
+		},
+		{
+			"timestamps": {
+				"from": "00:09:00,040",
+				"to": "00:09:03,040"
+			},
+			"offsets": {
+				"from": 540040,
+				"to": 543040
+			},
+			"text": " You will see what is the reason here."
+		},
+		{
+			"timestamps": {
+				"from": "00:09:03,040",
+				"to": "00:09:14,040"
+			},
+			"offsets": {
+				"from": 543040,
+				"to": 554040
+			},
+			"text": " And on the right side, you can basically prioritize and you say each one, how much do you, do you want from the, you will get from the, from the leads."
+		},
+		{
+			"timestamps": {
+				"from": "00:09:14,040",
+				"to": "00:09:15,040"
+			},
+			"offsets": {
+				"from": 554040,
+				"to": 555040
+			},
+			"text": " How much percentage?"
+		},
+		{
+			"timestamps": {
+				"from": "00:09:15,040",
+				"to": "00:09:19,040"
+			},
+			"offsets": {
+				"from": 555040,
+				"to": 559040
+			},
+			"text": " It's 40, 25, 10, and zero."
+		},
+		{
+			"timestamps": {
+				"from": "00:09:19,040",
+				"to": "00:09:31,040"
+			},
+			"offsets": {
+				"from": 559040,
+				"to": 571040
+			},
+			"text": " And so they, you know, the lead going according to this prioritization, it takes into consideration the copying and statistics and everything."
+		},
+		{
+			"timestamps": {
+				"from": "00:09:31,040",
+				"to": "00:09:42,040"
+			},
+			"offsets": {
+				"from": 571040,
+				"to": 582040
+			},
+			"text": " And you can create unlimited, another bucket and to put over there also a rotation of advertiser and do optimization per this bucket."
+		},
+		{
+			"timestamps": {
+				"from": "00:09:42,040",
+				"to": "00:09:52,040"
+			},
+			"offsets": {
+				"from": 582040,
+				"to": 592040
+			},
+			"text": " So people usually use it, put the best advertisers on the first bucket and then second, second level of advertising fallbacks and so on."
+		},
+		{
+			"timestamps": {
+				"from": "00:09:52,040",
+				"to": "00:09:53,040"
+			},
+			"offsets": {
+				"from": 592040,
+				"to": 593040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:09:53,040",
+				"to": "00:09:59,040"
+			},
+			"offsets": {
+				"from": 593040,
+				"to": 599040
+			},
+			"text": " This is how it is."
+		},
+		{
+			"timestamps": {
+				"from": "00:09:59,040",
+				"to": "00:10:00,040"
+			},
+			"offsets": {
+				"from": 599040,
+				"to": 600040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:00,040",
+				"to": "00:10:01,040"
+			},
+			"offsets": {
+				"from": 600040,
+				"to": 601040
+			},
+			"text": " Any question?"
+		},
+		{
+			"timestamps": {
+				"from": "00:10:01,040",
+				"to": "00:10:02,040"
+			},
+			"offsets": {
+				"from": 601040,
+				"to": 602040
+			},
+			"text": " No."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:02,040",
+				"to": "00:10:03,040"
+			},
+			"offsets": {
+				"from": 602040,
+				"to": 603040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:03,040",
+				"to": "00:10:05,040"
+			},
+			"offsets": {
+				"from": 603040,
+				"to": 605040
+			},
+			"text": " I understand all clear."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:05,040",
+				"to": "00:10:06,040"
+			},
+			"offsets": {
+				"from": 605040,
+				"to": 606040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:06,040",
+				"to": "00:10:07,040"
+			},
+			"offsets": {
+				"from": 606040,
+				"to": 607040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:07,040",
+				"to": "00:10:19,040"
+			},
+			"offsets": {
+				"from": 607040,
+				"to": 619040
+			},
+			"text": " But other stuff will be interesting at the moment, finances, finance, as I said, we've got, you can manage all the commission that you get and give."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:19,040",
+				"to": "00:10:26,040"
+			},
+			"offsets": {
+				"from": 619040,
+				"to": 626040
+			},
+			"text": " And if you want to work with, you know, with invoicing, it makes you the invoicing automatically."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:26,040",
+				"to": "00:10:34,040"
+			},
+			"offsets": {
+				"from": 626040,
+				"to": 634040
+			},
+			"text": " If you're working with CRG deals, we have a feature that calculates it automatically."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:34,040",
+				"to": "00:10:37,040"
+			},
+			"offsets": {
+				"from": 634040,
+				"to": 637040
+			},
+			"text": " And you want to see or it's okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:37,040",
+				"to": "00:10:40,040"
+			},
+			"offsets": {
+				"from": 637040,
+				"to": 640040
+			},
+			"text": " Yes, yes, I want to see."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:40,040",
+				"to": "00:10:41,040"
+			},
+			"offsets": {
+				"from": 640040,
+				"to": 641040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:41,040",
+				"to": "00:10:44,040"
+			},
+			"offsets": {
+				"from": 641040,
+				"to": 644040
+			},
+			"text": " It's basically called special deal."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:44,040",
+				"to": "00:10:50,040"
+			},
+			"offsets": {
+				"from": 644040,
+				"to": 650040
+			},
+			"text": " And any special, we've got right now, the, the first one conversions guarantee."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:50,040",
+				"to": "00:10:58,040"
+			},
+			"offsets": {
+				"from": 650040,
+				"to": 658040
+			},
+			"text": " And you're basically inputting all the deal that you have the name, how much, what is the guarantee."
+		},
+		{
+			"timestamps": {
+				"from": "00:10:58,040",
+				"to": "00:11:13,040"
+			},
+			"offsets": {
+				"from": 658040,
+				"to": 673040
+			},
+			"text": " The payment cycle date, and you can do a walking hours, days, status says, and the end of the payment cycle, the system checks it and calculates it automatically."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:13,040",
+				"to": "00:11:23,040"
+			},
+			"offsets": {
+				"from": 673040,
+				"to": 683040
+			},
+			"text": " And it's issuing for you an invoice with explanation how much you need to get and with all the explanation, all automatically."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:23,040",
+				"to": "00:11:39,040"
+			},
+			"offsets": {
+				"from": 683040,
+				"to": 699040
+			},
+			"text": " As I understand, if a partner have value above 13%, for example, 15, this deal, give him."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:39,040",
+				"to": "00:11:40,040"
+			},
+			"offsets": {
+				"from": 699040,
+				"to": 700040
+			},
+			"text": " So it's okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:40,040",
+				"to": "00:11:41,040"
+			},
+			"offsets": {
+				"from": 700040,
+				"to": 701040
+			},
+			"text": " Right."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:41,040",
+				"to": "00:11:43,040"
+			},
+			"offsets": {
+				"from": 701040,
+				"to": 703040
+			},
+			"text": " No, no, so it's okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:43,040",
+				"to": "00:11:48,040"
+			},
+			"offsets": {
+				"from": 703040,
+				"to": 708040
+			},
+			"text": " If the, if the guarantee, if the advertiser gave you guarantee 13%."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:48,040",
+				"to": "00:11:49,040"
+			},
+			"offsets": {
+				"from": 708040,
+				"to": 709040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:49,040",
+				"to": "00:11:53,040"
+			},
+			"offsets": {
+				"from": 709040,
+				"to": 713040
+			},
+			"text": " And he has done five 15% is okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:53,040",
+				"to": "00:11:56,040"
+			},
+			"offsets": {
+				"from": 713040,
+				"to": 716040
+			},
+			"text": " But if he converted in 10%."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:56,040",
+				"to": "00:11:57,040"
+			},
+			"offsets": {
+				"from": 716040,
+				"to": 717040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:57,040",
+				"to": "00:11:58,040"
+			},
+			"offsets": {
+				"from": 717040,
+				"to": 718040
+			},
+			"text": " Then he needs to pay you more."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:58,040",
+				"to": "00:11:59,040"
+			},
+			"offsets": {
+				"from": 718040,
+				"to": 719040
+			},
+			"text": " Yes."
+		},
+		{
+			"timestamps": {
+				"from": "00:11:59,040",
+				"to": "00:12:00,040"
+			},
+			"offsets": {
+				"from": 719040,
+				"to": 720040
+			},
+			"text": " Yes."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:00,040",
+				"to": "00:12:01,040"
+			},
+			"offsets": {
+				"from": 720040,
+				"to": 721040
+			},
+			"text": " Understand."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:01,040",
+				"to": "00:12:02,040"
+			},
+			"offsets": {
+				"from": 721040,
+				"to": 722040
+			},
+			"text": " So yes."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:02,040",
+				"to": "00:12:03,040"
+			},
+			"offsets": {
+				"from": 722040,
+				"to": 723040
+			},
+			"text": " And you can do back to back."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:03,040",
+				"to": "00:12:18,040"
+			},
+			"offsets": {
+				"from": 723040,
+				"to": 738040
+			},
+			"text": " You can do the deal over here also with your, at the moment it's your media buying, but in the future, when you will be affiliate network, you can do back to back with the affiliate as well."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:18,040",
+				"to": "00:12:19,040"
+			},
+			"offsets": {
+				"from": 738040,
+				"to": 739040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:19,040",
+				"to": "00:12:21,040"
+			},
+			"offsets": {
+				"from": 739040,
+				"to": 741040
+			},
+			"text": " A report with many reports."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:21,040",
+				"to": "00:12:25,040"
+			},
+			"offsets": {
+				"from": 741040,
+				"to": 745040
+			},
+			"text": " I will just show you the most important one is the leads report."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:25,040",
+				"to": "00:12:28,040"
+			},
+			"offsets": {
+				"from": 745040,
+				"to": 748040
+			},
+			"text": " Leads, FTDs."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:28,040",
+				"to": "00:12:29,040"
+			},
+			"offsets": {
+				"from": 748040,
+				"to": 749040
+			},
+			"text": " Yes."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:29,040",
+				"to": "00:12:30,040"
+			},
+			"offsets": {
+				"from": 749040,
+				"to": 750040
+			},
+			"text": " I think this is the same."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:30,040",
+				"to": "00:12:32,040"
+			},
+			"offsets": {
+				"from": 750040,
+				"to": 752040
+			},
+			"text": " But yeah, I'm sure the FTDs."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:32,040",
+				"to": "00:12:35,040"
+			},
+			"offsets": {
+				"from": 752040,
+				"to": 755040
+			},
+			"text": " It's just so the leads report."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:35,040",
+				"to": "00:12:44,040"
+			},
+			"offsets": {
+				"from": 755040,
+				"to": 764040
+			},
+			"text": " This is the information that you can see that we are collecting for you."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:44,040",
+				"to": "00:12:46,040"
+			},
+			"offsets": {
+				"from": 764040,
+				"to": 766040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:46,040",
+				"to": "00:12:51,040"
+			},
+			"offsets": {
+				"from": 766040,
+				"to": 771040
+			},
+			"text": " We have over here, the sales status says."
+		},
+		{
+			"timestamps": {
+				"from": "00:12:51,040",
+				"to": "00:13:00,040"
+			},
+			"offsets": {
+				"from": 771040,
+				"to": 780040
+			},
+			"text": " And if you're over, you can see also the history of the sales status says we have a lead score, which is very, it's a new feature."
+		},
+		{
+			"timestamps": {
+				"from": "00:13:00,040",
+				"to": "00:13:02,040"
+			},
+			"offsets": {
+				"from": 780040,
+				"to": 782040
+			},
+			"text": " I don't have data for it."
+		},
+		{
+			"timestamps": {
+				"from": "00:13:02,040",
+				"to": "00:13:09,040"
+			},
+			"offsets": {
+				"from": 782040,
+				"to": 789040
+			},
+			"text": " But basically it will show it will give a score to the lead."
+		},
+		{
+			"timestamps": {
+				"from": "00:13:09,040",
+				"to": "00:13:17,040"
+			},
+			"offsets": {
+				"from": 789040,
+				"to": 797040
+			},
+			"text": " And it will show you everything why, why he got this score."
+		},
+		{
+			"timestamps": {
+				"from": "00:13:17,040",
+				"to": "00:13:24,040"
+			},
+			"offsets": {
+				"from": 797040,
+				"to": 804040
+			},
+			"text": " I will tell them to add me data and I just didn't get me data, but it's a very, very nice feature."
+		},
+		{
+			"timestamps": {
+				"from": "00:13:24,040",
+				"to": "00:13:36,040"
+			},
+			"offsets": {
+				"from": 804040,
+				"to": 816040
+			},
+			"text": " And over here you will see information about what is the rotation of this lead, what was the rotation before helps you to understand a lot of processes."
+		},
+		{
+			"timestamps": {
+				"from": "00:13:36,040",
+				"to": "00:13:45,040"
+			},
+			"offsets": {
+				"from": 816040,
+				"to": 825040
+			},
+			"text": " And bugs and if something fails, why it fails, although you can always ask our team, can you help me to find out why this lead failed?"
+		},
+		{
+			"timestamps": {
+				"from": "00:13:45,040",
+				"to": "00:13:47,040"
+			},
+			"offsets": {
+				"from": 825040,
+				"to": 827040
+			},
+			"text": " Okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:13:47,040",
+				"to": "00:13:51,040"
+			},
+			"offsets": {
+				"from": 827040,
+				"to": 831040
+			},
+			"text": " Okay, in any case, so this is the lead report."
+		},
+		{
+			"timestamps": {
+				"from": "00:13:51,040",
+				"to": "00:14:01,040"
+			},
+			"offsets": {
+				"from": 831040,
+				"to": 841040
+			},
+			"text": " By the way, you can also, if some of the leads fail, you can click over here and you can re-register them from here."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:01,040",
+				"to": "00:14:03,040"
+			},
+			"offsets": {
+				"from": 841040,
+				"to": 843040
+			},
+			"text": " It's like injection."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:03,040",
+				"to": "00:14:09,040"
+			},
+			"offsets": {
+				"from": 843040,
+				"to": 849040
+			},
+			"text": " Yes, but on a small scale, you can also upload the list and you know, inject."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:09,040",
+				"to": "00:14:13,040"
+			},
+			"offsets": {
+				"from": 849040,
+				"to": 853040
+			},
+			"text": " Yes, but this is the registration of this lead."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:13,040",
+				"to": "00:14:26,040"
+			},
+			"offsets": {
+				"from": 853040,
+				"to": 866040
+			},
+			"text": " You can register them to the same white label, to a different, to the same advertiser, a different advertiser with some rules, you know, you've got whatever you need over here."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:26,040",
+				"to": "00:14:35,040"
+			},
+			"offsets": {
+				"from": 866040,
+				"to": 875040
+			},
+			"text": " And of course, you've got advanced field terms, we'd include and exclude."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:35,040",
+				"to": "00:14:52,040"
+			},
+			"offsets": {
+				"from": 875040,
+				"to": 892040
+			},
+			"text": " You can also, this is the auto refresh, where is I was looking for another over here, you can actually decide which days, which either is also time frame over here, you want to have the reports and everything."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:52,040",
+				"to": "00:14:57,040"
+			},
+			"offsets": {
+				"from": 892040,
+				"to": 897040
+			},
+			"text": " You can move the weekend if you want."
+		},
+		{
+			"timestamps": {
+				"from": "00:14:57,040",
+				"to": "00:15:04,040"
+			},
+			"offsets": {
+				"from": 897040,
+				"to": 904040
+			},
+			"text": " Convergence report, it's basically the same, just convergence, okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:15:04,040",
+				"to": "00:15:16,040"
+			},
+			"offsets": {
+				"from": 904040,
+				"to": 916040
+			},
+			"text": " Sorry, where I can see what advertisers was rejected and what errors, what type of here."
+		},
+		{
+			"timestamps": {
+				"from": "00:15:16,040",
+				"to": "00:15:27,040"
+			},
+			"offsets": {
+				"from": 916040,
+				"to": 927040
+			},
+			"text": " You can see on the needs report over here, you will see once again, I'm going back to the, I show it to you."
+		},
+		{
+			"timestamps": {
+				"from": "00:15:27,040",
+				"to": "00:15:34,040"
+			},
+			"offsets": {
+				"from": 927040,
+				"to": 934040
+			},
+			"text": " Okay, it's over here, you will see in the action, you'll see the information here."
+		},
+		{
+			"timestamps": {
+				"from": "00:15:34,040",
+				"to": "00:15:40,040"
+			},
+			"offsets": {
+				"from": 934040,
+				"to": 940040
+			},
+			"text": " Okay, I assume that you will see also it in the API request, probably a lot."
+		},
+		{
+			"timestamps": {
+				"from": "00:15:40,040",
+				"to": "00:15:48,040"
+			},
+			"offsets": {
+				"from": 940040,
+				"to": 948040
+			},
+			"text": " But you can, I told you, you can ask the team, you can ask the team to check for you why."
+		},
+		{
+			"timestamps": {
+				"from": "00:15:48,040",
+				"to": "00:16:04,040"
+			},
+			"offsets": {
+				"from": 948040,
+				"to": 964040
+			},
+			"text": " Okay, whoever we request, there are many places that you can see, I know Leslie, I'm not doing, you know, I'm not managing a network, so I'm not using it on the day to day."
+		},
+		{
+			"timestamps": {
+				"from": "00:16:04,040",
+				"to": "00:16:18,040"
+			},
+			"offsets": {
+				"from": 964040,
+				"to": 978040
+			},
+			"text": " Okay, so a generate report is a very good report that gives you basically to cut three layers."
+		},
+		{
+			"timestamps": {
+				"from": "00:16:18,040",
+				"to": "00:16:27,040"
+			},
+			"offsets": {
+				"from": 978040,
+				"to": 987040
+			},
+			"text": " Okay, for example, affiliate advertiser in country and you can filter between these three layers."
+		},
+		{
+			"timestamps": {
+				"from": "00:16:27,040",
+				"to": "00:16:35,040"
+			},
+			"offsets": {
+				"from": 987040,
+				"to": 995040
+			},
+			"text": " It's also very good report, we've got aggregation report, not many, many reporters, you can see over here."
+		},
+		{
+			"timestamps": {
+				"from": "00:16:35,040",
+				"to": "00:16:47,040"
+			},
+			"offsets": {
+				"from": 995040,
+				"to": 1007040
+			},
+			"text": " Permission, if you have a team, okay, everything in our system, you can control everything in our system to decide who will see what."
+		},
+		{
+			"timestamps": {
+				"from": "00:16:47,040",
+				"to": "00:16:53,040"
+			},
+			"offsets": {
+				"from": 1007040,
+				"to": 1013040
+			},
+			"text": " Everything, every column, every data, every feature, okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:16:53,040",
+				"to": "00:17:06,040"
+			},
+			"offsets": {
+				"from": 1013040,
+				"to": 1026040
+			},
+			"text": " You decide what are your user will use, of course, as an admin, everything is open for you, but you can do any role, different permissions, okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:17:06,040",
+				"to": "00:17:13,040"
+			},
+			"offsets": {
+				"from": 1026040,
+				"to": 1033040
+			},
+			"text": " You can see really thousands of permissions, everything is with permissions."
+		},
+		{
+			"timestamps": {
+				"from": "00:17:13,040",
+				"to": "00:17:34,040"
+			},
+			"offsets": {
+				"from": 1033040,
+				"to": 1054040
+			},
+			"text": " Yeah, marketing tool, catalog, alert system, you can create different triggers and you get them into telegram, email, conversion and different conditions, very good alert system."
+		},
+		{
+			"timestamps": {
+				"from": "00:17:34,040",
+				"to": "00:17:45,040"
+			},
+			"offsets": {
+				"from": 1054040,
+				"to": 1065040
+			},
+			"text": " This is basically not many other stuff, but this is in general, if you have any question, I'm sure everything that you need, we will have, okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:17:45,040",
+				"to": "00:17:51,040"
+			},
+			"offsets": {
+				"from": 1065040,
+				"to": 1071040
+			},
+			"text": " Yes, can you show FTDs how it looks?"
+		},
+		{
+			"timestamps": {
+				"from": "00:17:51,040",
+				"to": "00:17:57,040"
+			},
+			"offsets": {
+				"from": 1071040,
+				"to": 1077040
+			},
+			"text": " We move utter leads from leads to other."
+		},
+		{
+			"timestamps": {
+				"from": "00:17:57,040",
+				"to": "00:17:59,040"
+			},
+			"offsets": {
+				"from": 1077040,
+				"to": 1079040
+			},
+			"text": " The conversion reports?"
+		},
+		{
+			"timestamps": {
+				"from": "00:17:59,040",
+				"to": "00:18:01,040"
+			},
+			"offsets": {
+				"from": 1079040,
+				"to": 1081040
+			},
+			"text": " Yes, yes, yes."
+		},
+		{
+			"timestamps": {
+				"from": "00:18:01,040",
+				"to": "00:18:05,040"
+			},
+			"offsets": {
+				"from": 1081040,
+				"to": 1085040
+			},
+			"text": " It's audio, this is the conversion."
+		},
+		{
+			"timestamps": {
+				"from": "00:18:05,040",
+				"to": "00:18:13,040"
+			},
+			"offsets": {
+				"from": 1085040,
+				"to": 1093040
+			},
+			"text": " I don't know if I have data over here, but it's very, it's like the lead, just the conversion, you know."
+		},
+		{
+			"timestamps": {
+				"from": "00:18:13,040",
+				"to": "00:18:15,040"
+			},
+			"offsets": {
+				"from": 1093040,
+				"to": 1095040
+			},
+			"text": " Yes, understand, also important."
+		},
+		{
+			"timestamps": {
+				"from": "00:18:15,040",
+				"to": "00:18:23,040"
+			},
+			"offsets": {
+				"from": 1095040,
+				"to": 1103040
+			},
+			"text": " One second, let me see, maybe they need to put me in."
+		},
+		{
+			"timestamps": {
+				"from": "00:18:23,040",
+				"to": "00:18:24,040"
+			},
+			"offsets": {
+				"from": 1103040,
+				"to": 1104040
+			},
+			"text": " Yes, please, yes."
+		},
+		{
+			"timestamps": {
+				"from": "00:18:24,040",
+				"to": "00:18:30,040"
+			},
+			"offsets": {
+				"from": 1104040,
+				"to": 1110040
+			},
+			"text": " Important bulk injections."
+		},
+		{
+			"timestamps": {
+				"from": "00:18:30,040",
+				"to": "00:18:34,040"
+			},
+			"offsets": {
+				"from": 1110040,
+				"to": 1114040
+			},
+			"text": " Okay, it's over here."
+		},
+		{
+			"timestamps": {
+				"from": "00:18:34,040",
+				"to": "00:18:36,040"
+			},
+			"offsets": {
+				"from": 1114040,
+				"to": 1116040
+			},
+			"text": " Import leads."
+		},
+		{
+			"timestamps": {
+				"from": "00:18:36,040",
+				"to": "00:18:46,040"
+			},
+			"offsets": {
+				"from": 1116040,
+				"to": 1126040
+			},
+			"text": " You basically, you can decide from which source it's coming, what offer or what advertiser you want it to go."
+		},
+		{
+			"timestamps": {
+				"from": "00:18:46,040",
+				"to": "00:18:52,040"
+			},
+			"offsets": {
+				"from": 1126040,
+				"to": 1132040
+			},
+			"text": " You upload your list over here, your CSV, you've got some rule over here."
+		},
+		{
+			"timestamps": {
+				"from": "00:18:52,040",
+				"to": "00:18:59,040"
+			},
+			"offsets": {
+				"from": 1132040,
+				"to": 1139040
+			},
+			"text": " Basically, that's it, you know, it gives you and it puts it everything."
+		},
+		{
+			"timestamps": {
+				"from": "00:18:59,040",
+				"to": "00:19:14,040"
+			},
+			"offsets": {
+				"from": 1139040,
+				"to": 1154040
+			},
+			"text": " Well, you can do with the queue, so it won't be injection immediately, you can do immediately, whatever you want."
+		},
+		{
+			"timestamps": {
+				"from": "00:19:14,040",
+				"to": "00:19:19,040"
+			},
+			"offsets": {
+				"from": 1154040,
+				"to": 1159040
+			},
+			"text": " It's good, I think I don't have questions."
+		},
+		{
+			"timestamps": {
+				"from": "00:19:19,040",
+				"to": "00:19:26,040"
+			},
+			"offsets": {
+				"from": 1159040,
+				"to": 1166040
+			},
+			"text": " I just showed you, we have, listen, we have really a lot, a lot, a lot of features, okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:19:26,040",
+				"to": "00:19:32,040"
+			},
+			"offsets": {
+				"from": 1166040,
+				"to": 1172040
+			},
+			"text": " Everything that you will need, we, 99% we have it."
+		},
+		{
+			"timestamps": {
+				"from": "00:19:32,040",
+				"to": "00:19:38,040"
+			},
+			"offsets": {
+				"from": 1172040,
+				"to": 1178040
+			},
+			"text": " And because that it's very, you know, it's very, you've got a lot of features."
+		},
+		{
+			"timestamps": {
+				"from": "00:19:38,040",
+				"to": "00:19:43,040"
+			},
+			"offsets": {
+				"from": 1178040,
+				"to": 1183040
+			},
+			"text": " So you've got our team with you on a daily basis, okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:19:43,040",
+				"to": "00:19:49,040"
+			},
+			"offsets": {
+				"from": 1183040,
+				"to": 1189040
+			},
+			"text": " You can ask them everything small to show you, they can even do it for you."
+		},
+		{
+			"timestamps": {
+				"from": "00:19:49,040",
+				"to": "00:19:54,040"
+			},
+			"offsets": {
+				"from": 1189040,
+				"to": 1194040
+			},
+			"text": " So you are not alone, okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:19:54,040",
+				"to": "00:19:59,040"
+			},
+			"offsets": {
+				"from": 1194040,
+				"to": 1199040
+			},
+			"text": " So we've got really everything that you will need."
+		},
+		{
+			"timestamps": {
+				"from": "00:19:59,040",
+				"to": "00:20:04,040"
+			},
+			"offsets": {
+				"from": 1199040,
+				"to": 1204040
+			},
+			"text": " Yes, okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:20:04,040",
+				"to": "00:20:08,040"
+			},
+			"offsets": {
+				"from": 1204040,
+				"to": 1208040
+			},
+			"text": " Thank you."
+		},
+		{
+			"timestamps": {
+				"from": "00:20:08,040",
+				"to": "00:20:11,040"
+			},
+			"offsets": {
+				"from": 1208040,
+				"to": 1211040
+			},
+			"text": " Prices you send me already, yes."
+		},
+		{
+			"timestamps": {
+				"from": "00:20:11,040",
+				"to": "00:20:17,040"
+			},
+			"offsets": {
+				"from": 1211040,
+				"to": 1217040
+			},
+			"text": " I send you prices, yes, if you want to start, you will tell me, okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:20:17,040",
+				"to": "00:20:23,040"
+			},
+			"offsets": {
+				"from": 1217040,
+				"to": 1223040
+			},
+			"text": " I will open a group with the accounting, okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:20:23,040",
+				"to": "00:20:34,040"
+			},
+			"offsets": {
+				"from": 1223040,
+				"to": 1234040
+			},
+			"text": " We will do like, they will do with you, send you a link to put information of your company, whatever you want, you know, for the contract, the digital contract."
+		},
+		{
+			"timestamps": {
+				"from": "00:20:34,040",
+				"to": "00:20:40,040"
+			},
+			"offsets": {
+				"from": 1234040,
+				"to": 1240040
+			},
+			"text": " Then you pay the setup fee and then we open for you a group with the support."
+		},
+		{
+			"timestamps": {
+				"from": "00:20:40,040",
+				"to": "00:20:45,040"
+			},
+			"offsets": {
+				"from": 1240040,
+				"to": 1245040
+			},
+			"text": " And this is the group that you work all the time."
+		},
+		{
+			"timestamps": {
+				"from": "00:20:45,040",
+				"to": "00:20:52,040"
+			},
+			"offsets": {
+				"from": 1245040,
+				"to": 1252040
+			},
+			"text": " You will need only to buy three domains, okay, they will tell you, the team will tell you."
+		},
+		{
+			"timestamps": {
+				"from": "00:20:52,040",
+				"to": "00:21:02,040"
+			},
+			"offsets": {
+				"from": 1252040,
+				"to": 1262040
+			},
+			"text": " Three domains, one domain is the domain of the network, from where you log in, your partners will log in and everything."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:02,040",
+				"to": "00:21:06,040"
+			},
+			"offsets": {
+				"from": 1262040,
+				"to": 1266040
+			},
+			"text": " One domain for auto log in and one domain for API, okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:06,040",
+				"to": "00:21:09,040"
+			},
+			"offsets": {
+				"from": 1266040,
+				"to": 1269040
+			},
+			"text": " So they will tell you to buy these three domains."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:09,040",
+				"to": "00:21:15,040"
+			},
+			"offsets": {
+				"from": 1269040,
+				"to": 1275040
+			},
+			"text": " Once you buy the domains, one hour, two hours, you have the system up."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:15,040",
+				"to": "00:21:19,040"
+			},
+			"offsets": {
+				"from": 1275040,
+				"to": 1279040
+			},
+			"text": " And then you just need to start integration."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:19,040",
+				"to": "00:21:23,040"
+			},
+			"offsets": {
+				"from": 1279040,
+				"to": 1283040
+			},
+			"text": " Okay, understand."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:23,040",
+				"to": "00:21:33,040"
+			},
+			"offsets": {
+				"from": 1283040,
+				"to": 1293040
+			},
+			"text": " Okay, so whenever you bear in mind that tomorrow and Sunday, as I said, the team is not working."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:33,040",
+				"to": "00:21:39,040"
+			},
+			"offsets": {
+				"from": 1293040,
+				"to": 1299040
+			},
+			"text": " But I'm available, I can send you if you will want the link to fill all the details."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:39,040",
+				"to": "00:21:44,040"
+			},
+			"offsets": {
+				"from": 1299040,
+				"to": 1304040
+			},
+			"text": " Or, you know, in Monday morning, they will set you up the system."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:44,040",
+				"to": "00:21:48,040"
+			},
+			"offsets": {
+				"from": 1304040,
+				"to": 1308040
+			},
+			"text": " Or if you want, you know, whenever you want to tell me, I will, no rush, okay."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:48,040",
+				"to": "00:21:50,040"
+			},
+			"offsets": {
+				"from": 1308040,
+				"to": 1310040
+			},
+			"text": " Okay, okay, thank you."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:50,040",
+				"to": "00:21:59,040"
+			},
+			"offsets": {
+				"from": 1310040,
+				"to": 1319040
+			},
+			"text": " We check in also other systems and talking with the team and making decisions about the system."
+		},
+		{
+			"timestamps": {
+				"from": "00:21:59,040",
+				"to": "00:22:01,040"
+			},
+			"offsets": {
+				"from": 1319040,
+				"to": 1321040
+			},
+			"text": " Okay, very good, fair enough."
+		},
+		{
+			"timestamps": {
+				"from": "00:22:01,040",
+				"to": "00:22:03,040"
+			},
+			"offsets": {
+				"from": 1321040,
+				"to": 1323040
+			},
+			"text": " Keep you informed."
+		},
+		{
+			"timestamps": {
+				"from": "00:22:03,040",
+				"to": "00:22:05,040"
+			},
+			"offsets": {
+				"from": 1323040,
+				"to": 1325040
+			},
+			"text": " Okay, thank you very much Alex."
+		},
+		{
+			"timestamps": {
+				"from": "00:22:05,040",
+				"to": "00:22:06,040"
+			},
+			"offsets": {
+				"from": 1325040,
+				"to": 1326040
+			},
+			"text": " Thank you."
+		},
+		{
+			"timestamps": {
+				"from": "00:22:06,040",
+				"to": "00:22:08,040"
+			},
+			"offsets": {
+				"from": 1326040,
+				"to": 1328040
+			},
+			"text": " Thanks, bye bye."
+		},
+		{
+			"timestamps": {
+				"from": "00:22:08,040",
+				"to": "00:22:10,040"
+			},
+			"offsets": {
+				"from": 1328040,
+				"to": 1330040
+			},
+			"text": " Any questions, you can send me a message, okay?"
+		},
+		{
+			"timestamps": {
+				"from": "00:22:10,040",
+				"to": "00:22:11,040"
+			},
+			"offsets": {
+				"from": 1330040,
+				"to": 1331040
+			},
+			"text": " Yes."
+		},
+		{
+			"timestamps": {
+				"from": "00:22:11,040",
+				"to": "00:22:12,040"
+			},
+			"offsets": {
+				"from": 1331040,
+				"to": 1332040
+			},
+			"text": " Any more questions?"
+		},
+		{
+			"timestamps": {
+				"from": "00:22:12,040",
+				"to": "00:22:13,040"
+			},
+			"offsets": {
+				"from": 1332040,
+				"to": 1333040
+			},
+			"text": " Yes."
+		},
+		{
+			"timestamps": {
+				"from": "00:22:13,040",
+				"to": "00:22:14,040"
+			},
+			"offsets": {
+				"from": 1333040,
+				"to": 1334040
+			},
+			"text": " Thank you."
+		},
+		{
+			"timestamps": {
+				"from": "00:22:14,040",
+				"to": "00:22:15,040"
+			},
+			"offsets": {
+				"from": 1334040,
+				"to": 1335040
+			},
+			"text": " Have a nice day."
+		},
+		{
+			"timestamps": {
+				"from": "00:22:15,040",
+				"to": "00:22:16,040"
+			},
+			"offsets": {
+				"from": 1335040,
+				"to": 1336040
+			},
+			"text": " Bye bye."
+		},
+		{
+			"timestamps": {
+				"from": "00:22:16,040",
+				"to": "00:22:26,040"
+			},
+			"offsets": {
+				"from": 1336040,
+				"to": 1346040
+			},
+			"text": " [BLANK_AUDIO]"
+		}
+	]
+}

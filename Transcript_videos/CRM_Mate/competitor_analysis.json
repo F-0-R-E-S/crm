@@ -1,0 +1,1379 @@
+{
+  "meta": {
+    "source_video": "nt-gambchamp-com-Tue-03-Mar-2026-15-59-28-04-Untitled_2026-03-03.mp4",
+    "analysis_date": "2026-03-03",
+    "analyst_notes": "Sales demo recorded via Google Meet (fuz-jgjm-sdl). Presenter: BTC Transfer (CRM Mate seller). Prospect: Nikita T. Language: Russian. Transcript processed by Whisper small model (noisy). All 173 unique frames reviewed. Whisper noise corrections applied: серымка/сиремка=CRM Mate, китор/кейтор=Keitaro, байнг=buying/media buying, нафор/нетвор=network, байнра=buyer, паладеум=Paladium, хайтклик=HideClick."
+  },
+  "product": {
+    "name": "CRM Mate",
+    "category": "Lead Distribution CRM",
+    "niche": "Crypto/Forex affiliate marketing (buying + network)",
+    "ui_language": [
+      "Russian",
+      "English"
+    ],
+    "interface_themes": [
+      "Dark",
+      "Light"
+    ],
+    "demo_url_domain": "nt-gambchamp-com",
+    "confirmed_from": "UI logo visible in all product frames"
+  },
+  "vendor": {
+    "company_name": "CRM Mate (startup, no formal brand name stated)",
+    "team_size": "~7 people: 3 co-owners, 3 programmers, 1 support/integrator who also codes",
+    "company_type": "Early-stage startup",
+    "development_model": "Feature-driven, reactive (features added on client request); no formal roadmap or release calendar",
+    "update_delivery": "Rolling, non-uniform updates per client. Tested on early adopters, then rolled out to others. Changelog communicated via chat.",
+    "security": "External penetration testing performed. 2FA via Google Authenticator required to export data.",
+    "support": "Integrator available near 24/7; integration SLA ~15 minutes average"
+  },
+  "pricing": {
+    "model": "Flat monthly subscription",
+    "price_usd_per_month": 700,
+    "tiers": 1,
+    "included": "All features, support, and integrations included in single price",
+    "additional_fees": "None mentioned",
+    "notes": "Stated explicitly at end of demo: '700 dollars a month, one fixed tariff, includes support and CRM itself'"
+  },
+  "prospect_context": {
+    "prospect_name": "Nikita T",
+    "previous_tools": [
+      "iRev",
+      "AlterCP"
+    ],
+    "primary_use_case": "Media buying (Facebook) as primary, Google as secondary from month 2-3",
+    "traffic_sources": [
+      "Facebook",
+      "Google"
+    ],
+    "tracker_used": "Keitaro",
+    "cloaking_used": [
+      "Keitaro",
+      "HideClick"
+    ],
+    "decision_timeline": "1 week (until next Monday); other demos scheduled"
+  },
+  "navigation_structure": {
+    "main_menu_items": [
+      "Dashboard",
+      "Statistics",
+      "Leads",
+      "Inject",
+      "Campaigns",
+      "Links",
+      "Tasks",
+      "Users",
+      "Finance",
+      "Settings",
+      "Logs"
+    ],
+    "statistics_submenu": [
+      "Cap",
+      "Statistics",
+      "Manager Statistic",
+      "Teamlead Stats",
+      "Finances",
+      "UTM"
+    ],
+    "leads_submenu": [
+      "New Lead",
+      "Leads",
+      "Deposits Approve",
+      "Leads Import",
+      "Google Table"
+    ],
+    "campaigns_submenu": [
+      "Campaigns",
+      "Campaign Groups",
+      "Brokers"
+    ],
+    "links_submenu": [
+      "Domains",
+      "Landings",
+      "Archives"
+    ],
+    "tasks_submenu": [
+      "White page",
+      "Black page",
+      "AFF Manager"
+    ],
+    "users_submenu": [
+      "Users",
+      "Teams"
+    ],
+    "finance_submenu": [
+      "Spendings",
+      "Types",
+      "Accounts",
+      "Cards",
+      "Settings"
+    ],
+    "settings_submenu": [
+      "CRM",
+      "Activity Log",
+      "Funnels",
+      "Sources",
+      "Statuses",
+      "Country Groups",
+      "Servers",
+      "Integrations",
+      "Services"
+    ]
+  },
+  "modules": {
+    "dashboard": {
+      "description": "Overview page with key KPI widgets",
+      "metrics_displayed": [
+        "Leads",
+        "FTD",
+        "Profit",
+        "Net Profit"
+      ],
+      "widgets": [
+        "Revenue Overview chart",
+        "Caps widget (shows cap fill status per campaign)"
+      ],
+      "notes": "Presenter describes it as 'eye candy' - detailed analytics available in other sections"
+    },
+    "lead_distribution": {
+      "description": "Core routing engine that assigns incoming leads to campaigns",
+      "routing_parameters": [
+        "Funnel (exact match, case-insensitive)",
+        "Country",
+        "Source"
+      ],
+      "routing_in_development": [
+        "User (buyer) - visible in test version but not publicly announced"
+      ],
+      "distribution_logic": "Weight-based proportional distribution; Daily Cap determines lead volume; Weight multiplier adjusts priority ratio between campaigns",
+      "weight_cap_explanation": "If campaign A has daily cap 100 and weight 1, campaign B has daily cap 50 and weight 1 - leads are distributed at 2:1 ratio matching cap sizes. Changing weight to 2 on campaign A doubles its intake rate.",
+      "hold_mechanism": "Leads that fail routing go to Hold status; can be re-sent manually or automatically via Cold Overflows"
+    },
+    "campaigns": {
+      "description": "Individual broker offer configurations",
+      "list_view_tabs": [
+        "All (31)",
+        "Active (4)",
+        "Cap Control (4)",
+        "Pending (18)",
+        "Rejected (9)",
+        "Removed (10)"
+      ],
+      "list_columns": [
+        "Weight",
+        "Time Cap schedule (Mon-Sun)",
+        "Broker",
+        "Integration",
+        "Funnel",
+        "Geo",
+        "Sources",
+        "Users",
+        "Status",
+        "Created At",
+        "Actions"
+      ],
+      "actions": [
+        "View",
+        "Duplicate",
+        "Remove"
+      ],
+      "edit_tabs": [
+        "General",
+        "Payments",
+        "Funnels",
+        "Notifications",
+        "Fraud",
+        "Caps",
+        "Delayed Actions"
+      ],
+      "general_tab_fields": {
+        "Name": "Campaign name",
+        "Partner": "Broker/partner name",
+        "Integration": "Integration preset to use",
+        "Funnels": "Allowed funnels (multi-select)",
+        "Countries": "Allowed countries (multi-select)",
+        "Sources": "Allowed sources (multi-select, e.g. Google, FB, Instagram, TikTok, TestWeb, web2)",
+        "Users": "Assigned buyers/users",
+        "Daily Cap": "Max leads per day (e.g. 50)",
+        "Weight Cap": "Weight multiplier (default 1)",
+        "Lang": "Language filter (By Leads = auto-detect from lead)",
+        "Country Group": "Use predefined country group instead of individual countries",
+        "Time Cap": "Toggle to enable time-based scheduling",
+        "Campaign Statuses": "Toggle to enable custom status mapping",
+        "Notifications": "Toggle Telegram/in-app notifications",
+        "Rotations": "Toggle rotation mode",
+        "Our Thanks Page": "Toggle custom redirect after registration"
+      },
+      "status_colors": {
+        "green_dot": "Active",
+        "yellow_dot": "Pending",
+        "red_dot": "Rejected"
+      },
+      "integration_setup_time": "~15 minutes average"
+    },
+    "caps": {
+      "daily_cap": "Maximum leads per day per campaign",
+      "weight_cap": "Multiplier for proportional distribution priority",
+      "time_cap": {
+        "description": "Schedule-based availability windows per campaign",
+        "granularity": "Per day of week (Mon-Sun) with start/end time (HH:MM:SS)",
+        "example": "Mon-Fri 10:00:00 to 20:00:00; Sat-Sun disabled",
+        "apply_to_all": "Button to copy one day's schedule to all days"
+      },
+      "source_caps_in_development": "Planned: per-source daily cap within campaign (e.g. Google: 20, FB: 30 from total cap 50)",
+      "cap_stats_module": "Separate 'Cap' view under Statistics showing cap fill status across all campaigns",
+      "telegram_cap_alerts": "Bot can send hourly cap fill status notifications"
+    },
+    "campaign_groups": {
+      "description": "Priority-based grouping of campaigns for waterfall distribution",
+      "purpose": "Define strict priority order: leads try highest-priority group first, cascade down on rejection/cap fill",
+      "group_fields": [
+        "Group name",
+        "Campaigns list with: Name, Time Cap, Priority (integer), Cap used/total, Weight, Only Duplicates flag"
+      ],
+      "priority_logic": "Lower priority number = higher priority. Priority 0 = equal distribution among group members",
+      "only_duplicates_flag": "Mark campaign as 'only accept leads that already bounced from other campaigns'",
+      "cpa_only_offer_flag": "Same as Only Duplicates - for CPA campaigns that accept rejects",
+      "use_case_example": "Main brokers in group priority 1; backup brokers in priority 2; CPA duplicate buyers in priority 3 (last resort)"
+    },
+    "delayed_actions": {
+      "description": "Schedule future changes to campaign settings",
+      "purpose": "Avoid making live changes during traffic pouring hours; pre-configure tomorrow's campaign settings tonight at a scheduled time",
+      "fields": [
+        "Date/time (calendar picker)",
+        "Funnels",
+        "Countries",
+        "Sources",
+        "Comment"
+      ],
+      "planned_additions": "Daily cap changes and weight changes via delayed actions (in development)",
+      "history": "Completed actions log shown on same tab",
+      "example_use_case": "At 19:00 traffic stops; pre-configure 19:05 action to swap funnels for next day's pour"
+    },
+    "cold_overflows_injector": {
+      "description": "Automated re-injection engine for held/unsent leads",
+      "list_columns": [
+        "ID",
+        "Name",
+        "Cap",
+        "Time Cap",
+        "Campaign",
+        "Sources",
+        "Users",
+        "Interval",
+        "Status",
+        "Actions"
+      ],
+      "new_overflow_fields": [
+        "Name",
+        "Type",
+        "Number of Lead Repeats",
+        "Date range",
+        "Campaigns",
+        "Funnels",
+        "Country",
+        "Sources",
+        "Users"
+      ],
+      "function": "Automatically resend leads from Hold/unsent pool to campaigns on a schedule; enables second-chance distribution",
+      "use_case": "Leads that fell into Hold due to cap or no campaign match are retried automatically at intervals"
+    },
+    "inject_module": {
+      "description": "Manual lead injection controls",
+      "functions": [
+        "Send single lead by distribution (routes through normal campaign selection logic)",
+        "Send single lead to specific campaign (manual override)",
+        "Mass inject from Hold tab"
+      ],
+      "send_modal_options": [
+        "Send by distribution (button)",
+        "Choose Campaign (dropdown)"
+      ]
+    },
+    "leads_module": {
+      "description": "Full lead management interface",
+      "search": "By Email, ID, or Phone (top search bar)",
+      "date_filter": "Send Date filter with period selector (This Year, etc.)",
+      "per_page": "Configurable (25, etc.)",
+      "tabs": {
+        "Send/Hold": "Active leads in queue or hold (shown as combined count, e.g. 102)",
+        "Sent": "Successfully sent leads (e.g. 60)",
+        "Hold": "Leads waiting (e.g. 42)",
+        "Invalid": "Rejected as invalid (e.g. 3-52 depending on filter)",
+        "Duplicate": "Duplicates (e.g. 0)",
+        "Error": "Error on send (e.g. 13)",
+        "Removed": "Manually removed (e.g. 13)",
+        "Valid": "Leads marked valid (e.g. 57)",
+        "Duplicate B": "Broker-side duplicates (e.g. 1)",
+        "FTD": "First Time Deposits (e.g. 19)",
+        "Imported": "Manually imported leads (e.g. 1)",
+        "Fraud": "Fraud-flagged leads (e.g. 0)"
+      },
+      "filter_tabs": [
+        "Campaign",
+        "Lead",
+        "Date",
+        "Fraud",
+        "Mass Filters"
+      ],
+      "campaign_filter_fields": [
+        "Campaign",
+        "Countries",
+        "Languages",
+        "Campaign no send",
+        "Campaign didn't send",
+        "Webmasters",
+        "Brokers",
+        "Sources",
+        "Funnels",
+        "Urls",
+        "Payment type",
+        "Teams"
+      ],
+      "mass_filters": {
+        "description": "Bulk search across all leads",
+        "fields": [
+          "Mass Search (Phone/Email/IP/Name) - textarea for bulk paste",
+          "Mass Search (ID/External ID) - textarea for bulk paste"
+        ],
+        "result": "Filters lead list to matching records across all tabs",
+        "export": "Export button available on Mass Filters tab"
+      },
+      "main_columns": [
+        "ID",
+        "Campaign",
+        "Phone",
+        "Email",
+        "Name",
+        "Geo (flag+code)",
+        "City",
+        "Domain",
+        "Source",
+        "Broker",
+        "Lang",
+        "Funnel",
+        "Status",
+        "Web Status",
+        "Status History"
+      ],
+      "additional_columns_scrolled": [
+        "Real FTD",
+        "User",
+        "UTM fields",
+        "Created Date",
+        "Date Send",
+        "FTD Date",
+        "Auth",
+        "Autologin ID",
+        "Description",
+        "Sub ID",
+        "Payment Type"
+      ],
+      "customizable_columns": "Users can configure which columns appear via settings modal (Main Fields + UTM Fields sections)",
+      "status_history_inline": "Status history shown inline in lead list with timestamps",
+      "email_copy": "Click email column header to bulk-copy all emails on page (shows 'Emails copied' toast)",
+      "lead_detail_tabs": [
+        "General Info",
+        "Lead Response",
+        "Logs",
+        "Anti Fraud",
+        "Comments"
+      ],
+      "lead_detail_general_fields": [
+        "Email",
+        "Phone",
+        "Campaign",
+        "IP",
+        "Url (domain)",
+        "User",
+        "Funnel",
+        "Send Date",
+        "Create Date",
+        "Status",
+        "Web Status",
+        "Country",
+        "Lang",
+        "Source",
+        "External ID",
+        "Pay",
+        "Sale",
+        "Payment Type",
+        "Description",
+        "Conversion checkbox",
+        "Is Lock checkbox"
+      ],
+      "lead_detail_lead_response": "Shows Broker Response (timestamp + raw response e.g. 'Offers not found') and Lead Request JSON payload sent to broker",
+      "lead_detail_logs": "Full action log for this lead",
+      "lead_detail_anti_fraud": "Anti-fraud data: Redirect URLs, Real User Agent, Device, Provider, Browser, Platform, Device Languages, RAM, Connection, GPU, Screen Resolution, Fingerprint, FBToken, UTM params, Action",
+      "lead_detail_comments": "Internal comment thread",
+      "lead_actions": [
+        "Send (resend)",
+        "New Send (force new send)",
+        "Remove Lead (red button)",
+        "Edit (pencil icon)"
+      ],
+      "new_lead_form_fields": [
+        "First Name",
+        "Last Name",
+        "Email",
+        "Phone",
+        "Country",
+        "IP (with auto-generate button)",
+        "Link (domain)",
+        "Funnel",
+        "Source",
+        "User",
+        "Description",
+        "Lang",
+        "Generate Auto toggle (for autologin)"
+      ]
+    },
+    "leads_import": {
+      "description": "Bulk lead import from spreadsheet",
+      "access": "Leads Import menu item under Leads",
+      "function": "Upload spreadsheet, map columns, import leads into system"
+    },
+    "google_table_integration": {
+      "description": "Google Sheets integration for brokers without CRM systems",
+      "access": "Google Table menu item under Leads",
+      "function": "Broker updates lead statuses in Google Sheets; CRM reads status changes automatically"
+    },
+    "deposits_approve": {
+      "description": "Manual deposit/FTD approval workflow",
+      "access": "Deposits Approve menu item under Leads"
+    },
+    "anti_fraud": {
+      "description": "Multi-layer fraud detection and filtering system",
+      "status_fraud_marker": {
+        "description": "Automatic fraud flag triggered when status history shows suspicious pattern (e.g. lead marked valid but then changed to invalid/trash status)",
+        "purpose": "Anti-shave detection - catches brokers who initially approve leads then retroactively reject them",
+        "indicator": "Circle/warning icon next to status badge; lead appears in Fraud tab filter",
+        "example": "Lead goes New -> No send -> New -> Wrong age -> Call back -> Wrong Info; 'Wrong Info' triggers fraud marker"
+      },
+      "fraud_filter_tab": {
+        "description": "Dedicated fraud filter in leads section",
+        "filter_options": [
+          "Autologin",
+          "Cities",
+          "Device",
+          "Platform",
+          "Browser",
+          "Fraud (Status Fraud)"
+        ]
+      },
+      "blacklists": {
+        "server_ips": "Block leads originating from known server/datacenter IP ranges (detects automated bots)",
+        "user_agents": "Block specific browser user agents",
+        "phone_numbers": "Block specific phone numbers",
+        "email_addresses": "Block specific email addresses",
+        "domains": "Block specific referring domains"
+      },
+      "ip_tracking": "Tracks originating IP, detects if lead came from a server/VPN vs. real residential IP",
+      "fingerprinting": "Browser fingerprint captured (GPU, RAM, screen resolution, device languages, connection type)"
+    },
+    "autologin": {
+      "description": "Automated lead registration on broker platforms using real Android devices",
+      "technology": "Real physical Android smartphones (not emulators); real residential proxies",
+      "fingerprints": "Real device fingerprints from actual phones (not spoofed)",
+      "purpose": "Register leads on broker platforms to increase FTD conversion; circumvent broker bot detection",
+      "autologin_id_field": "Each autologin attempt logged with Autologin ID visible in lead columns",
+      "generate_auto_toggle": "Toggle on New Lead form to queue lead for autologin processing",
+      "notes": "Presented as key differentiator for media buying clients; especially valuable for Google traffic"
+    },
+    "status_management": {
+      "description": "Flexible status and status group configuration",
+      "status_groups": {
+        "Initial Statuses": "Statuses that count as 'initial contact' (e.g. New, High potential, Low potential, No answer, Duplicate Broker, Wrong age, No send)",
+        "Invalid Statuses": "Statuses that mark lead as invalid (e.g. Wrong geo, Wrong age, WrongInfo, Wrongnumber, Wrong Info)",
+        "Trash Statuses": "Statuses that permanently discard lead",
+        "No Answer Statuses": "Statuses for non-responsive leads",
+        "BlackListed Countries": "Countries whose leads are auto-blacklisted (used for blacklist percentage deals)"
+      },
+      "full_status_list_observed": [
+        "New",
+        "Call again",
+        "High potential",
+        "Deposit",
+        "Low potential",
+        "No answer",
+        "Duplicate",
+        "Duplicate Broker",
+        "Wrong age",
+        "Wrong geo",
+        "No send",
+        "Error",
+        "NAA",
+        "follow up",
+        "stat",
+        "Never answer",
+        "Didn't register",
+        "WrongInfo",
+        "Not interested",
+        "Wrong Info",
+        "Wrongnumber",
+        "Fraud",
+        "No answer 2",
+        "No interest",
+        "Initial call",
+        "Reassign",
+        "Recall",
+        "Wrong number",
+        "Call back",
+        "CallBack",
+        "Not interest"
+      ],
+      "web_status": "Separate 'Web Status' field - status visible to broker/external party; can differ from internal CRM status",
+      "status_tabs": [
+        "Statuses (full list)",
+        "Status types",
+        "Status groups"
+      ],
+      "blacklist_percentage_feature": {
+        "description": "Support for deals where broker accepts X% from blacklisted geos",
+        "example": "RU network: 50% Ukrainian leads paid, 50% go to replacement. Blacklist Countries group + percentage configured per campaign.",
+        "use_case": "Common in Russian-speaking network deals"
+      }
+    },
+    "statistics": {
+      "buying_view": {
+        "description": "Statistics oriented for media buyers (buying team)",
+        "grouping_options": [
+          "Campaign",
+          "User",
+          "Funnel",
+          "Geo"
+        ],
+        "columns": [
+          "Campaign",
+          "Leads",
+          "Valid",
+          "Invalid",
+          "NA (No Answer)",
+          "POT (Potential)",
+          "FTD",
+          "DI",
+          "Revenue"
+        ],
+        "filters": [
+          "Countries",
+          "Funnels",
+          "Campaign",
+          "Webmasters",
+          "Sources",
+          "Filter by FTD",
+          "UTM",
+          "Urls",
+          "Brokers",
+          "Payment type",
+          "Teams"
+        ]
+      },
+      "network_view": {
+        "description": "Statistics oriented for network operations",
+        "same_filters_as_buying": true,
+        "notes": "Separate tab to switch context between buying team view and network team view"
+      },
+      "manager_statistics": "Role-specific view for Affiliate Managers",
+      "teamlead_statistics": "Role-specific view for Team Leads",
+      "finances_statistics": "Financial reconciliation view; can close reconciliation periods",
+      "utm_statistics": {
+        "description": "UTM parameter breakdown table",
+        "columns": [
+          "UTM Name",
+          "Leads Count",
+          "Valid Leads",
+          "Invalid Leads",
+          "No Answer",
+          "Potential",
+          "FTD",
+          "Revenue",
+          "Cost",
+          "CPL",
+          "ROI"
+        ],
+        "utm_params_observed": [
+          "adset_id",
+          "utm",
+          "utm1"
+        ],
+        "custom_utm_params": "System supports creating new custom UTM parameters as additional columns"
+      },
+      "cap_statistics": "Dedicated cap fill monitoring view"
+    },
+    "finance_module": {
+      "description": "Buyer spend tracking and CPL/ROI calculation",
+      "spendings_view": {
+        "summary_metrics": [
+          "Income",
+          "CPL",
+          "Leads",
+          "FTD/CR",
+          "ROI",
+          "Profit",
+          "CPA",
+          "Revenue",
+          "Replenishment",
+          "Others"
+        ],
+        "table_tabs": [
+          "ADS",
+          "OTHER"
+        ],
+        "table_columns": [
+          "Date",
+          "Created At",
+          "Buyer",
+          "Geo",
+          "Source",
+          "Funnel",
+          "Comment",
+          "Spend",
+          "Action"
+        ]
+      },
+      "add_spend_form_fields": [
+        "Date",
+        "Funnel",
+        "Source",
+        "Country Group",
+        "User",
+        "Comment",
+        "Payment System",
+        "Spend",
+        "Реклама (Ads)",
+        "Материалы (Materials)",
+        "Карты (Cards)",
+        "Холд (Hold)"
+      ],
+      "cpl_calculation": "CRM calculates CPL automatically from spend data + lead counts per funnel/user/period",
+      "buyer_payment_visibility": "Per-campaign payment amount visible only to that buyer (can be set to show lower price than actual sale price to manage margin)",
+      "blacklist_percentage_accounting": "Finance can account for blacklist % deals in revenue calculations",
+      "finance_submodule_items": [
+        "Spendings",
+        "Types",
+        "Accounts",
+        "Cards",
+        "Settings"
+      ]
+    },
+    "tracker": {
+      "description": "Built-in lightweight traffic tracker (primarily for Google traffic)",
+      "purpose": "Alternative to Keitaro for Google buyers; avoids detection of external tracker architecture by Google",
+      "capabilities": "Domain management, link creation, basic click/lead tracking",
+      "limitations": "Not a full-featured tracker like Keitaro or Binom; sufficient for basic needs; Google cloaking less mature than Facebook cloaking",
+      "roadmap": "Planned to evolve into full tracker; may become separate product but included free for CRM Mate users",
+      "postback": "Keitaro postback integration supported for external tracker users"
+    },
+    "links_module": {
+      "domains": {
+        "description": "Domain lifecycle management",
+        "tabs": [
+          "Active (6)",
+          "Is Loading (0)",
+          "Is Not Available (5)",
+          "Error (2)",
+          "Archive (2)"
+        ],
+        "columns": [
+          "ID",
+          "Domain",
+          "Source",
+          "Registrator",
+          "Cloudflare",
+          "Server",
+          "User",
+          "Created Date",
+          "Source History",
+          "Comment"
+        ],
+        "actions": [
+          "Buy Domains (via integrated registrar)",
+          "Add Domains (manual add)"
+        ],
+        "supported_registrars": [
+          "Namecheap",
+          "Dynadot",
+          "Cloudflare"
+        ],
+        "auto_cloudflare": "CRM can automatically add domain to Cloudflare and configure DNS records pointing to server",
+        "dynadot_note": "Convenient for crypto payments"
+      },
+      "landings": {
+        "description": "Landing page configuration and deployment",
+        "add_landing_fields": [
+          "Campaign",
+          "Domain (dropdown of all registered domains)",
+          "Prelanding",
+          "Landing",
+          "Source",
+          "Pixel/Tag",
+          "Replaces (key:value pairs)",
+          "Cloak (select type)",
+          "Type Of Cloak",
+          "Geo"
+        ],
+        "cloaking_options": [
+          "CRM (built-in)",
+          "MagickChecker",
+          "HideClick",
+          "Paladium"
+        ],
+        "mass_add": "Button for bulk landing creation",
+        "default_button": "Pre-fill with default settings"
+      },
+      "gitlab_integration": {
+        "description": "Landings hosted on GitLab first, then deployed to servers from there",
+        "benefits": [
+          "Avoids Google detecting Keitaro/Binom tracker infrastructure in landing server headers",
+          "Fast server migration: if server banned, all landings auto-migrate to backup server",
+          "Caution: auto-migration can expose pattern to hosting provider leading to cascading bans"
+        ]
+      },
+      "archives": "Archive of past links/domains"
+    },
+    "servers_module": {
+      "description": "Server infrastructure management within CRM",
+      "function": "Add server credentials; CRM auto-installs required panel (hosting control panel)",
+      "location": "Settings > Servers",
+      "use_case": "Centralized server management without leaving CRM interface"
+    },
+    "integrations": {
+      "description": "Broker API integration management",
+      "location": "Settings > Integrations",
+      "setup_flow": "1. Share integration credentials with CRM Mate integrator via chat. 2. Integrator creates integration (~15 min). 3. Test email provided; forward to broker. 4. Broker sends test status/deposit. 5. Done.",
+      "notes": "Integrator available near 24/7"
+    },
+    "services_module": {
+      "description": "Third-party service connections configured within CRM",
+      "observed_services": [
+        {
+          "name": "Keitaro",
+          "logo": "Keitaro green logo",
+          "button": "Continue"
+        },
+        {
+          "name": "Cloudflare",
+          "logo": "Cloudflare orange cloud",
+          "button": "Continue"
+        },
+        {
+          "name": "Namecheap",
+          "logo": "Namecheap N logo",
+          "button": "Create"
+        },
+        {
+          "name": "Facebook",
+          "logo": "Facebook blue logo",
+          "button": "Continue"
+        },
+        {
+          "name": "Binom",
+          "logo": "Binom tracker logo",
+          "button": "Continue"
+        },
+        {
+          "name": "GitLab",
+          "logo": "GitLab fox logo",
+          "button": "Continue"
+        },
+        {
+          "name": "Dynadot",
+          "logo": "Dynadot chain logo",
+          "button": "Continue"
+        },
+        {
+          "name": "HideClick",
+          "logo": "HideClick logo",
+          "button": "Continue"
+        },
+        {
+          "name": "Paladium",
+          "logo": "Paladium arrow logo",
+          "button": "Create"
+        }
+      ]
+    },
+    "funnels_module": {
+      "description": "Funnel (offer) registry and grouping",
+      "tabs": [
+        "Funnels (list)",
+        "Funnel groups"
+      ],
+      "funnels_view": {
+        "tabs": [
+          "Active (42)",
+          "Removed (2)"
+        ],
+        "columns": [
+          "ID",
+          "Name",
+          "Actions"
+        ]
+      },
+      "funnel_groups": {
+        "description": "Group multiple funnels under one alias",
+        "tabs": [
+          "Active (27)",
+          "Removed (1)"
+        ],
+        "columns": [
+          "ID",
+          "Group",
+          "Funnels (tags)",
+          "Actions"
+        ],
+        "create_modal_fields": [
+          "Name",
+          "Funnels (multi-select)"
+        ],
+        "example_groups": [
+          "Tesla (contains: Bitcoin Profit, Cryptex Canon, Belka)",
+          "various test groups"
+        ],
+        "purpose": "Reference a group of funnels in campaign settings instead of selecting each individually"
+      },
+      "funnel_name_mapping": {
+        "description": "Substitute funnel names when sending to broker",
+        "global_mapping": "Settings > Funnels tab: map internal funnel name to broker-facing name globally",
+        "per_campaign_mapping": "Campaign > Funnels tab: override funnel name substitution for this specific campaign",
+        "use_case": "Keep detailed internal funnel names (Tesla Quiz, Tesla Liteform) while sending unified name (Tesla) to broker"
+      }
+    },
+    "sources_module": {
+      "description": "Traffic source registry",
+      "location": "Settings > Sources",
+      "observed_sources": [
+        "Google",
+        "FB",
+        "Instagram",
+        "TikTok",
+        "TestWeb",
+        "web2",
+        "123123",
+        "TestSource",
+        "Den",
+        "test1223123"
+      ],
+      "notes": "Sources used as routing parameter in campaigns and for statistics grouping"
+    },
+    "country_groups": {
+      "description": "Named groups of countries for reuse in campaign routing",
+      "location": "Settings > Country Groups",
+      "purpose": "Pre-define geo bundles (e.g. Tier1, DACH, Nordics) and reference by group name in campaigns"
+    },
+    "users_module": {
+      "description": "User account and role management",
+      "columns": [
+        "ID",
+        "Name",
+        "Email",
+        "Role",
+        "Server IPs",
+        "Daily Request",
+        "Actions"
+      ],
+      "roles_observed": [
+        "admin",
+        "affiliate_manager",
+        "buyer",
+        "financier",
+        "support",
+        "teamlead",
+        "tech",
+        "web_master"
+      ],
+      "all_roles_mentioned": [
+        "Admin",
+        "Affiliate Manager",
+        "Buyer",
+        "Financier",
+        "Support",
+        "Teamlead",
+        "Buyer's tech (lands)",
+        "Webmaster"
+      ],
+      "server_ips_column": "Associate specific server IPs with user account (fraud/security control)",
+      "daily_request_column": "Daily request counter per user",
+      "new_user_modal_fields": [
+        "Name",
+        "Email",
+        "Password",
+        "Role (dropdown)"
+      ],
+      "teams": "Sub-menu item 'Teams' under Users for team grouping",
+      "security": {
+        "two_factor_auth": "Google 2FA required to export lead data (enforced system-wide)",
+        "login_notifications": "Popup notification on each new login showing: User, Date, IP, Device, Browser details",
+        "activity_log": {
+          "description": "Full audit trail of all user actions",
+          "columns": [
+            "ID",
+            "Date",
+            "User",
+            "Action (detailed description)",
+            "IP",
+            "User Agent",
+            "Fingerprint"
+          ],
+          "example_entries": [
+            "Admin412341 get Leads page 1",
+            "Admin412341 copied phone for lead #4914",
+            "Admin412341 updated lead Test Test - Changed fields: status_id 32->23, buy 0->0, sale 0->1, is_fnd_status 0->1, status_type_id 1->2, web_status_id 9->32"
+          ]
+        }
+      }
+    },
+    "tasks_module": {
+      "description": "Kanban-style task management board",
+      "columns": [
+        "NEW",
+        "IN PROGRESS",
+        "READY",
+        "IN REVIEW",
+        "COMPLETED"
+      ],
+      "task_cards": "Show task title, assignees (user avatars)",
+      "views_submenu": [
+        "White page",
+        "Black page",
+        "AFF Manager"
+      ],
+      "notes": "Built-in project management for team coordination"
+    },
+    "notifications": {
+      "in_app": "Bell icon with notification feed; new login alerts show full session details",
+      "telegram_bot": {
+        "description": "External Telegram bot for alerts",
+        "notification_types": [
+          "Cap fill status (hourly)",
+          "New lead notifications",
+          "Campaign status changes",
+          "Last lead time monitoring"
+        ],
+        "configuration": "Configurable per user/role what notifications to receive"
+      }
+    },
+    "logs_module": {
+      "description": "System-level logs",
+      "location": "Main menu > Logs"
+    },
+    "brokers_module": {
+      "description": "Broker/partner registry",
+      "location": "Campaigns > Brokers",
+      "notes": "Manage broker profiles separate from campaign configurations"
+    }
+  },
+  "technical_features": {
+    "cloaking": {
+      "built_in": "CRM-native cloaking (white/black page logic)",
+      "third_party_integrations": [
+        "MagickChecker",
+        "HideClick",
+        "Paladium"
+      ],
+      "facebook_effectiveness": "Built-in cloaking sufficient for Facebook according to presenter",
+      "google_effectiveness": "Built-in cloaking less reliable for Google; Keitaro or separate server architecture recommended for Google"
+    },
+    "postback": {
+      "keitaro_postback": "Supported; allows external Keitaro installation to send conversion data back to CRM",
+      "binom_integration": "Listed in Services (Binom tracker)",
+      "facebook_pixel": "Pixel/Tag field in Landing configuration"
+    },
+    "api": {
+      "broker_integration_api": "REST API for broker integrations (lead submission + status postback)",
+      "test_lead_flow": "Test email endpoint for verifying integration before go-live"
+    },
+    "data_portability": {
+      "lead_export": "Export button on Leads page (requires 2FA to be enabled)",
+      "import": "Leads Import from spreadsheet"
+    },
+    "multi_language": {
+      "ui_languages": "Multiple UI language support (at least Russian and English observed)",
+      "lead_lang_field": "Lead language field; 'By Leads' auto-detection mode"
+    },
+    "themes": [
+      "Dark mode",
+      "Light mode"
+    ],
+    "responsive": "Web application; no mention of mobile app"
+  },
+  "competitive_positioning": {
+    "stated_competitors": [
+      "Trackbox (mentioned by presenter as known competitor)"
+    ],
+    "prospect_alternatives_evaluated": [
+      "iRev",
+      "AlterCP",
+      "CRM Mate"
+    ],
+    "key_differentiators_claimed": [
+      "All-inclusive pricing: one flat fee, no add-on modules",
+      "Built-in domain + server management (no need for separate registrar dashboards)",
+      "GitLab-hosted landings for fast server migration and reduced Google detection footprint",
+      "Native autologin with real Android devices (not emulators) - unique among comparable tools",
+      "Anti-shave detection via status history analysis",
+      "Funnel name substitution/mapping per campaign",
+      "Delayed Actions for pre-scheduling campaign changes",
+      "Campaign Groups with waterfall priority logic",
+      "CPA-only / Only Duplicates campaign flag",
+      "Source-level caps (in development)",
+      "Blacklist percentage accounting for RU/UA mixed geo deals",
+      "Buying + Network statistics split in single platform",
+      "Built-in Telegram notification bot",
+      "Feature development on client request with ~1 month turnaround",
+      "Near 24/7 integrator support"
+    ],
+    "known_weaknesses_admitted": [
+      "Built-in tracker not yet Keitaro-level for Google traffic",
+      "Google cloaking less reliable than Facebook cloaking",
+      "No formal roadmap or release calendar",
+      "Update rollout is non-uniform across clients",
+      "Small team (~7 people) may cause delays on complex features",
+      "Development backlog growing as features become more complex"
+    ],
+    "target_audience": "Crypto/forex affiliate networks and media buying teams (both buying-side and network-side)",
+    "pricing_vs_competitors": "Flat $700/month vs. per-module or per-lead pricing models of competitors like iRev",
+    "maturity": "Early-stage startup with paying clients; actively adding features based on client feedback"
+  },
+  "observed_test_data": {
+    "campaign_count": "31 total (4 Active, 4 Cap Control, 18 Pending, 9 Rejected, 10 Removed)",
+    "lead_count": "102 total in demo (60 Sent, 42 Hold, 3 Invalid, 0 Duplicate, 13 Error, 13 Removed, 57 Valid, 1 Duplicate B, 19 FTD, 1 Imported, 0 Fraud)",
+    "user_count": "24+ users across roles (IDs 1-32 observed)",
+    "funnel_count": "42 active funnels",
+    "funnel_group_count": "27 active funnel groups",
+    "domain_count": "6 active domains",
+    "overflow_count": "Multiple cold overflows configured",
+    "sample_funnels": [
+      "Bitcoin Profit",
+      "Cryptex Canon",
+      "Belka",
+      "Tesla",
+      "Maver",
+      "Quantum",
+      "YFI",
+      "RU WhatsApp Cards"
+    ],
+    "sample_campaigns": [
+      "TestGrp",
+      "GeyTest",
+      "1TestBrok",
+      "Test-brok3",
+      "TestNNowi",
+      "Maver333"
+    ],
+    "sample_integrations": [
+      "Test",
+      "asd",
+      "TestInt",
+      "Test-brok"
+    ]
+  },
+  "demo_call_metadata": {
+    "platform": "Google Meet",
+    "meeting_id": "fuz-jgjm-sdl",
+    "presenter": "BTC Transfer",
+    "prospect": "Nikita T",
+    "notetaker": "Fireflies.ai Notetaker Nikita",
+    "other_participants": "Participant 'Д' (likely 3rd party observer)",
+    "call_start_time": "~12:37 PM (from frame timestamps)",
+    "call_end_time": "~1:04 PM (from final frames)",
+    "call_duration_approx": "~27 minutes",
+    "outcome": "Prospect will make decision within 1 week; other demos scheduled"
+  },
+  "web_enrichment": {
+    "enriched_at": "2026-03-04T00:00:00Z",
+    "search_queries_used": [
+      "WebFetch https://crm-mate.com/en (home page)",
+      "WebFetch https://crm-mate.com/ru (Russian version)",
+      "WebFetch https://crm-mate.com/en/update (version history)",
+      "WebFetch https://crm-mate.com/en/program (referral program)",
+      "Tavily: CRM Mate crm-mate.com crypto forex affiliate CRM review 2025",
+      "Tavily: trackbox.io pricing features forex CRM competitor 2025",
+      "Tavily: BTC Transfer crypto affiliate CRM autologin Android leads"
+    ],
+    "company": {
+      "funding": {
+        "value": "not found - early startup, bootstrapped",
+        "source": null,
+        "confidence": "low"
+      },
+      "team_size": {
+        "value": "~7 (from demo: 3 co-owners + 3 programmers + 1 support/integrator)",
+        "source": "demo meeting",
+        "confidence": "medium",
+        "trend": "unknown"
+      },
+      "leadership": [],
+      "recent_news": [],
+      "public_presence": {
+        "website": "https://crm-mate.com",
+        "telegram_channel": "https://t.me/m/bkf13QlvYjEy",
+        "linkedin": null,
+        "twitter": null,
+        "notes": "Primary presence via Telegram; public site crm-mate.com with EN and RU versions"
+      }
+    },
+    "product": {
+      "pricing": {
+        "plans": [
+          {
+            "name": "Solo",
+            "price": "$200/month",
+            "features": [
+              "basic functionality for solo buyers",
+              "all integrations included"
+            ]
+          },
+          {
+            "name": "Team",
+            "price": "$700/month",
+            "features": [
+              "full feature set",
+              "team management",
+              "all integrations",
+              "support ~24/7",
+              "updates"
+            ]
+          }
+        ],
+        "source": "crm-mate.com/en + crm-mate.com/ru",
+        "last_checked": "2026-03-04",
+        "discrepancy_note": "IMPORTANT: Website shows two plans (Solo $200 + Team $700). In demo presenter cited only $700 flat 'one fixed tariff'. Solo plan was NOT mentioned in demo with Nikita T (team buyer) - presenter may have deliberately omitted it, or Solo lacks Android autologin feature."
+      },
+      "version_history": {
+        "current_version": "2.0 (2025-07-16)",
+        "release_dates": [
+          {
+            "version": "2.0",
+            "date": "2025-07-16",
+            "key_features": [
+              "Cloaking integrated into CRM (built-in, v2.0 first)",
+              "UTM Tag Statistics for campaign analysis",
+              "Task Manager for team assignment and expense tracking",
+              "Interface improvements and multilingual translations"
+            ]
+          },
+          {
+            "version": "1.04",
+            "date": "2024-08-08",
+            "key_features": [
+              "Tip system for lead management and fraud detection",
+              "Auto-disable offers after 5 lead errors",
+              "Customizable widgets in profile settings",
+              "Test lead generation with realistic IP addresses",
+              "Flexible offer working hours configuration",
+              "Funnel name customization for leads",
+              "Tomorrow tab for capacity planning",
+              "Telegram bot notifications for lead metrics"
+            ]
+          },
+          {
+            "version": "1.03",
+            "date": "2024-06-10",
+            "key_features": [
+              "Automatic email generation",
+              "Campaign-specific lead routing via camp_id",
+              "CPL traffic shaving protection with status notifications",
+              "Enhanced fraud analysis using User-Agent and IP data",
+              "Status blocking to preserve financial records",
+              "Webhook support for lead creation events",
+              "Bulk lead injection improvements",
+              "Admin function delegation"
+            ]
+          }
+        ],
+        "release_cadence_analysis": "v1.03 to v1.04: 2 months; v1.04 to v2.0: ~11 months. Approximately 2 major releases per year.",
+        "last_major_release": "2025-07-16"
+      },
+      "development_velocity": {
+        "release_frequency": "~2 major releases/year; reactive feature additions per client request between releases",
+        "last_release": "2025-07-16",
+        "roadmap_focus": "No public roadmap; features from demo in pipeline: source-level caps, expanded tracker, delayed actions for caps"
+      },
+      "market_sentiment": {
+        "g2_rating": null,
+        "g2_reviews_count": null,
+        "capterra_rating": null,
+        "top_complaints": [],
+        "top_praises": [],
+        "sources": [],
+        "notes": "Zero presence on G2, Capterra, Product Hunt - reputation built entirely via demos and referrals"
+      },
+      "key_value_props_from_site": [
+        "Prevents lead loss up to 15% vs. working without CRM",
+        "No technical specialists or own servers required",
+        "Average advertiser integration time: 5 min (site claim) vs 15 min (demo) - marketing inflation suspected",
+        "Buy domain, install SSL, link to server - all inside CRM",
+        "Manages Namecheap, Cloudflare, Keitaro, Facebook Conversion API from one interface"
+      ]
+    },
+    "marketing": {
+      "monthly_traffic_estimate": {
+        "value": "undetermined - young site, minimal organic",
+        "source": null
+      },
+      "top_organic_keywords": [
+        "crm mate",
+        "crm for affiliate teams",
+        "crypto affiliate crm"
+      ],
+      "content_cadence": "Russian and English website (crm-mate.com/ru, crm-mate.com/en); updates page; referral program page",
+      "referral_program": {
+        "exists": true,
+        "commission": "10% of referral subscription fees for 12 months",
+        "mechanism": "Personal referral link via Telegram bot",
+        "significance": "Active growth mechanism through word-of-mouth in crypto-affiliate community; earnings calculator by plan tier on site"
+      },
+      "paid_advertising": {
+        "active": false,
+        "observed_channels": []
+      },
+      "go_to_market": "Demo-led sales (no self-serve demo available), Telegram channel, word-of-mouth, referral program"
+    },
+    "technology": {
+      "tech_stack": [
+        "Real physical Android devices for autologin (not emulators) - key differentiator not mentioned on public site",
+        "GitLab for landing page hosting and fast server migration",
+        "Namecheap / Cloudflare / Dynadot domain management integrations",
+        "Built-in cloaking since v2.0 + support for MagickChecker / HideClick / Paladium",
+        "Telegram Bot API for notifications",
+        "Facebook Conversion API",
+        "REST API for broker integrations",
+        "Webhook support for lead creation events"
+      ],
+      "integrations_observed": [
+        "Keitaro",
+        "Cloudflare",
+        "Namecheap",
+        "Dynadot",
+        "Facebook",
+        "Binom",
+        "GitLab",
+        "HideClick",
+        "Paladium",
+        "Google Sheets"
+      ],
+      "integrations_count": 10,
+      "api_maturity": "intermediate - REST API for broker integrations, webhooks, postbacks",
+      "compliance_certifications": [
+        "External penetration test (claimed in demo, unverified)",
+        "2FA via Google Authenticator (mandatory for data export)"
+      ],
+      "hosting": "Client needs no own servers - CRM manages server provisioning internally"
+    },
+    "competitive_landscape": {
+      "stated_competitor_trackbox": {
+        "name": "Trackbox",
+        "url": "https://trackbox.io",
+        "positioning": "Cited by presenter as main known competitor",
+        "tracxn_summary": "Trackbox - CRM solution for business; top competitors per Tracxn: CTPL, Element451, Meritto",
+        "pricing_public": "not disclosed publicly (enterprise pricing on request)",
+        "crm_mate_framing": "Trackbox positioned by CRM Mate as more expensive / enterprise alternative",
+        "capterra_presence": true
+      },
+      "prospect_alternatives": [
+        "iRev",
+        "AlterCP"
+      ],
+      "market_position": "Niche player in crypto/forex affiliate segment; competes with iRev, AlterCP, Trackbox - not with enterprise Forex CRM (B2CORE, FXBO, AltimaCRM)"
+    },
+    "signals": {
+      "growth_signals": [
+        {
+          "signal": "Active referral program with 10% commission launched",
+          "evidence": "crm-mate.com/en/program - live referral program with Telegram bot and earnings calculator",
+          "source": "https://crm-mate.com/en/program"
+        },
+        {
+          "signal": "Public site with EN and RU versions plus documented version history",
+          "evidence": "3 public releases documented (v1.03, v1.04, v2.0) - product actively developed",
+          "source": "https://crm-mate.com/en/update"
+        },
+        {
+          "signal": "v2.0 released July 2025 - major release with integrated cloaking",
+          "evidence": "Date 2025-07-16 on updates page; cloaking now built-in (previously required 3rd-party only)",
+          "source": "https://crm-mate.com/en/update"
+        },
+        {
+          "signal": "Solo plan at $200/month unlocks lower-price entry point",
+          "evidence": "Two-tier pricing on website not mentioned in demo",
+          "source": "https://crm-mate.com/en"
+        }
+      ],
+      "stress_signals": [
+        {
+          "signal": "No self-serve demo - only presentations on request",
+          "evidence": "Site explicitly states: 'We do not provide a Demo version for independent exploration'",
+          "source": "https://crm-mate.com/en"
+        },
+        {
+          "signal": "Zero public reviews (G2, Capterra, Product Hunt)",
+          "evidence": "Search returned no independent reviews for crm-mate.com",
+          "source": "Tavily search"
+        },
+        {
+          "signal": "Small team (~7 people) creates scalability risk",
+          "evidence": "From demo meeting",
+          "source": "demo meeting"
+        },
+        {
+          "signal": "No formal roadmap",
+          "evidence": "Features added reactively per client requests",
+          "source": "demo meeting"
+        },
+        {
+          "signal": "Android autologin USP not mentioned on public website",
+          "evidence": "Site lists features but omits Android autologin - kept as private sales differentiator",
+          "source": "crm-mate.com/en vs demo comparison"
+        }
+      ],
+      "strategic_intent": [
+        {
+          "hypothesis": "Growth via referral program and word-of-mouth in Russian-speaking crypto-affiliate community",
+          "supporting_evidence": [
+            "10%/12-month referral commission with Telegram bot",
+            "Telegram as primary channel",
+            "Russian-language site and interface",
+            "Pricing $200/$700 without enterprise tier"
+          ]
+        },
+        {
+          "hypothesis": "Solo plan $200 as entry funnel with upsell to Team $700",
+          "supporting_evidence": [
+            "Two tiers on website (Solo + Team)",
+            "Solo plan NOT mentioned in demo with team buyer Nikita T",
+            "Referral program calculator references both plan tiers"
+          ]
+        }
+      ]
+    },
+    "contradictions_with_meeting": [
+      {
+        "topic": "Number of pricing tiers",
+        "in_demo": "Presenter stated one plan: $700/month flat, 'one fixed tariff, includes support and CRM itself'",
+        "on_website": "Website shows two plans: Solo $200/month and Team $700/month",
+        "implication": "Solo plan deliberately omitted for team client, or Solo lacks key features (Android autologin?). Suggests actual entry price is $200 - competitive with lower-end tools.",
+        "severity": "medium"
+      },
+      {
+        "topic": "Integration time claim",
+        "in_demo": "Presenter: '~15 minutes average'",
+        "on_website": "Site claims: 'average advertiser integration time of 5 minutes'",
+        "implication": "Marketing inflation on website; demo figure (15 min) more credible",
+        "severity": "low"
+      }
+    ],
+    "data_gaps": [
+      "Founder / owner names not publicly disclosed",
+      "Actual traffic to crm-mate.com (SimilarWeb/SEMrush not checked)",
+      "Company LinkedIn not found",
+      "Funding not found (bootstrapped assumed)",
+      "Exact client count unknown",
+      "Feature differences between Solo vs Team plan not published",
+      "Trackbox.io public pricing not disclosed",
+      "Identity of 'BTC Transfer' presenter pseudonym unknown"
+    ],
+    "analyst_summary": "CRM Mate is an early-stage startup with a real public site (crm-mate.com, EN+RU), 3 documented releases (v1.03-v2.0, 2024-2025), and an active 10%/12-month referral program via Telegram. KEY FINDING: website shows two pricing tiers - Solo $200/month and Team $700/month - while the demo presenter cited only $700 flat. The $200 Solo plan lowers the true entry price significantly and suggests a funnel strategy. Core competitive differentiator (real Android devices for autologin) is absent from the public website - kept as a private sales weapon. Zero public reviews indicate reputation is built entirely through demos and referrals within the Russian-speaking crypto-affiliate community. Trackbox (stated competitor) has enterprise positioning with undisclosed pricing. Main risks: tiny team, no roadmap, reactive development, and the autologin feature is hardware-dependent (scaling physical Android fleet is non-trivial)."
+  }
+}

@@ -1,0 +1,242 @@
+Hello?
+Hello?
+Hi.
+Can you hear me?
+Yes.
+You hear me?
+Yes, how are you?
+Yes.
+Pink.
+Hello?
+Yes, yes.
+Pink.
+Pink.
+Pink.
+Hello?
+Yes, yes, yes. I hear you. Do you hear me?
+Yes.
+Nice.
+I don't hear you very well, but I hope that it's just tempo early.
+Anyway, my name is Gal. What's your name? Alex?
+Yeah.
+Ok, nice to meet you.
+Nice to meet you. Where are you from?
+From Russia.
+Russia? Ok.
+Ok, let me share the screen and I will make you show you the system.
+I don't feel very well today.
+So, I will be quick, but if you have a specific question, just stop me and I will answer.
+Yes, ok, thank you. I have questions. I think it will be good.
+Ok, you want to ask now or you want to wait?
+I think in process.
+Ok, good.
+Ok, so you see my screen, right?
+Yes.
+You are going to be a network, I assume, right?
+Firstly, we start new project and want to start from Mediavine, around 3 months.
+And after 3 months, connect network.
+And we want to manage all of this project from one place.
+Ok, and are you doing only CryptoForex Verticals or something like that?
+Only CryptoForex, try and gambling, but I think it's tests.
+It was difficult, yes.
+Ok, in any case, our system, you can do all the verticals in our system.
+Ok, so you are getting from us a copy of this system.
+You put your logo here, you can control colors, you can do colors.
+We have over here the dashboard that you can filter by time, by advertiser, by traffic source.
+Affiliate is like a traffic source. Ok, it's the same thing.
+Offers, geos, you can see your financial, we have a finance system inside.
+I will show you in a minute.
+So if you use the finance system, you can see income, cost, profits, clicks, leads, failings.
+We are collecting all the failings for you. Ok, you are not losing them.
+Approve conversions, pending conversions, if you want to do it manually or with rules.
+Ok, some charts over here, system status, some, one second.
+It's for protection.
+Some charts, some tables over here to affiliates, for offers, advertiser and so on.
+We have different type of views of admin, but that's the main one.
+Ok, now you have full management of traffic sources and affiliates.
+You can control from copying, geos, limits, automations, whatever you want.
+We have also like a wallet, a virtual wallet, that you can control how much money you owe, how much money you expose and so on.
+We are supporting different levels of affiliates, like if you will have a master affiliate or affiliate manager, we are supporting these levels.
+You can create for you a lot of automation regarding the affiliates with rules and restrictions and everything.
+Ok, any questions regarding the affiliate section?
+No, affiliate section, no questions.
+Traffic sources, affiliate section, everything. In any case, just to let you know that all the connections, integrations with Google, Facebook, whatever you need, our team is helping you with this.
+You have a dedicated support team, they work on the telegram, they are answering in minutes, not one hour, two hours, in minutes.
+If you need integration, you open a group with the support team and with the integration party, everything they are doing, they are working from Monday to Friday.
+You have over here all the time their timetables. Monday to Friday, it's usually from 9 o'clock to 10 o'clock GMT plus 2 until then 10 o'clock at night.
+Sunday limited support and we have holidays and this is their telegram.
+Ok, you have advertisement management. You have a full advertising management system. Also here you have the wallet, this is more important to use.
+You don't want to be too exposed with the advertiser. You can control the downtime when you don't want to accept traffic.
+In the wallet you will see any transaction going with this broker, with this advertiser, commission. We are supporting different types of commission, fix, dynamic, ref share.
+We also have eBrit which is not here. Different types of currencies and you can get commission and you can give commission for almost any event.
+If it's SLEED, FTD, referral, everything you can give commission.
+Gears, opening the gears that the advertiser is accepting, also with different rules and you've got custom fields if you need.
+Copy on the advertising level and the rest are less important. Any questions regarding this?
+Here, no. I'm interested in rotation.
+Rotation, I'm going out of rotation.
+This is the lead distribution setup. It works like this.
+First of all, you can see...
+It's a demo account without data.
+First of all, you have a general view that you can see each country, which advertiser you have and which are in rotation and which are not rotation.
+The way we work with this is that you are starting with the country. Let's say United Kingdom.
+And for your convenience...
+Okay.
+For your convenience on the top, you have all the traffic sources that are sending to United Kingdom and with the rules.
+This is just for your convenience.
+Over here, you have the general rotation for all of them.
+We are working with the bucket system. A bucket is like a bucket of water.
+In any bucket, this is starting by the default. You are putting rotations of advertisers.
+If you see it with the line, it means it's out of rotation, you will see what is the reason here.
+And on the right side, you can basically prioritize.
+You say, how much do you want from the leads? How much percentage?
+It's 40, 25, 10, and zero.
+So the lead going according to this prioritization, it takes into consideration the copying and statistics and everything.
+And you can create unlimited another bucket and to put over there also a rotation of an advertiser and do optimization per this bucket.
+So people usually use it, put the best advertisers on the first bucket and then second level of advertiser fallbacks and so on.
+Okay, this is how it is.
+Okay, any question?
+No.
+Okay, I understand.
+Okay, okay.
+But other stuff will be interesting at the moment.
+Finances, finance, as I said, we've got, you can manage all the commission that you get and give.
+And if you want to work with invoicing, it makes you the invoicing automatically.
+If you're working with CRG deals, we have a feature that calculates it automatically.
+And you want to see or it's okay?
+Yes, yes, I want to see.
+Okay.
+It's basically called special deal.
+And any special, we have got right now the first one conversions guarantee.
+And you're basically inputting all the deal that you have the name, how much what is the guarantee.
+What is the payment cycle date.
+And you can do a working hours, days, statuses, and the end of the payment cycle.
+The system checks it and calculates it automatically.
+And it's issuing for you an invoice with explanation how much you need to get and with all the explanation, all automatically.
+As I understand, if a partner have value above 13%, for example, 15, this deal give him.
+So it's okay.
+Right?
+No, no, so it's okay.
+If the guarantee, if the advertiser gave you guarantee 13%, okay.
+And he has done 5% 15% is okay.
+But if he converted in 10%.
+Okay, then he needs to pay you more.
+Yes, yes, understand.
+So yes, and you can do back to back.
+You can do the deal over here also with your at the moment is your media buyer.
+But in the future, when you will be affiliate network, you can do back to back with the affiliate as well.
+Okay, reports with many reports.
+And we just show you the most important one is the leads report.
+Leads, FTDs.
+Yes, I think that's a but yeah, I'm sure the FTDs.
+It's just so the leads report.
+This is the information that you can see that we are collecting for you.
+Okay.
+We have over here the sense status says
+And if you move, you can see also the history of the sense status says we have a lead score, which is very it's a new feature.
+I don't have data for it.
+But basically it will show it will give a score to the lead.
+And it will show you everything why why he got this score.
+I will tell them to add me that I just didn't get me done.
+But it's a very, very nice feature.
+And over here you will see information about what is the rotation of this lead.
+What was the rotation before helps you to understand a lot of processes and bugs.
+And if something fails, why it fails, although you can always ask our team, can you help me to find out why this lead failed.
+Okay.
+Okay, in any case, so this is the lead report.
+By the way, you can also if some of the leads fail, you can click over here and you can read register them from here.
+It's like injection.
+Yes, yes, but on a small scale, you can also upload the least and you know, inject.
+Yes, but this is the registry registration of this lead.
+You can you can register them to the same white label to a different to the same advertiser a different advertiser with some rules, you know, you've got whatever you need over here.
+And of course, you've got advanced field terms with include and exclude.
+You can also this is the auto refresh.
+Well, is I was looking for another over here, you can actually decide which days which there is also time frame over here.
+You want to have the reports and everything so you can remove the weekend if you want.
+Conversion report. It's basically the same just convergence.
+Okay.
+Sorry, where I can see what advertisers was rejected and what errors.
+What type of here you can see on the needs report over here.
+You will see once I can I'm going back to the I show it to you.
+Okay, it's over here you will see in the action you'll see the information here.
+Okay, I assume that you will see also it in the API request probably a lot, but you can I told you you can ask the team.
+You can ask the team to check for you why.
+Okay, wherever we request, there are many places that you can see I I just I know Leslie.
+I'm not doing a you know I'm not managing a network so I'm not using it on the day to day.
+Okay, so do you have a generic report is a very good reports that gives you a basically to cut a three layers.
+Okay, for example, affiliate advertiser in country and you can filter between these three layers.
+Also very good report.
+We've got a good aggregation report, but many, many reporters you can see only permission and if you have a team.
+Okay, everything in our system you can control everything in our system to decide who will see what everything every column, every data, every feature.
+Okay.
+You decide what are your user will use, of course, as an admin everything is open for you, but you can, where you can do any role different permissions.
+Okay.
+You can see really thousands of permissions everything is with permissions.
+Yeah, marketing tool catalog alert system, you can create different triggers and you get them into telegram, email, conversion and different conditions.
+Very good alert system.
+This is basically what many other stuff but this is in general if you have any question. Yes, I'm sure everything that you need we will have.
+Yes, can you show FTDs how it's look.
+We move utter leads from leads to the conversion reports.
+Yes, yes, yes.
+I saw this is the conversions.
+I don't know if I have data over here, but it's I don't know but it's very it's like the lead just the conversion you know.
+Yes, understand also important.
+I got one second let me see maybe I need to put me in.
+Yes, please.
+Yes, important bulk injections.
+Okay, it's over here.
+Import leads.
+You basically, you can decide a, which source it's coming what offer or what advertiser you wanted to go.
+You upload your list of areas.
+You got some rule over here.
+Basically, that's it.
+You know, it gives you an edit and it puts it everything.
+You can do with the queue so it won't be injection immediately you can do immediately whatever you want.
+It's good. I think I don't have questions.
+I just showed you we have listen we have really a lot a lot a lot of features.
+Okay.
+Everything that you will need we 99% we have it and because that it's very you know it's very you've got a lot of features.
+So you've got our team with you on a daily basis.
+Okay, you can ask them everything small to show you they can even do it for you.
+So you're not alone.
+Okay.
+So it was good really everything that you will need.
+Yes. Okay.
+Thank you.
+Okay.
+prices you send me already.
+I send you prices.
+Yes. If you want to start, you will tell me.
+Okay.
+I will open a group with the accounting.
+Okay.
+We will do like they will do with you and send you a link to put information of your company whatever you want you know for the contract the digital contract.
+Then you pay the setup fee and then we open for you a group with the support.
+And this is the group that you work all the time.
+You will need only to buy three domains.
+Okay, they will tell you the team will tell you but three domains one domain is the domain of the network for where you log in your your partners will log in and everything one domain for auto log in and one domain for API.
+Okay, so they will tell you to buy these three domains.
+Once you buy the domains, a one hour two hours you have the system up and then you just need to start integration.
+Okay.
+Understand.
+Okay, so whenever you very mind that the.
+Tomorrow and Sunday they said the team is not working, but I'm available I can send you if you will want the link to fill all the details.
+Oh, you know, when Monday morning they will set you up the system.
+Or if you want, you know, whenever you want to tell me I will know rush.
+Okay.
+Okay.
+Thank you.
+And also other systems and talking with team and making decision about the system.
+Okay, very, very, very nice.
+Keep you keep you informed.
+Okay.
+Okay.
+Thank you very much.
+Thank you.
+Thank you.
+Any question you can send me a message.
+Okay.
+Yes.
+Yes.
+Thank you.
+Have a nice day.
+Thank you.

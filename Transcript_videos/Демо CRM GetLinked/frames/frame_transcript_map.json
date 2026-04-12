@@ -1,0 +1,184 @@
+[
+  {
+    "frame": "frame_000001.jpg",
+    "frame_number": 1,
+    "timestamp": 0.0,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000002.jpg",
+    "frame_number": 2,
+    "timestamp": 2.5,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000003.jpg",
+    "frame_number": 3,
+    "timestamp": 5.0,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000004.jpg",
+    "frame_number": 4,
+    "timestamp": 7.5,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000005.jpg",
+    "frame_number": 5,
+    "timestamp": 10.0,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000006.jpg",
+    "frame_number": 6,
+    "timestamp": 12.5,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000008.jpg",
+    "frame_number": 8,
+    "timestamp": 17.5,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000026.jpg",
+    "frame_number": 26,
+    "timestamp": 62.5,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000027.jpg",
+    "frame_number": 27,
+    "timestamp": 65.0,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000038.jpg",
+    "frame_number": 38,
+    "timestamp": 92.5,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000071.jpg",
+    "frame_number": 71,
+    "timestamp": 175.0,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000082.jpg",
+    "frame_number": 82,
+    "timestamp": 202.5,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000087.jpg",
+    "frame_number": 87,
+    "timestamp": 215.0,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000114.jpg",
+    "frame_number": 114,
+    "timestamp": 282.5,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000135.jpg",
+    "frame_number": 135,
+    "timestamp": 335.0,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000152.jpg",
+    "frame_number": 152,
+    "timestamp": 377.5,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000153.jpg",
+    "frame_number": 153,
+    "timestamp": 380.0,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000155.jpg",
+    "frame_number": 155,
+    "timestamp": 385.0,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000158.jpg",
+    "frame_number": 158,
+    "timestamp": 392.5,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000260.jpg",
+    "frame_number": 260,
+    "timestamp": 647.5,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000323.jpg",
+    "frame_number": 323,
+    "timestamp": 805.0,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000344.jpg",
+    "frame_number": 344,
+    "timestamp": 857.5,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000359.jpg",
+    "frame_number": 359,
+    "timestamp": 895.0,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000412.jpg",
+    "frame_number": 412,
+    "timestamp": 1027.5,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000455.jpg",
+    "frame_number": 455,
+    "timestamp": 1135.0,
+    "segment_indices": [],
+    "transcript_text": ""
+  },
+  {
+    "frame": "frame_000535.jpg",
+    "frame_number": 535,
+    "timestamp": 1335.0,
+    "segment_indices": [],
+    "transcript_text": ""
+  }
+]

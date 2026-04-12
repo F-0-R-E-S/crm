@@ -1,0 +1,938 @@
+{
+  "analysis_meta": {
+    "date": "2026-04-12",
+    "source_video": "Демо CRM GetLinked",
+    "transcript_language": "английский"
+  },
+  "company_identification": {
+    "product_name": "GetLinked Platform",
+    "product_url": "demo-server.getlinked.io (демо-стенд)",
+    "company_name": "GetLinked",
+    "positioning": "Белое решение (white-label) для дистрибуции лидов в нишах крипто/форекс/гемблинг с полным набором инструментов управления партнёрами, рекламодателями, финансами и ротацией — предоставляется как управляемая SaaS-платформа со встроенной командой поддержки",
+    "target_market": "Медиабаинговые команды, начинающие партнёрские сети (CPA-сети) в вертикалях Crypto, Forex, Gambling; аудитория — операторы трафика, которые планируют вырасти до полноценной сети через 3–6 месяцев",
+    "years_on_market": "Точно не установлено; наличие раздела 'Release Notes' и зрелость функциональности указывают на 3+ лет активной разработки",
+    "team_info": "Продавец — Gal (израильтянин, anglophone); команда поддержки работает Mon–Fri 09:00–22:00 GMT+2, в воскресенье — ограниченно; поддержка исключительно в Telegram, наличие выделенной команды интеграции",
+    "pricing_model": "Setup fee (единовременный взнос) + регулярная подписка; точные цифры не названы в демо ('цены я уже отправил')",
+    "pricing_details": "Клиенту необходимо купить 3 домена самостоятельно (основной / автологин / API); стоимость настройки и подписки передаётся коммерческим предложением отдельно",
+    "language": "Английский (демо), интерфейс системы — английский",
+    "key_competitors_mentioned": [],
+    "prospect_pain_points": [
+      "Нужно управлять всеми проектами (медиабаинг + сеть) из одного места",
+      "Вертикали: Crypto, Forex, частично Gambling",
+      "Старт как медиабайер, переход в сеть через ~3 месяца",
+      "Интерес к ротации лидов и отслеживанию FTD",
+      "Интерес к массовым инъекциям (bulk injection)",
+      "Интерес к финансовой аналитике (CRG-сделки)"
+    ]
+  },
+  "product_analysis": {
+    "feature_map": {
+      "Дашборд": {
+        "available": true,
+        "description": "Единый сводный дашборд с фильтрацией по временным периодам и сущностям; отображает ключевые KPI, графики и таблицы топ-партнёров",
+        "sub_features": {
+          "Фильтрация по времени": {
+            "available": true,
+            "description": "Стандартные временные диапазоны: Today, Yesterday, This Week, Last Week, This Month, Last Month, Custom с ручным выбором дат",
+            "ui_elements": [
+              "кнопки периодов",
+              "поля выбора даты From/To",
+              "стрелки навигации"
+            ],
+            "details": "Заметны кнопки: Today | Yesterday | This Week | Last Week | This Month | Last Month | Custom, поля дат 'From / To'"
+          },
+          "Фильтрация по сущностям": {
+            "available": true,
+            "description": "Фильтры по рекламодателю, источнику трафика/аффилиату, офферам, гео",
+            "ui_elements": [
+              "выпадающие фильтры"
+            ],
+            "details": "Упомянуто в транскрипте; фильтрация по advertiser, affiliate/traffic source, offers, geos"
+          },
+          "KPI-метрики": {
+            "available": true,
+            "description": "Карточки со значениями Revenue, Clicks, FTD/FPD per Lead, Leads, Conversions; показатели income, costs, profits, pay leads, proof conversion, spending conversion",
+            "ui_elements": [
+              "счётчики метрик",
+              "дельта-индикаторы"
+            ],
+            "details": "На скриншоте frame_000071 видны блоки: Revenue, Clicks, $ per Click, FPD per Lead, Leads, Conversions"
+          },
+          "Графики": {
+            "available": true,
+            "description": "Линейные графики Clicks, Leads и Conversions по времени",
+            "ui_elements": [
+              "многолинейный chart",
+              "легенда"
+            ],
+            "details": "Три линии на графике: Clicks (желтая), Leads (зеленая), Conversion Rate; ось X — временные метки"
+          },
+          "System Status": {
+            "available": true,
+            "description": "Блок мониторинга состояния системы: Critical, Alert, Admin, Updates — счётчики проблемных лидов/событий",
+            "ui_elements": [
+              "цветные бейджи с числами"
+            ],
+            "details": "Упомянуто как 'system status, some one second, it's for protection'; видно на frame_000071/000038"
+          },
+          "Таблица топ-аффилиатов": {
+            "available": true,
+            "description": "Таблица с ранжированием аффилиатов: Affiliate, Clicks, Conversions, Conversion Rate",
+            "ui_elements": [
+              "таблица с пагинацией"
+            ],
+            "details": "Видна в нижней части дашборда; аналогичные таблицы для Offers и Advertisers"
+          },
+          "Таблица топ-офферов": {
+            "available": true,
+            "description": "Таблица лучших офферов по трафику",
+            "ui_elements": [
+              "таблица"
+            ],
+            "details": "Упомянуто: 'top affiliates, for offers, advertiser and so on'"
+          },
+          "Таблица топ-рекламодателей": {
+            "available": true,
+            "description": "Рейтинг рекламодателей по лидам/конверсиям",
+            "ui_elements": [
+              "таблица"
+            ],
+            "details": ""
+          },
+          "Несколько видов дашборда": {
+            "available": true,
+            "description": "Разные типы view admin: Main, Todo (видно в меню)",
+            "ui_elements": [
+              "подпункты меню Dashboards: Main, Todo"
+            ],
+            "details": "Sidebar: Dashboards → Main, Todo"
+          }
+        }
+      },
+      "Управление аффилиатами": {
+        "available": true,
+        "description": "Полноценный модуль управления партнёрами с иерархией уровней, виртуальным кошельком, автоматизацией, ограничениями и аналитикой производительности",
+        "sub_features": {
+          "Список и управление аффилиатами": {
+            "available": true,
+            "description": "Полное управление аккаунтами партнёров: копирование, гео, лимиты, автоматизация",
+            "ui_elements": [
+              "Manage Affiliates в sidebar"
+            ],
+            "details": ""
+          },
+          "Уровни аффилиатов": {
+            "available": true,
+            "description": "Поддержка иерархии: рядовой аффилиат, Master Affiliate (мастер-партнёр), Affiliate Manager",
+            "ui_elements": [],
+            "details": "Упомянуто: 'supporting different levels of affiliates, like master affiliate or affiliate manager'"
+          },
+          "Виртуальный кошелёк": {
+            "available": true,
+            "description": "Виртуальный баланс (wallet) для контроля задолженностей/экспозиции перед аффилиатами",
+            "ui_elements": [
+              "wallet section"
+            ],
+            "details": "'a virtual wallet that you can control how much money you owe or how much money you expose'"
+          },
+          "Правила и автоматизации": {
+            "available": true,
+            "description": "Создание правил и автоматизаций (ограничений) для партнёров",
+            "ui_elements": [],
+            "details": "'you can create a lot of automation regarding the affiliates with rules and restrictions and everything'"
+          },
+          "Ограничения аффилиатов (Affiliate Restrictions)": {
+            "available": true,
+            "description": "Диалог настройки ограничений: Whitelabel, Affiliate, Offers, статус Include/Exclude, расписание (Enable Scheduling), комментарий, условия (advertiser, country, custom1-5, Offer Name, Offer URL)",
+            "ui_elements": [
+              "диалог Add Affiliate Restrictions",
+              "radio-buttons Include/Exclude",
+              "checkbox Enable Scheduling",
+              "поле Comment",
+              "section Conditions"
+            ],
+            "details": "Видно на frame_000114; кастомные поля условий: custom1, custom2, custom3, custom4, custom5, Offer Name, Offer URL"
+          },
+          "GEOs и Locale Limits": {
+            "available": true,
+            "description": "Управление гео-ограничениями на уровне аффилиата",
+            "ui_elements": [
+              "GEOs And Locale Limits в sidebar"
+            ],
+            "details": ""
+          },
+          "Группы аффилиатов": {
+            "available": true,
+            "description": "Группировка партнёров",
+            "ui_elements": [
+              "Groups в sidebar"
+            ],
+            "details": ""
+          },
+          "Производительность аффилиата": {
+            "available": true,
+            "description": "Отчёт о производительности по каждому аффилиату",
+            "ui_elements": [
+              "Affiliate Performance в sidebar"
+            ],
+            "details": ""
+          },
+          "Производительность менеджера": {
+            "available": true,
+            "description": "Отчёт производительности affiliate-менеджера",
+            "ui_elements": [
+              "Affiliate Manager Performance в sidebar"
+            ],
+            "details": ""
+          },
+          "API Response Time аффилиата": {
+            "available": true,
+            "description": "Мониторинг времени отклика API для каждого аффилиата",
+            "ui_elements": [
+              "Affiliate API Response Time в sidebar"
+            ],
+            "details": ""
+          },
+          "Marketing Data": {
+            "available": true,
+            "description": "Маркетинговые данные по партнёрам",
+            "ui_elements": [
+              "Marketing Data в sidebar"
+            ],
+            "details": ""
+          },
+          "Referrals Manager Performance": {
+            "available": true,
+            "description": "Отчёт производительности менеджера по рефералам",
+            "ui_elements": [
+              "Referrals Manager Performance в sidebar"
+            ],
+            "details": ""
+          },
+          "Реферальные комиссии": {
+            "available": true,
+            "description": "Поддержка реферального вознаграждения (referral commission) за события",
+            "ui_elements": [],
+            "details": "Упомянуто: 'you can give commission for almost any event, referral'"
+          }
+        }
+      },
+      "Управление рекламодателями": {
+        "available": true,
+        "description": "Модуль полного управления рекламодателями (брокерами): кошелёк, комиссии, downtime, гео, кастомные поля, копирование",
+        "sub_features": {
+          "Список рекламодателей": {
+            "available": true,
+            "description": "Центральный реестр рекламодателей/брокеров",
+            "ui_elements": [
+              "Advertisers в sidebar"
+            ],
+            "details": ""
+          },
+          "Кошелёк рекламодателя": {
+            "available": true,
+            "description": "Контроль финансовой экспозиции перед брокером; журнал транзакций",
+            "ui_elements": [
+              "wallet"
+            ],
+            "details": "'in the wallet you will see any transaction that they are going with this broker, with this advertiser'"
+          },
+          "Управление Downtime": {
+            "available": true,
+            "description": "Настройка временного окна, в которое рекламодатель не принимает трафик",
+            "ui_elements": [],
+            "details": "'you can control the downtime when you don't want, they will accept traffic'"
+          },
+          "Типы комиссий": {
+            "available": true,
+            "description": "Поддержка нескольких типов вознаграждения: Fix, Dynamic, Rev Share, Hybrid",
+            "ui_elements": [],
+            "details": "'fix, dynamic, ref share, we also have hybrid, which is not here'"
+          },
+          "Мультивалютность": {
+            "available": true,
+            "description": "Поддержка разных валют в расчётах с рекламодателями",
+            "ui_elements": [],
+            "details": "Упомянуто: 'different type of currencies'"
+          },
+          "События для начисления комиссии": {
+            "available": true,
+            "description": "Комиссии за любое событие: Leads, FTD, Referral и другие",
+            "ui_elements": [],
+            "details": "'you can get commission and you can give commission for almost any event, if it's fleets, fleets, FTD, referral'"
+          },
+          "Гео рекламодателя": {
+            "available": true,
+            "description": "Настройка принимаемых гео с дополнительными правилами",
+            "ui_elements": [],
+            "details": "'Gears, opening the gears that the advertiser been accepting, also with different rules'"
+          },
+          "Кастомные поля": {
+            "available": true,
+            "description": "Произвольные поля на уровне рекламодателя",
+            "ui_elements": [],
+            "details": "'you've got custom fields that you need'"
+          },
+          "Копирование настроек": {
+            "available": true,
+            "description": "Копирование конфигурации рекламодателя",
+            "ui_elements": [],
+            "details": "Упомянуто: 'copying on the advertising level'"
+          }
+        }
+      },
+      "Ротация лидов (Lead Distribution)": {
+        "available": true,
+        "description": "Система бакетов (bucket) для ротации рекламодателей по стране: неограниченное количество бакетов, взвешенная приоритизация в процентах, учёт копирования и статистики, fallback-бакеты",
+        "sub_features": {
+          "Обзор по странам": {
+            "available": true,
+            "description": "Общий вид: для каждой страны — какие рекламодатели в ротации, какие нет",
+            "ui_elements": [
+              "таблица стран × рекламодателей"
+            ],
+            "details": ""
+          },
+          "Привязка источников трафика к стране": {
+            "available": true,
+            "description": "Сверху страницы ротации для каждой страны показаны все источники трафика, которые шлют в эту страну, с их правилами",
+            "ui_elements": [],
+            "details": "'for your convenience on the top you have all the traffic sources that are sending to United Kingdom and with the rules'"
+          },
+          "Bucket-система": {
+            "available": true,
+            "description": "Бакет — группа рекламодателей с весовой ротацией; внутри бакета каждому рекламодателю задаётся процент лидов (напр. 40%, 25%, 10%, 0%); линия через название = вне ротации",
+            "ui_elements": [
+              "список бакетов",
+              "слайдер/поле процента",
+              "индикатор in/out rotation"
+            ],
+            "details": "'A bucket, it's like bucket of water. In any bucket you are putting rotations of advertisers. If you see, it's like with the line, it means it's out of rotation. On the right side you can prioritize and say each one how much percent'"
+          },
+          "Неограниченное количество бакетов": {
+            "available": true,
+            "description": "Можно создавать сколько угодно бакетов для одной страны, что позволяет настраивать каскадный fallback",
+            "ui_elements": [],
+            "details": "'you can create unlimited another bucket and to put over there also a rotation of advertiser and do optimization per this bucket'"
+          },
+          "Учёт копирования и статистики": {
+            "available": true,
+            "description": "Ротация учитывает cap (копирование) и накопленную статистику при распределении",
+            "ui_elements": [],
+            "details": "'it takes into consideration the copying and statistics and everything'"
+          },
+          "Fallback-стратегия": {
+            "available": true,
+            "description": "Первый бакет — лучшие рекламодатели, второй — запасные и т.д.",
+            "ui_elements": [],
+            "details": "'people usually use it, put the best advertisers on the first bucket and then second, second level of advertising fallbacks'"
+          }
+        }
+      },
+      "Финансы": {
+        "available": true,
+        "description": "Встроенный финансовый модуль: управление комиссиями, инвойсинг, CRG/Special Deals с автоматическим расчётом, back-to-back сделки",
+        "sub_features": {
+          "Управление комиссиями": {
+            "available": true,
+            "description": "Отслеживание всех полученных и выплаченных комиссий",
+            "ui_elements": [],
+            "details": ""
+          },
+          "Автоматический инвойсинг": {
+            "available": true,
+            "description": "Система автоматически генерирует инвойсы по итогам расчётного периода",
+            "ui_elements": [],
+            "details": "'if you want to work with invoicing, it makes you the invoicing automatically'"
+          },
+          "CRG / Special Deals": {
+            "available": true,
+            "description": "Модуль специальных сделок: Conversions Guarantee (CRG) — задаётся имя сделки, гарантия конверсии, платёжный цикл, рабочие часы/дни/статусы; по окончании цикла система сама рассчитывает разницу и выставляет инвойс с расшифровкой",
+            "ui_elements": [
+              "форма Special Deal",
+              "поля: name, guarantee %, payment cycle date, walking hours, days, status"
+            ],
+            "details": "'Conversions Guarantee. You are inputting the deal name, how much, what is the guarantee. The payment cycle date. The system checks it and calculates it automatically and issues an invoice with explanation'"
+          },
+          "Back-to-back сделки": {
+            "available": true,
+            "description": "Возможность создавать симметричные сделки с аффилиатом (медиабайером или партнёром сети)",
+            "ui_elements": [],
+            "details": "'you can do back to back. You can do the deal over here also with your media buying, but in the future when you will be affiliate network, you can do back to back with the affiliate as well'"
+          }
+        }
+      },
+      "Отчётность": {
+        "available": true,
+        "description": "Многоуровневая система отчётов: лиды, конверсии, агрегированный, сводный; фильтры include/exclude, автообновление, настройка колонок",
+        "sub_features": {
+          "Leads Report": {
+            "available": true,
+            "description": "Детальный отчёт по лидам: информация о лиде, sales statuses с историей, lead score, информация о ротации (текущей и предыдущей), причина отказа, возможность переотправки отказанных лидов",
+            "ui_elements": [
+              "таблица лидов",
+              "колонка action",
+              "lead score",
+              "sales status history"
+            ],
+            "details": "'you can see sales statuses and if you hover you can see the history. We have a lead score. Over here you will see information about what is the rotation of this lead, what was the rotation before'"
+          },
+          "Re-registration лидов": {
+            "available": true,
+            "description": "Повторная отправка отклонённых лидов: в тот же white-label, другому рекламодателю, с новыми правилами",
+            "ui_elements": [
+              "кнопка re-register в action column"
+            ],
+            "details": "'if some of the leads fail, you can click over here and you can re-register them. To the same white label, to a different, to the same advertiser, a different advertiser with some rules'"
+          },
+          "Conversions Report": {
+            "available": true,
+            "description": "Отчёт по FTD/конверсиям — аналогичная структура как у leads report но для конверсий",
+            "ui_elements": [],
+            "details": ""
+          },
+          "Aggregate Report": {
+            "available": true,
+            "description": "Трёхуровневый агрегированный отчёт: например, аффилиат × рекламодатель × страна; вложенная фильтрация между слоями",
+            "ui_elements": [],
+            "details": "'aggregate report is a very good report that gives you basically to cut three layers. For example, affiliate advertiser in country and you can filter between these three layers'"
+          },
+          "Расширенные фильтры": {
+            "available": true,
+            "description": "Include/Exclude фильтрация по полям отчёта",
+            "ui_elements": [
+              "advanced field terms"
+            ],
+            "details": "Упомянуто: 'advanced field terms, include and exclude'"
+          },
+          "Автообновление отчёта": {
+            "available": true,
+            "description": "Функция auto refresh для автоматического обновления данных",
+            "ui_elements": [
+              "auto refresh toggle"
+            ],
+            "details": "Упомянуто: 'this is the auto refresh'"
+          },
+          "Настройка временного окна отчёта": {
+            "available": true,
+            "description": "Выбор дней недели и временного диапазона для отображения данных в отчёте",
+            "ui_elements": [],
+            "details": "'you can actually decide which days, which either is also time frame over here, you want to have the reports, you can move the weekend if you want'"
+          },
+          "Множество других отчётов": {
+            "available": true,
+            "description": "Более широкий набор отчётов, не раскрытых в демо",
+            "ui_elements": [
+              "Reports в sidebar"
+            ],
+            "details": "'not many, many reporters, you can see over here'"
+          }
+        }
+      },
+      "Lead Score": {
+        "available": true,
+        "description": "Функция автоматической оценки качества лида с детальным объяснением выставленного балла (новая фича, в демо без данных)",
+        "sub_features": {
+          "Скор и объяснение": {
+            "available": true,
+            "description": "Каждому лиду присваивается числовой score с расшифровкой факторов",
+            "ui_elements": [
+              "колонка lead score в leads report"
+            ],
+            "details": "'we have a lead score which is a new feature. It will give a score to the lead and it will show you everything why he got this score'"
+          }
+        }
+      },
+      "Bulk Injection / Импорт лидов": {
+        "available": true,
+        "description": "Массовый импорт лидов через CSV-файл с выбором источника, рекламодателя/оффера, режима очереди или немедленной инъекции",
+        "sub_features": {
+          "CSV-загрузка": {
+            "available": true,
+            "description": "Загрузка CSV-файла со списком лидов",
+            "ui_elements": [
+              "upload area",
+              "Import Leads page"
+            ],
+            "details": ""
+          },
+          "Выбор источника": {
+            "available": true,
+            "description": "Указание источника трафика для импортируемых лидов",
+            "ui_elements": [],
+            "details": "'you can decide from which source it's coming'"
+          },
+          "Выбор рекламодателя/оффера": {
+            "available": true,
+            "description": "Указание, к какому офферу или рекламодателю направить лиды",
+            "ui_elements": [],
+            "details": "'what offer or what advertiser you want it to go'"
+          },
+          "Режим очереди": {
+            "available": true,
+            "description": "Возможность поставить инъекцию в очередь вместо немедленной отправки",
+            "ui_elements": [],
+            "details": "'you can do with the queue, so it won't be injection immediately, you can do immediately, whatever you want'"
+          }
+        }
+      },
+      "Управление правами доступа (Permissions)": {
+        "available": true,
+        "description": "Гранулярное разграничение доступа: тысячи разрешений, контроль до уровня отдельных колонок, данных и фич для каждой роли пользователя",
+        "sub_features": {
+          "Ролевая модель": {
+            "available": true,
+            "description": "Создание произвольных ролей с индивидуальными наборами разрешений",
+            "ui_elements": [
+              "Permissions в sidebar"
+            ],
+            "details": ""
+          },
+          "Контроль до колонки": {
+            "available": true,
+            "description": "Каждая колонка, каждая фича, каждое поле данных управляются разрешением",
+            "ui_elements": [],
+            "details": "'everything in our system, you can control everything to decide who will see what. Everything, every column, every data, every feature'"
+          }
+        }
+      },
+      "White-label": {
+        "available": true,
+        "description": "Полноценный white-label: кастомный логотип, цвета бренда, 3 собственных домена клиента; время запуска после покупки доменов — 1–2 часа",
+        "sub_features": {
+          "Логотип и цвета": {
+            "available": true,
+            "description": "Замена логотипа и управление цветовой схемой системы",
+            "ui_elements": [
+              "YOUR LOGO HERE placeholder в сайдбаре"
+            ],
+            "details": "'you put your logo here, you can control colors'"
+          },
+          "Кастомные домены": {
+            "available": true,
+            "description": "3 домена: основной (вход для оператора и партнёров), домен автологина, домен API",
+            "ui_elements": [],
+            "details": "'you will need only to buy three domains: one domain is the domain of the network, one domain for auto login and one domain for API'"
+          },
+          "Быстрый онбординг": {
+            "available": true,
+            "description": "После покупки доменов система поднимается за 1–2 часа командой поддержки",
+            "ui_elements": [],
+            "details": "'Once you buy the domains, one hour, two hours, you have the system up'"
+          },
+          "Управление whitelabels": {
+            "available": true,
+            "description": "Раздел управления несколькими white-label-экземплярами",
+            "ui_elements": [
+              "Whitelabels в sidebar"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "Маркетинговые инструменты": {
+        "available": true,
+        "description": "Раздел Marketing Tools в системе; содержит каталог и систему алертов",
+        "sub_features": {
+          "Каталог (Catalog)": {
+            "available": true,
+            "description": "Маркетинговый каталог — точное назначение не раскрыто",
+            "ui_elements": [
+              "Marketing Tools → Catalog"
+            ],
+            "details": "Упомянуто: 'marketing tool, catalog'"
+          },
+          "Система алертов": {
+            "available": true,
+            "description": "Настройка триггеров с уведомлениями в Telegram и по email: условия по конверсиям и другим событиям",
+            "ui_elements": [
+              "alert system"
+            ],
+            "details": "'alert system, you can create different triggers and you get them into telegram, email, conversion and different conditions, very good alert system'"
+          }
+        }
+      },
+      "Интеграции": {
+        "available": true,
+        "description": "Интеграции с платформами трафика (Google, Facebook и др.) выполняются командой GetLinked; партнёру создаётся отдельная Telegram-группа с командой интеграции и третьей стороной",
+        "sub_features": {
+          "Google Ads": {
+            "available": true,
+            "description": "Интеграция с Google Ads силами команды поддержки",
+            "ui_elements": [],
+            "details": ""
+          },
+          "Facebook Ads": {
+            "available": true,
+            "description": "Интеграция с Facebook Ads силами команды поддержки",
+            "ui_elements": [],
+            "details": ""
+          },
+          "Произвольные интеграции": {
+            "available": true,
+            "description": "Любые другие интеграции выполняются командой",
+            "ui_elements": [],
+            "details": "'whatever you need, our team is helping you with this'"
+          }
+        }
+      },
+      "Поддержка": {
+        "available": true,
+        "description": "Выделенная Telegram-команда поддержки; ответ в минутах (не часах); Mon–Fri 09:00–22:00 GMT+2, воскресенье — ограниченно; расписание доступно прямо в системе",
+        "sub_features": {
+          "Telegram-поддержка": {
+            "available": true,
+            "description": "Основной канал поддержки — Telegram; handle: @getlinked (виден во всплывающем окне 'Need Help?')",
+            "ui_elements": [
+              "Need Help? popup",
+              "Telegram icon",
+              "Support @getlinked"
+            ],
+            "details": "На frame_000135: 'Feel free to contact us... Monday-Friday 07:00–20:00... Sunday-Limited support. Support Telegram Name: @getlinked'"
+          },
+          "Групповой чат с интеграционными партнёрами": {
+            "available": true,
+            "description": "Для каждой интеграции открывается отдельная Telegram-группа с командой поддержки и стороной интеграции",
+            "ui_elements": [],
+            "details": "'you open a group with the support team and with the integration party'"
+          },
+          "Расписание в системе": {
+            "available": true,
+            "description": "Расписание работы саппорта доступно прямо в интерфейсе (timetable)",
+            "ui_elements": [
+              "timetable block"
+            ],
+            "details": "Упомянуто: 'you have over here all the time, their timetables'"
+          }
+        }
+      },
+      "Автологин": {
+        "available": true,
+        "description": "Отдельный домен для автологина брокера — упомянут как необходимый при онбординге",
+        "sub_features": {
+          "Домен автологина": {
+            "available": true,
+            "description": "Один из 3 доменов — специально для автологина",
+            "ui_elements": [],
+            "details": "'one domain for auto login'"
+          }
+        }
+      },
+      "Сообщения (Messages)": {
+        "available": true,
+        "description": "Встроенный модуль сообщений",
+        "sub_features": {
+          "Messages": {
+            "available": true,
+            "description": "Раздел Messages в сайдбаре — функциональность не раскрыта в демо",
+            "ui_elements": [
+              "Messages в sidebar"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "Инструменты и настройки": {
+        "available": true,
+        "description": "Раздел Tools & Settings для конфигурации системы",
+        "sub_features": {
+          "Tools & Settings": {
+            "available": true,
+            "description": "Системные настройки — детально не показаны",
+            "ui_elements": [
+              "Tools & Settings в sidebar"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "База знаний": {
+        "available": true,
+        "description": "Встроенная база знаний (Knowledge Base) для самообслуживания",
+        "sub_features": {
+          "Knowledge Base": {
+            "available": true,
+            "description": "Документация/справка внутри платформы",
+            "ui_elements": [
+              "Knowledge Base в sidebar"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "Release Notes": {
+        "available": true,
+        "description": "Журнал обновлений продукта доступен прямо в интерфейсе",
+        "sub_features": {
+          "Release Notes": {
+            "available": true,
+            "description": "История версий/фич",
+            "ui_elements": [
+              "Release Notes в sidebar"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "Защита (Anti-fraud/System Protection)": {
+        "available": true,
+        "description": "Упомянут блок system status как защитный инструмент; детали не раскрыты в демо",
+        "sub_features": {
+          "System Status Monitor": {
+            "available": true,
+            "description": "Мониторинг критических/алертных состояний — косвенно выполняет роль fraud-фильтра",
+            "ui_elements": [
+              "System Status block"
+            ],
+            "details": "'system status, some one second, it's for protection'"
+          }
+        }
+      }
+    }
+  },
+  "technology_stack": {
+    "frontend_hints": "Веб-приложение с классической серверной архитектурой — URL содержит .php (dashboard.php, affiliates/restrictions.php), что указывает на PHP-бэкенд; UI построен на современном SPA-фреймворке поверх PHP; зелёно-белая цветовая схема, адаптивный sidebar-layout",
+    "api_hints": "Отдельный API-домен (третий из трёх доменов при онбординге); REST API для приёма лидов от аффилиатов; упомянуты API-запросы в контексте отладки отказанных лидов ('you can see in the API request')",
+    "integrations": [
+      "Google Ads",
+      "Facebook Ads",
+      "Telegram (уведомления и поддержка)",
+      "Email (уведомления алертов)",
+      "Произвольные CRM/broker интеграции через команду"
+    ]
+  },
+  "sales_marketing": {
+    "demo_style": "Персональный live-demo через Google Meet: быстрое поверхностное прохождение по всем модулям с остановками по запросу клиента; демонстратор болен ('I don't feel very well today, so I will be quick') — что сократило глубину демо; акцент на широту функционала ('we have really a lot, a lot, a lot of features, 99% we have it')",
+    "selling_points": [
+      "Полный набор функций — 99% потребностей покрыто из коробки",
+      "Выделенная команда поддержки в Telegram, ответ за минуты",
+      "Помощь с любыми интеграциями — клиент не один",
+      "Быстрый запуск — 1–2 часа после покупки доменов",
+      "White-label с собственными доменами и брендингом",
+      "Автоматизированный расчёт CRG-сделок с инвойсингом",
+      "Гибкая bucket-ротация с неограниченными каскадами",
+      "Масштабирование от медиабайера до полноценной сети без смены платформы",
+      "Тысячи гранулярных разрешений для команд любого размера"
+    ],
+    "objection_handling": [
+      {
+        "objection": "Клиент сейчас медиабайер, а не сеть",
+        "response": "Система одинаково хорошо работает для медиабайера сейчас, и через 3 месяца масштабируется до партнёрской сети без смены платформы"
+      },
+      {
+        "objection": "Интерес к ротации (rotation)",
+        "response": "Детальная демонстрация bucket-системы с процентной приоритизацией и fallback-каскадами"
+      },
+      {
+        "objection": "Сложность CRG-расчётов",
+        "response": "Special Deals — автоматически считает и выставляет инвойс, back-to-back с аффилиатом тоже поддерживается"
+      }
+    ]
+  },
+  "behavioral_analysis": {
+    "navigation_flow": [
+      "Старт с Dashboard — обзор KPI и фильтров",
+      "Переход в Affiliates — управление партнёрами, кошелёк, уровни",
+      "Переход в Advertisers — управление брокерами, кошелёк, downtime",
+      "Демонстрация Lead Distribution (Rotation) — bucket-система по странам",
+      "Переход в Finance — Special Deals (CRG), инвойсинг",
+      "Reports — Leads report, Conversions report, Aggregate report",
+      "Bulk Injection (Import Leads)",
+      "Permissions — гранулярная ролевая модель",
+      "Marketing Tools — алерты, каталог",
+      "Упоминание Messages, Tools & Settings, Whitelabels, Knowledge Base, Release Notes"
+    ],
+    "key_interactions": [
+      "Клик на страну в ротации → раскрытие списка аффилиатов и бакетов",
+      "Настройка процента каждого рекламодателя в бакете",
+      "Диалог Add Affiliate Restrictions с условиями include/exclude по кастомным полям",
+      "Переотправка отклонённого лида кнопкой в action column",
+      "Открытие 'Need Help?' popup с telegram-контактом поддержки",
+      "Cloudflare-challenge при доступе к demo-server.getlinked.io (DDoS-защита)"
+    ]
+  },
+  "key_quotes": [
+    {
+      "speaker": "Gal (GetLinked)",
+      "text": "You are getting from us a copy of this system. You put your logo here, you can control colors.",
+      "context": "Презентация white-label возможностей"
+    },
+    {
+      "speaker": "Gal (GetLinked)",
+      "text": "A bucket, it's like, you know, bucket of water. In any bucket you are putting rotations of advertisers.",
+      "context": "Объяснение механизма ротации лидов"
+    },
+    {
+      "speaker": "Gal (GetLinked)",
+      "text": "The system checks it and calculates it automatically. And it's issuing for you an invoice with explanation how much you need to get — all automatically.",
+      "context": "Демонстрация автоматического расчёта CRG-сделок"
+    },
+    {
+      "speaker": "Gal (GetLinked)",
+      "text": "They are answering in minutes, okay, not one hour, two hours, in minutes.",
+      "context": "Ключевое УТП — скорость поддержки"
+    },
+    {
+      "speaker": "Gal (GetLinked)",
+      "text": "Everything in our system, you can control everything to decide who will see what. Everything, every column, every data, every feature.",
+      "context": "Презентация системы разрешений"
+    },
+    {
+      "speaker": "Gal (GetLinked)",
+      "text": "We have really a lot, a lot, a lot of features. 99% we have it.",
+      "context": "Общее резюме функциональности перед закрытием"
+    },
+    {
+      "speaker": "Gal (GetLinked)",
+      "text": "Once you buy the domains, one hour, two hours, you have the system up.",
+      "context": "Скорость запуска системы — онбординг"
+    },
+    {
+      "speaker": "Gal (GetLinked)",
+      "text": "We have a lead score, which is a new feature. It will give a score to the lead and it will show you everything why he got this score.",
+      "context": "Анонс новой функции Lead Score"
+    },
+    {
+      "speaker": "Alex (клиент)",
+      "text": "Firstly, we start new project and want to start from Mediavine around three months and after three months, connect network.",
+      "context": "Описание сценария использования клиентом"
+    }
+  ],
+  "scorecard": {
+    "Управление лидами и ротация": {
+      "score_1_to_10": 8,
+      "rationale": "Bucket-система с неограниченными каскадами, процентной приоритизацией и fallback — сильное решение. Переотправка отклонённых лидов прямо из отчёта. Минус: детали настройки cap/копирования в bucket'е остались нераскрытыми"
+    },
+    "Управление аффилиатами": {
+      "score_1_to_10": 8,
+      "rationale": "Богатая модель: иерархия уровней, виртуальный кошелёк, гранулярные ограничения с кастомными условиями, API response time мониторинг, производительность менеджера — покрывает потребности как медиабайера, так и сети"
+    },
+    "Финансы и биллинг": {
+      "score_1_to_10": 8,
+      "rationale": "Автоматический расчёт CRG-сделок и инвойсинг — редкая и ценная фича для рынка; поддержка back-to-back. Минус: нет публичного ценообразования, мультивалютность заявлена но не показана детально"
+    },
+    "Отчётность и аналитика": {
+      "score_1_to_10": 7,
+      "rationale": "Трёхуровневый aggregate report, history статусов лида, rotation trail — выше среднего. Lead Score (новая фича) потенциально сильный. Слабость: демо без реальных данных, не показана глубина кастомизации отчётов"
+    },
+    "White-label и кастомизация": {
+      "score_1_to_10": 7,
+      "rationale": "Полноценный white-label с 3 кастомными доменами, логотипом и цветами; быстрый запуск за 1–2 часа. Цифровой договор. Минус: насколько глубока кастомизация UI (темы, layout) — не раскрыто"
+    },
+    "Поддержка и онбординг": {
+      "score_1_to_10": 9,
+      "rationale": "Главное УТП: Telegram-поддержка с ответом в минуты, выделенная интеграционная команда, расписание внутри системы, 'Need Help?' popup. Ограничение: только Mon–Fri полноценно, воскресенье — лимитировано"
+    },
+    "Технологическая зрелость": {
+      "score_1_to_10": 6,
+      "rationale": "PHP-backend (.php URLs), Cloudflare-защита на демо-стенде, SPA-интерфейс — работающее, но не самое современное стек. Отдельный API-домен структурирован правильно. Наличие Release Notes говорит о регулярных обновлениях"
+    },
+    "Масштабируемость под разные бизнес-модели": {
+      "score_1_to_10": 8,
+      "rationale": "Явное позиционирование под путь медиабайер → CPA-сеть. Back-to-back CRG, мастер-аффилиаты, иерархия уровней, permissions — всё поддерживает масштаб. Ограничение: нет упоминания multi-tenant или API-first архитектуры"
+    },
+    "UX и удобство интерфейса": {
+      "score_1_to_10": 7,
+      "rationale": "Чистый, структурированный интерфейс с хорошей навигацией; 'YOUR LOGO HERE' placeholder виден в демо (мелкий минус). Инлайн 'Need Help?' popup — продуманный UX-жест. Загрузка дашборда была замедленной в демо"
+    },
+    "Конкурентное позиционирование для GambChamp": {
+      "score_1_to_10": 7,
+      "rationale": "GetLinked — серьёзный конкурент с широким функционалом и сильной поддержкой. Уязвимости для GambChamp: нет упоминания клоакинга, публичного прайсинга, гарантии SLA автологина, 4D-антифрода; поддержка ограничена рабочими днями"
+    }
+  },
+  "functional_breakdown": [
+    {
+      "module": "Dashboard",
+      "capability": "Многопериодная аналитика KPI с графиками и топ-таблицами",
+      "depth": "intermediate",
+      "notes": "Фильтрация по всем основным сущностям; System Status block для мониторинга; несколько видов дашборда (Main, Todo)"
+    },
+    {
+      "module": "Affiliates",
+      "capability": "Многоуровневое управление партнёрами с виртуальным кошельком и гранулярными ограничениями",
+      "depth": "advanced",
+      "notes": "Иерархия: обычный аффилиат / Affiliate Manager / Master Affiliate; ограничения с расписанием и кастомными условиями (custom1–5, Offer Name, Offer URL)"
+    },
+    {
+      "module": "Advertisers",
+      "capability": "Управление брокерами: кошелёк, downtime, комиссии (Fix/Dynamic/RevShare/Hybrid), мультивалюта",
+      "depth": "advanced",
+      "notes": "Комиссии за любые события включая referral; кастомные поля; копирование конфигурации"
+    },
+    {
+      "module": "Lead Distribution (Rotation)",
+      "capability": "Bucket-система ротации по странам с взвешенной приоритизацией и fallback-каскадами",
+      "depth": "advanced",
+      "notes": "Неограниченное количество бакетов на страну; учёт cap и статистики; лучшее решение среди виденных конкурентов по гибкости ротации"
+    },
+    {
+      "module": "Finance",
+      "capability": "Автоматический расчёт CRG-сделок (Conversions Guarantee) с инвойсингом и back-to-back опцией",
+      "depth": "advanced",
+      "notes": "Special Deal: название, % гарантии, платёжный цикл, часы/дни/статусы; инвойс с расшифровкой генерируется автоматически"
+    },
+    {
+      "module": "Reports — Leads",
+      "capability": "Детальный лид-отчёт с историей статусов, rotation trail, lead score и переотправкой",
+      "depth": "advanced",
+      "notes": "Re-registration прямо из отчёта; видна история rotation до и после"
+    },
+    {
+      "module": "Reports — Conversions",
+      "capability": "Отчёт по FTD/конверсиям аналогичной глубины как Leads Report",
+      "depth": "intermediate",
+      "notes": "В демо показан кратко"
+    },
+    {
+      "module": "Reports — Aggregate",
+      "capability": "Трёхуровневый агрегированный срез по любым трём измерениям",
+      "depth": "advanced",
+      "notes": "Возможность фильтрации между слоями — мощный инструмент для network-операторов"
+    },
+    {
+      "module": "Lead Score",
+      "capability": "Автоматическая оценка качества лида с объяснением факторов",
+      "depth": "intermediate",
+      "notes": "Новая фича, в демо без данных; потенциально сильное конкурентное преимущество"
+    },
+    {
+      "module": "Bulk Import",
+      "capability": "Массовый импорт лидов через CSV с режимом очереди",
+      "depth": "intermediate",
+      "notes": "Выбор источника и рекламодателя/оффера; немедленная или отложенная инъекция"
+    },
+    {
+      "module": "Permissions",
+      "capability": "Гранулярное разграничение доступа до уровня каждой колонки и фичи",
+      "depth": "advanced",
+      "notes": "Тысячи разрешений; полная свобода в создании ролей"
+    },
+    {
+      "module": "White-label",
+      "capability": "Брендированная копия системы на 3 кастомных доменах клиента",
+      "depth": "intermediate",
+      "notes": "Быстрый запуск 1–2 часа; цифровой контракт; управление несколькими WL из одного admin"
+    },
+    {
+      "module": "Marketing Tools / Alerts",
+      "capability": "Система алертов по триггерам с доставкой в Telegram и email",
+      "depth": "intermediate",
+      "notes": "Условия по конверсиям и другим событиям; каталог — функциональность не раскрыта"
+    },
+    {
+      "module": "Support",
+      "capability": "Выделенная Telegram-поддержка с ответом за минуты и интеграционными группами",
+      "depth": "advanced",
+      "notes": "Ключевое УТП продукта; 'Need Help?' popup с @getlinked; расписание внутри UI"
+    },
+    {
+      "module": "Integrations",
+      "capability": "Managed-интеграции с Google, Facebook и произвольными партнёрами силами команды",
+      "depth": "intermediate",
+      "notes": "Модель: клиент + поддержка + партнёр в одной Telegram-группе; не self-service"
+    }
+  ],
+  "web_enrichment": {
+    "raw_research": "The Tavily MCP tools are blocked in the current permission mode (`don't ask mode`). I cannot perform live web research.\n\n**What I need from you:**\n\nThe `mcp__tavily__tavily_search` tool is being denied automatically because Claude Code is running in **\"don't ask\" mode**, which silently blocks unapproved tools instead of prompting you.\n\n**To fix this, you have two options:**\n\n1. **Switch permission mode** — In Claude Code settings, change the permission mode from \"don't ask\" to \"default\" or \"ask\" so Tavily searches can be approved.\n\n2. **Run the pipeline directly** — Your `video_pipeline.py` already has Stage 6 (web research via `claude` CLI + Tavily MCP) built in. You can run it for GetLinked:\n   ```bash\n   python3 video_pipeline.py --single videos/<getlinked_video>.mp4 --no-prd\n   ```\n   Or if frames/transcript are already processed:\n   ```bash\n   python3 video_pipeline.py --single videos/<getlinked_video>.mp4 --skip-existing\n   ```\n\n3. **Approve Tavily manually** — If you'd like me to proceed right now, please change the permission mode and re-send your request.\n\nOnce Tavily access is granted, I'll run ~10 parallel searches covering pricing, reviews, tech stack, hiring signals, social media, and regulatory info, then compile the full JSON output."
+  }
+}

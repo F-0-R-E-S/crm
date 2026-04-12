@@ -1,0 +1,39 @@
+────────────────────────────────────────────────────────────────
+  stage0_visual_overview  ·  Демо CRM GetLinked.mov
+  started: 2026-04-12 14:32:56
+────────────────────────────────────────────────────────────────
+
+Done. The overview JSON has been written to `/Users/f0res/video_prd_Демо_CRM_GetLinked_20260412_143126/overview.json`.
+
+Here's a summary of what was found:
+
+---
+
+**Product: GetLinked Platform** (`demo.getlinked.io`)
+
+A white-label **affiliate CRM / performance marketing platform**. The UI uses a white-label logo placeholder ("YOUR LOGO HERE powered by link") but the product identity is clear from the domain, Google Meet participant names ("Getlinked Platform"), and the "gl" monogram logo.
+
+**14 unique frames analyzed** across 535 total raw frames (~22 minutes of video):
+
+| Frame | What's shown |
+|---|---|
+| 000001 | Google Meet pre-join lobby |
+| 000002 | Black screen (transition) |
+| 000004 | Google Meet waiting room |
+| 000005 | Active call, cameras off, 3 participants |
+| 000006 | Active call + macOS Wi-Fi menu open |
+| 000007 | Call with Getlinked "gl" logo avatars (45s) |
+| 000026 | Call layout shift |
+| 000027 | Screen share starts — CRM Dashboard (small, 107.5s) |
+| 000071 | **CRM Dashboard full view** — metrics, chart, affiliate table |
+| 000082 | Cloudflare security challenge modal |
+| 000087 | **CRM Dashboard loading state** (longest group: 790s) |
+| 000404 | **CRM Permissions** — Edit permissions modal (Administration) |
+| 000411 | **CRM Permissions** — Edit permissions modal (Administrators, 307.5s) |
+| 000535 | Call end, back to avatar tiles (16:57) |
+
+**Sections demoed**: Dashboard (Main) and Permissions module. The demo was interrupted by a Cloudflare check and a ~13-minute loading stall.
+
+────────────────────────────────────────────────────────────────
+  finished: 2026-04-12 14:35:22
+────────────────────────────────────────────────────────────────

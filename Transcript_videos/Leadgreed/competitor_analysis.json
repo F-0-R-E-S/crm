@@ -1,0 +1,1876 @@
+{
+  "analysis_meta": {
+    "date": "2026-03-03",
+    "source_video": "Leadgreed.mp4",
+    "transcript_file": "transcript.txt",
+    "transcript_language": "EN",
+    "frames_analyzed": [
+      "frame_000001.jpg",
+      "frame_000095.jpg",
+      "frame_000096.jpg",
+      "frame_000098.jpg",
+      "frame_000099.jpg",
+      "frame_000111.jpg",
+      "frame_000114.jpg",
+      "frame_000129.jpg",
+      "frame_000130.jpg",
+      "frame_000165.jpg",
+      "frame_000166.jpg",
+      "frame_000229.jpg",
+      "frame_000235.jpg",
+      "frame_000258.jpg",
+      "frame_000259.jpg",
+      "frame_000264.jpg",
+      "frame_000266.jpg",
+      "frame_000268.jpg",
+      "frame_000298.jpg",
+      "frame_000313.jpg",
+      "frame_000314.jpg",
+      "frame_000315.jpg",
+      "frame_000317.jpg",
+      "frame_000326.jpg",
+      "frame_000336.jpg",
+      "frame_000351.jpg",
+      "frame_000352.jpg",
+      "frame_000354.jpg",
+      "frame_000358.jpg",
+      "frame_000379.jpg",
+      "frame_000383.jpg",
+      "frame_000384.jpg",
+      "frame_000390.jpg",
+      "frame_000406.jpg",
+      "frame_000424.jpg",
+      "frame_000435.jpg",
+      "frame_000440.jpg",
+      "frame_000457.jpg",
+      "frame_000465.jpg",
+      "frame_000489.jpg",
+      "frame_000548.jpg",
+      "frame_000557.jpg",
+      "frame_000564.jpg",
+      "frame_000567.jpg",
+      "frame_000568.jpg",
+      "frame_000574.jpg",
+      "frame_000575.jpg",
+      "frame_000576.jpg",
+      "frame_000584.jpg",
+      "frame_000585.jpg",
+      "frame_000587.jpg",
+      "frame_000630.jpg",
+      "frame_000650.jpg",
+      "frame_000675.jpg",
+      "frame_000676.jpg",
+      "frame_000678.jpg",
+      "frame_000681.jpg",
+      "frame_000682.jpg",
+      "frame_000684.jpg",
+      "frame_000685.jpg",
+      "frame_000699.jpg",
+      "frame_000702.jpg",
+      "frame_000703.jpg",
+      "frame_000738.jpg",
+      "frame_000810.jpg",
+      "frame_000816.jpg",
+      "frame_000831.jpg",
+      "frame_000836.jpg",
+      "frame_000881.jpg",
+      "frame_000882.jpg",
+      "frame_000885.jpg",
+      "frame_000889.jpg",
+      "frame_000890.jpg",
+      "frame_000891.jpg",
+      "frame_000893.jpg",
+      "frame_000902.jpg",
+      "frame_000903.jpg",
+      "frame_000915.jpg",
+      "frame_000916.jpg",
+      "frame_000923.jpg",
+      "frame_000926.jpg"
+    ]
+  },
+  "company_identification": {
+    "product_name": "Leadgreed",
+    "product_url": "admin.leadgreed.io",
+    "company_name": "Leadgreed",
+    "positioning": "Полнофункциональная CRM-платформа для дистрибуции лидов в крипто/форекс нише, ориентированная на сети (networks) и аффилейт-программы. Позиционируется как более мощная и гибкая альтернатива Altair CPA с развитой аналитикой, антифрод-системой и выделенной поддержкой",
+    "target_market": "Крипто/форекс партнёрские сети, медиабайинг-команды, аффилейт-агрегаторы, брокеры",
+    "years_on_market": "Не озвучено явно; судя по данным в демо-аккаунте (записи с 2020-2024 года) — минимум 4-5 лет",
+    "team_info": "Ведущий демо — Robin Franssen (предположительно сейлз или основатель). Упоминается выделенная команда поддержки, доступная с 8:00 до 22:00 (время клиента). Есть аккаунт-менеджеры",
+    "pricing_model": "Подписка (SaaS). Упомянуто что Altair CPA стоит $400 за Pro-версию — Leadgreed позиционирует себя в другом ценовом диапазоне (предположительно выше)",
+    "pricing_details": "Конкретные цены в демо не раскрыты. Презентатор сказал 'мы в другом ценовом диапазоне' относительно конкурента за $400",
+    "language": "EN",
+    "key_competitors_mentioned": [
+      "Altair CPA (упомянут как конкурент с неполным функционалом)"
+    ],
+    "prospect_pain_points": [
+      "Altair CPA не имеет полного функционала, необходимого для работы",
+      "Проблема с автологином: при переходе лида ко второму брокеру после отказа первого — автологин не выдаётся",
+      "Необходимость масштабирования партнёрской сети",
+      "Улучшение ROI через лучшую дистрибуцию трафика"
+    ]
+  },
+  "product_analysis": {
+    "feature_map": {
+      "DASHBOARD": {
+        "available": true,
+        "description": "Настраиваемая главная панель с виджетами в реальном времени",
+        "sub_features": {
+          "caps_overview_widget": {
+            "available": true,
+            "description": "Виджет отображает текущее состояние всех капов: интервал (daily/total), тип (lead/FTD), заполненность в %, страны, атрибуты. Пагинация по страницам",
+            "ui_elements": [
+              "таблица с колонками: Interval, Type, Filled%, Countries, Attributes",
+              "пагинация",
+              "кнопка FILTERS"
+            ],
+            "details": "Показывает капы в реальном времени, отображает % заполненности, поддерживает несколько страниц"
+          },
+          "global_statistics_widget": {
+            "available": true,
+            "description": "Виджет глобальной статистики с ключевыми метриками дня",
+            "ui_elements": [
+              "Total clicks",
+              "Total FTDs",
+              "Total Revenue",
+              "Total Payout",
+              "график по часам (сравнение Today/Yesterday)",
+              "кнопка фильтра Campaign Leads (Include/Exclude), Fake FTDs (Include/Exclude)"
+            ],
+            "details": "Метрики с дельтой к вчера в %, часовой график. В демо: Total clicks 449, Total FTDs 16, Revenue $10,575, Payout $2,400"
+          },
+          "latest_ftds_widget": {
+            "available": true,
+            "description": "Таблица последних FTD-конверсий с детализацией",
+            "ui_elements": [
+              "Mediabuyer ID",
+              "Mediabuyer",
+              "Client",
+              "FTD",
+              "Created",
+              "Payout",
+              "Revenue",
+              "Country",
+              "счётчики: Today/This week/This month/Last month"
+            ],
+            "details": "Показывает последние 8-10 конверсий с временными метками"
+          },
+          "top_api_offers_widget": {
+            "available": true,
+            "description": "ТОП-5 API-офферов по FTD за день",
+            "ui_elements": [
+              "API Offer (название)",
+              "FTDs (количество)",
+              "кнопка TOP 5 TODAY"
+            ],
+            "details": "В демо видны офферы: CFD Trader, Bitcoin Amazing, Bitcoin Trader"
+          },
+          "client_overview_widget": {
+            "available": true,
+            "description": "Сводная таблица по клиентам (брокерам)",
+            "ui_elements": [
+              "Client",
+              "Leads",
+              "FTDs",
+              "Late FTDs",
+              "Ratio",
+              "Caps (ссылки на конфигурации)"
+            ],
+            "details": "Быстрый обзор активности брокеров с прямыми ссылками на капы"
+          },
+          "mediabuyer_overview_widget": {
+            "available": true,
+            "description": "Сводная таблица по медиабайерам/аффилейтам",
+            "ui_elements": [
+              "ID",
+              "Mediabuyer",
+              "Leads",
+              "FTDs",
+              "Ratio"
+            ],
+            "details": ""
+          },
+          "widget_customization": {
+            "available": true,
+            "description": "Пользователь может добавлять, удалять, перемещать виджеты. Доступные виджеты: API Offer statistics, Caps overview, Client stats, Financial statistics, Global statistics",
+            "ui_elements": [
+              "кнопка ADD WIDGET",
+              "кнопка SET FILTER",
+              "модальное окно выбора виджета с поиском"
+            ],
+            "details": "Дашборд полностью кастомизируемый под нужды пользователя"
+          },
+          "timezone_switcher": {
+            "available": true,
+            "description": "Глобальное переключение временной зоны через выпадающий список в хедере. Все данные пересчитываются",
+            "ui_elements": [
+              "селектор timezone в правом верхнем углу",
+              "модальное окно подтверждения смены зоны"
+            ],
+            "details": "Система работает с предпочитаемой временной зоной пользователя, все расписания и статистики пересчитываются"
+          },
+          "notifications": {
+            "available": true,
+            "description": "Система уведомлений с расширенными настройками",
+            "ui_elements": [
+              "иконка колокольчика в хедере",
+              "панель уведомлений",
+              "кнопки: mark all read, настройки, корзина"
+            ],
+            "details": "Упоминается как 'очень обширная система уведомлений', детали не показаны полностью"
+          }
+        }
+      },
+      "AFFILIATES_MANAGEMENT": {
+        "available": true,
+        "description": "Управление аффилейтами/медиабайерами. Система позволяет переименовывать модуль (например, в 'Mediabuyers')",
+        "sub_features": {
+          "affiliate_settings": {
+            "available": true,
+            "description": "Основные настройки аффилейта: статус (Active/Pending/Declined), имя, аккаунт-менеджер, API token (автогенерация), autologin interval (в днях/часах), tracking domain, offer URL, геолокация лидов",
+            "ui_elements": [
+              "поле Status",
+              "поле Name",
+              "поле Account manager",
+              "поле API token с кнопкой COPY",
+              "поле Autologin interval с выбором Days/Hours",
+              "блок CLICK TRACKING: Tracking API token, Tracking domain",
+              "блок LOCATION SERVICES: Locate leads by"
+            ],
+            "details": "URL: admin.leadgreed.io/sources/{id}/settings"
+          },
+          "affiliate_offers_whitelist": {
+            "available": true,
+            "description": "Вайтлист офферов для аффилейта",
+            "ui_elements": [
+              "вкладка Offers",
+              "список разрешённых офферов"
+            ],
+            "details": ""
+          },
+          "affiliate_payouts": {
+            "available": true,
+            "description": "Настройка выплат аффилейтам с гранулярной фильтрацией по стране, типу и параметрам трафика",
+            "ui_elements": [
+              "кнопки ADD PAYOUT, COPY PAYOUT",
+              "таблица: Client, Offer, Country, Type, Amount, Created At, Last Updated At, Actions",
+              "фильтры: Type (All/Fixed amount/Fixed share), Client, Offer, Country, Aff sub 1-6+",
+              "модальное окно: Country (мультиселект), Type (Fixed amount$/Fixed share%), Amount, PARAMETERS секция"
+            ],
+            "details": "Поддерживает типы: Fixed amount ($) и Fixed share (%). Параметры для детализации: source, aff_sub (1-8+). Кнопка SCHEDULE PAYOUT для отложенной активации. COPY PAYOUT копирует все настройки от другого аффилейта"
+          },
+          "affiliate_postbacks": {
+            "available": true,
+            "description": "Настройка постбеков (webhook уведомлений) при событиях Lead и FTD",
+            "ui_elements": [
+              "вкладка Postbacks",
+              "кнопки ADD FIRST POSTBACK, COPY SETUP",
+              "модальное окно: Event (Lead/FTD), URL (с шаблонными переменными), Funnel, Country, PARAMETERS"
+            ],
+            "details": "Шаблонные переменные в URL: {lead_id}, {click_id}, {ftd_id}, {user_id}, {affiliate_id}, {aff_id}, {affiliate_name}, {payout}, {client_id}, {client_name}, {funnel_id}, {funnel_slug}, {iso_code}, {click_id2}, {phone}, {random_number}, {aff_sub}, {aff_sub2}...{aff_sub10}, {source}, {language}. Параметры для условного срабатывания: aff_sub, aff_sub2...aff_sub8. Поддержка фильтрации по фанеелу и стране"
+          },
+          "affiliate_blocks": {
+            "available": true,
+            "description": "Блокировки аффилейта (вкладка Blocks в интерфейсе)",
+            "ui_elements": [
+              "вкладка Blocks"
+            ],
+            "details": "Точный функционал из кадров не раскрыт полностью, но вкладка присутствует"
+          },
+          "affiliate_pixels": {
+            "available": true,
+            "description": "Настройка пикселей для фанелов/лендингов на инфраструктуре Leadgreed",
+            "ui_elements": [
+              "вкладка Pixels"
+            ],
+            "details": "Работает только с фанелами/лендингами, размещёнными на инфраструктуре Leadgreed"
+          },
+          "affiliate_caps": {
+            "available": true,
+            "description": "Капы на уровне аффилейта с поддержкой временных зон",
+            "ui_elements": [
+              "вкладка Caps",
+              "таблица капов: Interval, Type, Filled, Countries, Attributes",
+              "фильтры ALL/DAILY/TOTAL и ALL/LEAD/FTD",
+              "модальное окно: Type (Lead/FTD), Interval (Daily), Reset at (время сброса), Timezone, Count (текущее), Cap (лимит), Countries (с опцией 'Create a separate cap for each country'), ADD PARAMETER"
+            ],
+            "details": "Кнопки SCHEDULE и SAVE CAP. Поддержка временной зоны для сброса в нужный момент"
+          },
+          "affiliate_distributions_view": {
+            "available": true,
+            "description": "Список дистрибуций, в которых участвует аффилейт",
+            "ui_elements": [
+              "вкладка Distributions"
+            ],
+            "details": ""
+          },
+          "affiliate_postback_log": {
+            "available": true,
+            "description": "Лог всех отправленных постбеков",
+            "ui_elements": [
+              "вкладка Postback Log"
+            ],
+            "details": ""
+          },
+          "affiliate_users": {
+            "available": true,
+            "description": "Управление пользователями аффилейта — создание логинов для доступа в систему",
+            "ui_elements": [
+              "вкладка Users",
+              "кнопка ADD USER",
+              "таблица: ID, Username, Email, Role, Created At, Actions",
+              "модальное окно Create new user: Name, Email, Password, Confirm password"
+            ],
+            "details": "Каждый аффилейт может иметь своих пользователей с ролью 'affiliate' для просмотра своих данных в системе"
+          }
+        }
+      },
+      "CLIENTS_BROKERS_MANAGEMENT": {
+        "available": true,
+        "description": "Управление клиентами (брокерами/рекламодателями)",
+        "sub_features": {
+          "client_settings": {
+            "available": true,
+            "description": "Основные настройки клиента: менеджер, display name для отчётности",
+            "ui_elements": [
+              "вкладка Settings",
+              "поле Account manager",
+              "поле Display name"
+            ],
+            "details": "Кнопка CLONE THIS CLIENT для клонирования клиента"
+          },
+          "client_revenue": {
+            "available": true,
+            "description": "Настройка доходов от клиента по странам с поддержкой параметров и расписания",
+            "ui_elements": [
+              "вкладка Revenue",
+              "кнопки ADD REVENUE, COPY REVENUE",
+              "чекбокс 'Use fetched revenue if available'",
+              "таблица: Country, Type, Amount, Last Updated At",
+              "модальное окно: Country, Amount, PARAMETERS"
+            ],
+            "details": "Поддерживает Fixed amount по каждой стране, параметры для детализации, кнопка SCHEDULE REVENUE. В демо показаны десятки стран для одного клиента (Albania $800, Australia $1000/$1200/$1400/$1500, Belgium $500/$550, Algeria $500/$550 и т.д.). Переключатель 'Use fetched revenue if available' — получение доходов напрямую от брокера"
+          },
+          "client_caps": {
+            "available": true,
+            "description": "Капы на уровне клиента (брокера) по Lead/FTD с интервалами и временными зонами",
+            "ui_elements": [
+              "вкладка Caps",
+              "таблица: Interval, Type, Filled, Countries, Attributes",
+              "фильтры ALL/DAILY/TOTAL и ALL/LEAD/FTD",
+              "кнопка ADD CAP",
+              "модальное окно аналогично аффилейт-капам"
+            ],
+            "details": "Поддерживает создание отдельного капа для каждой страны чекбоксом. Кнопки SCHEDULE и SAVE CAP"
+          },
+          "client_exclusions": {
+            "available": true,
+            "description": "Исключения аффилейтов из трафика для данного клиента",
+            "ui_elements": [
+              "вкладка Exclusions",
+              "таблица: Affiliate, API Offer, Country, Created At, Last Updated At, Actions",
+              "кнопка ADD EXCLUSION",
+              "модальное окно: Affiliate (мультиселект), API Offer (мультиселект), Country (мультиселект)"
+            ],
+            "details": "В демо Client F имеет исключения: Elite Traffic (all geos), Facebook-Alex (all geos), Ads Rush (Afghanistan only), All affiliates (Germany only)"
+          },
+          "client_scheduled": {
+            "available": true,
+            "description": "Расписание запланированных изменений для клиента (revenues, caps и т.д.)",
+            "ui_elements": [
+              "вкладка Scheduled с индикатором количества"
+            ],
+            "details": "Показывает будущие изменения с датой применения"
+          },
+          "client_distributions": {
+            "available": true,
+            "description": "Список дистрибуций, в которых участвует клиент",
+            "ui_elements": [
+              "вкладка Distributions"
+            ],
+            "details": ""
+          },
+          "client_opening_hours": {
+            "available": true,
+            "description": "Часы работы клиента по странам с возможностью запрета трафика в нерабочее время",
+            "ui_elements": [
+              "вкладка Opening Hours",
+              "кнопка ADD OPENING HOURS",
+              "таблица: Country, Opening hours (по дням), Timezone",
+              "индикаторы 'no traffic' (жёлтые бейджи)",
+              "модальное окно: Countries, Timezone for opening hours, Opening hours (пн-вс с галочками, временными диапазонами, опцией 'no traffic' per day), SAVE OPENING HOURS"
+            ],
+            "details": "В демо Client F имеет часы по: Australia (09-18 Mon-Fri, no traffic выходные), Belgium (09-18 Mon-Fri, no traffic), Cyprus (09-17), United Kingdom (09-17 Mon-Fri, no traffic), Netherlands (09-17 Mon-Fri, closed Sat/Sun)"
+          }
+        }
+      },
+      "DISTRIBUTIONS": {
+        "available": true,
+        "description": "Система дистрибуции лидов — ключевой модуль для настройки маршрутизации трафика между брокерами",
+        "sub_features": {
+          "distributions_list": {
+            "available": true,
+            "description": "Страница списка всех дистрибуций с группировкой и фильтрацией",
+            "ui_elements": [
+              "URL: admin.leadgreed.io/distributions",
+              "кнопка NEW DISTRIBUTION",
+              "Group by: COUNTRY / AFFILIATE / OFFER / ALL",
+              "SEARCH секция",
+              "FILTER секция (по тегам, странам, параметрам)",
+              "кнопка ADD FILTER ON PARAMETER",
+              "таблица: Country, Distributions (бейджи), Last Updated, Actions",
+              "теги таймслотов: Week, Weekend, default"
+            ],
+            "details": "В демо показаны дистрибуции по странам: Global (2 дистрибуции), Afghanistan, Algeria, Andorra, Antarctica, Australia, Austria, Belgium (7 дистрибуций), Canada, Colombia, Germany, Netherlands, United Kingdom. Детальные имена дистрибуций: 'Belgium', 'Belgium - CFD Trader', 'Belgium - Elite Traffic (11)', 'Belgium - Elite Traffic (11) - source: google', 'Belgium - Facebook - Alex (20)', 'Belgium - Facebook - Alex (20) - aff_sub2: red', 'Belgium - Facebook - Alex (20) - aff_sub: facebook'"
+          },
+          "distribution_editor": {
+            "available": true,
+            "description": "Редактор дистрибуции с визуальным управлением долями брокеров через слайдеры",
+            "ui_elements": [
+              "панель быстрой статистики: This week/Last week/This month (Client, Leads, FTDs, Ratio)",
+              "фильтр 'Shares of [дистрибуция]' с датой последнего обновления",
+              "переключатель Exclude weekends",
+              "боковая панель брокеров (с CPA-ценой и статусом open/inactive/open)",
+              "табы таймслотов: week/weekend/+ New Timeslot",
+              "группы приоритетов (Group 1 - 100%)",
+              "строки брокеров со слайдером % и кнопкой удаления",
+              "кнопки: NEW GROUP, CLEAR ALL, SAVE GROUP(S), SCHEDULE"
+            ],
+            "details": "Метод дистрибуции: SLOTS (балансирует исторически) или CHANCE (каждый лид получает случайный шанс). Drag-and-drop для добавления брокеров"
+          },
+          "timeslots": {
+            "available": true,
+            "description": "Временные слоты для дистрибуции — разные настройки в разное время",
+            "ui_elements": [
+              "табы: week / weekend / Week-working / Week-non-working / + New Timeslot",
+              "модальное окно таймслота: Timezone, Traffic (чекбокс 'Reject leads outside opening hours'), Name, Opening hours (пн-вс с временными диапазонами и 'copy to all'/'copy previous'), APPLY TIMESLOT / CANCEL / REMOVE TIMESLOT"
+            ],
+            "details": "Каждый таймслот имеет своё имя, временную зону и расписание дней/часов. Можно иметь одновременно несколько таймслотов (week-working 09-17, week-non-working 00-09 + 17-24, weekend). Предупреждение при незакрытых группах"
+          },
+          "priority_groups": {
+            "available": true,
+            "description": "Группы приоритетов для последовательного заполнения капов",
+            "ui_elements": [
+              "кнопка NEW GROUP",
+              "группы: Group 1, Group 2 и т.д.",
+              "внутри группы: список брокеров со слайдерами %"
+            ],
+            "details": "Система сначала заполняет Group 1 до капа, затем переходит к Group 2. Внутри группы — обычное % распределение"
+          },
+          "distribution_creation": {
+            "available": true,
+            "description": "Создание новой дистрибуции через двухшаговый визард",
+            "ui_elements": [
+              "модальное окно 'New distribution': Label (опц.), Tags (опц.), Method (SLOTS/CHANCE), Hours: Timezone + 'Reject leads outside opening hours', Country, PARAMETERS (Affiliate, aff_sub 1-8), LEAD DATA OVERWRITE, кнопка NEXT",
+              "шаг 2: 'Define shares for a new distribution' с выбором брокеров и настройкой %"
+            ],
+            "details": "Поддерживает фильтрацию: Only active clients, Only clients with CPA for [country]. LEAD DATA OVERWRITE — перезапись данных лида при маршрутизации"
+          },
+          "distribution_clone": {
+            "available": true,
+            "description": "Клонирование существующей дистрибуции для быстрого создания похожей",
+            "ui_elements": [
+              "кнопка COPY в редакторе дистрибуции"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "REPORTS_ANALYTICS": {
+        "available": true,
+        "description": "Многоуровневая система отчётности с drill-down и гибкой фильтрацией",
+        "sub_features": {
+          "global_report": {
+            "available": true,
+            "description": "Глобальный отчёт с ключевыми метриками",
+            "ui_elements": [
+              "URL: admin.leadgreed.io/stats/global",
+              "вкладки: Global, Clients, Countries, Offers, Affiliates, Hourly, Daily, Weekly, Details, Statuses",
+              "метрики: Attempts, Leads, Success%, Autologged, Autologged Ratio%, Total FTDs, Late FTDs, Conversion%, eCPL, AeCPL, Revenue, Payout, Profit, Margin%"
+            ],
+            "details": "В демо (за 24ч): 150 Attempts, 143 Leads, 95% Success, 0 Autologged, 0% Autologged Ratio, 16 Total FTDs, 0 Late FTDs, 11.2% Conversion, eCPL 73.95, AeCPL 16.78, Revenue $10,575, Payout $2,400, Profit $8,175, Margin 77.3%"
+          },
+          "clients_report": {
+            "available": true,
+            "description": "Отчёт с разбивкой по клиентам (брокерам)",
+            "ui_elements": [
+              "вкладка Clients",
+              "URL: admin.leadgreed.io/stats/clients",
+              "таблица: Client ID, Client, Total, Leads, FTDs, Late FTDs, CR, Payout, Revenue, Profit, Margin, eCPL, AeCPL",
+              "иконки drill-down"
+            ],
+            "details": "В демо 6 клиентов (A-F) с различными показателями CR (9-15%), маржа 59-88%"
+          },
+          "countries_report": {
+            "available": true,
+            "description": "Разбивка по странам",
+            "ui_elements": [
+              "вкладка Countries"
+            ],
+            "details": ""
+          },
+          "offers_report": {
+            "available": true,
+            "description": "Разбивка по офферам",
+            "ui_elements": [
+              "вкладка Offers"
+            ],
+            "details": ""
+          },
+          "affiliates_report": {
+            "available": true,
+            "description": "Разбивка по аффилейтам",
+            "ui_elements": [
+              "вкладка Affiliates"
+            ],
+            "details": ""
+          },
+          "hourly_daily_weekly_report": {
+            "available": true,
+            "description": "Временные срезы статистики",
+            "ui_elements": [
+              "вкладки Hourly, Daily, Weekly"
+            ],
+            "details": "Monthly в демо-окружении отключён"
+          },
+          "details_report": {
+            "available": true,
+            "description": "Детальный отчёт по каждому лиду — основная рабочая таблица",
+            "ui_elements": [
+              "URL: admin.leadgreed.io/stats/details",
+              "фильтры ALL CONVERSIONS / ALL LEADS / GROUP BY",
+              "режимы SINGLE / EMAIL",
+              "поиск по параметру",
+              "кнопки APPLY TO SELECTION, EXPORT",
+              "таблица колонок: регистрационные попытки (#), Client, Affiliate, Country, Status, Status Override, Created, E-mail, Funnel, Offer, FTD (timestamp), BFTD, Real Conversion (bool), Revenue, Payout, Autologged (bool), Autologin URL",
+              "кнопки действий: PUSH TO CAMPAIGNS, EXPORT"
+            ],
+            "details": "Клик по попытке (числу) открывает Client history с деталями: Client, Category (caps_full/blocked/duplicate/registered), Response (ошибка API), Request. Цветовое кодирование: зелёный фон — FTD, красный — проблема"
+          },
+          "statuses_report": {
+            "available": true,
+            "description": "Отчёт по статусам лидов",
+            "ui_elements": [
+              "вкладка Statuses"
+            ],
+            "details": ""
+          },
+          "drill_down": {
+            "available": true,
+            "description": "Многоуровневый drill-down в любом отчёте — нажатие на строку открывает следующий уровень детализации",
+            "ui_elements": [
+              "иконки раскрытия строк",
+              "BREAK DOWN ALL кнопка"
+            ],
+            "details": "Можно детализировать: клиент -> аффилейты -> офферы -> страны и т.д. в любом порядке"
+          },
+          "column_customization": {
+            "available": true,
+            "description": "Пользователь может выбирать видимые колонки и их порядок, сохранять как default",
+            "ui_elements": [
+              "кнопка настройки колонок",
+              "перетаскивание колонок",
+              "кнопка Set as default"
+            ],
+            "details": ""
+          },
+          "filters_panel": {
+            "available": true,
+            "description": "Обширная панель фильтров для всех отчётов",
+            "ui_elements": [
+              "Date Range (с пресетами Last 24 hours и т.д.)",
+              "Clients, Countries, Affiliates, API Offers, Offers, Statuses, Sources, Aff Sub 1-10, Languages, Mapped Sources",
+              "Traffic: All days / Weekends only / Weekdays only",
+              "Approved: All/Only/Excluded",
+              "Late FTDs: All/Only/Excluded",
+              "Include Fake Conversions: All/Only/Excluded",
+              "Campaign Leads: All/Only/Excluded",
+              "Original Leads: All/Only/Excluded",
+              "кнопки PRESETS, SAVE, APPLY, SHARE FILTERS, HIDE FILTER"
+            ],
+            "details": "Каждый фильтр имеет опцию 'exclude selection'. Фильтры можно сохранять как пресеты"
+          },
+          "status_override": {
+            "available": true,
+            "description": "Перезапись статуса лида вручную или из дропдауна для показа аффилейту",
+            "ui_elements": [
+              "модальное окно Status Override: Manual (ввод текста) / Choose from dropdown (список статусов: Call Again, call again private, Call back, Call Back (scheduled), Call in a While, canceled, Follow Up, FTD и другие)",
+              "кнопка CONFIRM"
+            ],
+            "details": "Позволяет скрывать реальный статус от аффилейта и показывать произвольный"
+          },
+          "fake_conversion": {
+            "available": true,
+            "description": "Ручное создание fake FTD (фиктивной конверсии) с настраиваемыми параметрами",
+            "ui_elements": [
+              "кнопка на строке лида",
+              "модальное окно 'Confirm Fake Conversion approval': Fire postbacks (чекбокс), Charge client (чекбокс), Add payout (чекбокс), Set date in the past (чекбокс)",
+              "кнопки APPROVE, SCHEDULE SETTINGS"
+            ],
+            "details": "Функционал для поддержания отношений с аффилейтами когда реальные конверсии ниже ожиданий"
+          },
+          "revenue_payout_edit": {
+            "available": true,
+            "description": "Ретроактивное редактирование revenue и payout по отдельному лиду",
+            "ui_elements": [
+              "модальное окно 'Edit payout and/or revenue': REVENUE (toggle + поле суммы, Apply revenue), PAYOUT (toggle + поле суммы, Apply payout)",
+              "кнопка APPLY"
+            ],
+            "details": "Позволяет исправить некорректно зафиксированные суммы задним числом"
+          },
+          "status_history": {
+            "available": true,
+            "description": "История смены статусов для конкретного лида",
+            "ui_elements": [
+              "модальное окно 'Status history for lead [email]': таблица Date, Status"
+            ],
+            "details": "В демо показано: Call Back (scheduled) -> Interested -> Interested -> Call back"
+          },
+          "push_to_campaigns": {
+            "available": true,
+            "description": "Отправка выбранных лидов в кампании (ретаргетинг)",
+            "ui_elements": [
+              "кнопка PUSH TO CAMPAIGNS (bulk action)"
+            ],
+            "details": ""
+          },
+          "export": {
+            "available": true,
+            "description": "Экспорт данных из таблицы",
+            "ui_elements": [
+              "кнопка EXPORT"
+            ],
+            "details": ""
+          },
+          "compare_with_past": {
+            "available": true,
+            "description": "Сравнение текущего периода с прошлым",
+            "ui_elements": [
+              "чекбокс 'Compare with past' в панели фильтров"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "CLICK_REPORTS": {
+        "available": true,
+        "description": "Отдельный модуль click-трекинга",
+        "sub_features": {
+          "click_tracking_reports": {
+            "available": true,
+            "description": "Отчёты по кликам для аффилейтов, использующих click-tracking систему Leadgreed",
+            "ui_elements": [
+              "URL: admin.leadgreed.io/click-reports (упомянут в меню)",
+              "Offers > API и Tracked подменю"
+            ],
+            "details": "Система поддерживает собственный click-трекинг с отдельными API токенами и tracking domains"
+          }
+        }
+      },
+      "LEADS_MODULE": {
+        "available": true,
+        "description": "Управление лидами и pending конверсиями",
+        "sub_features": {
+          "leads_list": {
+            "available": true,
+            "description": "Список всех лидов",
+            "ui_elements": [
+              "пункт меню Leads"
+            ],
+            "details": ""
+          },
+          "pending_conversions": {
+            "available": true,
+            "description": "Список конверсий ожидающих подтверждения",
+            "ui_elements": [
+              "пункт меню Pending conversions"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "CAPS_GLOBAL": {
+        "available": true,
+        "description": "Глобальная страница капов для просмотра всех капов системы",
+        "sub_features": {
+          "global_caps_view": {
+            "available": true,
+            "description": "Сводная страница всех капов с состоянием заполненности",
+            "ui_elements": [
+              "пункт меню Caps",
+              "виджет CAPS на дашборде"
+            ],
+            "details": "Упоминается 'у нас есть страница капов, где можно видеть информацию обо всех капах'"
+          }
+        }
+      },
+      "SCHEDULE_MODULE": {
+        "available": true,
+        "description": "Глобальное расписание запланированных изменений по всей системе",
+        "sub_features": {
+          "system_schedule": {
+            "available": true,
+            "description": "Просмотр всех запланированных действий в системе — payouts, revenues, caps — с отображением по месяцам",
+            "ui_elements": [
+              "пункт меню Schedule",
+              "отображение по месяцам"
+            ],
+            "details": "Расписание доступно на уровне аффилейтов, клиентов, дистрибуций"
+          }
+        }
+      },
+      "GROUPS": {
+        "available": true,
+        "description": "Группы (аффилейтов или клиентов) для удобного управления",
+        "sub_features": {
+          "groups_management": {
+            "available": true,
+            "description": "Группировка сущностей",
+            "ui_elements": [
+              "пункт меню Groups"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "CAMPAIGNS": {
+        "available": true,
+        "description": "Модуль кампаний для работы с лидами",
+        "sub_features": {
+          "campaigns_management": {
+            "available": true,
+            "description": "Управление кампаниями, в которые можно пушить лиды",
+            "ui_elements": [
+              "пункт меню Campaigns"
+            ],
+            "details": "Интегрирован с кнопкой 'PUSH TO CAMPAIGNS' в детальном отчёте"
+          }
+        }
+      },
+      "FORM_GENERATOR": {
+        "available": true,
+        "description": "Генератор форм для захвата лидов",
+        "sub_features": {
+          "form_builder": {
+            "available": true,
+            "description": "Встроенный инструмент создания форм",
+            "ui_elements": [
+              "пункт меню Form Generator"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "FINANCE2": {
+        "available": true,
+        "description": "Финансовый модуль (судя по подменю — Finance2)",
+        "sub_features": {
+          "financial_reports": {
+            "available": true,
+            "description": "Финансовые отчёты и управление",
+            "ui_elements": [
+              "пункт меню Finance2 с подпунктами"
+            ],
+            "details": "Точный состав подменю не раскрыт в демо"
+          }
+        }
+      },
+      "LOGS": {
+        "available": true,
+        "description": "Системные логи",
+        "sub_features": {
+          "system_logs": {
+            "available": true,
+            "description": "Логи системных событий",
+            "ui_elements": [
+              "пункт меню Logs с подпунктами"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "BLACKLIST": {
+        "available": true,
+        "description": "Глобальный блэклист",
+        "sub_features": {
+          "blacklist_management": {
+            "available": true,
+            "description": "Управление блэклистом лидов/IP",
+            "ui_elements": [
+              "пункт меню Blacklist"
+            ],
+            "details": "Упомянут в транскрипте как отдельная функция"
+          }
+        }
+      },
+      "USERS_PERMISSIONS": {
+        "available": true,
+        "description": "Управление пользователями системы с гибкой системой разрешений",
+        "sub_features": {
+          "user_management": {
+            "available": true,
+            "description": "Создание пользователей и управление правами доступа",
+            "ui_elements": [
+              "пункт меню Users"
+            ],
+            "details": "Широкая система прав — можно показывать аффилейтам много или мало данных"
+          }
+        }
+      },
+      "SETTINGS": {
+        "available": true,
+        "description": "Системные настройки с множеством вкладок",
+        "sub_features": {
+          "general_settings": {
+            "available": true,
+            "description": "Общие настройки системы",
+            "ui_elements": [
+              "вкладка General"
+            ],
+            "details": ""
+          },
+          "api_whitelist": {
+            "available": true,
+            "description": "Вайтлист API IP-адресов",
+            "ui_elements": [
+              "вкладка API Whitelist"
+            ],
+            "details": ""
+          },
+          "conversion_whitelist": {
+            "available": true,
+            "description": "Вайтлист для конверсий",
+            "ui_elements": [
+              "вкладка Conversion Whitelist"
+            ],
+            "details": ""
+          },
+          "tracking_domains": {
+            "available": true,
+            "description": "Управление tracking domains",
+            "ui_elements": [
+              "вкладка Tracking Domains"
+            ],
+            "details": ""
+          },
+          "pixels_global": {
+            "available": true,
+            "description": "Глобальные пиксели",
+            "ui_elements": [
+              "вкладка Pixels"
+            ],
+            "details": ""
+          },
+          "postbacks_global": {
+            "available": true,
+            "description": "Глобальные постбеки",
+            "ui_elements": [
+              "вкладка Postbacks"
+            ],
+            "details": ""
+          },
+          "module_names": {
+            "available": true,
+            "description": "Переименование терминов системы для кастомизации",
+            "ui_elements": [
+              "вкладка Module Names",
+              "URL: admin.leadgreed.io/settings/module-names",
+              "таблица: Original -> Target",
+              "пары: FTD->FTD, Fake FTD->Fake Conversion, Affiliate->Affiliate, Broker->Client, Lead->Lead",
+              "кнопка APPLY CHANGES"
+            ],
+            "details": "Позволяет переименовывать ключевые термины системы (FTD, Affiliate, Broker, Lead) под собственную терминологию клиента"
+          },
+          "conversion_delays": {
+            "available": true,
+            "description": "Задержки конверсий",
+            "ui_elements": [
+              "вкладка Conversion Delays"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "API_DOCUMENTATION": {
+        "available": true,
+        "description": "Встроенная документация API",
+        "sub_features": {
+          "api_docs": {
+            "available": true,
+            "description": "Документация API прямо в системе",
+            "ui_elements": [
+              "пункт меню API documentation"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "FRAUD_ANALYSIS": {
+        "available": true,
+        "description": "Антифрод-модуль с проверкой IP, email, телефона через внешние сервисы",
+        "sub_features": {
+          "fraud_score": {
+            "available": true,
+            "description": "Оценка мошеннического трафика для каждого лида по шкале 0-100",
+            "ui_elements": [
+              "колонка Fraud Score в детальном отчёте (в демо не активна)",
+              "информационная кнопка с деталями (VPN/Proxy)"
+            ],
+            "details": "По умолчанию блокирует лиды с VPN/Proxy и fraud score > 70. Настраивается: можно менять порог, отключать блокировку но оставлять скор, ужесточать правила"
+          },
+          "ip_comparison": {
+            "available": true,
+            "description": "Сравнение IP лида при регистрации и IP при переходе по autologin ссылке",
+            "ui_elements": [
+              "индикатор в детальном отчёте"
+            ],
+            "details": "Позволяет выявлять автоматизации и ботов"
+          },
+          "external_services": {
+            "available": true,
+            "description": "Использование внешних баз данных для проверки IP, email, телефона",
+            "ui_elements": [],
+            "details": "Многосервисная проверка. По умолчанию не показывается всем клиентам — требует отдельного включения"
+          }
+        }
+      },
+      "AUTOLOGIN": {
+        "available": true,
+        "description": "Система автологина с failover при отказе брокера",
+        "sub_features": {
+          "autologin_failover": {
+            "available": true,
+            "description": "При отказе первого брокера лид автоматически направляется ко второму, который выдаёт новую autologin-ссылку",
+            "ui_elements": [
+              "колонка Autologged в отчёте",
+              "колонка Autologin URL"
+            ],
+            "details": "Решает ключевую проблему конкурента Altair CPA — у Leadgreed autologin корректно переключается на следующего брокера. Токен одноразовый"
+          },
+          "autologin_interval": {
+            "available": true,
+            "description": "Интервал автологина — как долго можно использовать ссылку",
+            "ui_elements": [
+              "поле Autologin interval с выбором Days/Hours в настройках аффилейта"
+            ],
+            "details": ""
+          }
+        }
+      }
+    },
+    "ux_ui": {
+      "design_style": "Современный SaaS-стиль, тёмная боковая панель навигации, светлый контентный блок. Минималистичный корпоративный дизайн с акцентами зелёного цвета (primary action buttons). Иллюстрации-заглушки (НЛО с лучом) при пустых состояниях. Уведомления об успехе — зелёные бейджи в правом верхнем углу",
+      "navigation_pattern": "Левая боковая панель с иконками и текстовыми метками. Вкладки внутри сущностей (Settings, Offers, Payouts, Blocks, Pixels, Postbacks, Distributions, Postback Log, Caps, Users). Breadcrumb навигация (Dashboard / Affiliates / Partnerish). Кнопка Collapse для сворачивания сайдбара",
+      "color_scheme": "Тёмно-серая/тёмно-зелёная боковая панель (#2D3748 или схожий), белый основной контент, синие кнопки (secondary), зелёные (primary action — Save, Apply), красные (Delete/Cancel), оранжево-жёлтые (предупреждения — no traffic). Зелёный для FTD строк, красный для проблемных строк",
+      "framework_hints": "Предположительно Vue.js или React (SPA-поведение, модальные окна без перезагрузки). CSS-фреймворк похож на Tailwind или кастомный. Слайдеры — нативные range inputs",
+      "key_screens": [
+        {
+          "screen_name": "Dashboard",
+          "frame_ref": "frame_000096.jpg",
+          "description": "Главный дашборд с виджетами: CAPS, Global Statistics, Latest FTDs, Top API Offers, Client Overview, Mediabuyer Overview",
+          "notable_elements": [
+            "виджет CAPS с таблицей заполненности",
+            "виджет Global Statistics с часовым графиком",
+            "виджет Latest FTDs с таблицей последних конверсий",
+            "кнопки + SET FILTER и + ADD WIDGET"
+          ]
+        },
+        {
+          "screen_name": "Affiliate Payouts",
+          "frame_ref": "frame_000259.jpg",
+          "description": "Страница управления выплатами аффилейта 'Partnerish-28'",
+          "notable_elements": [
+            "вкладки: Settings, Offers, Payouts, Blocks, Pixels, Postbacks, Distributions, Postback Log, Caps, Users",
+            "фильтры по типу/клиенту/офферу/стране/aff sub 1-6",
+            "таблица payouts с параметрами"
+          ]
+        },
+        {
+          "screen_name": "Postback Creation",
+          "frame_ref": "frame_000314.jpg",
+          "description": "Модальное окно создания постбека с полным набором шаблонных переменных",
+          "notable_elements": [
+            "выбор события Lead/FTD",
+            "URL с шаблонными переменными в виде синих бейджей",
+            "секция PARAMETERS для условного срабатывания",
+            "выбор фанела и страны"
+          ]
+        },
+        {
+          "screen_name": "Client Revenue",
+          "frame_ref": "frame_000383.jpg",
+          "description": "Страница настройки доходов клиента Client F с сотнями записей по странам",
+          "notable_elements": [
+            "вкладки клиента: Settings, Revenue, Caps, Exclusions, Scheduled, Distributions, Opening Hours",
+            "кнопка CLONE THIS CLIENT (красная)",
+            "чекбокс Use fetched revenue if available",
+            "массовые данные по странам с параметрами"
+          ]
+        },
+        {
+          "screen_name": "Client Opening Hours",
+          "frame_ref": "frame_000465.jpg",
+          "description": "Часы работы клиента с почасовым расписанием и управлением трафиком",
+          "notable_elements": [
+            "жёлтые бейджи 'no traffic'",
+            "расписание по 5 странам",
+            "разные временные зоны для разных гео",
+            "модальное окно с детальными настройками по дням"
+          ]
+        },
+        {
+          "screen_name": "Distribution Editor",
+          "frame_ref": "frame_000557.jpg",
+          "description": "Редактор дистрибуции Belgium - Elite Traffic с визуальными слайдерами долей",
+          "notable_elements": [
+            "боковая панель брокеров с CPA и статусом",
+            "панель быстрой статистики This week/Last week/This month",
+            "табы week/weekend с кнопкой + New Timeslot",
+            "Group 1 - 100% с Client B 50%, Client E 20%, Client D 30%"
+          ]
+        },
+        {
+          "screen_name": "Distributions List",
+          "frame_ref": "frame_000685.jpg",
+          "description": "Список всех дистрибуций с группировкой по стране",
+          "notable_elements": [
+            "Group by: COUNTRY/AFFILIATE/OFFER/ALL",
+            "теги таймслотов (Week, Weekend, default)",
+            "видимость параметров дистрибуции inline",
+            "фильтр по тегам и странам"
+          ]
+        },
+        {
+          "screen_name": "Global Reports",
+          "frame_ref": "frame_000699.jpg",
+          "description": "Страница глобальных отчётов со всеми метриками и обширной панелью фильтров",
+          "notable_elements": [
+            "12 метрик в цветных плашках",
+            "табы: Global, Clients, Countries, Offers, Affiliates, Hourly, Daily, Weekly, Details, Statuses",
+            "левая панель фильтров с 20+ параметрами",
+            "кнопки PRESETS, SAVE, APPLY, SHARE FILTERS"
+          ]
+        },
+        {
+          "screen_name": "Details Report",
+          "frame_ref": "frame_000816.jpg",
+          "description": "Детальный отчёт по лидам — основная операционная таблица",
+          "notable_elements": [
+            "фильтры ALL CONVERSIONS / ALL LEADS / GROUP BY",
+            "поиск by selected parameter",
+            "bulk actions: APPLY TO SELECTION, EXPORT, PUSH TO CAMPAIGNS",
+            "строки с цветовым кодированием (зелёный = FTD)",
+            "колонки: Country, Status, Status Override, Created, E-mail, Funnel, Offer, FTD, Revenue, Payout, Autologged, Autologin URL"
+          ]
+        },
+        {
+          "screen_name": "Settings Module Names",
+          "frame_ref": "frame_000166.jpg",
+          "description": "Настройка переименования терминов системы",
+          "notable_elements": [
+            "пары Original->Target для FTD, Fake FTD, Affiliate, Broker, Lead",
+            "кнопка APPLY CHANGES",
+            "предупреждение об изменении после накопления данных"
+          ]
+        }
+      ]
+    },
+    "user_scenarios": [
+      {
+        "scenario_name": "Онбординг нового аффилейта",
+        "actor": "Администратор сети",
+        "steps": [
+          "Аффилейт регистрируется через sign-up page",
+          "Администратор получает email о новом аффилейте в статусе Pending",
+          "Администратор одобряет аффилейта через Settings > Status = Active",
+          "Настраивает payouts по странам (+ параметры если нужна гранулярность)",
+          "Настраивает постбек на FTD событие с URL трекера аффилейта",
+          "Настраивает капы на аффилейта",
+          "Создаёт пользователя для аффилейта (логин/пароль) через вкладку Users",
+          "Создаёт или добавляет аффилейта в дистрибуцию для нужного гео",
+          "Аффилейт начинает отправлять трафик через API token"
+        ],
+        "outcome": "Аффилейт полностью интегрирован, трафик распределяется, постбеки отправляются"
+      },
+      {
+        "scenario_name": "Настройка дистрибуции для нового гео",
+        "actor": "Администратор сети",
+        "steps": [
+          "Переход в Distributions > + NEW DISTRIBUTION",
+          "Указать страну (например Belgium), метод (SLOTS/CHANCE), временную зону",
+          "Добавить параметры если нужна специфика (аффилейт, source, aff_sub)",
+          "Нажать NEXT — шаг 2 настройки долей",
+          "Перетащить нужных клиентов в Group 1, указать % через слайдеры",
+          "При необходимости добавить таймслоты (week-working 09-17, weekend и т.д.)",
+          "Сохранить дистрибуцию"
+        ],
+        "outcome": "Трафик из Belgium распределяется между брокерами согласно настройкам"
+      },
+      {
+        "scenario_name": "Анализ качества трафика аффилейта",
+        "actor": "Администратор сети",
+        "steps": [
+          "Открыть Reports > Details",
+          "Отфильтровать по нужному аффилейту",
+          "Просмотреть статусы, CR, FTD",
+          "Кликнуть на число попыток чтобы увидеть Client history",
+          "Проверить причины блокировок (caps_full, blocked, duplicate)",
+          "Проверить fraud score если включён",
+          "При необходимости создать исключение на уровне клиента"
+        ],
+        "outcome": "Получена детальная картина качества трафика, приняты меры"
+      }
+    ]
+  },
+  "technology_stack": {
+    "frontend": "SPA (Single Page Application), предположительно Vue.js или React. Адаптивный дизайн, модальные окна без перезагрузки страницы",
+    "backend": "Не раскрыт явно. Судя по структуре URL (RESTful: /sources/28/payouts, /clients/6/revenues, /stats/global) — REST API архитектура",
+    "database": "Не раскрыто",
+    "integrations": [
+      "Внешние антифрод-сервисы (IP/email/phone проверка, VPN/Proxy детектирование)",
+      "Брокерские платформы через REST API (упомянуты POST https://platform.io/api/v3/customers — судя по ошибкам в Client history)",
+      "Трекеры аффилейтов через постбеки (webhook URL)",
+      "Tracking domains (trackinglink.com упомянут в демо)",
+      "Поддержка отдельных tracking domains для каждого аффилейта"
+    ],
+    "infrastructure": "Cloud-хостинг (admin.leadgreed.io). Инфраструктура для хостинга лендингов/фанелов (упомянуто в транскрипте)",
+    "api_type": "REST API с токен-аутентификацией. Документация встроена в систему. Поддержка aff_sub параметров (1-10)"
+  },
+  "sales_marketing": {
+    "sales_approach": "Личные продажи через видео-демо (Zoom/Google Meet). Честный консультативный подход — презентатор открыто говорит что для pure медиабайинг-команды (без сети) их система может быть избыточной. Апеллирует к масштабированию и наличию крупных клиентов",
+    "demo_structure": "Демо начинается с Dashboard -> Affiliates (переименование модуля) -> Payouts -> Postbacks -> Caps -> Users -> Clients -> Revenue -> Caps -> Exclusions -> Opening Hours -> Distributions -> Reports -> Details. Примерно 45-60 минут",
+    "key_selling_points": [
+      "Автологин всегда корректно переключается на следующего брокера при отказе (решение боли с Altair CPA)",
+      "Выделенная поддержка 8:00-22:00 которая делает интеграции с брокерами за клиента",
+      "Гибкая система дистрибуции с таймслотами, приоритетными группами и методами SLOTS/CHANCE",
+      "Тонкая настройка payouts по параметрам трафика (source, aff_sub)",
+      "Антифрод-система с IP/email/phone проверкой через внешние сервисы",
+      "Полная прозрачность — Client history с деталями каждой попытки (caps_full, blocked, duplicate)",
+      "Timezone-aware система — капы, расписания, отчёты в нужной зоне",
+      "Fake FTD функция для управления отношениями с аффилейтами",
+      "Система переименования терминов (Module Names) — гибкость под бизнес клиента",
+      "Возможность помочь с лендингами/фанелами"
+    ],
+    "pricing_strategy": "Premum pricing относительно Altair CPA ($400+). Конкретные цены не раскрываются до квалификации клиента",
+    "target_audience": "Преимущественно партнёрские сети (networks) в крипто/форекс нише, реже — крупные медиабайинг-команды строящие свою сеть",
+    "competitive_positioning": "Позиционируется выше Altair CPA по функционалу и уровню поддержки. Конкурирует по функционалу с другими lead distribution CRM"
+  },
+  "behavioral_analysis": {
+    "presenter_name": "Robin Franssen",
+    "presenter_role": "Предположительно Co-founder или Head of Sales",
+    "presentation_style": "Консультативный, честный, ориентированный на ценность. Детальный технический уровень демо. Хорошо знает продукт, отвечает на вопросы по ходу. Использует живые примеры из практики клиентов",
+    "confidence_level": "Высокий. Уверенно демонстрирует сложные функции, не боится раскрывать детали",
+    "objection_handling": [
+      "На вопрос об автологине — немедленно дал исчерпывающий ответ: 'Yes, that's no problem. They get the right autologin link. Otherwise our clients would not be happy with us'",
+      "На вопрос что система больше для сетей — объяснил что разница только в названии модуля, функционально всё идентично",
+      "На тему цены — заранее предупредил что в другом диапазоне чем Altair CPA $400"
+    ],
+    "acknowledged_weaknesses": [
+      "Открыто сказал что для pure медиабайинг-команды (без построения сети) они могут не дать большого преимущества",
+      "Антифрод не 100% bulletproof — нужно работать с данными с долей скептицизма",
+      "В демо-окружении нет реальных данных по autologin метрикам",
+      "Monthly отчёт отключён в демо-окружении"
+    ],
+    "strong_selling_points": [
+      "Решение проблемы autologin при failover — прямое попадание в боль клиента",
+      "Выделенная поддержка которая делает интеграции за клиента",
+      "Прозрачность системы (Client history, fraud analysis)",
+      "Гибкость дистрибуции и расписаний"
+    ],
+    "prospect_reactions": [
+      "Задал точный технический вопрос про autologin при failover — знает проблематику",
+      "Попросил показать как для affiliate network а не только медиабайинг",
+      "Подтвердил что работал с системой через партнёров (JBO) и видел хорошую fraud систему",
+      "Реагировал позитивно: 'You explain very good. I understand.'"
+    ]
+  },
+  "key_quotes": [
+    {
+      "speaker": "Robin Franssen",
+      "quote": "We also offer dedicated support to our clients. There is someone available for you from 8 in the morning until 10 in the evening. They basically help you with everything you need, of course, related to the system. But also if you need, for example, an integration with a network or broker, you just invite the dedicated support account to the group you run with a broker or network and they will do everything for you.",
+      "context": "Объяснение сервиса поддержки",
+      "significance": "Ключевое конкурентное преимущество — поддержка как аутсорс интеграций"
+    },
+    {
+      "speaker": "Robin Franssen",
+      "quote": "Yes, that's no problem. They get the right autologin link. Otherwise our clients would not be happy with us.",
+      "context": "Ответ на вопрос об autologin при переходе ко второму брокеру",
+      "significance": "Прямое закрытие ключевой боли клиента — проблемы с конкурентом Altair CPA"
+    },
+    {
+      "speaker": "Robin Franssen",
+      "quote": "The system will choose the most specific distribution. So if we look at the distribution that looks like this. On the left side you have all the brokers... you can make a list of your rotations. You can say out of all my traffic I want to have 50% going here and 50% going to the other one.",
+      "context": "Объяснение принципа работы системы дистрибуции",
+      "significance": "Описание логики специфичности матчинга дистрибуций"
+    },
+    {
+      "speaker": "Robin Franssen",
+      "quote": "We have a feature that we can enable. Then you will see a fraud score in this table and in the reports as well. It does several checks. We use several external services to analyze the IP, email and phone number.",
+      "context": "Объяснение антифрод-функционала",
+      "significance": "Антифрод — differentiator, по умолчанию скрыт, включается по запросу"
+    },
+    {
+      "speaker": "Robin Franssen",
+      "quote": "For media buying, I don't know if you will greatly benefit with the features we have just to be transparent with you. I always want to be honest because if we work together it needs to be in your advantage as well.",
+      "context": "Честное признание возможного несоответствия продукта потребностям клиента",
+      "significance": "Демонстрирует консультативный подход продаж, строит доверие"
+    },
+    {
+      "speaker": "Prospect",
+      "quote": "We work with your system with some partners. For example, it's JBO. Your system is good. What we see, you have a good fraud system.",
+      "context": "Проспект рассказывает о знакомстве с системой",
+      "significance": "Подтверждение реальной репутации продукта через usage у партнёров"
+    }
+  ],
+  "scorecard": {
+    "feature_completeness": {
+      "score": 9,
+      "max": 10,
+      "notes": "Очень полный набор функций: дистрибуция с таймслотами и группами приоритетов, антифрод, autologin failover, детальная аналитика с drill-down, fake FTD, статус-оверрайд, постбеки с условиями, капы с timezone, opening hours, исключения, click-трекинг, form generator, campaigns. Отсутствует явно видимый Telegram-бот и injector"
+    },
+    "ux_quality": {
+      "score": 8,
+      "max": 10,
+      "notes": "Современный интерфейс, хорошая навигация, визуальные слайдеры для дистрибуций, информативные модальные окна. Небольшие минусы: местами интерфейс перегружен (Reports filter panel очень длинная), drag-and-drop для дистрибуций требует привыкания"
+    },
+    "tech_sophistication": {
+      "score": 8,
+      "max": 10,
+      "notes": "SPA архитектура, REST API, мультисервисный антифрод, autologin failover, timezone-aware система, постбеки с template variables (20+ переменных), matching дистрибуций по специфичности, SLOTS vs CHANCE алгоритмы, real-time refresh дашборда"
+    },
+    "sales_effectiveness": {
+      "score": 8,
+      "max": 10,
+      "notes": "Сильный консультативный подход, честность вызывает доверие, хорошее знание болей клиента, немедленная реакция на технические вопросы. Минус — нет ценообразования прозрачного до демо"
+    },
+    "innovation": {
+      "score": 7,
+      "max": 10,
+      "notes": "Хорошие инновации: LEAD DATA OVERWRITE в дистрибуции, Module Names переименование, matching по специфичности, визуальный editor дистрибуций со слайдерами, Client history с детальными попытками. Нет явных прорывных инноваций типа AI или ML"
+    },
+    "overall_score": 8.0,
+    "threat_level": "HIGH",
+    "summary": "Leadgreed — зрелый, функционально богатый продукт для lead distribution в крипто/форекс нише. Имеет сильный product-market fit, лояльных клиентов (упомянут JBO как реальный пользователь), качественную поддержку и технически продуманную систему дистрибуции. Особенно силён в антифроде и прозрачности операций. Является серьёзным конкурентом уровня HIGH THREAT",
+    "key_differentiators": [
+      "Autologin failover — корректная передача autologin при переключении между брокерами",
+      "Выделенная поддержка 8-22 которая делает интеграции за клиента",
+      "Система матчинга дистрибуций по специфичности (country > country+affiliate > country+affiliate+source)",
+      "Таймслоты дистрибуций с разными настройками для разного времени",
+      "Антифрод с IP comparison autologin URL vs lead registration IP",
+      "Client history с деталями каждой попытки (caps_full, blocked, duplicate + API error)",
+      "Module Names — полная кастомизация терминологии"
+    ],
+    "vulnerabilities": [
+      "Позиционирование преимущественно как сетевой продукт — слабее для чистого медиабайинга",
+      "Цена выше конкурентов, нет прозрачного прайса",
+      "Сложность настройки (много опций) может пугать небольшие команды",
+      "Telegram-бот / уведомления в мессенджерах не показаны явно",
+      "Injector / повторная обработка лидов не показан"
+    ],
+    "features_worth_adopting": [
+      "Client history с детализацией попыток и причин отказов (caps_full/blocked/duplicate/registered)",
+      "LEAD DATA OVERWRITE при создании дистрибуции",
+      "Matching дистрибуций по специфичности параметров (от общего к частному)",
+      "Визуальные слайдеры для управления долями дистрибуции",
+      "Fake FTD с настройкой: Fire postbacks / Charge client / Add payout / Set date in past",
+      "Module Names — переименование терминов системы",
+      "Posting variables (20+) в постбеках",
+      "Antologin IP comparison для детектирования автоматизаций",
+      "Таймслоты дистрибуций с возможностью reject leads outside opening hours",
+      "Revenue пересчёт в реальном времени 'Use fetched revenue if available'"
+    ]
+  },
+  "functional_breakdown": {
+    "описание": "Детальный разбор ключевых функций продукта Leadgreed на основе транскрипта и анализа кадров",
+    "functions": [
+      {
+        "function_name": "Распределение лидов (Lead Distribution)",
+        "purpose": "Автоматическая маршрутизация входящих лидов к нужному брокеру/клиенту на основе страны, аффилейта, параметров трафика и временных условий",
+        "data_flow": [
+          "Лид поступает через API аффилейта с параметрами (country, aff_sub, source и т.д.)",
+          "Система ищет наиболее специфичную дистрибуцию (страна+аффилейт+параметры > страна+аффилейт > страна > global)",
+          "Внутри дистрибуции проверяется активный таймслот (week/weekend/working/non-working)",
+          "Выбирается брокер по алгоритму SLOTS (историческое балансирование) или CHANCE (случайный выбор)",
+          "Система проверяет капы брокера и аффилейта",
+          "При успехе — лид передаётся брокеру, выдаётся autologin ссылка",
+          "При отказе — system пробует следующего брокера в группе, затем следующую группу приоритетов",
+          "Постбек отправляется аффилейту при успешной регистрации"
+        ],
+        "user_steps": [
+          "Создать дистрибуцию (страна, метод, параметры)",
+          "Добавить брокеров в Group 1 с % долями через слайдеры",
+          "При необходимости создать Group 2 с капами для waterfall-логики",
+          "Настроить таймслоты если нужно разное поведение в разное время",
+          "Сохранить дистрибуцию"
+        ],
+        "configuration_options": [
+          "Метод: SLOTS (балансирование) / CHANCE (случайность)",
+          "Временная зона дистрибуции",
+          "Reject leads outside opening hours (чекбокс)",
+          "Параметры матчинга: Affiliate, aff_sub 1-8, source и другие",
+          "Lead Data Overwrite — перезапись данных лида",
+          "Множество таймслотов с разными настройками",
+          "Приоритетные группы с капами"
+        ],
+        "automation_level": "Полная автоматика — система сама выбирает брокера, обрабатывает отказы, ребалансирует доли",
+        "ui_complexity": "Высокая — визуальный редактор со слайдерами, таймслотами, группами приоритетов и боковой панелью брокеров",
+        "edge_cases_handled": [
+          "Cap full — брокер пропускается, следующий в очереди",
+          "API error брокера — автоматический переход к следующему",
+          "Duplicate lead — отказ или маршрутизация к тому же брокеру (настраивается)",
+          "Нет подходящего брокера — lead blocked с причиной 'no brokers available'",
+          "Брокер недоступен в нерабочее время — reject если включён 'Reject leads outside opening hours'",
+          "Ребалансировка — при возобновлении работы брокера система догоняет его % долю"
+        ],
+        "verdict": "Один из лучших в классе. Система специфичности матчинга, таймслоты и группы приоритетов — продуманные инженерные решения"
+      },
+      {
+        "function_name": "Автологин (Autologin)",
+        "purpose": "Автоматический вход лида в платформу брокера по уникальной ссылке без необходимости ввода пароля",
+        "data_flow": [
+          "При успешной регистрации лида у брокера — система получает autologin token",
+          "Token привязывается к лиду и сохраняется в системе",
+          "Autologin URL доступен в детальном отчёте (колонка Autologin URL)",
+          "При переходе по ссылке — лид автоматически входит на платформу брокера",
+          "Token одноразовый — второй клик даёт ошибку",
+          "При failover (брокер 1 отказал) — система выдаёт autologin token от брокера 2"
+        ],
+        "user_steps": [
+          "Настроить Autologin interval в настройках аффилейта (дни/часы)",
+          "При необходимости проверить autologin URL через отчёт Details"
+        ],
+        "configuration_options": [
+          "Autologin interval (длительность действия ссылки в днях/часах)"
+        ],
+        "automation_level": "Полная автоматика, включая failover между брокерами",
+        "ui_complexity": "Низкая для пользователя — один параметр настройки",
+        "edge_cases_handled": [
+          "Failover — при отказе брокера 1 выдаётся autologin от брокера 2",
+          "Дублированный переход — второй клик даёт ошибку (одноразовый token)",
+          "IP mismatch — система сравнивает IP регистрации с IP autologin перехода, показывает флаг"
+        ],
+        "verdict": "Решает критическую боль рынка (некорректный autologin при failover). Реализован корректно и надёжно"
+      },
+      {
+        "function_name": "Капы (Caps)",
+        "purpose": "Ограничение количества лидов/FTD на уровне аффилейта, клиента с поддержкой временных зон и интервалов",
+        "data_flow": [
+          "Cap создаётся на уровне аффилейта или клиента",
+          "При каждом лиде система проверяет cap.count против cap.limit",
+          "Счётчик инкрементируется при успешной обработке",
+          "При достижении лимита — брокер/аффилейт помечается как caps_full и пропускается",
+          "Сброс происходит в указанное время (Reset at) в указанной временной зоне"
+        ],
+        "user_steps": [
+          "Перейти в вкладку Caps у аффилейта или клиента",
+          "ADD CAP",
+          "Указать Type (Lead/FTD), Interval (Daily/Total), Reset at (время сброса), Timezone, Cap (лимит)",
+          "Выбрать Countries (один или несколько, с опцией 'Create separate cap for each country')",
+          "Добавить параметры если нужна более гранулярная настройка",
+          "SAVE CAP или SCHEDULE для отложенной активации"
+        ],
+        "configuration_options": [
+          "Type: Lead или FTD",
+          "Interval: Daily, Total",
+          "Reset at: время в формате HH:MM",
+          "Timezone: любая временная зона (пример: UTC+2 Europe/Amsterdam)",
+          "Count: текущее значение (можно сбросить кнопкой)",
+          "Cap: лимит",
+          "Countries: мультиселект с опцией 'Create a separate cap for each country'",
+          "SCHEDULE — активация в будущем",
+          "ADD PARAMETER — дополнительные условия"
+        ],
+        "automation_level": "Автоматический сброс по расписанию, автоматическая блокировка при достижении лимита",
+        "ui_complexity": "Средняя — простая форма с несколькими полями",
+        "edge_cases_handled": [
+          "Разные временные зоны для разных стран — cap для Australia сбрасывается в полночь по Австралии",
+          "Создание отдельных капов для каждой страны одним кликом",
+          "Просмотр текущего заполнения (Count/Cap) в таблице"
+        ],
+        "verdict": "Хорошая реализация с timezone-awareness. Отдельный cap для каждой страны из одного UI — удобное решение"
+      },
+      {
+        "function_name": "Постбеки (Postbacks)",
+        "purpose": "Webhook-уведомления аффилейту/трекеру о событиях Lead и FTD с богатым набором динамических переменных",
+        "data_flow": [
+          "Настраивается URL постбека с шаблонными переменными",
+          "При наступлении события (Lead/FTD) — система формирует URL подставляя реальные значения переменных",
+          "GET запрос отправляется на URL аффилейта",
+          "Результат (статус ответа) логируется в Postback Log",
+          "Опционально: условная фильтрация по стране и параметрам лида"
+        ],
+        "user_steps": [
+          "Перейти в вкладку Postbacks аффилейта",
+          "ADD FIRST POSTBACK или + ADD POSTBACK",
+          "Выбрать Event (Lead/FTD)",
+          "Указать URL с шаблонными переменными (синие бейджи кликабельны для вставки)",
+          "Опционально: выбрать Funnel и Country",
+          "Опционально: ADD PARAMETER для условного срабатывания (лид должен иметь определённые параметры)",
+          "SAVE POSTBACK"
+        ],
+        "configuration_options": [
+          "Event: Lead / FTD",
+          "URL: свободный ввод с шаблонными переменными",
+          "Шаблонные переменные: {lead_id}, {click_id}, {ftd_id}, {user_id}, {affiliate_id}, {aff_id}, {affiliate_name}, {payout}, {client_id}, {client_name}, {funnel_id}, {funnel_slug}, {iso_code}, {click_id2}, {phone}, {random_number}, {aff_sub}...{aff_sub10}, {source}, {language}",
+          "Funnel: фильтр по конкретному фанелу (оставить пустым = все)",
+          "Country: фильтр по стране (оставить пустым = все)",
+          "Parameters: условия срабатывания (aff_sub 1-8)",
+          "COPY SETUP — скопировать постбеки от другого аффилейта"
+        ],
+        "automation_level": "Полная автоматика — срабатывает мгновенно при событии",
+        "ui_complexity": "Средняя — форма с шаблонными переменными в виде кликабельных бейджей (удобный UX)",
+        "edge_cases_handled": [
+          "Условное срабатывание по параметрам лида",
+          "Логирование результатов в Postback Log для диагностики",
+          "Быстрое копирование настроек от другого аффилейта"
+        ],
+        "verdict": "Богатый набор переменных (20+), условное срабатывание, логирование — профессиональная реализация"
+      },
+      {
+        "function_name": "Антифрод / детект шейва (Fraud Analysis)",
+        "purpose": "Защита от мошеннического трафика и детектирование автоматизаций/ботов",
+        "data_flow": [
+          "При поступлении лида — запросы к внешним антифрод-сервисам",
+          "Проверка IP (VPN, Proxy, fraud score 0-100)",
+          "Проверка email и телефона",
+          "Возврат агрегированного fraud score",
+          "Если score > 70 И VPN/Proxy — лид автоматически блокируется (по умолчанию)",
+          "При переходе по autologin URL — сравнение IP с IP регистрации",
+          "Результаты доступны в детальном отчёте"
+        ],
+        "user_steps": [
+          "Включить антифрод-модуль (по умолчанию выключен, требует активации командой Leadgreed)",
+          "Настроить пороговые значения (стандарт: score > 70 + VPN/Proxy = block)",
+          "Мониторить fraud score в детальном отчёте",
+          "Просматривать детали через информационную кнопку (VPN/Proxy флаги)"
+        ],
+        "configuration_options": [
+          "Включение/выключение модуля",
+          "Пороговое значение fraud score (по умолчанию 70)",
+          "Block vs мониторинг без блокировки",
+          "Строгость правил (настраивается)"
+        ],
+        "automation_level": "Высокий — автоматическая блокировка при превышении порога",
+        "ui_complexity": "Низкая для пользователя — скор отображается в таблице, кнопка с деталями",
+        "edge_cases_handled": [
+          "IPv4 vs IPv6 различия при сравнении IP — система учитывает",
+          "Детектирование автоматизаций через autologin IP comparison",
+          "Гибкая настройка порогов под разные типы трафика"
+        ],
+        "verdict": "Продвинутая реализация по сравнению с конкурентами. Особенно ценна функция IP comparison autologin — защита от накруток"
+      },
+      {
+        "function_name": "Статусы лидов и статус-оверрайд",
+        "purpose": "Отслеживание статусов лидов от брокеров и управление тем, что видит аффилейт",
+        "data_flow": [
+          "Статус получается от брокера (call back, interested, FTD, etc.)",
+          "Сохраняется в системе с временной меткой",
+          "История статусов доступна по клику",
+          "Администратор может переписать статус для показа аффилейту (Status Override)",
+          "Аффилейт видит переписанный статус"
+        ],
+        "user_steps": [
+          "В Details отчёте кликнуть на кнопку Override статуса",
+          "Выбрать Manual (ввести вручную) или Choose from dropdown",
+          "Если dropdown — выбрать из списка: Call Again, call again private, Call back, Call Back (scheduled), Call in a While, canceled, Follow Up, FTD и другие",
+          "CONFIRM"
+        ],
+        "configuration_options": [
+          "Manual input — любой произвольный статус",
+          "Dropdown — предопределённые статусы системы"
+        ],
+        "automation_level": "Ручное действие администратора",
+        "ui_complexity": "Низкая",
+        "edge_cases_handled": [
+          "История смены статусов — полный аудит лога"
+        ],
+        "verdict": "Стандартная функция для рынка, реализована корректно. Важна для управления отношениями с аффилейтами"
+      },
+      {
+        "function_name": "Аналитика и отчёты",
+        "purpose": "Многоуровневый анализ эффективности трафика, конверсий и финансовых метрик",
+        "data_flow": [
+          "Все данные агрегируются в реальном времени",
+          "Пользователь задаёт фильтры (дата, клиент, аффилейт, страна, статус, источник и т.д.)",
+          "Данные отображаются с возможностью drill-down",
+          "Кастомные колонки сохраняются как default view",
+          "Фильтры сохраняются как пресеты"
+        ],
+        "user_steps": [
+          "Перейти в Reports",
+          "Выбрать тип отчёта (Global/Clients/Countries/Offers/Affiliates/Hourly/Daily/Weekly/Details)",
+          "Настроить фильтры и нажать APPLY",
+          "Кликнуть на строку для drill-down",
+          "Настроить колонки и сохранить как default"
+        ],
+        "configuration_options": [
+          "20+ фильтров: дата, клиенты, страны, аффилейты, API офферы, офферы, статусы, источники, aff sub 1-10, языки, mapped sources",
+          "Traffic: All days / Weekends only / Weekdays only",
+          "Approved / Late FTDs / Fake Conversions / Campaign Leads / Original Leads — Include/Only/Exclude",
+          "Пресеты фильтров (сохранение и переиспользование)",
+          "SHARE FILTERS — поделиться настройками с коллегами"
+        ],
+        "automation_level": "Автоматический сбор данных, ручная настройка фильтров",
+        "ui_complexity": "Высокая — очень длинная панель фильтров, множество вкладок и опций",
+        "edge_cases_handled": [
+          "Only successfully loaded filter",
+          "Compare with past период",
+          "Monthly отчёт (отключён в демо)",
+          "Share Filters — передача настроек другим пользователям"
+        ],
+        "verdict": "Очень полная аналитическая система. Особенно ценен drill-down и Client history для операционного мониторинга"
+      },
+      {
+        "function_name": "Управление аффилейтами / медиабайерами",
+        "purpose": "Полный жизненный цикл работы с партнёрами: onboarding, настройка условий, мониторинг",
+        "data_flow": [
+          "Аффилейт регистрируется через sign-up page или создаётся вручную",
+          "Настраиваются payouts, постбеки, капы, права доступа",
+          "Аффилейту создаётся логин для доступа к своим данным",
+          "Трафик аффилейта отслеживается через API token или click-tracking"
+        ],
+        "user_steps": [],
+        "configuration_options": [],
+        "automation_level": "Частично автоматизирован — sign-up page, email уведомление об одобрении",
+        "ui_complexity": "Высокая — 10 вкладок на страницу аффилейта",
+        "edge_cases_handled": [],
+        "verdict": "Полнофункциональный модуль с гибкой системой прав и поддержкой выделенным аккаунт-менеджером"
+      },
+      {
+        "function_name": "Управление брокерами / клиентами",
+        "purpose": "Настройка условий работы с брокерами: revenues, caps, exclusions, opening hours",
+        "data_flow": [
+          "Клиент создаётся в системе",
+          "Настраиваются revenues по странам и параметрам",
+          "Задаются капы по типу лида, интервалу, странам",
+          "Настраиваются исключения аффилейтов",
+          "Задаются opening hours с опцией запрета трафика вне рабочих часов",
+          "Планируются будущие изменения через Schedule"
+        ],
+        "user_steps": [],
+        "configuration_options": [],
+        "automation_level": "Расписание изменений (Schedule) автоматически применяется",
+        "ui_complexity": "Высокая — 7 вкладок, сотни записей revenue",
+        "edge_cases_handled": [
+          "Use fetched revenue if available — получение реальных данных от брокера",
+          "Clone this client — быстрое копирование настроек"
+        ],
+        "verdict": "Очень детальный модуль. Opening hours с контролем трафика — продуманная функция"
+      },
+      {
+        "function_name": "Fake FTD / Ручное управление конверсиями",
+        "purpose": "Создание фиктивных конверсий для поддержания отношений с аффилейтами при недостаточных реальных показателях",
+        "data_flow": [
+          "Администратор выбирает лид в Details отчёте",
+          "Нажимает кнопку создания Fake Conversion",
+          "Настраивает параметры: постбек, выставление счёта клиенту, добавление выплаты, дата в прошлом",
+          "Подтверждает создание (APPROVE) или настраивает расписание (SCHEDULE SETTINGS)",
+          "Система помечает конверсию как fake в отчёте",
+          "В отчёте видна пометка реальная/fake конверсия"
+        ],
+        "user_steps": [],
+        "configuration_options": [
+          "Fire postbacks: да/нет",
+          "Charge client: да/нет (включить revenue от клиента)",
+          "Add payout: да/нет (добавить выплату аффилейту)",
+          "Set date in the past: да/нет"
+        ],
+        "automation_level": "Ручное действие с настраиваемыми опциями",
+        "ui_complexity": "Низкая — модальное окно с 4 чекбоксами",
+        "edge_cases_handled": [
+          "Опция SCHEDULE SETTINGS — запланировать fake FTD на будущее",
+          "Видимость real vs fake в отчёте — прозрачность для администратора"
+        ],
+        "verdict": "Редкая функция на рынке. Практически важна для управления отношениями с партнёрами"
+      }
+    ],
+    "cross_function_insights": [
+      "Система специфичности дистрибуций — основа архитектуры: чем больше параметров совпало, тем выше приоритет дистрибуции",
+      "Timezone-awareness пронизывает всю систему: капы, opening hours, расписания, таймслоты дистрибуций — везде можно указать свою зону",
+      "Schedule (расписание) — единый механизм для всех отложенных изменений (payouts, revenues, caps) с глобальной страницей просмотра",
+      "Client history — сквозная прозрачность по каждому лиду: какой брокер получил, почему остальные отказали",
+      "Module Names переименование позволяет адаптировать терминологию под любой бизнес (медиабайер, брокер, аффилейт)",
+      "COPY функции (Copy Payout, Copy Setup, Copy Revenue) — ускоряют онбординг новых партнёров"
+    ],
+    "ux_patterns_notable": [
+      "Синие бейджи-кнопки для вставки шаблонных переменных в URL постбека — отличный UX для снижения ошибок",
+      "Drag-and-drop клиентов в дистрибуцию из боковой панели",
+      "Слайдеры для % распределения между брокерами вместо числовых полей",
+      "CPA цена брокера отображается прямо в боковой панели дистрибуции — контекстная информация для принятия решений",
+      "Жёлтые бейджи 'no traffic' в Opening Hours — быстрая визуальная идентификация ограничений",
+      "Иллюстрация НЛО с лучом для пустых состояний — единый визуальный язык",
+      "Зелёный фон строки в Details = FTD конверсия, красный = проблема — цветовое кодирование для быстрого сканирования",
+      "Inline отображение параметров дистрибуции в списке (Affiliate: Elite Traffic) — без необходимости открывать запись"
+    ]
+  },
+  "web_enrichment": {
+    "enriched_at": "2026-03-03T00:00:00Z",
+    "search_queries_used": [
+      "Leadgreed CRM affiliate marketing crypto forex",
+      "Leadgreed.io review pricing",
+      "Leadgreed review alternative lead distribution CRM",
+      "Altair CPA lead distribution CRM forex crypto affiliate",
+      "AlterCPA pricing plans affiliate network software",
+      "Leadgreed Robin Franssen",
+      "leadgreed.io traffic analytics SimilarWeb",
+      "Leadgreed funding investors crunchbase startup",
+      "Leadgreed linkedin company employees team",
+      "leadgreed CRM отзывы обзор лиды форекс крипто",
+      "leadgreed.com lead distribution system demo affiliate",
+      "leadgreed G2 Capterra Trustpilot ProductHunt review",
+      "leadgreed affiliate network CRM software",
+      "leadgreed reddit forum alternative review",
+      "SCITO creative technology company Netherlands Belgium Leadgreed",
+      "Scito Leadgreed Clickbit company team",
+      "GRAIL powered by SCITO lead distribution affiliate",
+      "site:linkedin.com leadgreed",
+      "Leadgreed CRM lead distribution crypto forex affiliate"
+    ],
+    "company": {
+      "parent_company": {
+        "name": "SCITO (IT Services and IT Consulting)",
+        "description": "Creative technology company; Leadgreed is one of their products (alongside Clickbit). Founded 2014 as a technology branch of Scito Media.",
+        "hq": "Parallelweg Oost 21, Valkenswaard, North Brabant 5555 XA, Netherlands",
+        "dev_teams": "Development teams in North Macedonia and Bulgaria",
+        "linkedin": "https://www.linkedin.com/company/scito-performance",
+        "website": "https://scito.com",
+        "source": "https://scito.com/scito/, https://www.linkedin.com/company/scito-performance",
+        "confidence": "high"
+      },
+      "funding": {
+        "value": "не найдено публично — нет данных на Crunchbase, AngelList или PitchBook",
+        "source": null,
+        "confidence": "high",
+        "notes": "SCITO — небольшая частная компания (5 сотрудников на LinkedIn). Bootstrapped, без публичных раундов финансирования."
+      },
+      "team_size": {
+        "value": "5 (LinkedIn SCITO) — вероятно реальная команда 10-25 с учётом удалённых разработчиков",
+        "source": "https://www.linkedin.com/company/scito-performance",
+        "confidence": "medium",
+        "trend": "stable",
+        "notes": "LinkedIn показывает 5 associated members для SCITO. Вакансии открыты на Full Stack Developer, Funnel Developer, UX Frontend Developer — признак роста или ротации. Dev-команды в Северной Македонии и Болгарии."
+      },
+      "leadership": [
+        {
+          "name": "Robin Franssen",
+          "role": "Sales / Account Executive (ведущий демо-продажи)",
+          "linkedin": "не идентифицирован публично — найденные Robin Franssen на LinkedIn не связаны с Leadgreed/SCITO (механический дизайнер в MI-Partners BV, Эйндховен)",
+          "background": "Нидерланды (судя по демо-записи). Вероятно нидерландский продавец SCITO. Точный профиль не найден.",
+          "confidence": "low"
+        },
+        {
+          "name": "Alexander Willemsen",
+          "role": "Сотрудник SCITO (указан в LinkedIn компании)",
+          "linkedin": "https://www.linkedin.com/company/scito-performance",
+          "background": "Идентифицирован в списке сотрудников SCITO на LinkedIn",
+          "confidence": "medium"
+        },
+        {
+          "name": "Simona Nikolova",
+          "role": "Сотрудник SCITO",
+          "linkedin": "https://www.linkedin.com/company/scito-performance",
+          "background": "Вероятно из болгарской или македонской dev-команды",
+          "confidence": "medium"
+        },
+        {
+          "name": "Maikel van Maurik",
+          "role": "Сотрудник SCITO",
+          "linkedin": "https://www.linkedin.com/company/scito-performance",
+          "background": "Нидерланды",
+          "confidence": "medium"
+        },
+        {
+          "name": "Tom van Otten",
+          "role": "Сотрудник SCITO",
+          "linkedin": "https://www.linkedin.com/company/scito-performance",
+          "background": "Нидерланды",
+          "confidence": "medium"
+        }
+      ],
+      "recent_news": [
+        {
+          "headline": "Нет публичных новостей о финансировании, партнёрствах или скандалах за последние 12 месяцев",
+          "date": "2026-03-03",
+          "source": null,
+          "significance": "Компания работает в тени — отсутствие пресс-релизов и публичных заявлений типично для B2B SaaS в нише крипто/форекс аффилейт-маркетинга"
+        }
+      ]
+    },
+    "product": {
+      "public_description": "Next Gen Lead Distribution System — 'Contact Us For A Free Demo. Custom made according to your needs. Fully mobile friendly so you can work from anywhere.'",
+      "public_description_source": "https://leadgreed.com/",
+      "pricing": {
+        "plans": [],
+        "source": "leadgreed.io / leadgreed.com",
+        "last_checked": "2026-03-03",
+        "notes": "Цены не публикуются публично. Сайт требует контакта для получения демо. Модель: enterprise SaaS с индивидуальным ценообразованием. В демо-записи продавец сказал 'мы в другом ценовом диапазоне' относительно AlterCPA Pro ($500/мес). Вероятно Leadgreed стоит дороже $500/мес.",
+        "confidence": "low"
+      },
+      "development_velocity": {
+        "release_frequency": "не найдено публично",
+        "last_release": "не найдено публично",
+        "roadmap_focus": "не найдено публично",
+        "notes": "Нет публичного changelog или блога. Сайт scito.com упоминает оба продукта (Leadgreed + Clickbit) без дат релизов."
+      },
+      "market_sentiment": {
+        "g2_rating": null,
+        "g2_reviews_count": null,
+        "capterra_rating": null,
+        "trustpilot_rating": null,
+        "top_complaints": [],
+        "top_praises": [],
+        "sources": [],
+        "notes": "Leadgreed отсутствует на G2, Capterra, Trustpilot, ProductHunt. Нет публичных отзывов на каких-либо платформах. Полная закрытость."
+      }
+    },
+    "marketing": {
+      "monthly_traffic_estimate": {
+        "value": "не найдено — сайт слишком мал для SimilarWeb данных (< 50K визитов/мес)",
+        "source": null,
+        "notes": "leadgreed.io не отображается в SimilarWeb. leadgreed.com также без данных. Типично для нишевых B2B SaaS с прямыми продажами."
+      },
+      "top_organic_keywords": [],
+      "content_cadence": "нет публичного контента — ни блога, ни YouTube-канала не найдено",
+      "paid_advertising": {
+        "active": false,
+        "observed_channels": [],
+        "notes": "Нет признаков платной рекламы. Продажи, вероятно, через прямые демо и сарафанное радио в нише."
+      },
+      "social_media": {
+        "linkedin": "https://www.linkedin.com/company/scito-performance (103 followers, 5 employees listed)",
+        "twitter_x": "не найдено",
+        "telegram": "не найдено публично",
+        "notes": "Минимальное присутствие в соцсетях. Типично для инсайдерских B2B-продуктов в крипто/форекс нише."
+      }
+    },
+    "technology": {
+      "tech_stack": [
+        {
+          "component": "Web SaaS",
+          "detail": "Судя по описанию вакансии Full Stack Developer — 'web-based SaaS product'",
+          "confidence": "high"
+        },
+        {
+          "component": "40 database inserts per second",
+          "detail": "Метрика с сайта scito.com — указывает на высоконагруженную БД (вероятно PostgreSQL или MySQL)",
+          "confidence": "medium"
+        },
+        {
+          "component": "Background task processing",
+          "detail": "Scito.com: 'Background tasks have been processed last month' — очереди задач (Redis/RabbitMQ)",
+          "confidence": "medium"
+        }
+      ],
+      "integrations_count": "многочисленные (API офферы с брокерами — в демо показаны десятки CRM-интеграций через API)",
+      "api_maturity": "advanced",
+      "compliance_certifications": [],
+      "notes": "Продукт явно enterprise-grade с развитым API (постбеки, автологин, многопараметрические интеграции с брокерскими CRM). Нет публичных данных о сертификациях."
+    },
+    "competitor_altercpa": {
+      "actual_competitor_name": "AlterCPA (altercpa.pro)",
+      "note": "В транскрипте упомянут как 'Altair CPA' — это вероятно AlterCPA (altercpa.pro), а не Altair Engineering. AlterCPA — основной конкурент в нише affiliate network software для CPA.",
+      "pricing": {
+        "AlterCPA_Pro_monthly": "$500/мес (только лицензия, без поддержки)",
+        "AlterCPA_Pro_3months": "$1350",
+        "AlterCPA_Pro_lifetime": "$6000",
+        "AlterCPA_Optimal": "$950/мес (Basic support)",
+        "AlterCPA_Premium": "$1450/мес (Standard support)",
+        "AlterCPA_Cloud_Starter": "$8/день (~100 лидов, 2K кликов/день)",
+        "AlterCPA_Cloud_Standard": "$13/день (~500 лидов, 10K кликов/день)",
+        "AlterCPA_Cloud_Pro": "$18/день (~5000 лидов, 1M кликов/день)",
+        "AlterCPA_Lite": "$111/мес (трекер для медиабайеров)"
+      },
+      "positioning": "Self-hosted (на собственном сервере клиента) или облачный. Universal CPA platform: аффилейт-сети, трекер, CRM для мерчантов. Любые вертикали включая крипто/форекс.",
+      "key_differentiators_vs_leadgreed": [
+        "AlterCPA: self-hosted (клиент владеет сервером) vs Leadgreed: SaaS",
+        "AlterCPA: более широкий рынок (любые вертикали) vs Leadgreed: специализация крипто/форекс",
+        "AlterCPA: прозрачная публичная цена vs Leadgreed: цена только через демо",
+        "AlterCPA: поддержка не включена в базовый тариф vs Leadgreed: выделенный аккаунт-менеджер",
+        "AlterCPA: нет выделенных функций opening hours, autologin для брокеров vs Leadgreed: специфичные для форекс/крипто функции"
+      ],
+      "source": "https://www.altercpa.pro/en/price, https://www.altercpa.pro/en/altercpa, https://cpa.rip/en/services/referral-program-software/"
+    },
+    "signals": {
+      "growth_signals": [
+        {
+          "signal": "Активный наём: открытые вакансии Full Stack Developer, Funnel Developer, UX Frontend Developer",
+          "evidence": "Три вакансии одновременно на scito.com",
+          "source": "https://scito.com/jobs/"
+        },
+        {
+          "signal": "Развитие продукта GRAIL powered by SCITO — новый продукт в портфеле",
+          "evidence": "LinkedIn страница 'GRAIL - powered by SCITO' — Software Development компания в портфеле",
+          "source": "https://www.linkedin.com/company/scito-performance"
+        },
+        {
+          "signal": "Специализированный продукт в растущей нише крипто/форекс аффилейт-маркетинга",
+          "evidence": "Уникальные функции (autologin, opening hours, FTD-tracking) указывают на глубокую нишевую специализацию",
+          "source": "Демо-запись Leadgreed"
+        }
+      ],
+      "stress_signals": [
+        {
+          "signal": "Минимальный публичный след — нет отзывов, нет публичных цен, нет контента",
+          "evidence": "Отсутствие на G2, Capterra, Trustpilot, ProductHunt; нет блога; нет YouTube",
+          "source": "Поисковые запросы 2026-03-03"
+        },
+        {
+          "signal": "Очень малая команда для enterprise-продукта",
+          "evidence": "5 сотрудников на LinkedIn — риск операционной зависимости от ключевых людей",
+          "source": "https://www.linkedin.com/company/scito-performance"
+        },
+        {
+          "signal": "Работа в регулируемой нише с репутационными рисками",
+          "evidence": "Крипто/форекс — ниша с высоким регуляторным давлением. Инструменты для дистрибуции лидов могут использоваться недобросовестными брокерами.",
+          "source": "Отраслевой контекст"
+        }
+      ],
+      "strategic_intent": [
+        {
+          "hypothesis": "Leadgreed позиционирует себя как premium-альтернатива AlterCPA с фокусом на крипто/форекс специфику",
+          "supporting_evidence": [
+            "В демо напрямую сравнивается с AlterCPA по функционалу",
+            "Цена выше $500/мес AlterCPA по заявлению продавца",
+            "Специфичные для ниши функции: autologin, FTD-tracking, opening hours по странам, anti-fraud"
+          ]
+        },
+        {
+          "hypothesis": "SCITO создаёт экосистему инструментов для крипто/форекс performance marketing (Leadgreed + Clickbit)",
+          "supporting_evidence": [
+            "Два продукта: Leadgreed (CRM/дистрибуция лидов) + Clickbit (предположительно click-tracking/трекер)",
+            "Позиционирование как 'future-proof tools' для performance marketing",
+            "Dev-команды в Северной Македонии и Болгарии — снижение затрат на разработку"
+          ]
+        }
+      ]
+    },
+    "contradictions_with_meeting": [
+      {
+        "topic": "Упоминание конкурента 'Altair CPA'",
+        "claimed_in_meeting": "Продавец упоминает 'Altair CPA' как конкурента за $400 с неполным функционалом",
+        "public_data_shows": "Компания 'Altair CPA' не найдена. Вероятно имеется в виду AlterCPA (altercpa.pro) — реальный конкурент. AlterCPA Pro стоит $500/мес (базовый, без поддержки), не $400. Либо $400 — цена за Optimal-тариф AlterCPA без поддержки на момент записи.",
+        "source": "https://www.altercpa.pro/en/price",
+        "implication": "Небольшое расхождение в цене: $400 vs $500 может быть устаревшей ценой, специальным предложением или округлением. Важно: AlterCPA — самоустанавливаемое ПО, а не SaaS — это принципиальное отличие, которое продавец мог не акцентировать."
+      },
+      {
+        "topic": "Размер и зрелость компании",
+        "claimed_in_meeting": "Презентатор позиционирует Leadgreed как зрелую enterprise-платформу с выделенной поддержкой 8:00-22:00 и аккаунт-менеджерами",
+        "public_data_shows": "SCITO — компания с 5 сотрудниками на LinkedIn. Обещанная поддержка может быть ограничена при масштабировании клиентской базы.",
+        "source": "https://www.linkedin.com/company/scito-performance",
+        "implication": "Риск для потенциального клиента: enterprise-обещания от micro-компании. Следует уточнять SLA и реальную команду поддержки."
+      }
+    ],
+    "data_gaps": [
+      "Конкретные цены Leadgreed — не раскрываются публично",
+      "Количество активных клиентов / ARR — не найдено",
+      "Robin Franssen в контексте Leadgreed — LinkedIn профиль не идентифицирован",
+      "Трафик leadgreed.io и leadgreed.com — ниже порога SimilarWeb",
+      "Отзывы клиентов Leadgreed — полное отсутствие публичных отзывов",
+      "Changelog / история релизов продукта — не найдено",
+      "Технологический стек (конкретные фреймворки, языки) — не раскрыт публично",
+      "Юридическая структура SCITO (KvK номер, учредители) — не верифицировано",
+      "Интеграции Clickbit с Leadgreed — не описаны публично",
+      "GRAIL powered by SCITO — новый продукт, данных недостаточно"
+    ],
+    "analyst_summary": "Leadgreed — нишевой enterprise SaaS-продукт для дистрибуции лидов в крипто/форекс аффилейт-маркетинге, разработанный нидерландской компанией SCITO (Valkenswaard, Netherlands). Компания крайне мала (5 человек на LinkedIn) с dev-командами в Северной Македонии и Болгарии, что типично для bootstrapped B2B SaaS в этой нише. Ключевое конкурентное преимущество — глубокая специализация под форекс/крипто (autologin, FTD-трекинг, opening hours по странам, антифрод), которой нет у универсального конкурента AlterCPA ($500-1450/мес). Главный риск: полное отсутствие публичного социального доказательства (нет отзывов, нет контента, нет публичных цен) при позиционировании как enterprise-решения — это либо намеренная закрытость в чувствительной нише, либо сигнал о ранней стадии продукта. Стратегическое намерение — занять premium-сегмент выше AlterCPA, эксплуатируя отсутствие специализированных конкурентов в крипто/форекс distribution-CRM пространстве."
+  }
+}

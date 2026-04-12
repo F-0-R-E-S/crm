@@ -1,0 +1,569 @@
+Do you hear me better now?
+Yes, yes, yes.
+Perfect, apologies, my AirPods weren't connected.
+Nice to meet you finally.
+Yeah, nice to meet you too.
+How are you?
+Great bro, thank you.
+Very good.
+Working today as usual.
+How are you?
+Are you all good here?
+All good, working as usual as well.
+Are you alone in your team or do you have more partners or maybe I'm playing with you?
+Do you have employees that are working with you?
+I'm alone because I'm the owner of the team and I have partners who want to see your functional.
+Partners want to build their own network.
+I see, I see.
+I have a media buying team and we are starting work together and now we are looking for CRM
+system for better work because Altair CPA, what I tell you before, have not full functional
+what we need.
+I think with the other CRM system we can improve our ROI to more than with Altair CPA.
+Yes, yes, yes.
+So our system can definitely help you scale as we've had big clients working with it and
+are working with it.
+So I'm convinced we can help you scale if necessary.
+I don't know Altair CPA that well.
+So we're in a different price range as well.
+I think you pay 400 for the pro version at the moment.
+I looked at the site.
+Yes.
+It looks like a nice system, don't get me wrong.
+But I will show you ours and you can be the judge of that.
+For media buying, I don't know if you will greatly benefit with the features we have just
+to be transparent with you.
+I always want to be honest because if we work together it needs to be in your advantage
+as well.
+But I will show you the system and you can say what you or make your own conclusions
+one moment.
+I'm going to share my screen.
+We work with your system with some partners.
+For example, it's JBO.
+Your system is good.
+What we see, you have a good fraud system.
+Yes.
+That's something you will not fully see in the demo but I can explain it.
+Because fraud analysis is something that we don't have open by default for everyone.
+But I will explain more about that.
+One moment I'm searching the right screen.
+You should be able to see it now.
+I think.
+All right.
+So basically if you are the main user of our system, this is the first screen that you
+will see when you log in.
+It's a dashboard.
+I think you're a bit familiar with that.
+So it's self-explanatory.
+You have some widget that shows you a quick overview of your whole system.
+It's very customizable.
+You can set it up the way you want.
+It auto refreshes so you can leave it open if you want.
+You can collapse the sidebar so you have a bit more space.
+And you can compose it the way that you want.
+You can add extra widgets if necessary.
+Or you can remove the ones that you don't want.
+You can always remove the widgets from the dashboard.
+Our whole system works on a preference time zone.
+What does that mean?
+So the system is not dedicated to one time zone.
+If you work in, for example, let me say plus one, you can switch it to plus one and the
+statistics will change.
+And if you set something up, it will be in the correct time zone as well.
+But throughout the demo, you will see you always have an option to schedule in a certain
+time zone.
+So the system does calculation in the back end.
+Let's set up this one.
+We have a very extensive notification system.
+I will show you more later, but this is already like a bit of a preview.
+Here you can see your notifications and all set up notifications.
+You are in the crypto slash forex space.
+So you know there are always the three big pillars of the system are clients slash brokers,
+media buyers slash affiliates.
+And you have the rotations, the how we call it, the distributions of your traffic.
+So I will start out with media buyers.
+Here you can see less media buyers.
+You can set up everything.
+Sorry.
+Let's move like you make presentation for affiliate network.
+Because I tell to my friend your features and this and all not like for media buying
+mostly for network.
+No, no, no, no.
+But it doesn't differ much.
+It's only the name in the system.
+Look, I can show you something.
+I can make this.
+Affiliate and this is the way and the system will work because underwater it doesn't change
+much for us.
+Understand.
+So you can set up everything for this certain partners.
+What you see here are some general settings.
+So the status you can decline it or you can put it back to pending.
+That means it's integrating.
+But we have a support team that takes care of everything.
+I don't know.
+Did you talk with someone about our system or you only saw it through the partners?
+Bro, can you repeat?
+Yeah.
+So did someone recommend the system to you or did you only see it by logging in on the
+networks you work with?
+Yeah.
+Second way.
+Okay.
+So maybe also important usually that something most of the potential clients are aware of.
+So we also offer dedicated support to our clients.
+What does that mean?
+There is someone available for you from 8 in the morning until 10 in the evening on
+the time.
+They basically help you with everything you need, of course, related to the system.
+But also if you need, for example, an integration with a network or broker, you just invite
+the dedicated support account to the group you run with a broker or network and they
+will do everything for you and you'll just get a ping, okay, you can start working with
+them and you just need to set up the distribution.
+We also, we can help you with landing pages and so on, but I will come back to that later.
+I just wanted to emphasize if you, for example, have a pending affiliate as a network, we
+have the sign up page and affiliate signs up.
+You'll get an email, okay, there's an affiliate that's waiting for approval and you can approve
+and if the affiliate cannot integrate himself, you can also just contact our support and
+they will talk to him on how to integrate with the system.
+So we really try to take care of most things so that our partners can focus on their business
+and not jibberish with tech.
+So to continue, this is the main configuration, the click tracking configuration sets a bit
+more details.
+I will show you the most important things.
+We'll start with the payouts.
+So here you can set up the payouts for a certain partner.
+It's pretty straightforward.
+You choose the country, for example, if you're working in Belgium with a certain partner,
+you can tell to the system there's a payout of 500.
+But something really important when you're a network, you get a lot of traffic.
+You can really fine tune it and, for example, if you agree with another network that they
+are forwarding traffic to you, usually they use another parameter to forward the source
+ID or the affiliate ID or the partner ID, however you want to call it.
+And in here you can set up dedicated payouts based on combinations of extra parameters.
+So for example, if a source stem from a certain network would send you and they are sending
+an offset five, it's Facebook or Google, you can really fine tune what's being paid, for
+example, for this kind of traffic, they would pay extra.
+They can set it up like this with the extra parameters.
+You can always schedule a payout if you want to activate it later.
+For example, you want to activate it starting on Thursday for some reason, you can schedule
+it here.
+This is the way to set up payouts.
+You can edit them, remove them.
+If you have a big list, we have some filters on the side so you can filter out the related
+payouts that you need for your case.
+You can always copy a payout if you have a new affiliate but you want to apply the same
+payouts as an amazing partner, you can say copy and it will copy all the payouts from
+this one.
+Then we have the offers.
+So we have a part of the system that we also offer click tracking.
+These are the offers you can whitelist here.
+For example, you have 10 offers.
+You can whitelist offers for a certain affiliate so you can start using them.
+They are listed here.
+So you can see, okay, this offer is whitelisted for this affiliate.
+If they work through API, you'll need to make them here but I'll show this at a later point.
+The pixels, to set up pixels based on this partner's traffic, this only works with the
+funnels or the landing pages that are hosted on our infrastructure.
+Yeah.
+The post-vax.
+Sorry.
+I think our mostly partners, what affiliates, will use API integration.
+That's something we generally see happening more and more so it makes sense.
+But then you need to post-vax to notify them of an action.
+So you can set up an event based on if there is lead or an FTD.
+Let's say FTD, you want to fire tracking system of affiliate.com and then you want to probably
+notify them like this was the plague ID and this is your payout.
+And then you can set up this post-vax and you can even fine tune it if it's for certain
+countries.
+We have seen all kinds of setups.
+Or you can tweak it again with certain parameters if necessary and this way you can save the
+post-vax and this will be triggered every time there is an FTD for this partner.
+Then we have the distributions.
+This will list all the distributions that this partner is part of.
+Currently it's not part of a specific distribution.
+The post-vax logs, this will show you the logs of all the post-vax that were being sent.
+This is the caps.
+You will probably work with caps.
+So you can make caps based on an affiliate based on brokers.
+You can even set caps on a country specifically but we always have an easy way to access them.
+For example if you have a daily cap that needs to reset at midnight.
+But in Australia for example.
+And you want to cap it at 10 in Australia time then it will happen at midnight in Australia.
+So you don't need to think about time zones and all that.
+Then you can say Australia of course for the country.
+You can save the cap and that's about it.
+You can always follow up on that certain cap.
+For example now there were already 47 needs in Australia.
+We also have a caps page in general where you can see information about caps.
+But more on that later.
+Let me see partner-ish.
+And the last stop is users.
+Here you can see all users that are tied to a certain affiliate.
+For example the login you are using has been made through this window.
+You can say partner.com.
+Give them a password. Save the user.
+And now this partner also has a user to login to the system to see their data.
+Everything can be tweaked pretty extensively.
+We have a very broad permission system.
+So you can also tweak what affiliates or your partners can see.
+If you want to show them a lot you can show them a lot.
+If you want to show them very little you can show them very little.
+Then we go to the clients or brokers or advertisers.
+So the general settings.
+If there is a manager that needs to be applied on this client.
+And the display name this is for reporting.
+Then you have the revenue that's also pretty straightforward.
+Works the same way as affiliates and payouts.
+But here you can set up the revenue you are getting per FTD.
+So you can say Australia I'm getting I don't know 600.
+And you can save it.
+So now it's a schedule.
+As you can see here is also a schedule button.
+For example if you know tomorrow in Australia my revenue will go down to 400.
+You can schedule it for midnight nine.
+That's coming for tomorrow.
+You can save the schedule.
+And on a lot of places you will see a schedule top.
+So you can always see what actions will be applied in the future for a certain entity.
+So that can be an affiliate broker distribution.
+It's just system wide.
+At the left side you also have a general schedule page.
+Where you can see all the actions that will be applied on your environment.
+Like you can view by month and you will see everything that's scheduled.
+Let's go back here real quick.
+Then you have the caps.
+Those are the broker caps.
+So you can set them up here.
+Same way you can choose what type of interval like total daily.
+If you want a cap on FTD or lead.
+When it needs to reset and the amount.
+You can select multiple countries and you can combine them in the cap.
+Like I want to have 10 leads from these three countries in total.
+Or you can quickly set up like three countries.
+Set this checkbox and it will create three caps for the different countries.
+That's it here.
+Like it's a convenience method.
+So this will generate three separate caps.
+Each with 10 caps total.
+If you have questions please shoot.
+So I'll just continue.
+You explain very good.
+I understand.
+Perfect.
+Thank you.
+Then we have exclusions.
+So imagine this is we also have a blacklist feature.
+But this is exclusions.
+Imagine you have a broker complaining about a certain partner.
+Like he's not sending good leads.
+I don't know why.
+You can make an exclusion like I don't want this affiliate to be considered.
+And leads that are being sent to this certain broker.
+So you can add this exclusion and every time even if this one is in the distribution.
+Traffic will be excluded.
+So it will not be an option.
+Then here we have the distribution list.
+So you can quickly see where it's being used as an option in the distributions.
+But I will show you the distributions in general.
+So you have a better picture of what's happening there.
+Then you have the opening hours.
+Here you can list the opening hours of a certain advertiser.
+The flexibility here is you can use it for administration purposes.
+What does that mean?
+You just want to be able to click and see our righties open or closed.
+But you can even go further.
+And when you're setting them up, you can choose to do to not set send them traffic.
+Outside the opening hours.
+So if they are working from 9 to 5 and you check this no traffic.
+After 5 they will not be able to get any traffic from the system.
+But there are two ways to set these things up.
+So I will move on to the distributions now.
+This is the piece that connects it all.
+So now you have partners, you have clients and you want to connect these things.
+You can set up distributions.
+I will take Belgium as an example.
+You can see here this is what we call a country distribution.
+It doesn't have any other parameters attached.
+So all leads from Belgium will go to this distribution if it cannot find a more specific one.
+If you set up a more specific one, for example Belgium and the partner Elite Traffic.
+Then all traffic will go to Belgium unless Elite Traffic is sending them because it can find a more specific one.
+That's really important to understand because that's how the system is built.
+That will choose the most specific distribution.
+So if we look at the distribution that looks like this.
+On the left side you have all the brokers.
+On the top you have quick performance metrics about a certain partner for certain brokers.
+So for example you can see client B as well because out of two leads you currently convert a one.
+So you always want to have client B and rotation.
+You know what I mean?
+Or you can see some quick performance metrics.
+And here you can make a list of your rotations.
+You can say out of all my traffic I want to have 50% going here and 50% going to the other one.
+This means the system will really try to allocate 50% to one and 50% to two.
+So if you send 10 leads, if nothing goes wrong each will have five.
+If you want to add an extra one you can just drag and drop it here.
+And you can give it something you need.
+For example 30 it will take the share of another one.
+But yeah you will have to adapt for example if you want to do it like this it can be possible.
+If client B is supposed to get the lead.
+But for some reason as you know it can be a duplicate.
+It gets rejected whatever or something is wrong.
+It will automatically choose the next one that should be able to get the lead.
+And the system will try to rebalance the percentages each time.
+So imagine that client B has a problem.
+And it should get 50% of the leads.
+But like first half of today everything went to client E and D.
+Afterwards the system will try to get back to these ratios if client B starts accepting again.
+So that's something to know if you work with the system.
+That the system will try to get back to the 50% and all the following leads will go there.
+But you learn to work with it.
+Then we have on top you can see like two tabs.
+You have week and weekend.
+These are what we call time slots for the distributions.
+Sorry excuse me.
+I have a bit of a call.
+So you can make time slots.
+What does that mean?
+You can say for example I want to have all days from 9 to 5.
+I want to have a specific distribution.
+You could make it like this.
+I want to copy it to all or I only want to do it at a Monday.
+You can set up a distribution specifically on this time slot that you are about to apply.
+How does that look like if you see the week one we made here and the weekend one?
+Apparently during the week we want to send everything to B, E and D.
+But for example in the weekend we let's remove this one.
+And we want to send everything to client D only.
+So you say in the weekend 100% to client D.
+But you can really tweak the time slots.
+For example if you want to say this one goes from let's say the example I just gave you time to 5.
+And we'll do that for all.
+We can call that week working.
+For example but then you can add another time slot.
+That's week non-working for example.
+And you'd say not on the weekends because we already have something there.
+But we say everything from midnight to 9 and from 17 to 24.
+And we want to copy this configuration to all.
+You quickly made, you can see like the working one and outside of the working hours.
+And for example you want to set this one up differently like this.
+You can put it like this.
+This will be your other configuration during the non-work hours.
+So it's really flexible in terms of how you can set things up.
+Then we also have an advanced distribution.
+But this is basically another way.
+So this is the normal distribution.
+Then I'm going to show you the advanced distribution.
+So this is inside the time slots still.
+But we've had clients that work with caps.
+So what does that mean?
+For example they want to send 10 leads first to client E and then 10 leads to client C.
+So you can make different priority groups.
+And you can say I want to send 10 leads first to client E and then 100 to client C.
+And it can be 100, 100.
+Or you can even go deeper and make different rotations wherever you want.
+So you can make this one 5.
+But make sure to, because I will set this one to 50-50.
+And if you keep the priority groups the same, this means that during the first 10 leads, 5 and 5,
+leads will go 50-50 to these two.
+If 10 leads have passed, it will fill out this cap, the second one.
+And then it will jump to priority group 2.
+Nice.
+So that's important to know.
+But this gives you normally at least all terms of flexibility on how to work with your traffic.
+That's how you can set up distributions.
+You can set them up pretty specifically.
+As you can see this one is set up for affiliate lead traffic.
+It's a thousand source Google.
+So if this partner sends traffic in Belgium with these parameters, it will go to this distribution.
+If he doesn't apply these parameters, it will go to that one.
+And all other things that are not specifically matched will go to the Belgium general one.
+And you can even set up if you want a global distribution.
+Some clients want to accept everything.
+Some clients want to only open certain geos and reject everything else.
+So that depends on the way you work.
+You can easily clone distribution.
+So you have the same setup to start working with it, but you can define other parameters.
+And this is basically to edit the metadata of your distribution.
+I will show you how to set up a new one.
+You don't need to add a label or a tag unless you want one.
+The system will auto generate these.
+Then you have a method slots and chance.
+Slots is our default.
+Chance is another way.
+You know I told you like if you have 50, 50, the slots will always try to keep them in balance.
+If you pick chance, that means that every new lead has the chance of 50% going to one broker
+or another one and it doesn't care about the history.
+Like if a broker rejected the first 10 leads, it doesn't care.
+It just gets 50% chance of receiving the lead.
+I hope that makes sense.
+And here you set up the distribution country.
+So if you want to set it up for a specific country, again, you can add the parameters you want.
+So if you are setting one up for Belgium and you want to have the affiliate partner-ish,
+the one we viewed before, you can set it up like this and you can go to the next step
+and you can start setting up the distribution.
+But again, our support is always here to help.
+So when things become complex, they are always here to assist.
+You have different ways of viewing the distributions.
+You can, for example, also view it from an affiliate perspective if you want to edit their specific distributions.
+If you make them based on an offer or you want to have a list of them all just in each other.
+But we see that most people work with the country.
+So that was an important part to understand.
+Then we can go to some reports. That's the interesting part.
+This is a very big screen.
+There is a lot happening. On the left side you have all possible parameters to filter on.
+On the right part you can see the reports.
+We have the first up that's a global report. That's just how you are doing globally.
+To explain the metrics, the attempts are the registration attempts.
+Out of 150 attempts, 143 leads got accepted by advertisers.
+That's a success rate of 95%.
+You can see how many autos worked because it's a demo environment.
+There are no metrics here. But basically you are aware about the autologon and the bread.
+So the leads go to when they are registered.
+You can follow here how many went through.
+This is very convenient if you are working with partners and they have an algorithm of setup.
+You can quickly see it at the autoblogged ratios.
+Then you can see the total FTDs. How many of them were late.
+The late rule is if the FTDs are older than 12 hours or on another date.
+It's considered a late FTD. That's a conversion rate of 11%.
+You have some CPL metrics. The revenue, the payout and of course the profit.
+The following four tabs are the main information.
+This is just an entry point to your data.
+You want to start breaking down from clients or countries or offers or affiliates.
+We have the columns here. That's the main data.
+You can always choose what to show here.
+You can even reorganize the reports if you want to see certain things before other things.
+You can just move it around, set it up and you can say set as default.
+It always opens like this for you.
+You can work with some extra functionality only successfully.
+You will filter out the results where no leads were successful if you need that.
+You can say break down all. That's something I'm going to show you now.
+If you press on the name, there will be a default breakdown of the data.
+You can really break down from certain data to more informational parts.
+This is a suggested breakdown. You always have the ability to break down by whatever you want.
+It doesn't matter how deep. You can just start breaking down.
+For example, if you want to see all affiliates that have sent to a certain client,
+you can break it down like this. For example, you want to see supreme affiliates.
+You want to see their offers that they sent on.
+You can really drill down the way you want.
+You can go to countries. It's basically the same thing but another entry point.
+If you want to see affiliates that send in a certain country, you can do it like this and so on again.
+You can start from an affiliate as well and just look at what geo is that he sent.
+Where is the country? Did I miss it?
+You can see the countries he sent in.
+You can see the hourly statistics. You can see the daily and the weekly.
+You can have monthly but it's not enabled in the demo environment.
+Same thing. You can break down again however you want.
+Then one of the powerful views in the system.
+This is basically all the details about the leads being sent in your system.
+I'm just going to start with the columns you see here.
+I will explain the other filters later.
+The first column you see is what we call registration attempts.
+Like a lead comes in. You have four potential brokers that it will go to but it will pick one.
+If it doesn't succeed with the first one, it will go to the second one and so on.
+You quickly can see how many it tried. You can click here and you can see how client F is the capsperful.
+Client C was blocked because of an error in the API.
+Same for client A but it succeeded with client D.
+It's doing automatically.
+I have one question about autologuing.
+Autologuing is saved when leads try to come second or third time.
+Or lead get autologuing with first broker.
+When he goes to second or third broker, he goes without autologuing.
+I understand.
+Basically what happens here, these brokers are tried but they let us know they did not accept the lead.
+There is no autologuing yet.
+Client D gets autologuing.
+They can only use the autologuing once for client D.
+They get a special token and if they click it, they go through.
+The second time they will get an error.
+If a lead depends, it will try to register again.
+It will be sent to the same broker or it will be rejected because it's a duplicate.
+That depends on how you want to set it up.
+We have a problem with Alter.
+We have a lead who goes to one partner broker.
+He goes to one broker.
+Broker rejects this lead.
+This lead should be automatically sent to next broker.
+But this lead does not get autologuing link from second broker.
+He goes to second broker without autologuing.
+We do not have that problem.
+You have this function, right?
+Yes, that's no problem.
+They get the right autologuing link.
+Otherwise our clients would not be happy with us.
+Great.
+To continue, here you can see the affiliate ID and affiliate name that you are getting or the lead will send from.
+Again, you have a lot of columns.
+You can customize however you want to see it.
+For example, if you do not want to see the affiliate ID, you can just set it or disable it.
+You can look at it like this or set your view as default.
+You always get the same view.
+You can see the country.
+The status is also an important one.
+As you know, there are call statuses.
+We track them.
+You can always see the history of call statuses here.
+This is convenient to know and to follow.
+You have the ability to override it towards your partners.
+For example, there is a status.
+For some reason, you want to show something else because it is problematic for you.
+You can set it up here or you can choose an existing one or you can just type something.
+You can confirm and then that is the status that affiliate will see.
+You will see the creation date, the email, the funnel, the offer and so on.
+You have the ability to trigger an FDD.
+For example, if you have a broker that is not performing towards what you were expecting,
+but you made some promises towards your partners,
+we often see that they want to fire an FDD to their partner.
+The relationship stays in a good manner if you know what I mean.
+You have to be an FDD column.
+That is basically the timestamp of the broker where you can see when it was published.
+Sometimes we fetched FDD at 1 o'clock but it was published at 12.50.
+For example, you can see the correct date.
+You can see if it is a real conversion or not because you can fire fakes as we call it.
+If you manually fire something and then you move on with some revenue payout and auto log information.
+For example, here you can see the color green.
+I am on this row and you can see revenue and payout.
+If something was misconfigured, you always have the option to edit the revenue and payout.
+For example, this was supposed to be 900.
+You can change it retroactively.
+The auto log information on the demo, everything is no, but here you can see yes or no.
+The auto log end link, the user was sent to.
+You can always check it if you need to.
+Apart from that, let me see, do we have something I should show you?
+You can see the blockage reason.
+You have stability.
+You send the language with the lead.
+For example, in Belgium you have Dutch and French.
+The blockage reason is something interesting.
+It does not have any data on the demo environment.
+Basically, when a lead is blocked, it will show the reason here.
+A general one, there were no brokers available.
+There was an island that says some more to capture a fool or something like that.
+I will always show here.
+Something you asked about, but it is not available in the demo, is our fraud analysis.
+We have a feature that we can enable.
+Then you will see a fraud score in this table and in the reports as well.
+It does several checks.
+We use several external services to analyze the IP, email and phone number.
+We get back data, like if it is using a proxy or using a VPN.
+The highly, how do they, what is the right term?
+The fraud possibility.
+It is like an indicator.
+It gives you a score from 0 to 100.
+You can set up the rules however you want, but the defaults are that if a lead is coming from a VPN or proxy
+and their fraud possibility is higher than 70, the lead is blocked.
+You can tweak this however you want.
+If you do not want to block the lead, you can disable it, but still view it.
+If you want to be more strict, you can set up more strict however you want, but that is the fraud analysis.
+You can check the informational button and it will show you like this lead came through proxy or came through VPN.
+I always tell the clients these are external databases and those services work hard.
+On keeping data as accurate as possible, is it 100% bulletproof? No.
+You need to take it with a grain of salt.
+If you work with a partner and you can see out of 100 leads, 80 of his leads are giving you a fraud possibility of more than 70.
+You know something is up.
+If it happens for one or two leads out of 100 leads, it all depends on how you work of course, but you can probably neglect it.
+You need to learn to work with it.
+It is extra information that you can take into account in your partnerships.
+We also have fraud analysis on the autolog end line.
+In the past, for example, we detected automations, things like that.
+We also compare the IPs of the leads that are coming in and the IP of the autolog end line.
+If they are not similar and it is not due to IPv4 and 6, you will also see an indicator that you should probably check something.
+So that is a bit in short about our detail stop.
+You have different colors.

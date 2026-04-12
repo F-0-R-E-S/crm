@@ -1,0 +1,699 @@
+{
+  "analysis_meta": {
+    "date": "2026-04-12",
+    "source_video": "Запись экрана 2026-03-12 в 12.39.14.mov",
+    "transcript_language": "no audio — transcript file contains '(no audio)' only",
+    "frames_examined": [
+      "frame_000001.jpg", "frame_000002.jpg", "frame_000036.jpg", "frame_000037.jpg",
+      "frame_000044.jpg", "frame_000047.jpg", "frame_000048.jpg", "frame_000063.jpg",
+      "frame_000088.jpg", "frame_000089.jpg", "frame_000098.jpg", "frame_000099.jpg",
+      "frame_000107.jpg", "frame_000148.jpg", "frame_000158.jpg", "frame_000166.jpg",
+      "frame_000395.jpg", "frame_000451.jpg", "frame_000486.jpg", "frame_000503.jpg",
+      "frame_000527.jpg", "frame_000533.jpg", "frame_000604.jpg", "frame_000706.jpg",
+      "frame_000717.jpg", "frame_000718.jpg", "frame_000719.jpg", "frame_000736.jpg"
+    ],
+    "total_unique_frames": 139,
+    "notes": "Recording has NO audio track — transcript is empty. Analysis is based entirely on visual frames. Product is demoed over a Google Meet call (room ede-hxjp-uod). Presenter is Gari Zeldich sharing screen. The trackbox.ai splash screen (frame_000717.jpg) confirms the product name includes the '.ai' suffix. Overview.json mis-labeled frame_000148.jpg as 'Lead detail modal — Margarett Coby' when it actually shows the Campaigns list; other overview frame descriptions are accurate."
+  },
+
+  "product_identification": {
+    "product_name": "trackbox.ai",
+    "product_url": "trackbox.ai (confirmed from splash screen logo in frame_000717.jpg)",
+    "company_name": "not determined",
+    "product_version": "not shown in recording",
+    "product_category": "Affiliate marketing CRM / performance marketing lead management platform",
+    "positioning": "A full-stack affiliate and lead management system for performance marketing networks: tracks leads from acquisition through FTD conversion, manages affiliate relationships, routes leads to brands, detects fraud, and provides granular analytics.",
+    "target_market": "Performance marketing networks, affiliate managers, and media buyers operating CPA/lead-gen campaigns — particularly in high-regulation verticals (finance, forex, crypto) based on campaign names like 'Campaign for offer FX ETH/XRP/Bitcoin'.",
+    "pricing_model": "not shown in recording",
+    "pricing_details": "not shown in recording",
+    "ui_language": "English",
+    "competitors_mentioned": [],
+    "prospect_pain_points": [
+      "Need to monitor affiliate performance in real time across multiple brands and campaigns",
+      "Need to detect and filter fraudulent leads (bots, duplicates, mismatched phone/country) before passing them to brands",
+      "Need to track FTD (First Time Deposit) conversions and reconcile affiliate payouts",
+      "Need visibility into which leads were accepted, rejected, or timed out by brand CRMs",
+      "Need to route leads automatically based on rules (timing, caps, destination brand)",
+      "Need to manage parameter replacement (UTM/tracking params) per affiliate and campaign",
+      "Need security oversight: employees without 2FA, logins from new locations, unauthorized exports",
+      "Need to assign lead quality scores and distinguish Q-Leads from raw total leads",
+      "Need per-affiliate performance analytics with customizable metrics",
+      "Need to bulk-import and inject lead lists into specific campaigns and affiliates"
+    ]
+  },
+
+  "feature_map": {
+    "Dashboard": {
+      "description": "Executive overview page displaying aggregated KPI metrics, affiliate performance summary, live lead feeds, a multi-series trend chart, traffic map, and security alerts for the selected date range.",
+      "sub_features": {
+        "Traffic KPI Cards": {
+          "description": "Shows top-of-funnel traffic metrics with period-over-period comparison.",
+          "ui_elements": ["Impressions 288", "Clicks 258", "CTL 43.02%", "Yesterday comparisons"],
+          "notes": "Percentage change vs prior period shown in green (positive) or red (negative) below each card."
+        },
+        "Finance KPI Cards": {
+          "description": "Financial performance metrics including revenue, payout to affiliates, and net profit.",
+          "ui_elements": ["Revenue 2,100€", "Payout 8,312.66€", "Net Profit -4,212.66€"],
+          "notes": "Net Profit displayed in red when negative, highlighting financial loss on the selected period. Demo data shows significant negative margin."
+        },
+        "Conversion KPI Cards": {
+          "description": "Lead quality and conversion funnel metrics.",
+          "ui_elements": ["Q-Leads 111", "Q-FTDs 19", "CR 17.12%"],
+          "notes": "Q-Leads and Q-FTDs are 'qualified' lead counts, distinct from raw totals."
+        },
+        "Security Alert Banner": {
+          "description": "Inline security warning on the dashboard prompting action on compliance issues.",
+          "ui_elements": ["Your system at risk: activate 2FA", "View Security Report", "Some employees don't have 2FA enabled. Ask them to activate it."],
+          "notes": "Links directly to the Security section for remediation."
+        },
+        "Monthly Goals": {
+          "description": "Progress bars showing leads and FTD deposit goals vs actuals.",
+          "ui_elements": ["Monthly Goals", "11 of 500 Leads", "19 of 100 Deposits"],
+          "notes": "Configurable target numbers set in System Settings."
+        },
+        "Online Users & Pending Affiliates": {
+          "description": "Live counters for currently active users and affiliates awaiting approval.",
+          "ui_elements": ["Online Users", "Pending Affiliates +1"],
+          "notes": "Indicates real-time system activity."
+        },
+        "Top Affiliates Table": {
+          "description": "Ranked leaderboard table of top-performing affiliates for the selected period.",
+          "ui_elements": ["Top 11 Affiliates", "Name", "Impressions", "Total Leads", "Q-Leads", "Total FTDs", "Q-FTDs", "Conversion Rate", "Clicks", "Affiliate filter dropdown"],
+          "notes": "Rows include: Affiliate3 (54.55% CR), AffiliateBloc (various), Affiliate1, Affiliate2. Up to 11 affiliates shown; count configurable."
+        },
+        "TCC / Expert Live Feed": {
+          "description": "Two live feed panels showing the most recent incoming leads with country of origin.",
+          "ui_elements": ["TCC", "Expert", "View all posts", "Issue Date", "Source", "Australia flag", "Spain flag", "Israel flag", "Your Organization label"],
+          "notes": "TCC and Expert appear to be two distinct brand destinations receiving leads in real time. Country flags indicate lead origin geography."
+        },
+        "Statistics Chart": {
+          "description": "Multi-line trend chart overlaying key metrics over the date range.",
+          "ui_elements": ["Statistics", "Impressions 288 (line)", "Q-Leads 23 (line)", "FTDs 20 (line)", "Q-FTDs 19 (line)", "4 selected (legend toggle)", "date axis: 25 Mar - 12 Mar"],
+          "notes": "Legend items are togglable. Shows the last ~2 weeks of data."
+        },
+        "Traffic Map": {
+          "description": "Geographic heatmap/visualization of traffic by country.",
+          "ui_elements": ["Traffic Map", "Impressions dropdown", "Insights button"],
+          "notes": "Metric selector allows switching between Impressions, Clicks, etc."
+        },
+        "Date Range / Quick Tabs": {
+          "description": "Date filter at top with preset quick-select tabs.",
+          "ui_elements": ["Filter (date picker)", "Today", "Yesterday", "Last 7 Days", "This Week", "This Month", "Last Month", "Custom", "Get Data button"],
+          "notes": "All sections share this top-level filter. 'Get Data' must be manually clicked after changing the range."
+        }
+      }
+    },
+
+    "Leads": {
+      "description": "Central lead management module. Lists all incoming leads across affiliates and campaigns, supports detailed inspection of individual leads, fraud analysis, bulk operations, and list import.",
+      "sub_features": {
+        "Lead List Table": {
+          "description": "Paginated data table of all leads with sortable/filterable columns.",
+          "ui_elements": ["Leads (page title)", "Main View tab", "New Unconverted View tab", "New Unnamed View tab (multiple)", "+ (add view tab)", "Email", "Affiliate", "Campaign", "Box", "Brand", "Country", "Phone", "Type", "Status", "Created Date", "Call Status", "Callback Mapped", "Login", "IP", "Fraud Score", "Bot", "Brand Response", "Items 25 (page size)", "Showing N / N results", "Filter (date)", "Get Data", "Email search field"],
+          "notes": "Multiple saved view tabs allow different column/filter presets. Views can be named. Columns are fully customizable via Customize Columns modal."
+        },
+        "Filter Panel": {
+          "description": "Slide-out filter panel for narrowing the lead list.",
+          "ui_elements": ["Filters", "Affiliates (multi-select)", "Country (multi-select)", "Brand (multi-select)"],
+          "notes": "Filter panel is collapsible. After applying filters the table reloads."
+        },
+        "Customize Columns Modal": {
+          "description": "Modal for toggling which columns are visible in the leads table.",
+          "ui_elements": ["Customize Columns", "Brand Response", "Fraud Score", "Affiliate", "Bot", "Brand", "Country", "Email", "Phone", "Type"],
+          "notes": "Bot column shows automated traffic detection indicators in red/orange tags when enabled."
+        },
+        "Lead Detail Modal": {
+          "description": "Full-detail overlay for a single lead record showing all tracked data, API integration logs, and analytical tabs.",
+          "ui_elements": ["Lead name (e.g. Margarett Coby, Elida Serna, Dion Wiers)", "Details tab", "Smart Responses tab", "Lead Analysis tab", "Transactions tab", "Fraud Detection tab", "Call Status", "Lead source details", "Tracking Parameters", "API Request (tab)", "API Response (tab)", "Auto Logs by Body", "Result Seems", "No Data (empty state)"],
+          "notes": "The API Request/Response sub-tabs show the raw JSON payload sent to the brand CRM and the brand's response. 'Result Seems' likely indicates a verdict label on the push result. Empty state shows 'No Data' when no API log is available."
+        },
+        "Fraud Detection Tab": {
+          "description": "Per-lead fraud risk scoring and integration with a fraud API.",
+          "ui_elements": ["Fraud Detection (tab)", "Fraud Score", "Available Credits 999", "Lead source details", "Auto Logs by Body", "Result Seems"],
+          "notes": "Available Credits 999 suggests a credit-based fraud API (likely third-party). The fraud score is computed per lead."
+        },
+        "Bulk Actions (Bottom Action Bar)": {
+          "description": "Multi-select checkboxes on lead rows reveal a bottom action bar for batch operations.",
+          "ui_elements": ["Fraud Check", "Fix Customer Id Param", "Notes", "Change Sale Status", "Change Type", "Inject Leads", "Delete", "Cancel", "N rows selected"],
+          "notes": "Inject Leads opens the 'Where to inject?' modal. Fraud Check presumably triggers the fraud API for selected leads in batch."
+        },
+        "Where to Inject? (Import Modal)": {
+          "description": "Modal for routing selected leads to a specific campaign and affiliate.",
+          "ui_elements": ["Where to inject?", "Campaign (dropdown)", "Affiliates (dropdown)", "Use Autologin (checkbox)", "Confirm button"],
+          "notes": "Allows rerouting leads across affiliates/campaigns in bulk. Autologin option suggests generating auto-login links for the leads."
+        },
+        "Create New Rule (Upload List)": {
+          "description": "Modal for importing a lead list from a file or from an existing list source.",
+          "ui_elements": ["Create New Rule", "Information tab", "Rule Name (text input)", "Select A Source (dropdown)", "Loading List (option)", "Upload A New List (option)", "Drag and drop files here to upload", "Create New Rule (button)", "Download Template (button)"],
+          "notes": "Download Template allows downloading a correctly formatted CSV/XLSX for upload. This appears to be a lead list import feature tied to distribution rules."
+        }
+      }
+    },
+
+    "Campaigns": {
+      "description": "Manages the campaign catalog — the bridge between affiliate traffic and brand destinations. Each campaign belongs to a brand and has privacy and status controls.",
+      "sub_features": {
+        "Campaign List Table": {
+          "description": "Paginated table of all campaigns with status and visibility management.",
+          "ui_elements": ["Campaigns (page title)", "Main View tab", "Items 25", "Showing 31 / 2485 results", "ID", "Name", "Brand", "Brand ID", "Status (Active/Inactive)", "Privacy (Public/Private)", "Note", "Create Campaign button", "Search by Name field", "Name sort dropdown"],
+          "notes": "2485 total campaigns indicate a large-scale operation. Privacy (Public/Private) controls which affiliates can see and use a campaign. Brands include: Mock, AfxCenters, Shabbai, Antiblock, Mock5, Mock4. Campaign naming convention e.g. 'Campaign for offer FX ETH' indicates vertical-specific campaigns."
+        }
+      }
+    },
+
+    "Statistics": {
+      "description": "Performance analytics module showing aggregated metrics per affiliate (and optionally per campaign, brand, country) for the selected date range.",
+      "sub_features": {
+        "Performance Graph Table": {
+          "description": "Main statistics table with one row per affiliate/campaign entity showing all key metrics.",
+          "ui_elements": ["Statistics (page title)", "Main View tab", "MyView tab", "Performance Graph heading", "Name", "Impressions", "Clicks", "Q-Leads", "CTL", "Q-FTDs", "CR", "Total Payout", "Revenue", "ROI", "Late FTDs", "Hard Failures", "Unassigned", "Injected", "New Lead button (orange)", "Get Data button", "Filter (date)", "Search by Name", "Name sort dropdown"],
+          "notes": "Totals row at bottom: 288 Impressions, 258 Clicks, 111 Q-Leads, 19 Q-FTDs, €6,312.66 payout, €6,300 revenue. ROI is shown as negative for some affiliates (e.g. -87.07%, -83.4%). 'Hard Failures' and 'Unassigned' appear to track API push failures and unrouted leads."
+        },
+        "Filter Panel": {
+          "description": "Filters for segmenting statistics by affiliate, country, brand.",
+          "ui_elements": ["Filters", "Affiliates (multi-select)", "Country (multi-select)", "Brand (multi-select)", "Today", "Yesterday", "Last 7 Days", "This Week", "This Month", "Last Month (date range dropdown)"],
+          "notes": "Date range options for the filter panel are separate from the top-level date filter."
+        },
+        "Customize Columns Modal": {
+          "description": "Drag-and-drop column customization for the statistics table.",
+          "ui_elements": ["Customize Columns", "Available Fields", "In Use", "Search by Field...", "Insights", "ID", "TCC Actions", "Installs", "CTR", "Uninstalls", "Total Leads", "Total FTDs", "Impressions", "Clicks", "Q-Leads", "CTL", "Q-FTDs", "CR", "Total Payout", "Revenue", "Confirm button"],
+          "notes": "Two-panel design: Available Fields (left) and In Use (right) with add/remove buttons."
+        },
+        "Insights Modal": {
+          "description": "Per-affiliate drill-down modal with performance charts and activity analysis.",
+          "ui_elements": ["Insights For [Affiliate Name]", "Performance tab", "Hourly Activity tab", "Auto Login tab", "No Data (empty state)", "Impressions (line)", "Q-Leads (line)", "CTL (line)", "Q-FTDs (line)", "multi-line trend chart"],
+          "notes": "Accessible by clicking a row in the statistics table. Performance tab shows trend lines over time. Some affiliates show 'No Data' if they have no activity in the period. Hourly Activity and Auto Login tabs also available."
+        }
+      }
+    },
+
+    "Security": {
+      "description": "Security and compliance monitoring module tracking 2FA adoption, suspicious logins, data exports, and password resets.",
+      "sub_features": {
+        "Security Alert Cards": {
+          "description": "Three severity-coded alert cards summarizing the current security posture.",
+          "ui_elements": ["Security (page title)", "Your system at risk: activate 2FA (red banner)", "Employees Without 2FA 30", "Logins From A New Location 14", "Exports (7 days) 0", "Password Resets 4", "Show Low severity risks (toggle)", "Filter 05/03/2026 - 12/03/2026", "Get Data"],
+          "notes": "30 employees lacking 2FA is flagged as high risk. The 'Show Low severity risks' toggle suggests a risk tiering system."
+        },
+        "Password Resets Table": {
+          "description": "Detailed list of recent password reset events with user and role information.",
+          "ui_elements": ["ID (A sort)", "Username", "Role", "Last Reset (date)", "Changed By", "10000008 — 400f — Affiliate", "10000007 — Tom — Affiliate", "10000006 — ecko — MasterAffiliate", "10000005 — Ted543 — Affiliate", "System (Changed By value)", "Showing 4 / 4 results"],
+          "notes": "Roles visible: Affiliate, MasterAffiliate. 'System' as the 'Changed By' actor indicates automated or admin-initiated resets."
+        }
+      }
+    },
+
+    "Falcon": {
+      "description": "FTD (First Time Deposit) management module. Tracks conversion events reported by brand CRMs, allows manual FTD updates, and manages payout reconciliation.",
+      "sub_features": {
+        "FTD Records Table": {
+          "description": "Full list of FTD events with affiliate, campaign, status, and payout data.",
+          "ui_elements": ["Falcon (page title)", "Main View tab", "SELECTION control", "New Lead button", "FTD Update (red link)", "Filter 06/01/2026 - 12/03/2026", "Email search field", "ID", "Found Date", "Customer Id", "Email", "Affiliate", "Campaign", "Country", "Status (Approved / Declined)", "Actions (CPA)", "Conversion Date", "Transaction", "Call Status (NEW)", "Payout", "Rev (Revenue)", "Created", "Updated", "Item", "Items 25", "Showing 29 / 38 results"],
+          "notes": "Most FTDs show 'Approved' status; some show 'Declined'. CPA in the Actions column indicates cost-per-acquisition model. Payout and Revenue columns track financial settlements. 'FTD Update' (red) suggests a manual upload or correction flow. Country flags shown per record (ES=Spain, GB=UK)."
+        }
+      }
+    },
+
+    "Replace Params": {
+      "description": "Parameter replacement rule engine that substitutes tracking parameters (UTM, affiliate IDs, custom params) when leads are pushed to brands — enabling flexible parameter mapping per affiliate/country/campaign combination.",
+      "sub_features": {
+        "Replace Params Table": {
+          "description": "Table of active parameter replacement rules.",
+          "ui_elements": ["Replace Params (page title)", "Filter", "New Lead button", "Create New Params button", "ID", "Name", "Affiliate", "Country", "Campaign", "Status (ON/OFF toggle)", "Save in Leads (ON/OFF toggle)", "Created", "Updated", "Note", "Items 25", "Showing 2 / 3 results"],
+          "notes": "Rules include 'test' (All Affiliates, BRAND TEST, Created 13/02/26) and 'Test Aff Trafalgan' (Aiest, +243 country code, All Campaigns). 'Save in Leads' toggle controls whether the replaced params are written back to the lead record."
+        }
+      }
+    },
+
+    "Distribution": {
+      "description": "Lead routing and distribution rule engine. Defines where leads are sent (brand/CRM destinations), with timing controls, daily/hourly caps, and per-rule status management.",
+      "sub_features": {
+        "Distribution Summary Counters": {
+          "description": "Top-of-page aggregate limit counters showing current usage vs configured maximum.",
+          "ui_elements": ["Daily Leads Limit 5 / 100000", "Hourly Leads Limit 0 / 10000", "Rules Limit 2 / 10"],
+          "notes": "Limits appear to be soft caps shown for awareness. Rules Limit (2/10) caps the number of active distribution rules."
+        },
+        "Distribution Rules Table": {
+          "description": "Paginated list of lead routing rules with full destination and timing details.",
+          "ui_elements": ["Distribution tab", "Lists tab", "Filter", "Get Data", "Create New Rule button", "ID", "Name", "Successful Leads", "Sent leads", "Timing (DB_TO_LIST — Now)", "Status (Done / Running)", "Destination (Affiliate + Campaign)", "Cap", "Created", "Updated", "Start", "Items 25", "Showing 25 of 80 results"],
+          "notes": "Destination format: 'Affiliate: [name] Campaign: [name]'. Timing 'DB_TO_LIST — Now' suggests database-to-list immediate push mode. Status values: Done, Running. Cap column controls max leads per rule."
+        }
+      }
+    },
+
+    "System Settings": {
+      "description": "Global configuration panel for platform branding, lead processing behavior, fraud detection, registration forms, and integrations.",
+      "sub_features": {
+        "General Tab": {
+          "description": "Core platform preferences and operational defaults.",
+          "ui_elements": ["General tab", "Registration Page tab", "Integration tab", "Aliases tab", "IP Registration Form tab", "Fraud Detection tab", "System Title (text input: 'Demo System')", "Change your system's tab text", "Brand Logo (upload)", "Theme Color (color palette picker with 8 preset swatches)", "Light / Dark theme toggle", "Break starts (Sunday / Monday radio)", "Reset Menu Layout", "Auto-approve Leads (toggle)", "Leads qualified by default (toggle)", "Include Free parameters for injected leads (toggle)"],
+          "notes": "Theme Color supports full color customization. White-label capability implied by System Title and Brand Logo controls."
+        },
+        "Right Panel — Defaults & Validation": {
+          "description": "Default behaviors for invalid transactions, duplicate blocking, and lead prioritization.",
+          "ui_elements": ["Default settings for Invalid Transactions (collapsible)", "Contact Details (collapsible)", "Monthly Goals (collapsible)", "Block Duplicates by Email/Phone/IP (toggles)", "Block duplicate IPs", "Block duplicate Emails", "Block duplicate Phones", "Block leads if IP and phone country mismatch (toggle)", "Duplicate Lead Criteria (dropdown: Any Type)", "Replace Params Rule Priority (dropdown: First Rule)"],
+          "notes": "Country mismatch blocking is a fraud prevention control. 'Replace Params Rule Priority: First Rule' means when multiple rules match, the first matching rule wins."
+        }
+      }
+    },
+
+    "Employees": {
+      "description": "User management module for internal staff and affiliate accounts.",
+      "sub_features": {
+        "Employee List Table": {
+          "description": "Full list of system users with role, status, and activity metadata.",
+          "ui_elements": ["Employees (page title)", "Main View tab", "SELECTION", "New Lead button", "Create Employee button", "Filter (date)", "Username search", "Employee (email column)", "Full Name", "Created", "Call status", "Status", "JTA", "Role (e.g. GeneralManager)", "Last Promoted Sheet"],
+          "notes": "Role 'GeneralManager' visible in demo data. 'JTA' column purpose not clear from visual alone — likely a boolean flag or date. 'Last Promoted Sheet' may track affiliate tier promotions."
+        }
+      }
+    },
+
+    "Left Sidebar Navigation": {
+      "description": "Icon-only collapsible left sidebar providing access to all product modules.",
+      "sub_features": {
+        "Navigation Items": {
+          "description": "All navigation destinations visible in the expanded sidebar.",
+          "ui_elements": ["trackbox.ai logo (blue 'b' icon, top)", "Leads", "Traffic", "Statistics", "Boxes", "Campaigns", "Affiliates", "Employees", "Offers", "Transactions", "Falcon (with custom icon)", "Balance", "Traffic Rules", "Alerts", "Payment Plans", "Replace Params (visible in Replace Params frames)"],
+          "notes": "Navigation uses icon-only display by default; text labels appear on hover or when expanded. At least 15 distinct modules are accessible."
+        }
+      }
+    }
+  },
+
+  "ux_ui": {
+    "design_style": "enterprise dark-mode dashboard — dense data, low visual noise, consistent dark navy/charcoal backgrounds with orange and blue accent colors",
+    "navigation_pattern": "narrow left sidebar (icon-only, collapsible) + top date filter bar with quick-select tabs + main content area; module pages use sub-tabs for view variants",
+    "color_scheme": "Primary background: #1a1f2e (dark navy/charcoal); Accent 1: #FF6B00 orange (primary action buttons: New Lead, Get Data, Create); Accent 2: #3B82F6 blue (secondary actions, highlights); Success/positive: green; Error/negative: red; Status badges: green (Active/Approved), red (Declined/risk), orange (warnings)",
+    "framework_hints": "Custom-built UI — consistent component library with dark-themed cards, skeleton loading states, and modal dialogs. Likely React-based given the SPA navigation patterns. Chat bubble widget visible in bottom-right (third-party support widget).",
+    "key_screens": [
+      {
+        "screen_name": "trackbox.ai Splash / Loading Screen",
+        "frame_ref": "frame_000717.jpg",
+        "timestamp_seconds": 1790,
+        "description": "Full-screen dark loading screen with the trackbox.ai logo centered — white 'b' monogram with 'trackbox.ai' text and a glowing purple/blue circular animation ring.",
+        "notable_elements": ["trackbox.ai logo", "glowing ring loading animation", "dark background"]
+      },
+      {
+        "screen_name": "Dashboard — Full View",
+        "frame_ref": "frame_000063.jpg",
+        "timestamp_seconds": 155,
+        "description": "The main dashboard showing all KPI cards (Traffic, Finance, Conversion, Security), monthly goal progress bars, Online Users, Top 11 Affiliates table, TCC/Expert live feeds, Statistics multi-line chart, and Traffic Map.",
+        "notable_elements": ["Impressions 288", "Clicks 258", "CTL 43.02%", "Revenue 2,100€", "Payout 8,312.66€", "Net Profit -4,212.66€", "Q-Leads 111", "Q-FTDs 19", "CR 17.12%", "Top 11 Affiliates table", "TCC/Expert live feeds with country flags", "multi-line Statistics chart", "Traffic Map", "Monthly Goals progress bars"]
+      },
+      {
+        "screen_name": "Security — Risk Overview",
+        "frame_ref": "frame_000088.jpg",
+        "timestamp_seconds": 217,
+        "description": "Security page showing three risk alert cards: 30 employees without 2FA (red/high severity), 14 logins from new locations (medium), 0 exports in 7 days, 4 password resets (medium).",
+        "notable_elements": ["Employees Without 2FA 30", "Logins From A New Location 14", "Exports (7 days) 0", "Password Resets 4", "Show Low severity risks toggle"]
+      },
+      {
+        "screen_name": "Leads — List with Bulk Action Bar",
+        "frame_ref": "frame_000395.jpg",
+        "timestamp_seconds": 985,
+        "description": "Leads table with multiple rows selected showing all columns and the bottom bulk-action bar with Fraud Check, Fix Customer Id Param, Notes, Change Sale Status, Change Type, Inject Leads, Delete, Cancel. The 'Where to inject?' popup is open.",
+        "notable_elements": ["Multiple selected rows with checkboxes", "Campaign, Box, Brand, Country, Email, Phone, Type columns", "Where to inject? modal", "Campaign and Affiliates dropdowns", "Use Autologin checkbox"]
+      },
+      {
+        "screen_name": "Campaigns — List",
+        "frame_ref": "frame_000148.jpg",
+        "timestamp_seconds": 367,
+        "description": "Campaigns page listing 2485 total campaigns. Columns: ID, Name, Brand, Brand ID, Status, Privacy, Note. Campaign names include crypto/forex offers. Create Campaign button visible.",
+        "notable_elements": ["2485 total campaigns", "Campaign for offer FX ETH/XRP/Bitcoin", "BRAND_SUCCESS", "Brands: Mock, AfxCenters, Shabbai, Antiblock, Mock5, Mock4", "Status: Active", "Privacy: Private/Public", "Create Campaign button"]
+      },
+      {
+        "screen_name": "Statistics — Performance Graph Table",
+        "frame_ref": "frame_000451.jpg",
+        "timestamp_seconds": 1125,
+        "description": "Statistics page showing the Performance Graph table with all affiliates listed and their metrics: Impressions, Clicks, Q-Leads, CTL, Q-FTDs, CR, Total Payout, Revenue, ROI, Late FTDs, Hard Failures, Unassigned, Injected.",
+        "notable_elements": ["Per-affiliate metric rows", "ROI column (negative for most affiliates)", "Total row: 288 Impressions, 111 Q-Leads, 19 Q-FTDs, €6,312.66 payout", "Late FTDs column", "Hard Failures column"]
+      },
+      {
+        "screen_name": "Replace Params — Rules List",
+        "frame_ref": "frame_000486.jpg",
+        "timestamp_seconds": 1212,
+        "description": "Replace Params page with 3 parameter replacement rules shown. Columns: ID, Name, Affiliate, Country, Campaign, Status, Save in Leads, Updated, Note. Create New Params button.",
+        "notable_elements": ["Create New Params button", "ON/OFF toggles for Status and Save in Leads", "Country code +243 visible"]
+      },
+      {
+        "screen_name": "Distribution — Rules Table with Limits",
+        "frame_ref": "frame_000503.jpg",
+        "timestamp_seconds": 1255,
+        "description": "Distribution page showing daily/hourly/rules limit counters at top and 80 distribution rules in a table with destination affiliate/campaign pairs, timing, and status.",
+        "notable_elements": ["Daily Leads Limit 5/100000", "Hourly Leads Limit 0/10000", "Rules Limit 2/10", "Showing 25 of 80 results", "DB_TO_LIST — Now timing", "Done / Running status"]
+      },
+      {
+        "screen_name": "System Settings — General Tab",
+        "frame_ref": "frame_000527.jpg",
+        "timestamp_seconds": 1315,
+        "description": "System Settings General tab showing white-label options (System Title, Brand Logo, Theme Color with 8 color swatches, Light/Dark toggle), operational settings, and right panel with duplicate blocking and lead validation controls.",
+        "notable_elements": ["System Title: Demo System", "Theme Color picker with 8 swatches + custom", "Light/Dark theme toggle", "Block duplicate IPs/Emails/Phones", "Block leads if IP and phone country mismatch", "Replace Params Rule Priority: First Rule"]
+      },
+      {
+        "screen_name": "Falcon — FTD Records Table",
+        "frame_ref": "frame_000533.jpg",
+        "timestamp_seconds": 1330,
+        "description": "Falcon module showing FTD records with detailed columns including Found Date, Customer Id, Email, Affiliate, Campaign, Country, Status (Approved/Declined), CPA action, Conversion Date, Payout, Revenue.",
+        "notable_elements": ["Approved / Declined status badges", "CPA in Actions column", "Payout column", "FTD Update button (red)", "38 total FTD records", "Country flags (ES/GB)"]
+      },
+      {
+        "screen_name": "Statistics — Customize Columns Modal",
+        "frame_ref": "frame_000604.jpg",
+        "timestamp_seconds": 1507,
+        "description": "Customize Columns modal with two-panel drag interface showing Available Fields (Insights, ID, TCC Actions, Installs, CTR, Uninstalls, Total Leads, Total FTDs) and In Use (Impressions, Clicks, Q-Leads, CTL, Q-FTDs, CR, Total Payout, Revenue).",
+        "notable_elements": ["Available Fields panel", "In Use panel", "TCC Actions (available metric)", "Installs / Uninstalls (mobile app metrics)", "Confirm button"]
+      }
+    ]
+  },
+
+  "user_scenarios": [
+    {
+      "scenario_name": "Daily Performance Review",
+      "actor": "affiliate manager / network admin",
+      "steps": [
+        "Step 1: Open Dashboard, select 'Last 7 Days' quick tab, click 'Get Data'",
+        "Step 2: Review KPI cards for Traffic (Impressions, Clicks, CTL), Finance (Revenue, Payout, Net Profit), Conversion (Q-Leads, Q-FTDs, CR)",
+        "Step 3: Scan Top Affiliates table for performance ranking",
+        "Step 4: Review TCC/Expert live feeds for recent lead country distribution",
+        "Step 5: Check Security alert banner; if 2FA risk flagged, click 'View Security Report'",
+        "Step 6: Navigate to Statistics for per-affiliate breakdown with full metrics table"
+      ],
+      "outcome": "Manager has full overview of network health, financial performance, and compliance posture for the period."
+    },
+    {
+      "scenario_name": "Lead Investigation and Fraud Check",
+      "actor": "affiliate manager / compliance analyst",
+      "steps": [
+        "Step 1: Navigate to Leads section",
+        "Step 2: Apply filters (Affiliate, Country, Brand) or search by email to find suspect leads",
+        "Step 3: Click a lead row to open the Lead Detail modal",
+        "Step 4: Review Details tab for contact info, tracking parameters, and lead source",
+        "Step 5: Open Fraud Detection tab to see Fraud Score and available fraud API credits",
+        "Step 6: Check Auto Logs by Body for the API Request sent to the brand CRM and the API Response received",
+        "Step 7: Review 'Result Seems' verdict on the push result",
+        "Step 8: Enable Bot column via Customize Columns to see bot detection flags across the lead list"
+      ],
+      "outcome": "Analyst identifies fraudulent or low-quality leads, understands why specific leads were rejected by brands, and can take bulk action (Fraud Check, Delete, Change Status)."
+    },
+    {
+      "scenario_name": "Lead List Import and Distribution",
+      "actor": "affiliate manager",
+      "steps": [
+        "Step 1: Navigate to Leads section",
+        "Step 2: Click 'New Rule' / 'Create New Rule' button",
+        "Step 3: Enter Rule Name in the Create New Rule modal",
+        "Step 4: Select source: 'Upload A New List' and drag/drop the CSV file onto the upload area (or select 'Loading List' for existing)",
+        "Step 5: Click 'Create New Rule' to trigger the import",
+        "Step 6: Navigate to Distribution to set up routing rules for the new leads",
+        "Step 7: Alternatively, select leads from the list table and use 'Inject Leads' bulk action to route them to a specific Campaign + Affiliate via the 'Where to inject?' modal"
+      ],
+      "outcome": "Imported lead list is processed, assigned to the appropriate campaign and affiliate, and pushed to the brand CRM."
+    },
+    {
+      "scenario_name": "Per-Affiliate Performance Drill-Down",
+      "actor": "affiliate manager",
+      "steps": [
+        "Step 1: Navigate to Statistics",
+        "Step 2: Select date range, optionally open filter panel and filter by specific Brand or Country",
+        "Step 3: Optionally customize columns via Customize Columns modal to show ROI, Late FTDs, Hard Failures",
+        "Step 4: Scan the Performance Graph table for affiliates with poor ROI or high Hard Failures",
+        "Step 5: Click on an affiliate row to open the Insights modal",
+        "Step 6: Review Performance tab trend lines (Impressions, Q-Leads, CTL, Q-FTDs) over time",
+        "Step 7: Switch to Hourly Activity tab to identify peak traffic hours",
+        "Step 8: Switch to Auto Login tab for session data"
+      ],
+      "outcome": "Manager identifies underperforming affiliates, understands traffic patterns, and can negotiate or adjust campaign parameters accordingly."
+    },
+    {
+      "scenario_name": "Security Compliance Audit",
+      "actor": "system admin",
+      "steps": [
+        "Step 1: Navigate to Security section",
+        "Step 2: Review alert cards: identify employees without 2FA (30 in demo), logins from new locations (14), and password resets (4)",
+        "Step 3: Enable 'Show Low severity risks' to see all issues",
+        "Step 4: Review the password reset detail table to identify which accounts were reset and by whom",
+        "Step 5: Contact employees without 2FA to enforce activation",
+        "Step 6: Investigate suspicious login locations"
+      ],
+      "outcome": "Admin has a complete picture of security risks and can take remediation steps for compliance."
+    }
+  ],
+
+  "technology_stack": {
+    "frontend": "React (inferred from SPA navigation patterns, component-based architecture, skeleton loading states)",
+    "backend": "not determined from recording",
+    "database": "not determined from recording",
+    "integrations": [
+      "Brand CRM APIs (lead push via HTTP with JSON request/response, visible in lead detail API logs)",
+      "Third-party Fraud Detection API (credit-based, 999 credits visible — likely IPQS, Ekata, or similar)",
+      "Google Meet (used for the demo call)",
+      "Third-party support chat widget (floating chat bubble in bottom-right of all pages)"
+    ],
+    "infrastructure": "not determined from recording",
+    "api_type": "REST (JSON request/response payloads visible in Lead Detail API logs)"
+  },
+
+  "recording_analysis": {
+    "recording_type": "sales_demo",
+    "presenter_role": "Gari Zeldich — likely a sales representative or product specialist at trackbox.ai",
+    "audience_role": "adi koren and Петр Белов — likely prospects or existing clients evaluating the platform's capabilities",
+    "structure_summary": "The recording begins with a Google Meet pre-demo setup (file dialog, 2 minutes of call participants without screen share). Screen share starts at ~117s with the Dashboard. The demo then walks through: Dashboard overview → Security → back to Dashboard (reloading) → Leads (extensive browsing, ~15 min) → Campaigns (briefly shown) → Statistics → Replace Params → Distribution → System Settings → Falcon → back to Leads → Statistics again (with Insights drill-downs) → Leads (filter panel, customize columns, bot detection) → Employees → platform reload (splash screen) → Dashboard again → meeting end screen. Leads and Statistics receive by far the most demo time.",
+    "key_selling_points": [
+      "Complete affiliate performance visibility: Impressions → Clicks → Leads → Q-Leads → FTDs → Revenue in one dashboard",
+      "Fraud detection at the lead level with per-lead Fraud Score and bulk Fraud Check",
+      "Bot detection column in the leads table showing automated traffic",
+      "Full API integration transparency — see the exact JSON pushed to brand CRMs and their responses",
+      "Flexible lead routing via Distribution rules with daily/hourly/rule caps",
+      "Parameter replacement engine for customizing tracking params per affiliate/country/campaign",
+      "Per-affiliate Insights modal with hourly activity analysis",
+      "White-label capability: custom System Title, Brand Logo, Theme Color",
+      "Security module with 2FA compliance tracking and suspicious login monitoring",
+      "Multiple saved view tabs on the Leads page for different team member workflows",
+      "Bulk lead operations: inject, fraud check, status change, delete"
+    ],
+    "acknowledged_weaknesses": [
+      "Net Profit is negative in the demo data (-4,212.66€ on 2,100€ revenue) — not addressed during demo, may raise questions",
+      "Statistics Insights modal shows 'No Data' for several affiliates, suggesting incomplete data coverage",
+      "Rules Limit capped at 10 (showing 2/10) — may be a plan-based constraint that limits scalability",
+      "Distribution shows only 80 rules; combined with the 10-rule limit indicator this may indicate plan-based restrictions",
+      "Loading states are frequent and visible throughout the demo, suggesting the platform can be slow to fetch data"
+    ],
+    "audience_questions_and_reactions": [
+      "No audio — cannot determine audience reactions or questions"
+    ],
+    "objection_handling": [
+      "No audio — cannot determine objection handling"
+    ]
+  },
+
+  "key_quotes": [
+    {
+      "speaker": "unknown",
+      "quote": "(no audio track — no quotes available)",
+      "context": "The recording has no audio",
+      "significance": "All analysis is visual-only"
+    }
+  ],
+
+  "functional_breakdown": {
+    "functions": [
+      {
+        "function_name": "Lead Ingestion and Tracking",
+        "purpose": "Capture incoming leads from affiliate traffic, assign them to campaigns and brands, and track every step of their lifecycle from click to deposit.",
+        "data_flow": [
+          "Step 1: Lead is generated by affiliate traffic (impression → click → registration form fill)",
+          "Step 2: System receives lead data via API or CSV upload, stores with affiliate/campaign/brand attribution",
+          "Step 3: Lead appears in Leads table with all metadata: Email, Country, Phone, Type, Status, tracking params"
+        ],
+        "user_steps": [
+          "Navigate to Leads section",
+          "Use filters (Affiliate, Country, Brand, Date) to segment the lead pool",
+          "Click any lead to open the detail modal and inspect all fields"
+        ],
+        "configuration_options": ["Multiple saved view tabs with different column sets", "Customize Columns to show/hide fields", "Date range filter", "Affiliate/Country/Brand filters"],
+        "automation_level": "semi-automatic — lead data is captured automatically; routing and action require user configuration",
+        "ui_complexity": "moderate — table is dense with many columns, but column customization and saved views help manage cognitive load",
+        "edge_cases_handled": ["'No Data' empty state when a lead has no API push record", "Bot detection flags in dedicated column", "Fraud score at lead level"],
+        "verdict": "Well-implemented core module. The Lead Detail modal is particularly powerful with the API Request/Response log giving full push transparency. The main friction point is the manual 'Get Data' click required after every filter change."
+      },
+      {
+        "function_name": "Fraud Detection and Quality Scoring",
+        "purpose": "Identify fraudulent, low-quality, or bot-generated leads before they cost the network money through invalid payouts to affiliates.",
+        "data_flow": [
+          "Step 1: Lead is received and optionally submitted to a third-party fraud API (credit-based)",
+          "Step 2: Fraud API returns a score and verdict stored on the lead record",
+          "Step 3: Score visible in Fraud Score column in the table and detailed in the Fraud Detection tab of the Lead Detail modal"
+        ],
+        "user_steps": [
+          "Enable 'Fraud Score' column via Customize Columns",
+          "Open a lead's detail modal and switch to Fraud Detection tab",
+          "Or select multiple leads and use 'Fraud Check' bulk action"
+        ],
+        "configuration_options": ["Fraud Detection tab in System Settings (configuration not shown)", "Available Credits (999 in demo) limit total checks", "Bot column in Leads table for bot detection"],
+        "automation_level": "semi-automatic — fraud scoring requires user-initiated check or automatic trigger (not confirmed from visual alone)",
+        "ui_complexity": "simple to view, moderate to act on",
+        "edge_cases_handled": ["Credit system prevents unlimited automated checks", "Separate Bot detection column for client-side bot identification"],
+        "verdict": "Solid feature set. The credit-based model is standard for fraud API integrations. Combining Fraud Score with Bot detection and country/IP mismatch blocking (in System Settings) gives multiple layers of protection. Missing: no visible automatic flagging or threshold-based auto-rejection of high-fraud-score leads."
+      },
+      {
+        "function_name": "Lead Distribution and Routing",
+        "purpose": "Automatically route leads to the correct brand CRM endpoint based on configurable rules with timing, caps, and destination mapping.",
+        "data_flow": [
+          "Step 1: User configures distribution rules in the Distribution module (Affiliate + Campaign destination, timing mode, caps)",
+          "Step 2: System evaluates incoming leads against active rules and routes them to matching destinations",
+          "Step 3: Push result (API Request/Response) is logged on each lead record; successful leads counted in 'Successful Leads' column"
+        ],
+        "user_steps": [
+          "Navigate to Distribution",
+          "Click 'Create New Rule'",
+          "Define rule: name, destination (Affiliate + Campaign), timing (DB_TO_LIST — Now or scheduled), daily/hourly caps",
+          "Activate rule — status shows as Running or Done"
+        ],
+        "configuration_options": ["Daily Leads Limit (100,000 max)", "Hourly Leads Limit (10,000 max)", "Rules Limit (up to 10 per plan)", "Timing mode (immediate / scheduled)", "Cap per rule", "Destination Affiliate + Campaign pair"],
+        "automation_level": "fully automatic once rules are configured",
+        "ui_complexity": "moderate — the rules table is clear but the rule creation flow was not fully shown",
+        "edge_cases_handled": ["Rules Limit (2/10) prevents unbounded rule creation", "Done vs Running status tracks rule lifecycle"],
+        "verdict": "Core routing functionality appears solid. The 10-rule limit is a notable constraint for large networks with many brands/affiliates. The daily/hourly caps are essential for brands that don't want to be overwhelmed. Missing: no visible A/B split routing, priority weighting between rules, or fallback rule configuration."
+      },
+      {
+        "function_name": "Performance Analytics (Statistics Module)",
+        "purpose": "Give affiliate managers a comprehensive, filterable view of traffic and conversion performance per affiliate, with drill-down charts and customizable metrics.",
+        "data_flow": [
+          "Step 1: User selects date range and optional filters (Affiliate, Country, Brand) then clicks 'Get Data'",
+          "Step 2: System aggregates all lead, click, and FTD data for the period into per-row metrics",
+          "Step 3: Table displays aggregated metrics; user can click a row to open the Insights modal with trend charts"
+        ],
+        "user_steps": [
+          "Navigate to Statistics",
+          "Select date range (preset or custom)",
+          "Optionally apply filters via Filter panel",
+          "Optionally customize columns",
+          "Click an affiliate row to open Insights modal",
+          "Switch between Performance, Hourly Activity, Auto Login tabs in the modal"
+        ],
+        "configuration_options": ["Customizable columns (15+ available metrics)", "Filter by Affiliate/Country/Brand", "Date range presets + custom", "MyView tab for saved personal view"],
+        "automation_level": "fully manual — user must click 'Get Data' to refresh",
+        "ui_complexity": "moderate — many columns can be overwhelming; column customization and MyView help",
+        "edge_cases_handled": ["'No Data' empty state in Insights modal for inactive affiliates", "ROI column handles negative values"],
+        "verdict": "Comprehensive analytics module. The Insights modal with hourly activity is a differentiator. Main weakness: no automated reporting, no email digests, no alerting on performance thresholds. The 'Get Data' button pattern (manual refresh) adds friction compared to auto-refresh dashboards."
+      },
+      {
+        "function_name": "FTD Management (Falcon Module)",
+        "purpose": "Track First Time Deposit conversion events, reconcile affiliate payouts, and allow manual FTD corrections when brand CRM data is delayed or incorrect.",
+        "data_flow": [
+          "Step 1: Brand CRM reports an FTD event (via API callback or manual upload via FTD Update)",
+          "Step 2: System matches FTD to the originating lead record and affiliate",
+          "Step 3: FTD appears in Falcon table with Approved or Declined status; Payout and Revenue columns populated"
+        ],
+        "user_steps": [
+          "Navigate to Falcon",
+          "Apply date range filter",
+          "Review FTD records table — identify Approved vs Declined conversions",
+          "Use 'FTD Update' (red) to manually add or correct FTD records"
+        ],
+        "configuration_options": ["Date range filter", "Email search", "Status filter (Approved/Declined)"],
+        "automation_level": "semi-automatic — FTDs received via brand API callback automatically; manual update option available",
+        "ui_complexity": "simple — table is dense but columns are self-explanatory",
+        "edge_cases_handled": ["Declined status for rejected FTDs", "Manual FTD Update flow for corrections"],
+        "verdict": "Well-scoped module for FTD management. The 'FTD Issues' button (red) link suggests a dedicated workflow for investigating FTD discrepancies. The CPA action type in the Actions column indicates cost-per-acquisition model support."
+      },
+      {
+        "function_name": "Parameter Replacement Engine",
+        "purpose": "Dynamically substitute tracking parameters (UTM tags, affiliate sub-IDs, custom fields) when leads are forwarded to brand CRMs, enabling clean parameter mapping without changing the affiliate's original link.",
+        "data_flow": [
+          "Step 1: User creates a Replace Params rule specifying Affiliate, Country, Campaign scope and the parameter substitutions",
+          "Step 2: When a lead matching the rule criteria is distributed, the system replaces the specified parameters before the API push",
+          "Step 3: Replaced params optionally written back to the lead record if 'Save in Leads' is ON"
+        ],
+        "user_steps": [
+          "Navigate to Replace Params",
+          "Click 'Create New Params'",
+          "Define rule name, affiliate scope, country, campaign, and parameter mappings",
+          "Toggle Status ON to activate"
+        ],
+        "configuration_options": ["Affiliate scope (specific affiliate or All Affiliates)", "Country scope (specific country or all)", "Campaign scope (specific campaign or All Campaigns)", "Status ON/OFF toggle", "Save in Leads toggle", "Replace Params Rule Priority in System Settings (First Rule wins)"],
+        "automation_level": "fully automatic once configured",
+        "ui_complexity": "simple — minimal UI; actual parameter mapping fields were not shown in frames",
+        "edge_cases_handled": ["Priority rule in System Settings handles conflicts between overlapping rules"],
+        "verdict": "Niche but valuable feature for performance marketers managing multiple brand integrations with different parameter schemas. The 'Save in Leads' option adds flexibility. The priority system prevents ambiguity. Main gap: the actual parameter mapping UI (what gets replaced with what) was not visible in the recording."
+      }
+    ],
+    "cross_function_insights": [
+      "Leads are the central data entity — everything else (Distribution, Falcon, Statistics, Replace Params) operates on or derives from lead records",
+      "The Lead Detail modal's API Request/Response log bridges the Leads and Distribution modules, showing what was sent to brands and what came back",
+      "Fraud Detection feeds into the Leads module (Fraud Score column) and can inform Distribution decisions (block low-quality leads from being routed)",
+      "The Falcon (FTD) module closes the loop from lead to deposit, enabling financial reconciliation with affiliates",
+      "Statistics aggregates across all lead/FTD data and presents it per-affiliate, creating the reporting layer on top of the operational data",
+      "Replace Params operates as a middleware layer between lead storage and brand push, modifying data in transit"
+    ],
+    "notable_ux_patterns": [
+      "SMOOTH: Multiple saved view tabs on Leads page — allows different team roles to have their own column presets without conflicting",
+      "SMOOTH: Skeleton loading states throughout — consistent loading UX that never shows broken/empty states",
+      "SMOOTH: Lead Detail modal with tabbed sections — keeps all lead data accessible without requiring page navigation",
+      "SMOOTH: Quick-select date range tabs (Today, Yesterday, Last 7 Days, etc.) — reduces clicks for the most common time ranges",
+      "FRICTION: Manual 'Get Data' button required after every date or filter change — adds cognitive overhead vs. automatic refresh",
+      "FRICTION: Icon-only sidebar by default — new users must learn icon meanings; no persistent text labels visible",
+      "FRICTION: Statistics Customize Columns modal uses a two-panel design but requires scrolling to find fields — a search box helps but fields are not grouped semantically",
+      "FRICTION: Dashboard date filter and Statistics/Leads date filters appear to be independent — changing the Dashboard filter does not carry over to other sections"
+    ]
+  },
+
+  "scorecard": {
+    "feature_completeness": {
+      "score": 8,
+      "max": 10,
+      "notes": "Covers the full affiliate marketing operations stack: lead capture, routing, fraud detection, FTD tracking, parameter management, analytics, security, and employee management. Missing or not shown: automated alerts/notifications, scheduled reporting, A/B lead splitting, API documentation for affiliates, affiliate self-service portal, and mobile support."
+    },
+    "ux_quality": {
+      "score": 6,
+      "max": 10,
+      "notes": "Dark mode enterprise aesthetic is well-executed and consistent. Skeleton loading states are polished. However, the 'Get Data' manual refresh pattern, icon-only navigation, and data-dense tables with minimal progressive disclosure create meaningful friction for non-expert users. The multiple saved view tabs are a standout UX decision."
+    },
+    "tech_sophistication": {
+      "score": 7,
+      "max": 10,
+      "notes": "Real-time API integration logging at the lead level is technically sophisticated. Credit-based fraud API, bot detection, country/IP mismatch validation, and parameter replacement engine demonstrate mature backend logic. Scalability signals: 2,485 campaigns, 80 distribution rules, 100,000 daily lead cap. Missing evidence of: GraphQL, webhooks, advanced caching, or real-time push technology."
+    },
+    "demo_effectiveness": {
+      "score": 5,
+      "max": 10,
+      "notes": "No audio makes it impossible to assess verbal pitch quality. Visually, the demo spends excessive time on the Leads list table (browsing without apparent purpose for large portions), which would likely lose audience attention. The Security section is shown briefly but is a compelling differentiator. Key modules like Affiliates, Offers, Boxes, Balance, Traffic Rules, and Alerts are shown only as sidebar icons and never opened."
+    },
+    "innovation": {
+      "score": 6,
+      "max": 10,
+      "notes": "The combination of real-time API push logging (viewable per lead), credit-based fraud scoring, bot detection in the lead table, and parameter replacement on push is a reasonably differentiated feature set for the affiliate CRM category. The 'Insights' per-affiliate modal with hourly activity analysis adds depth beyond basic tabular analytics. Not breakthrough innovation but solid domain-specific execution."
+    },
+    "overall_score": 6.4,
+    "summary": "trackbox.ai is a mature, domain-specific affiliate marketing CRM with a comprehensive feature set covering the full lead-to-FTD lifecycle. The platform is clearly built by practitioners who understand the operational needs of performance marketing networks — the API push logging, fraud scoring, FTD reconciliation, and parameter replacement engine are exactly what this market needs. The dark-mode enterprise UI is polished and consistent. The main weaknesses are UX friction (manual data refresh, icon-only navigation) and demo structure (too much time on lead list browsing, key modules never opened). The product appears well-suited to mid-to-large performance marketing networks running multi-brand, multi-affiliate CPA operations, particularly in financial verticals.",
+    "key_strengths": [
+      "Full-stack affiliate operations: one platform covers traffic → leads → distribution → FTDs → payouts → analytics",
+      "API push transparency: every lead shows the exact JSON sent to brand CRM and the response received",
+      "Fraud and bot detection built into the lead management workflow",
+      "Parameter replacement engine for flexible brand integration without changing affiliate tracking links",
+      "Per-affiliate Insights modal with hourly activity drill-down",
+      "Security module with 2FA compliance tracking — rare in this category",
+      "White-label ready: custom system title, logo, and theme color",
+      "Scalable: 2,485+ campaigns, 100,000 daily lead cap, 80+ distribution rules in demo"
+    ],
+    "key_weaknesses": [
+      "Manual 'Get Data' refresh pattern throughout the platform creates unnecessary friction",
+      "10-rule limit on Distribution rules may constrain large networks",
+      "No visible automated alerts, threshold notifications, or scheduled email reports",
+      "Icon-only sidebar navigation is not self-explanatory for new users",
+      "Several modules visible in the sidebar (Affiliates, Offers, Boxes, Balance, Traffic Rules, Alerts, Payment Plans) were never demonstrated",
+      "Statistics Insights shows 'No Data' for many affiliates in demo — suggests data coverage gaps",
+      "No apparent affiliate self-service portal visible in the demo"
+    ],
+    "features_worth_studying": [
+      "Lead Detail modal with API Request/Response log tabs — gives support and ops teams full visibility into brand push failures without needing developer access",
+      "Multiple saved view tabs on the Leads page — simple but powerful way to support different role-based workflows in a shared data table",
+      "Per-lead Bot detection column with colored indicators — visual fraud signal at the list level before opening individual records",
+      "Insights modal with Hourly Activity tab — understanding which hours drive quality leads is actionable for affiliates and managers",
+      "Replace Params Rule Priority system in System Settings — explicit conflict resolution for overlapping rules is often overlooked in rule engine design",
+      "Security module with 2FA compliance counter (30 employees without 2FA) — proactive compliance tracking in a B2B SaaS is a trust differentiator",
+      "Distribution Daily/Hourly/Rules Limit counters at top of page — surfaces capacity constraints before users hit them during rule creation",
+      "FTD Update manual flow in Falcon — acknowledges that brand CRM webhooks fail and provides a graceful fallback without requiring developer intervention"
+    ]
+  }
+}

@@ -1,0 +1,34 @@
+────────────────────────────────────────────────────────────────
+  AI Analysis  ·  Демо CRM GetLinked.mov
+  started: 2026-04-12 14:35:22
+────────────────────────────────────────────────────────────────
+
+The analysis has been written to `/Users/f0res/video_prd_Демо_CRM_GetLinked_20260412_143126/analysis.json`.
+
+Here's a summary of what was produced:
+
+---
+
+**Product:** Getlinked Platform — a white-label affiliate network CRM at `demo.getlinked.io`
+
+**Recording:** 22-minute Google Meet sales demo. Presenter: Gal (Israel-based, Getlinked sales rep). Prospect: Alex (Russia, starting Crypto/Forex media buying, scaling to affiliate network in ~3 months).
+
+**Key findings:**
+
+- **14 unique visual frames** analyzed. Large portion of the demo (~13 minutes) was lost to a dashboard loading spinner — most features were described verbally rather than demonstrated visually.
+
+- **Feature map covers 13 modules:** Dashboard (Main/Task), Affiliates, Advertisers, Lead Distribution (Rotation), Finance (with Special Deals/CRG), Reports (Leads, Conversions, Generic, Aggregation, Bulk Injection), Permissions, Marketing Tools/Alerts, Messages, Tools & Settings, Whitelabel, Knowledge Base, Release Notes.
+
+- **Standout features worth studying:**
+  - **Bucket-based lead rotation** — clean mental model for multi-tier advertiser routing with priority weights and fallback chains
+  - **CRG/Special Deals auto-invoicing** — automates a workflow (guarantee reconciliation) that most platforms leave to spreadsheets
+  - **Per-lead rotation history** — excellent for debugging routing failures
+  - **Support-team-as-product** — Telegram-based daily operational partner positioned as core product value
+
+- **Overall score: 6/10** — strong feature set undermined by dated UI, demo environment instability, and an in-development lead scoring feature being pre-sold before delivery.
+
+- **Prospect pain points fully documented** — 10 specific needs captured, from CRG deal management to error visibility to bulk lead injection.
+
+────────────────────────────────────────────────────────────────
+  finished: 2026-04-12 14:42:54
+────────────────────────────────────────────────────────────────

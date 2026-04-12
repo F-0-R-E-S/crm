@@ -1,0 +1,38 @@
+────────────────────────────────────────────────────────────────
+  AI Analysis  ·  Запись экрана 2026-03-12 в 12.39.14.mov
+  started: 2026-04-12 14:59:17
+────────────────────────────────────────────────────────────────
+
+The analysis is complete. Here's a summary of what was produced:
+
+**`analysis.json`** written to the video folder.
+
+---
+
+## Key Findings
+
+**Product:** `trackbox.ai` — an affiliate marketing CRM / performance marketing lead management platform (confirmed from the splash screen logo in frame_000717.jpg, which shows "trackbox.ai" branding).
+
+**Recording type:** Sales demo over Google Meet. Presenter: **Gari Zeldich** (screen-sharing). Audience: **adi koren** and **Петр Белов**. No audio track.
+
+**Modules documented** (13 sections, 139 unique frames):
+| Module | Key capability |
+|---|---|
+| Dashboard | KPI cards, Top Affiliates table, TCC/Expert live feeds, chart, traffic map |
+| Leads | Data table, Lead Detail modal with API logs, Fraud Detection, Bot column, bulk actions |
+| Campaigns | 2,485 campaigns with Brand/Privacy management |
+| Statistics | Per-affiliate metrics with Insights drill-down (Hourly Activity charts) |
+| Falcon | FTD tracking and payout reconciliation |
+| Security | 2FA compliance (30 employees flagged), suspicious logins, password resets |
+| Distribution | Lead routing rules with daily/hourly/rule caps |
+| Replace Params | Parameter substitution engine for brand API pushes |
+| System Settings | White-label config, duplicate blocking, fraud validation rules |
+| Employees | User management with role/status tracking |
+
+**Overall score: 6.4/10** — solid domain-specific product for performance marketing networks, held back by manual "Get Data" refresh friction and an under-demonstrated demo structure.
+
+**Top features worth studying:** Lead Detail API Request/Response log, per-affiliate Insights Hourly Activity modal, multiple saved view tabs on Leads, the Distribution cap counters, and the Security 2FA compliance tracker.
+
+────────────────────────────────────────────────────────────────
+  finished: 2026-04-12 15:06:50
+────────────────────────────────────────────────────────────────

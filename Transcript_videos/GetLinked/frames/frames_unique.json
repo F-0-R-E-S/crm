@@ -1,0 +1,156 @@
+[
+  {
+    "index": 0,
+    "filename": "frame_000001.jpg",
+    "timestamp_seconds": 0.0,
+    "visual_group": 0,
+    "is_representative": true,
+    "representative_filename": "frame_000001.jpg",
+    "group_size": 1,
+    "group_start_seconds": 0.0,
+    "group_end_seconds": 0.0
+  },
+  {
+    "index": 1,
+    "filename": "frame_000002.jpg",
+    "timestamp_seconds": 2.5,
+    "visual_group": 1,
+    "is_representative": true,
+    "representative_filename": "frame_000002.jpg",
+    "group_size": 2,
+    "group_start_seconds": 2.5,
+    "group_end_seconds": 5.0
+  },
+  {
+    "index": 3,
+    "filename": "frame_000004.jpg",
+    "timestamp_seconds": 7.5,
+    "visual_group": 2,
+    "is_representative": true,
+    "representative_filename": "frame_000004.jpg",
+    "group_size": 1,
+    "group_start_seconds": 7.5,
+    "group_end_seconds": 7.5
+  },
+  {
+    "index": 4,
+    "filename": "frame_000005.jpg",
+    "timestamp_seconds": 10.0,
+    "visual_group": 3,
+    "is_representative": true,
+    "representative_filename": "frame_000005.jpg",
+    "group_size": 1,
+    "group_start_seconds": 10.0,
+    "group_end_seconds": 10.0
+  },
+  {
+    "index": 5,
+    "filename": "frame_000006.jpg",
+    "timestamp_seconds": 12.5,
+    "visual_group": 4,
+    "is_representative": true,
+    "representative_filename": "frame_000006.jpg",
+    "group_size": 1,
+    "group_start_seconds": 12.5,
+    "group_end_seconds": 12.5
+  },
+  {
+    "index": 6,
+    "filename": "frame_000007.jpg",
+    "timestamp_seconds": 15.0,
+    "visual_group": 5,
+    "is_representative": true,
+    "representative_filename": "frame_000007.jpg",
+    "group_size": 19,
+    "group_start_seconds": 15.0,
+    "group_end_seconds": 60.0
+  },
+  {
+    "index": 25,
+    "filename": "frame_000026.jpg",
+    "timestamp_seconds": 62.5,
+    "visual_group": 6,
+    "is_representative": true,
+    "representative_filename": "frame_000026.jpg",
+    "group_size": 1,
+    "group_start_seconds": 62.5,
+    "group_end_seconds": 62.5
+  },
+  {
+    "index": 26,
+    "filename": "frame_000027.jpg",
+    "timestamp_seconds": 65.0,
+    "visual_group": 7,
+    "is_representative": true,
+    "representative_filename": "frame_000027.jpg",
+    "group_size": 44,
+    "group_start_seconds": 65.0,
+    "group_end_seconds": 172.5
+  },
+  {
+    "index": 70,
+    "filename": "frame_000071.jpg",
+    "timestamp_seconds": 175.0,
+    "visual_group": 8,
+    "is_representative": true,
+    "representative_filename": "frame_000071.jpg",
+    "group_size": 11,
+    "group_start_seconds": 175.0,
+    "group_end_seconds": 200.0
+  },
+  {
+    "index": 81,
+    "filename": "frame_000082.jpg",
+    "timestamp_seconds": 202.5,
+    "visual_group": 9,
+    "is_representative": true,
+    "representative_filename": "frame_000082.jpg",
+    "group_size": 5,
+    "group_start_seconds": 202.5,
+    "group_end_seconds": 212.5
+  },
+  {
+    "index": 86,
+    "filename": "frame_000087.jpg",
+    "timestamp_seconds": 215.0,
+    "visual_group": 10,
+    "is_representative": true,
+    "representative_filename": "frame_000087.jpg",
+    "group_size": 317,
+    "group_start_seconds": 215.0,
+    "group_end_seconds": 1005.0
+  },
+  {
+    "index": 403,
+    "filename": "frame_000404.jpg",
+    "timestamp_seconds": 1007.5,
+    "visual_group": 11,
+    "is_representative": true,
+    "representative_filename": "frame_000404.jpg",
+    "group_size": 7,
+    "group_start_seconds": 1007.5,
+    "group_end_seconds": 1022.5
+  },
+  {
+    "index": 410,
+    "filename": "frame_000411.jpg",
+    "timestamp_seconds": 1025.0,
+    "visual_group": 12,
+    "is_representative": true,
+    "representative_filename": "frame_000411.jpg",
+    "group_size": 124,
+    "group_start_seconds": 1025.0,
+    "group_end_seconds": 1332.5
+  },
+  {
+    "index": 534,
+    "filename": "frame_000535.jpg",
+    "timestamp_seconds": 1335.0,
+    "visual_group": 13,
+    "is_representative": true,
+    "representative_filename": "frame_000535.jpg",
+    "group_size": 1,
+    "group_start_seconds": 1335.0,
+    "group_end_seconds": 1335.0
+  }
+]

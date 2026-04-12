@@ -1,0 +1,200 @@
+{
+  "overview": {
+    "analyzed_at": "2026-04-12T14:31:26Z",
+    "source_video": "Демо CRM GetLinked.mov",
+    "unique_frames_analyzed": 14,
+    "total_frames_in_video": 535,
+
+    "product_name": "GetLinked Platform",
+    "product_name_sources": [
+      "Google Meet participant display name: 'Getlinked Platform'",
+      "URL domain: demo.getlinked.io and demo-server.getlinked.io",
+      "Logo monogram 'gl' in green circle on participant avatar tiles"
+    ],
+    "product_url": "demo.getlinked.io",
+    "product_category": "CRM / Affiliate Management Platform",
+    "ui_language": "English (meeting participants speak Russian)",
+    "product_version": null,
+
+    "navigation_structure": "Left sidebar with collapsible sections; top breadcrumb bar; date-range filter tabs across top of main content area",
+    "color_scheme": {
+      "primary": "Dark green (#2d6a4f / forest green) — sidebar, logo, spinner",
+      "accent": "Green (#52b788) — active states, loading indicator, action buttons",
+      "background": "light — white main content area, light-grey sidebar"
+    },
+    "design_style": "Enterprise / SaaS — dense data tables, multi-tab date filters, modal permission grids; functional rather than decorative",
+
+    "key_screens": [
+      {
+        "frame": "frame_000001.jpg",
+        "timestamp_seconds": 0.0,
+        "screen_name": "Google Meet — Pre-join Lobby",
+        "section_path": "meet.google.com (pre-join)",
+        "description": "The presenter (Alex) is on the Google Meet pre-join screen before entering the demo call. Camera is disabled; options to join or use other methods are visible.",
+        "notable_ui_elements": ["Готовы присоединиться", "Присоединиться", "Другие способы присоединиться", "Камера выключена", "Gemini может вести заметки"],
+        "group_duration_seconds": 0
+      },
+      {
+        "frame": "frame_000002.jpg",
+        "timestamp_seconds": 2.5,
+        "screen_name": "Black Screen — Transition",
+        "section_path": "n/a",
+        "description": "Completely black frame representing a brief transition between the pre-join screen and the Google Meet waiting room.",
+        "notable_ui_elements": [],
+        "group_duration_seconds": 2.5
+      },
+      {
+        "frame": "frame_000004.jpg",
+        "timestamp_seconds": 7.5,
+        "screen_name": "Google Meet — Waiting Room",
+        "section_path": "meet.google.com (waiting room)",
+        "description": "Alex has joined the call but is waiting for the organizer to admit them. An illustrated waiting screen is shown with a spinner and explanatory text.",
+        "notable_ui_elements": ["Подождите, пока организатор примет ваш запрос.", "16:35 timestamp", "microphone and end-call controls"],
+        "group_duration_seconds": 0
+      },
+      {
+        "frame": "frame_000005.jpg",
+        "timestamp_seconds": 10.0,
+        "screen_name": "Google Meet — Active Call, Cameras Off",
+        "section_path": "meet.google.com (call: zys-wesq-qda)",
+        "description": "Alex is now admitted to the call. Three participant tiles are visible ('Getlinked Platform' x2, 'Alex') but all cameras are off, showing dark grey tiles. No screen share yet.",
+        "notable_ui_elements": ["Getlinked Platform", "Alex", "16:35 timestamp", "screenshare, emoji, reaction, raise-hand, more-options controls"],
+        "group_duration_seconds": 0
+      },
+      {
+        "frame": "frame_000006.jpg",
+        "timestamp_seconds": 12.5,
+        "screen_name": "Google Meet — Active Call with Wi-Fi Menu",
+        "section_path": "meet.google.com (call)",
+        "description": "Same active call view as the previous frame but the macOS Wi-Fi menu is open in the top-right corner, showing 'ASUS_AXE' as the connected network — a brief off-task interaction before the demo.",
+        "notable_ui_elements": ["Getlinked Platform", "Alex", "Известная сеть", "ASUS_AXE", "Другие сети", "Настройки Wi-Fi..."],
+        "group_duration_seconds": 0
+      },
+      {
+        "frame": "frame_000007.jpg",
+        "timestamp_seconds": 15.0,
+        "screen_name": "Google Meet — Active Call with GetLinked Logo Avatars",
+        "section_path": "meet.google.com (call: zys-wesq-qda)",
+        "description": "Both 'Getlinked Platform' participant tiles now display the branded green avatar with the 'gl' monogram logo. This is the stable in-call state before screen sharing begins, lasting ~45 seconds.",
+        "notable_ui_elements": ["Getlinked Platform (x2)", "gl monogram logo on dark-green background", "Alex avatar (partial)", "16:35 | zys-wesq-qda"],
+        "group_duration_seconds": 45.0
+      },
+      {
+        "frame": "frame_000026.jpg",
+        "timestamp_seconds": 62.5,
+        "screen_name": "Google Meet — Call Layout Shift",
+        "section_path": "meet.google.com (call: zys-wesq-qda)",
+        "description": "The call grid has reflowed slightly — Getlinked Platform tiles remain with the green 'gl' logo avatar; Alex's tile is partially visible on the right edge. Represents a brief transitional moment before screen sharing.",
+        "notable_ui_elements": ["Getlinked Platform (x2)", "gl monogram logo", "Alex (partial)", "16:36 | zys-wesq-qda"],
+        "group_duration_seconds": 0
+      },
+      {
+        "frame": "frame_000027.jpg",
+        "timestamp_seconds": 65.0,
+        "screen_name": "Google Meet — Screen Share Active (CRM Dashboard Overview)",
+        "section_path": "meet.google.com — screen share of demo.getlinked.io/dashboard.php",
+        "description": "A presenter has started screen sharing the GetLinked CRM. The title bar reads 'Getlinked Platform (Проводится показ с аннотациями.)'. The shared screen shows the CRM Dashboard at a small scale: line chart for Clicks/Applies/Leads/Conversions, System Status panel, and an affiliate data table. This view persists for ~107 seconds.",
+        "notable_ui_elements": ["Getlinked Platform (Проводится показ с аннотациями.)", "Dashboard", "Clicks, Applies, Leads and Conversions chart", "System Status", "Getlinked Platform avatar tiles on right"],
+        "group_duration_seconds": 107.5
+      },
+      {
+        "frame": "frame_000071.jpg",
+        "timestamp_seconds": 175.0,
+        "screen_name": "CRM Dashboard — Full View",
+        "section_path": "demo.getlinked.io/dashboard.php > Dashboard > Main",
+        "description": "The CRM Dashboard is now shown full-screen (screen share filling the window). The dashboard displays date-range filter tabs, key metric cards (Financials, Clicks, Applies, Leads, Commissions), a multi-line chart, a System Status section, and an affiliate summary table. The left sidebar shows all main navigation sections.",
+        "notable_ui_elements": [
+          "YOUR LOGO HERE powered by link",
+          "Dashboard",
+          "Today / Yesterday / This Week / Last Week / This Month / Last Month / Custom",
+          "Financials", "Clicks", "Applies", "Leads", "Commissions",
+          "Clicks, Applies, Leads and Conversions (line chart)",
+          "System Status: Critical, Danger, Admin, OK",
+          "Left nav: Dashboards (Main, Task), Affiliates, Advertisers, Finance, Reports, Permissions, Messages, Tools & Settings, Whitelabel, Knowledge Base, Release Notes"
+        ],
+        "group_duration_seconds": 25.0
+      },
+      {
+        "frame": "frame_000082.jpg",
+        "timestamp_seconds": 202.5,
+        "screen_name": "Cloudflare Browser Security Check",
+        "section_path": "demo-server.getlinked.io (Cloudflare challenge)",
+        "description": "A Cloudflare bot-protection challenge modal has appeared over the CRM interface while navigating to demo-server.getlinked.io. The CRM page (with affiliate data table visible behind the modal) is temporarily blocked pending browser verification.",
+        "notable_ui_elements": [
+          "Checking your browser before accessing demo-server.getlinked.io",
+          "This process is automatic. Your browser will redirect to your requested content shortly.",
+          "Please allow up to 4 seconds...",
+          "Request Details (IP address, Country code, Request URL, User-Agent)",
+          "affiliate data table visible behind modal (Rank, Name: Mary Leann; Name: Crystal Geraldine)"
+        ],
+        "group_duration_seconds": 10.0
+      },
+      {
+        "frame": "frame_000087.jpg",
+        "timestamp_seconds": 215.0,
+        "screen_name": "CRM Dashboard — Loading State",
+        "section_path": "demo.getlinked.io/dashboard.php > Dashboard",
+        "description": "The CRM Dashboard page is reloading after the Cloudflare check. A green loading spinner is displayed in the centre of the content area. A notification banner at the top warns users to only communicate via official Getlinked support channels. This is the longest-held frame group (~790 seconds) suggesting the dashboard took considerable time to load or the demo paused here.",
+        "notable_ui_elements": [
+          "Attention: Getlinked Support Team communicates ONLY in its Official Chats or Groups. Make sure you are on the right one. (Click here)",
+          "Dashboard breadcrumb",
+          "Today / Yesterday / This Week / Last Week / This Month / Last Month / Custom tabs",
+          "Loading... (green spinner)",
+          "Left sidebar navigation visible"
+        ],
+        "group_duration_seconds": 790.0
+      },
+      {
+        "frame": "frame_000404.jpg",
+        "timestamp_seconds": 1007.5,
+        "screen_name": "CRM Permissions — Edit Permissions Modal (Administration, compact view)",
+        "section_path": "demo.getlinked.io/permissions.php > Permissions",
+        "description": "The Permissions section of the CRM is open. A modal dialog 'Edit permissions - Administration' overlays the page, showing a permission matrix with rows of permissions and green Allow / red Deny toggle buttons. The underlying list shows various permission groups.",
+        "notable_ui_elements": [
+          "Edit permissions - Administration",
+          "Permissions / Translate / Actions column headers",
+          "Allow / Deny buttons (green/red)",
+          "Left nav: Permissions highlighted",
+          "Add new, Edit, Delete CSV/PDF action buttons"
+        ],
+        "group_duration_seconds": 15.0
+      },
+      {
+        "frame": "frame_000411.jpg",
+        "timestamp_seconds": 1025.0,
+        "screen_name": "CRM Permissions — Edit Permissions Modal (Administrators, expanded view)",
+        "section_path": "demo.getlinked.io/permissions.php > Permissions > Administrators",
+        "description": "The same Permissions section with the 'Edit permissions - Administrators' modal open in a more expanded state, revealing a longer scrollable list of individual permission rows each with Allow/Deny action buttons. This view persists for ~307 seconds as the demonstrator walks through permission settings.",
+        "notable_ui_elements": [
+          "Edit permissions - Administrators",
+          "Permissions / Translate / Actions columns",
+          "Multiple permission rows with Allow / Deny buttons",
+          "Left nav: Permissions highlighted",
+          "Affiliate management, Advertiser, Collaboration, Commissions, Marketing, Payment, Reporting categories visible in background list"
+        ],
+        "group_duration_seconds": 307.5
+      },
+      {
+        "frame": "frame_000535.jpg",
+        "timestamp_seconds": 1335.0,
+        "screen_name": "Google Meet — Call End, Back to Avatar View",
+        "section_path": "meet.google.com (call: zys-wesq-qda)",
+        "description": "The screen sharing has ended and the call returns to the participant tile grid. Both 'Getlinked Platform' tiles show the green 'gl' logo avatar again. A 'Windows App' notification badge is visible on Alex's controls, indicating the call is wrapping up. Time is now 16:57.",
+        "notable_ui_elements": ["Getlinked Platform (x2)", "gl monogram logo", "Alex (partial)", "16:57 | zys-wesq-qda", "Windows App notification badge"],
+        "group_duration_seconds": 0
+      }
+    ],
+
+    "sections_identified": [
+      "Google Meet — Pre-join Lobby",
+      "Google Meet — Waiting Room",
+      "Google Meet — Active Call",
+      "Google Meet — Screen Share (CRM demo)",
+      "CRM Dashboard (Main)",
+      "CRM Permissions",
+      "Cloudflare Security Check"
+    ],
+
+    "summary": "This video records a Google Meet demo call in which a representative of 'Getlinked Platform' presents a white-label affiliate/CRM platform to a user named Alex. The core product is hosted at demo.getlinked.io — a CRM and affiliate management system with a white-label logo placeholder, a left-sidebar navigation covering Dashboards, Affiliates, Advertisers, Finance, Reports, Permissions, Messages, Tools & Settings, Whitelabel, and Knowledge Base. The demo focused primarily on the Dashboard (metric cards, a multi-line Clicks/Applies/Leads/Conversions chart, System Status panel, and affiliate data tables) and the Permissions module (a granular Allow/Deny permission matrix for admin roles). The UI is enterprise-grade, data-dense, and English-language, using a dark-green and white color scheme. A Cloudflare security challenge briefly interrupted the demo, and the dashboard experienced a lengthy loading pause (~13 minutes), suggesting the demo environment was running on a shared or slow server."
+  }
+}

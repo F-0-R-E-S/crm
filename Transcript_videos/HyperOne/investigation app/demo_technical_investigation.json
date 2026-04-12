@@ -1,0 +1,809 @@
+{
+  "meta": {
+    "target": "demo.hypernet.pro",
+    "product": "HyperOne CRM",
+    "description": "Affiliate traffic management CRM for crypto/forex verticals",
+    "investigation_date": "2026-03-03",
+    "investigation_updated": "2026-03-04",
+    "app_version": "4.0.136",
+    "investigator": "claude-sonnet-4-6",
+    "credentials_used": "billionaire@demo.com (trackerAdmin role)",
+    "total_modules": 14,
+    "companion_documents": [
+      "design_system.json — color palette, typography, spacing, component inventory",
+      "forms_catalog.json — all 14 forms with every field, type, validation, options",
+      "pages_catalog.json — all pages with URL, layout, toolbar, columns, API calls",
+      "api_reference.json — all discovered endpoints with methods and request/response schemas",
+      "investigation_transcript.md — full narrative investigation transcript (Ukrainian)"
+    ]
+  },
+
+  "block_1_api_architecture": {
+    "summary": "Two-microservice REST API behind Cloudflare. Main tracker service at /api/tracker/, UAD/scenarios service at /api/injector/. Auth via session UUID Bearer token (NOT JWT). All resources paginated with skip/take, sorted with sort[field]=direction, filtered with filter[field][op]=value.",
+
+    "auth": {
+      "type": "session_uuid_bearer",
+      "storage": "localStorage with base64-encoded key ('InNlc3Npb25LZXki' = '\"sessionKey\"')",
+      "header": "Authorization: Bearer <uuid>",
+      "token_format": "UUID v4, NOT JWT (no dot-separated structure)",
+      "login_endpoint": "POST /api/tracker/auth/sign-in (returns 404 — actual endpoint unknown, session set by cookies or redirect)",
+      "session_behavior": "Expires mid-session requiring re-login; no visible refresh token mechanism"
+    },
+
+    "microservices": [
+      {
+        "name": "tracker",
+        "base_url": "/api/tracker/",
+        "purpose": "Core CRM: leads, hubs, brands, affiliates, metrics, fraud, conversions, accounts, company"
+      },
+      {
+        "name": "injector",
+        "base_url": "/api/injector/",
+        "purpose": "UAD (User Action Director) scenarios — automated lead re-injection engine"
+      }
+    ],
+
+    "api_conventions": {
+      "pagination": "skip=N&take=N (e.g. skip=0&take=10)",
+      "sorting": "sort[fieldName]=asc|desc (multiple sort params supported)",
+      "filtering": "filter[fieldName]=value OR filter[fieldName][op]=value (op: gte, lte, etc.)",
+      "list_variants": {
+        "paginated": "/api/tracker/{entity}?skip=0&take=10",
+        "full_list": "/api/tracker/{entity}/list (returns all, no pagination)",
+        "filtered_list": "/api/tracker/{entity}/list?filter[field]=value"
+      },
+      "id_format": "UUID v4 in URL paths",
+      "code_format": "Human-readable short codes in UI (BR-, BI-, BX-, SCN-, FP- prefixes)"
+    },
+
+    "entity_id_prefixes": {
+      "Brand": "BR-XXXXXXXX (e.g. BR-SXCQPRA0IE)",
+      "BrandIntegration": "BI-XXXXXXXX",
+      "Hub": "BX-XXXXXXXX",
+      "Scenario": "SCN-XXXXXXXXX",
+      "FraudProfile": "FP-XXXXXXX",
+      "StatusGroup": "no prefix",
+      "TelegramBot": "SB-XXXXXXXXX"
+    },
+
+    "api_naming_aliases": {
+      "Hub_in_API": "box (e.g. /api/tracker/box)",
+      "Brand_in_API": "broker (e.g. /api/tracker/broker)",
+      "Stream_Rotation_in_API": "box/brokerAttachment",
+      "Hub_Rotation_in_API": "box/affiliateAttachment",
+      "GEO_Group_in_API": "countryGroup/group",
+      "StatusGroup_in_API": "statusGroup/group",
+      "Scenario_in_API": "scenario (injector service)",
+      "FraudProfile_in_API": "company/resources/fraudProfile",
+      "TelegramBot_in_API": "account/resources/botSubscriber"
+    },
+
+    "all_discovered_endpoints": [
+      "GET /api/tracker/statistic/statusGroup",
+      "GET /api/tracker/statistic/geo",
+      "GET /api/tracker/statistic/leads",
+      "GET /api/tracker/statistic/affiliates",
+      "GET /api/tracker/statistic/brands",
+      "GET /api/tracker/statistic/hubs",
+      "GET /api/tracker/statistic/status",
+      "GET /api/tracker/statistic/attribute/subId_a",
+      "GET /api/tracker/statistic/attribute/utmId",
+      "GET /api/tracker/statistic/attribute/autologinStatus",
+      "GET /api/tracker/statistic/attribute/funnel",
+      "GET /api/tracker/statistic/attribute/lang",
+      "GET /api/tracker/lead",
+      "GET /api/tracker/lead/list",
+      "GET /api/tracker/lead/conversion/hold",
+      "GET /api/tracker/lead/{id}",
+      "GET /api/tracker/broker",
+      "GET /api/tracker/broker/list",
+      "GET /api/tracker/broker/{id}",
+      "GET /api/tracker/broker/integration/crm",
+      "GET /api/tracker/broker/integration/crm/list",
+      "GET /api/tracker/integrator",
+      "GET /api/tracker/box",
+      "GET /api/tracker/box/list",
+      "GET /api/tracker/box/{id}",
+      "GET /api/tracker/box/brokerAttachment",
+      "GET /api/tracker/box/affiliateAttachment",
+      "GET /api/tracker/affiliate",
+      "GET /api/tracker/affiliate/list",
+      "GET /api/tracker/statusGroup/group",
+      "GET /api/tracker/statusGroup/group/list",
+      "GET /api/tracker/countryGroup/group",
+      "GET /api/tracker/countryGroup/group/{id}",
+      "GET /api/tracker/account",
+      "GET /api/tracker/account/{id}",
+      "GET /api/tracker/account/resources/botSubscriber",
+      "GET /api/tracker/company/{id}",
+      "GET /api/tracker/company/resources/affiliateStopStatus/{companyId}",
+      "GET /api/tracker/company/resources/fraudProfile",
+      "GET /api/tracker/company/resources/fraudProfile/{id}",
+      "GET /api/tracker/company/resources/fraudScoringConfig/{companyId}",
+      "GET /api/injector/scenario"
+    ],
+
+    "known_404s": [
+      "GET /api/tracker/rotation/stream",
+      "GET /api/tracker/rotation/hub",
+      "GET /api/tracker/statusGroup/{id}",
+      "GET /api/tracker/statusGroup/group/{id} (profiles don't have own pages)",
+      "POST /api/tracker/auth/sign-in"
+    ],
+
+    "error_codes_observed": {
+      "401": "Account not authorized (acNA) — session expired or missing auth header",
+      "404": "Not Found — incorrect endpoint guess",
+      "500": "Internal server error on some filter queries",
+      "503": "Service unavailable — occasional transient errors on box and lead endpoints"
+    }
+  },
+
+  "block_2_hidden_features": {
+    "summary": "Several non-obvious capabilities discovered through deep exploration.",
+
+    "features": [
+      {
+        "name": "Dual-service architecture",
+        "detail": "UAD (Scenarios) runs on a completely separate microservice /api/injector/ — not /api/tracker/. This implies separate deployment, scaling, and codebase for the automation engine."
+      },
+      {
+        "name": "subId_f as UAD tracking field",
+        "detail": "The UAD/Scenarios system tags leads via filter[subId_f][0]=uad_{scenarioId_short}. Sub F slot is reserved for internal system tracking of scenario membership."
+      },
+      {
+        "name": "scenarioId filter on leads",
+        "detail": "Leads can be filtered by filter[scenarioId]={uuid} — enabling scenario-level lead attribution in the leads table."
+      },
+      {
+        "name": "Company-scoped resource storage",
+        "detail": "Fraud profiles, stop statuses, and scoring config are stored at company level: /api/tracker/company/resources/{type}/{companyId}. This suggests multi-tenancy with company isolation."
+      },
+      {
+        "name": "Account-scoped Telegram bots",
+        "detail": "Telegram bots are per-account (not per-company): /api/tracker/account/resources/botSubscriber. Each user can have their own notification bot."
+      },
+      {
+        "name": "Dual fraud system",
+        "detail": "Two complementary fraud systems: (1) binary per-attribute Allow/Block profiles assigned to streams, (2) weighted numeric scoring (0-100) per attribute with category-level balancing producing a fraud score. The score uses an MI (Machine Intelligence) coefficient for AI-detection strictness."
+      },
+      {
+        "name": "Integrator TelegramBot template",
+        "detail": "CRM integrators list includes 'TelegramBot' as a named integration template — meaning Telegram can be used as a CRM destination for lead routing, not just for notifications."
+      },
+      {
+        "name": "Integrator GoogleSheets and MT4 templates",
+        "detail": "134 CRM templates include GoogleSheets and MT4 — non-standard integrations enabling routing to Google Sheets or MT4 trading platforms."
+      },
+      {
+        "name": "Hypernet self-integration",
+        "detail": "The integrator list contains 'Hypernet' as a named template — the platform integrates with itself, likely for internal routing or cross-account lead passing."
+      },
+      {
+        "name": "Autologin overridable per integration",
+        "detail": "Brand integration has isAutologinOverridden and autologinCustomURL fields — autologin URL can be custom per integration, not just per brand."
+      },
+      {
+        "name": "Ignore stream settings in scenarios",
+        "detail": "UAD scenarios have 'Ігнорувати налаштування потоку' (Ignore stream settings) flag — scenarios can bypass normal stream routing rules."
+      },
+      {
+        "name": "Fallback hub mode",
+        "detail": "Hubs have 'Резервний режим' (fallback mode) indicator — hubs can act as fallback destinations when primary routes fail."
+      },
+      {
+        "name": "Hub deduplication",
+        "detail": "Hubs have 'Блокувати дублікати' (block duplicates) indicator — built-in deduplication at hub level."
+      },
+      {
+        "name": "Proxy support in scenarios",
+        "detail": "UAD scenarios support proxy routing (Використовувати проксі toggle) with a named proxy selection (e.g. HYPER-1). Scenarios can inject leads through proxies."
+      },
+      {
+        "name": "Continuous sending mode",
+        "detail": "Scenarios have 'Безперервна відправка' (continuous sending) checkbox — allows the scenario to keep sending leads continuously rather than in batches."
+      },
+      {
+        "name": "Inject modes",
+        "detail": "UAD scenarios have a 'Режим інжекту' (inject mode) field with option 'Змінити реєстрацію' (Change registration) — implies multiple injection modes (re-register, re-route, etc.)."
+      },
+      {
+        "name": "Scenario affiliate replacement",
+        "detail": "Scenarios have 'Змінити афілейта' (Change affiliate) toggle — scenarios can override the original affiliate attribution when re-injecting leads."
+      },
+      {
+        "name": "Company API endpoint exposed",
+        "detail": "GET /api/tracker/company/{companyId} — full company profile endpoint exists, indicating multi-company architecture in the backend."
+      },
+      {
+        "name": "17 Telegram notification event types",
+        "detail": "Bot notification system supports: Перенесення ліда успішне, Помилка перенесення ліда, Ліда не призначено, Створено новий статус бренду, Ліміт обсягу лідів для інтеграції хаба, Відбулася конверсія, Аномалії ліда (перенаправлення/фрод/недійсний статус), Акаунт ліміт перевірок на фрод, Ліміт кількості лідів за підпискою, Ліміт автологін редиректів, Ліміт холду конверсій, Повідомляти про ліди з невалідним профілем, Лід заблокований через підозру на фрод, Виявлено нову воронку, Експорт лідів."
+      },
+      {
+        "name": "Funnel auto-detection",
+        "detail": "Telegram notification type 'Виявлено нову воронку' (New funnel detected) implies automatic funnel discovery — the system detects new traffic funnels automatically."
+      }
+    ]
+  },
+
+  "block_3_tech_stack": {
+    "frontend": {
+      "framework": "Angular",
+      "version": "16.2.12",
+      "ui_library": "Angular Material (mat-* components confirmed in DOM)",
+      "build_tool": "webpack (content-hash filenames: main.086565acb84f1c4f.js, runtime.806dbbc3dcb4e0ee.js, polyfills.1486ec5c122ab847.js)",
+      "css_bundle": "styles.e9286f7dc708ffc8.css (single CSS bundle)",
+      "chart_library": "Unknown (not ApexCharts, Chart.js, Highcharts, or ECharts at window scope — likely lazy-loaded as Angular modules)",
+      "icon_library": "Stockholm Icons (SVG sketches referenced in DOM as 'Stockholm-icons / General / Duplicate Created with Sketch.')",
+      "routing": "Angular Router with hash-based routing (#/dashboard/...)",
+      "forms": "Angular Reactive Forms (confirmed by ng-model binding behavior)"
+    },
+    "backend": {
+      "architecture": "Microservices (at minimum: tracker service, injector service)",
+      "api_style": "REST",
+      "auth_mechanism": "Session UUID Bearer tokens",
+      "api_base_paths": ["/api/tracker/", "/api/injector/"],
+      "query_style": "flat query string parameters with bracket notation for nested filters"
+    },
+    "infrastructure": {
+      "cdn_waf": "Cloudflare (server: cloudflare, CF-Ray header, NEL reporting)",
+      "http_version": "HTTP/3 supported (alt-svc: h3=':443'; ma=86400)",
+      "compression": "zstd (Zstandard — modern, faster than gzip/brotli)",
+      "caching": "Cache-Control: public, max-age=3600 (1 hour for SPA assets)",
+      "analytics": "Cloudflare Insights (static.cloudflareinsights.com/beacon.min.js)",
+      "error_tracking": "None detected (no Sentry, no Datadog, no LogRocket)",
+      "last_deployment": "2026-02-26 (Last-Modified header on index.html)"
+    },
+    "seo_indexing": {
+      "robots_meta": "noindex,nofollow (all pages)",
+      "theme_color": "#100e1f (dark purple-black)"
+    },
+    "api_docs": {
+      "swagger_ui": "Not exposed (/swagger returns SPA HTML)",
+      "redoc": "Not exposed (/redoc returns SPA HTML)",
+      "openapi_json": "Not exposed (/openapi.json returns SPA HTML)",
+      "conclusion": "No public API documentation — all /api-docs variants return SPA"
+    }
+  },
+
+  "block_4_ux_pain_points": {
+    "observed_issues": [
+      {
+        "module": "Auth",
+        "issue": "Angular Reactive Form doesn't accept programmatic value setting",
+        "detail": "form_input and direct .value= do not trigger Angular's form model updates — requires keyboard simulation to properly bind values. Affects users using password managers or browser autofill.",
+        "severity": "medium"
+      },
+      {
+        "module": "Session",
+        "issue": "Session expires without warning during active use",
+        "detail": "No visible session timeout warning or refresh mechanism — user is silently redirected to login and loses in-progress work.",
+        "severity": "high"
+      },
+      {
+        "module": "Leads",
+        "issue": "API returns 503 intermittently on lead list endpoint",
+        "detail": "GET /api/tracker/lead returned 503 Service Unavailable multiple times — service reliability issue.",
+        "severity": "high"
+      },
+      {
+        "module": "Rotations",
+        "issue": "Global rotation view has no edit-in-place capability",
+        "detail": "The global Rotations page (/rotations/streams/list) shows all stream attachments but the settings gear opens a context menu only — no inline editing of weight/priority.",
+        "severity": "low"
+      },
+      {
+        "module": "Status Groups",
+        "issue": "No individual status group profile page",
+        "detail": "Clicking into a status group row only highlights it — no drill-down profile page. Individual status names within a group are not visible from the list.",
+        "severity": "medium"
+      },
+      {
+        "module": "Brands",
+        "issue": "Integration template catalog (134 items) not searchable in creation modal",
+        "detail": "When creating a new brand integration, the integrator selection loads all 134 templates but UX discoverability is limited.",
+        "severity": "low"
+      },
+      {
+        "module": "UAD Manager",
+        "issue": "Scenarios named inconsistently (some in Russian, some in English)",
+        "detail": "Real user data shows mixed-language scenario names: 'Нерабочая Канада', 'отказ Канада', 'FR_RESEND' — no naming convention enforcement.",
+        "severity": "low"
+      },
+      {
+        "module": "Fraud Scoring",
+        "issue": "Category balancing weights don't sum to 100%",
+        "detail": "IP:30 + Email:30 + Phone:100 + Messengers:30 = 190 — weights are not normalized percentages but multipliers, which may be unintuitive.",
+        "severity": "medium"
+      },
+      {
+        "module": "Navigation",
+        "issue": "Sidebar collapses on certain navigation actions",
+        "detail": "Navigating to some modules causes the sidebar to collapse to icon-only mode unexpectedly, requiring an extra click to re-expand.",
+        "severity": "low"
+      },
+      {
+        "module": "Accounts",
+        "issue": "safeUsageModeON field unexplained in UI",
+        "detail": "Account roles have a safeUsageModeON field visible in API but not clearly documented or explained in the UI.",
+        "severity": "low"
+      }
+    ]
+  },
+
+  "block_5_competitive_signals": {
+    "market_positioning": "CRM middleware for crypto/forex affiliate networks — sits between traffic sources (affiliates) and CRM destinations (brands). Not a CRM itself, but a routing and tracking layer.",
+
+    "target_customers": "Affiliate network operators (not individual affiliates or brands directly). Customers are likely mid-to-large networks with 10+ brands and 20+ affiliates.",
+
+    "competitor_integrations_visible": {
+      "direct_competitors_as_templates": ["Scaleo", "Skale", "IREV_2"],
+      "comment": "The fact that Scaleo, Skale, and IREV appear as integration TEMPLATES means HyperOne customers can route leads INTO these competing platforms — indicating customers may run HyperOne alongside competitors, or are migrating from them."
+    },
+
+    "134_crm_integrations_analysis": {
+      "total": 134,
+      "notable_non_standard": ["TelegramBot", "GoogleSheets", "MT4", "Hypernet (self)"],
+      "major_crm_platforms": ["Trackbox", "AlgoAffiliates", "Affclub", "BeatsClick", "CPAffiliates", "TenXaffiliates", "RoyalCRM", "VirginCRM", "AsapCRM", "PixelCRM", "EclipseCRM", "AurumCRM"],
+      "impression": "Extremely broad integration coverage suggests mature product with years of integration development. 134 templates is a significant moat."
+    },
+
+    "pricing_model_signals": {
+      "financial_model_in_product": "Buy price / Sell price per affiliate attachment (CPA or CPL), suggesting the platform captures the spread between affiliate payment and brand payment",
+      "currencies": "USD and EUR only",
+      "deal_types": "CPA (Cost Per Acquisition/Deposit) and CPL (Cost Per Lead) only"
+    },
+
+    "scalability_signals": {
+      "hub_rotation_records": "110 records in hub rotations — substantial real usage",
+      "scenario_count": 14,
+      "fraud_profile_count": 8,
+      "status_group_count": 10,
+      "geo_group_count": 5,
+      "affiliate_names_observed": ["AMERICAN BOBTAIL", "KAKNIBUT_AFF", "NEW_AFFILIATE", "TEST_9348_AFF", "AM_TEST_AFF_1", "Affiliate 4"]
+    },
+
+    "version_history_signal": {
+      "app_version": "4.0.136",
+      "interpretation": "v4.0 major version with 136 minor builds — product has gone through at least 4 major architectural versions. Mature codebase."
+    },
+
+    "unique_differentiators": [
+      "Built-in fraud scoring with ML coefficient (MI coefficient)",
+      "Dual fraud system: binary profiles + weighted scoring",
+      "UAD (User Action Director) for automated lead re-injection — uncommon in this category",
+      "Conversion hold mechanism with auto-confirmation and stop-status lists",
+      "Stream rotation with 7 filter dimensions (GEO, Schedule, Offers, Sub A-F, UTM)",
+      "Fallback hub mode for high-availability routing",
+      "17-event Telegram notification system",
+      "Autologin with per-integration URL override",
+      "JMESPath response parsing for CRM integration (technical sophistication)",
+      "Vendor/source discovery via VendorDiscoveryUpdater ETL"
+    ],
+
+    "weaknesses_observed": [
+      "Session expiry without warning (UX issue)",
+      "503 errors on lead endpoint (reliability concern)",
+      "No HSTS, CSP, X-Frame-Options security headers",
+      "No public API documentation",
+      "Mixed-language UI (Ukrainian + English labels)",
+      "No real-time updates visible (polling-based or manual refresh)"
+    ]
+  },
+
+  "block_6_complete_feature_map": {
+    "modules": [
+      {
+        "id": 1,
+        "name": "Метрики (Metrics)",
+        "url_pattern": "/dashboard/metrics",
+        "api_base": "GET /api/tracker/statistic/{entity}",
+        "description": "Analytics dashboard with configurable widgets",
+        "key_features": [
+          "13 configurable widget types",
+          "27 filter dimensions",
+          "Metrics by: Brand Status Groups or Affiliate Status Groups",
+          "Date range filtering with period selector",
+          "Lead funnel chart",
+          "Status group breakdown",
+          "GEO breakdown chart",
+          "Leads over time chart",
+          "Affiliate / Brand / Hub tables with deposit metrics",
+          "Sub ID, UTM, autologin status, funnel, language tables"
+        ],
+        "statistic_entities": [
+          "statusGroup", "geo", "leads", "affiliates", "brands", "hubs",
+          "status", "attribute/subId_a", "attribute/utmId", "attribute/autologinStatus",
+          "attribute/funnel", "attribute/lang"
+        ],
+        "widgets": [
+          "Статичний фільтр", "Статус метрик-бокси", "Діаграма статус груп",
+          "ГЕО діаграма", "Графік лідів", "Таблиця афілейтів", "Таблиця брендів",
+          "Таблиця хабів", "Таблиця Sub", "Таблиця UTM", "Таблиця автологін статусів",
+          "Таблиця воронок", "Таблиця мов"
+        ],
+        "filter_dimensions_count": 27
+      },
+      {
+        "id": 2,
+        "name": "Ліди (Leads)",
+        "url_pattern": "/dashboard/leads/list",
+        "api_base": "GET /api/tracker/lead",
+        "description": "Global lead management table",
+        "key_features": [
+          "Filter by isTest=false (real leads)",
+          "Filter by scenarioId (for UAD-originated leads)",
+          "Filter by subId_f (UAD tracking slot)",
+          "Multiple GEO, status, and attribute filters",
+          "Individual lead profile pages"
+        ],
+        "columns_inferred": ["Lead (email)", "Affiliate", "Brand", "Integration", "Status", "GEO", "Sub IDs A-F", "UTM fields", "Created", "Updated"],
+        "lead_profile_tabs_inferred": ["Basic info", "Status history", "Autologin", "Transactions"]
+      },
+      {
+        "id": 3,
+        "name": "Статус групи (Status Groups)",
+        "url_pattern": "/dashboard/status-groups/list",
+        "api_base": "GET /api/tracker/statusGroup/group",
+        "description": "Groups of brand CRM statuses for analytics segmentation",
+        "key_features": [
+          "10 groups in demo",
+          "Per-group: isSystemDefault, isValid, isWatched, qualityScore flags",
+          "Groups used as dimensions in Metrics module",
+          "Switchable between Brand and Affiliate status group views in Metrics",
+          "Groups: Ungrouped, CrossLead, Potential, Wrong Language, Callback, Deposit, Not interested, WrongAge, No answer, In Work"
+        ],
+        "list_fields": ["id", "companyId", "name", "isSystemDefault", "isValid", "isWatched", "qualityScore"]
+      },
+      {
+        "id": 4,
+        "name": "ГЕО групи (GEO Groups)",
+        "url_pattern": "/dashboard/country-groups/list",
+        "api_base": "GET /api/tracker/countryGroup/group",
+        "description": "Country groupings for stream and hub rotation filtering",
+        "key_features": [
+          "5 groups in demo: LATAM, TEST, RU EU, EUROP, RU_EU",
+          "Used as filter dimension in stream rotation rules",
+          "Edit page at /dashboard/country-groups/{id}"
+        ],
+        "note": "URL uses country-groups not geo-groups"
+      },
+      {
+        "id": 5,
+        "name": "Акаунти (Accounts)",
+        "url_pattern": "/dashboard/accounts/list",
+        "api_base": "GET /api/tracker/account",
+        "description": "User account management with 4 role types",
+        "key_features": [
+          "4 roles: trackerAdmin, trackerSale, trackerMaster, trackerViewer",
+          "MFA support (mfaON field)",
+          "Static timezone mode (staticTimezoneON)",
+          "Display time in header option",
+          "Per-role: safeUsageModeON flag",
+          "5 accounts in demo"
+        ],
+        "roles": {
+          "trackerAdmin": "Full access (Адмін)",
+          "trackerSale": "Sales role (Сейл)",
+          "trackerMaster": "Master role (Майстер)",
+          "trackerViewer": "Read-only (Спостерігач)"
+        },
+        "list_fields": ["id", "lang", "status", "email", "firstName", "lastName", "timezone", "mfaON", "staticTimezoneON", "displayTimeInHeader", "createdAt", "updatedAt", "roles"]
+      },
+      {
+        "id": 6,
+        "name": "Афілейти (Affiliates)",
+        "url_pattern": "/dashboard/affiliates/list",
+        "api_base": "GET /api/tracker/affiliate",
+        "description": "Affiliate (traffic source) partner management",
+        "key_features": [
+          "Profile with system indicators",
+          "Hub attachment (rotation configuration)",
+          "Statistics view",
+          "Used in hub rotation pricing model (buy/sell price per affiliate)"
+        ]
+      },
+      {
+        "id": 7,
+        "name": "Бренди (Brands)",
+        "url_pattern": "/dashboard/brands/list",
+        "api_base": "GET /api/tracker/broker",
+        "description": "Brand (CRM destination) management",
+        "key_features": [
+          "5-tab profile: Primary, Integrations, Streams, Accounts, Statistics",
+          "API key field per brand",
+          "4 system indicators: Відкритий (Open), Синхронізований (Synced), Блокування фрода (Fraud block), Постбек (Postback)",
+          "Code format: BR-XXXXXXXX",
+          "Integration creation with 134 CRM templates",
+          "Stream rotation (brokerAttachment) per brand"
+        ],
+        "brand_integration_fields": [
+          "id", "companyId", "verticalTemplateId", "name", "brokerId",
+          "isSendable", "isSyncable", "useProxyIP", "isAutologinEnabled",
+          "isAutologinOverridden", "autologinCustomURL", "code (BI-)",
+          "integrationTemplateId", "description", "lastLeadSentAt"
+        ],
+        "integrator_structure": {
+          "total_public_templates": 134,
+          "config_format": {
+            "push": "url, body, params, headers, bodyType, redirect, response(path/parser/schema/dataType), requestType, leadOptionPlace, successCondition",
+            "pullFTD": "similar to push",
+            "pullLead": "similar to push",
+            "variables": "custom variable definitions",
+            "references": "external references",
+            "connectionOptions": "connection config"
+          },
+          "response_parser": "JMESPath",
+          "success_condition": "array of conditions for CRM response validation"
+        }
+      },
+      {
+        "id": 8,
+        "name": "Хаби (Hubs)",
+        "url_pattern": "/dashboard/hubs/list",
+        "api_base": "GET /api/tracker/box",
+        "description": "Hub routing nodes connecting affiliates to brands",
+        "key_features": [
+          "3 system indicators: Надсилається (Sending), Блокувати дублікати (Block duplicates), Резервний режим (Fallback mode)",
+          "Code format: BX-XXXXXXXX",
+          "3-tab profile: Primary, Affiliates (rotation), Streams (rotation)",
+          "Per-affiliate pricing: buy price, sell price, deal type (CPA/CPL), currency (USD/EUR)",
+          "Stream attachment (brokerAttachment) configuration",
+          "Affiliate attachment (affiliateAttachment) configuration"
+        ]
+      },
+      {
+        "id": 9,
+        "name": "Ротації (Rotations)",
+        "url_pattern": "/dashboard/rotations/streams/list and /dashboard/rotations/hubs/list",
+        "api_base": "GET /api/tracker/box/brokerAttachment (streams) + GET /api/tracker/box/affiliateAttachment (hubs)",
+        "description": "Global view of all stream and hub rotation attachments",
+        "tabs": {
+          "stream_rotations": {
+            "url": "/dashboard/rotations/streams/list",
+            "api": "GET /api/tracker/box/brokerAttachment?sort[weight]=desc&sort[priority]=asc",
+            "columns": ["Інтеграція бренду", "Оффер", "Країни", "Код інтеграції", "Вага", "Пріоритет", "Тотал капа"],
+            "creation_form_fields": [
+              "Хаб (Hub)", "Бренд (Brand)", "Інтеграція бренду (Brand integration)",
+              "Кількість=20 (quota)", "Вага=1 (weight)", "Пріоритет=1 (priority)",
+              "Надсилається (Sendable)", "Суворий режим (Strict mode)"
+            ],
+            "filter_dimensions": [
+              "GEO (Країни/Мова/Мови лендінгів)",
+              "Розклад (Mon-Sun schedule per day, timezone-aware)",
+              "Офери (offer names)",
+              "Sub A-F (subId filters A through F)",
+              "UTM (ID/Source/Medium/Campaign)"
+            ]
+          },
+          "hub_rotations": {
+            "url": "/dashboard/rotations/hubs/list",
+            "api": "GET /api/tracker/box/affiliateAttachment?sort[weight]=desc",
+            "columns": ["Хаб", "Sub «A»", "Вага", "Афілейт", "Ціна покупки", "Ціна продажу", "Тип угоди", "Валюта угоди", "Мови лендінгів", "Мова", "Оффер", "Країни"],
+            "total_records": 110,
+            "creation_form_fields": [
+              "Хаб", "Афілейт", "Вага", "Ціна покупки", "Ціна продажу",
+              "Тип угоди (CPA|CPL)", "Валюта угоди (USD|EUR)"
+            ],
+            "filter_dimensions": ["GEO", "Офери", "Sub A-F", "UTM (NO schedule, NO quota in hub rotations)"]
+          }
+        }
+      },
+      {
+        "id": 10,
+        "name": "UAD менеджер / Сценарії (UAD Manager / Scenarios)",
+        "url_pattern": "/dashboard/scenarios/list",
+        "api_base": "GET /api/injector/scenario",
+        "description": "Automated lead re-injection engine — schedules batch re-sending of leads to different brands/integrations",
+        "key_features": [
+          "Separate microservice (/api/injector/)",
+          "14 scenarios in demo",
+          "States: Активний (Active status) + Запущено/Очікує (Running/Waiting state)",
+          "Code format: SCN-XXXXXXXXX",
+          "Context menu: Переглянути, Створити копію, Зупинити, Видалити",
+          "Management button: Створити копію, Зупинити, Видалити",
+          "Timezone-aware execution"
+        ],
+        "profile_tabs": {
+          "form_tab": {
+            "fields": [
+              "Назва (Name)",
+              "К-сть лідів (Lead count, locked)",
+              "Безперервна відправка (Continuous sending checkbox)",
+              "Хаб (Hub, locked)",
+              "Інтеграція бренду (Brand integration, locked)",
+              "Ігнорувати налаштування потоку (Ignore stream settings checkbox)",
+              "Режим інжекту (Inject mode: Змінити реєстрацію = Change registration)",
+              "Змінити афілейта (Change affiliate toggle + Affiliate selector)",
+              "Використовувати автологін (Use autologin checkbox)",
+              "Використовувати проксі (Use proxy toggle + proxy name)"
+            ]
+          },
+          "schedule_tab": {
+            "fields": [
+              "Таймзона (Timezone: GMT+N + city name)",
+              "Дата запуску (Launch date)",
+              "Час запуску (Launch time)",
+              "Встановити дату зупинки (Set stop date checkbox)",
+              "Дата зупинки (Stop date)",
+              "Час зупинки (Stop time)",
+              "Використовувати інтервал хвилини (Use interval in minutes: min-max range slider)"
+            ]
+          },
+          "selected_leads_tab": "Обрані ліди — leads matching scenario filters (API: filter[scenarioId]={uuid})",
+          "used_leads_tab": "Використані ліди — leads already processed by this scenario"
+        },
+        "list_columns": ["Назва", "Код", "Статус", "Стан", "Хаб", "Створений", "Оновлено", "Дата запуску"]
+      },
+      {
+        "id": 11,
+        "name": "Конверсії (Conversions)",
+        "url_pattern": "/dashboard/conversions/overview",
+        "api_base": "GET /api/tracker/lead/conversion/hold",
+        "description": "Conversion hold management and stop-status configuration",
+        "tabs": {
+          "hold_tab": {
+            "name": "Холд",
+            "api": "GET /api/tracker/lead/conversion/hold",
+            "description": "Leads awaiting conversion confirmation (in hold state)",
+            "columns": ["Лід", "Афілейт", "Бренд", "Оброблено", "Видимо афілейту", "Час утримання", "Автопідтвердження", "Створений", "Оновлено"],
+            "records_in_demo": 1
+          },
+          "stop_statuses_tab": {
+            "name": "Стоп статуси",
+            "api": "GET /api/tracker/company/resources/affiliateStopStatus/{companyId}",
+            "description": "List of brand CRM status strings that terminate the conversion hold timer",
+            "columns": ["Назва (status name string)"],
+            "records_in_demo": 39,
+            "examples": ["сделка", "фтд", "продажа", "покупка", "закрыт", "конвер", "деп", "депозит", "dd"]
+          }
+        }
+      },
+      {
+        "id": 12,
+        "name": "Телеграм боти (Telegram Bots)",
+        "url_pattern": "/dashboard/telegram-bots/list",
+        "api_base": "GET /api/tracker/account/resources/botSubscriber",
+        "description": "Per-account Telegram bot notification configuration",
+        "key_features": [
+          "Bots are account-scoped (not company-scoped)",
+          "1 bot per account (demo)",
+          "Context menu: Налаштувати сповіщення (Configure notifications), Заблокувати (Block)"
+        ],
+        "list_columns": ["Код (SB-prefix)", "Telegram чат ID", "Telegram username", "Група (Group)", "Активний", "Оновлено", "Створений"],
+        "notification_events": [
+          "Перенесення ліда успішне (Lead transfer successful)",
+          "Помилка перенесення ліда (Lead transfer error)",
+          "Ліда не призначено (Lead not assigned)",
+          "Створено новий статус бренду (New brand status created)",
+          "Ліміт обсягу лідів для інтеграції хаба (Hub integration lead volume limit)",
+          "Відбулася конверсія (Conversion occurred)",
+          "Аномалії ліда: виявлено перенаправлення (Lead anomaly: redirect detected)",
+          "Аномалії ліда: виявлено фрод (Lead anomaly: fraud detected)",
+          "Аномалії ліда: виявлено недійсний статус (Lead anomaly: invalid status detected)",
+          "Акаунт: ліміт перевірок на фрод (Account: fraud check limit reached)",
+          "Ліміт кількості лідів за підпискою (Lead count limit by subscription)",
+          "Ліміт автологін редиректів (Autologin redirect limit reached)",
+          "Ліміт холду конверсій (Conversion hold limit reached)",
+          "Повідомляти про ліди з невалідним профілем (Notify about leads with invalid profile)",
+          "Лід заблокований через підозру на фрод (Lead blocked due to fraud suspicion)",
+          "Виявлено нову воронку (New funnel detected)",
+          "Експорт лідів (Lead export)"
+        ]
+      },
+      {
+        "id": 13,
+        "name": "Анти-фрод (Anti-fraud)",
+        "url_pattern": "/dashboard/anti-fraud",
+        "api_base": "GET /api/tracker/company/resources/fraudProfile + GET /api/tracker/company/resources/fraudScoringConfig/{companyId}",
+        "description": "Dual fraud detection system: binary allow/block profiles + weighted numeric scoring",
+        "tabs": {
+          "fraud_profiles_tab": {
+            "name": "Фрод профілі",
+            "description": "Named fraud profiles with binary Allow/Block per-attribute rules, assigned to streams",
+            "records_in_demo": 8,
+            "list_columns": ["Ім'я", "Код (FP-prefix)", "Увімкнено", "Опис", "Оновлено"],
+            "profile_tabs": {
+              "basic_info": ["Назва", "Опис", "Активувати фрод профіль checkbox"],
+              "settings": {
+                "categories": {
+                  "IP": {
+                    "checks": ["Bot", "TOR", "VPN", "Proxy", "Crawler"],
+                    "control": "Allow/Block toggle per check"
+                  },
+                  "Email": {
+                    "checks": ["Invalid", "Disposable", "DNS invalid", "SMTP invalid"],
+                    "control": "Allow/Block toggle per check"
+                  },
+                  "Phone": {
+                    "checks": ["VOIP", "Risky", "Invalid", "Prepaid", "Spammer", "Inactive", "Recent abuse"],
+                    "control": "Allow/Block toggle per check"
+                  },
+                  "Line_Type": {
+                    "checks": ["N/A", "VOIP", "Pager", "Mobile", "Landline", "Toll free", "Wireless", "Satellite", "Premium rate"],
+                    "control": "Allow/Block toggle per check"
+                  },
+                  "Line_Activity_Status": {
+                    "checks": ["N/A", "Low activity", "Medium activity", "High activity", "Disconnected", "Phone turned off", "Inconclusive status"],
+                    "control": "Allow/Block toggle per check"
+                  },
+                  "Messengers": {
+                    "checks": ["Telegram missed", "Whatsapp missed"],
+                    "control": "Allow/Block toggle per check"
+                  }
+                }
+              }
+            }
+          },
+          "fraud_scoring_tab": {
+            "name": "Оцінка фрода",
+            "description": "Company-level weighted fraud score configuration — each attribute has a 0-100 weight slider; final score is weighted average across categories",
+            "api": "GET /api/tracker/company/resources/fraudScoringConfig/{companyId}",
+            "per_category_fields": {
+              "Phone": ["MI coefficient (AI strictness, default 25)", "Valid (100)", "Recent abuse (10)", "VOIP (100)", "Prepaid", "Risky", "Inactive", "Spammer", "line types: VOIP/Mobile/Landline/Toll free/Wireless/Satellite/Premium rate/Pager/N/A", "activity: High/Medium/Low/Disconnected/Phone turned off/Inconclusive/N/A"],
+              "Email": ["MI coefficient (15)", "Valid (100)", "Disposable", "DNS score", "SMTP score"],
+              "IP": ["MI coefficient (20)", "Bot status", "TOR (50)", "VPN (25)", "Proxy (60)", "Crawler (20)", "Recent abuse (5)"],
+              "Messengers": ["Telegram (0)", "Whatsapp (0)"]
+            },
+            "category_balancing": {
+              "description": "Determines % of each category score in final total",
+              "values": {"IP": 30, "Email": 30, "Phone": 100, "Messengers": 30},
+              "reset_link": "Встановити налаштування за замовчуванням (Reset to defaults)"
+            }
+          }
+        }
+      },
+      {
+        "id": 14,
+        "name": "Вертикалі (Verticals)",
+        "url_pattern": "/dashboard/verticals/list",
+        "api_base": "GET /api/tracker/verticalTemplate",
+        "description": "Vertical templates that define the lead profile field schema. Read-only list — only the system administrator can create verticals. Oldest record in the system (2022).",
+        "key_features": [
+          "Read-only list (no + create button)",
+          "Row selection via radio button (single-select, NOT navigation to profile)",
+          "Clicking a row does NOT open a detail page",
+          "Vertical defines the dynamic field set for lead profiles",
+          "Lead creation and Hub creation require selecting a vertical",
+          "Only 1 vertical in demo: 'Base' (VT-HP8XSRMKVS6E7)",
+          "Created 2022-08-03 — the oldest record in the system"
+        ],
+        "list_columns": ["# (radio button)", "Назва", "Код (VT-)", "Публічне", "Створений", "Оновлено"],
+        "list_api": "GET /api/tracker/verticalTemplate?skip=0&take=10&sort[createdAt]=desc",
+        "toolbar_actions": ["↻ refresh", "← back", "funnel filter"],
+        "no_create_action": true,
+        "sample_data": {
+          "name": "Base",
+          "code": "VT-HP8XSRMKVS6E7",
+          "isPublic": true,
+          "createdAt": "2022-08-03T19:29:48.000Z",
+          "updatedAt": "2022-08-03T19:29:48.000Z"
+        },
+        "competitive_insight": "The vertical system is a multi-tenant configuration layer. Different verticals (gambling, forex, crypto) would have different lead profile schemas. Currently only 'Base' is configured, suggesting demo is set up for a single vertical use case."
+      }
+    ]
+  },
+
+  "additional_discoveries": {
+    "company_api": {
+      "endpoint": "GET /api/tracker/company/{uuid}",
+      "company_id_in_demo": "c4950cc9-7588-4d4e-b749-0ed29dbd3dd9",
+      "implication": "Multi-company architecture — each tenant has a UUID company ID"
+    },
+    "vendor_discovery": {
+      "note": "From memory context: VendorDiscoveryUpdater ETL task runs 30-min periodic vendor sync from all aggregators, suggesting upstream aggregator/provider integrations beyond just brand CRMs"
+    },
+    "statistics_filter_params": {
+      "date_range": "filter[createdAt][gte]=ISO8601&filter[createdAt][lte]=ISO8601",
+      "status_group_mode": "statusGroup=brandStatusGroup OR statusGroup=affiliateStatusGroup",
+      "time_scale": "scale=month (for leads chart endpoint)"
+    },
+    "leads_api_special_filters": {
+      "exclude_test": "filter[isTest]=false",
+      "by_scenario": "filter[scenarioId]={uuid}",
+      "by_geo": "filter[geo][0]=XX (ISO country code array)",
+      "by_status": "filter[status][0]=statusName (array)",
+      "by_sub_f": "filter[subId_f][0]=uad_XXXXX (UAD tracking)"
+    }
+  }
+}

@@ -1,0 +1,448 @@
+{
+  "web_enrichment": {
+    "enriched_at": "2026-04-12T14:48:00Z",
+    "source_analysis_file": "/Users/f0res/video_prd_Запись_экрана_2026-03-12_в_12_39_14_20260412_144841/analysis.json",
+    "search_queries_used": [
+      "trackbox.ai funding crunchbase",
+      "trackbox.ai pitchbook investment",
+      "trackbox.ai tracxn funding rounds",
+      "tigloo ltd trackbox funding",
+      "trackbox.ai linkedin company",
+      "trackbox.ai employees headcount",
+      "trackbox.ai CEO founder kfir benami",
+      "trackbox.ai CTO danny valariola",
+      "trackbox.ai team leadership",
+      "trackbox.ai site:techcrunch.com",
+      "trackbox.ai site:forbes.com",
+      "trackbox.ai site:venturebeat.com",
+      "trackbox.ai partnership news 2024 2025",
+      "trackbox.ai nuxgame integration",
+      "trackbox.ai coinspaid",
+      "trackbox.ai pricing plans",
+      "trackbox.ai capterra pricing",
+      "trackbox.ai free trial",
+      "trackbox.ai g2 reviews rating",
+      "tigloo trackbox g2",
+      "trackbox.ai productHunt",
+      "trackbox.ai reddit review",
+      "trackbox.ai hacker news",
+      "trackbox.ai alternative review",
+      "trackbox.ai similarweb traffic",
+      "trackbox.ai blog content",
+      "trackbox.ai linkedin followers",
+      "trackbox.ai twitter",
+      "trackbox.ai zapier integration",
+      "trackbox.ai builtwith tech stack",
+      "trackbox.ai api documentation postman",
+      "trackbox.ai soc2 gdpr compliance certifications",
+      "trackbox.ai status page uptime",
+      "tigloo security incident 2021",
+      "tigloo kalite network fintelegram",
+      "trackbox.ai igb affiliate awards 2024",
+      "trackbox.ai changelog release notes",
+      "trackbox.ai github",
+      "trackbox.ai office location ramat gan israel",
+      "tigloo ltd israel registration"
+    ],
+
+    "company": {
+      "funding": {
+        "total_raised": "$0 — bootstrapped",
+        "rounds": [],
+        "bootstrapped_signal": true,
+        "latest_valuation": "not found",
+        "estimated_arr": "~$2.3M USD (GetLatka 2025 estimate)",
+        "notable_flag": "GetLatka lists a locked 'M&A Offer' entry dated April 10, 2025 — suggests an inbound acquisition inquiry; details locked behind paywall, unconfirmed",
+        "confidence": "high",
+        "sources": [
+          "https://getlatka.com/companies/trackbox.ai",
+          "https://tracxn.com/d/companies/trackbox/__SzxWtQHndAMGvxM60-_Y_i3Lg68PEGN7mwXmNyqm_Q0",
+          "https://www.crunchbase.com/organization/trackbox-af94"
+        ]
+      },
+      "legal_entity": {
+        "name": "TIGLOO LTD",
+        "registration_number": "516097268",
+        "incorporated": "2019-10-27",
+        "country": "Israel",
+        "status": "Active (as of 2025 annual report)"
+      },
+      "team": {
+        "headcount": {
+          "current": 21,
+          "bracket": "10–50 employees (LinkedIn self-reported)",
+          "trend_6mo": "stable",
+          "source": "https://il.linkedin.com/company/trackbox-ai"
+        },
+        "tenure_distribution": {
+          "1_2_years": "31%",
+          "3_4_years": "25%",
+          "5_7_years": "19%",
+          "8_10_years": "19%",
+          "11_plus_years": "6%",
+          "source": "https://www.signalhire.com/companies/tigloo-online-technologies"
+        },
+        "active_hiring_areas": ["not found — no active job postings identified in public search"],
+        "leadership": [
+          {
+            "name": "Kfir Benami",
+            "role": "CEO (Founder)",
+            "background": "Previously COO at TrackBox.ai; prior roles at ProgressPlay, Over.ai, Bmm, Pelephone. BA Business Administration from Ruppin Academic Center; Directors' Course from Israel Management Center.",
+            "tenure": "Founder-level, inception ~2019",
+            "source": "https://rocketreach.co/trackboxai-management_b71fc765c49337fc"
+          },
+          {
+            "name": "Danny Valariola",
+            "role": "CTO",
+            "background": "Previously at CPAindustry; expert in web projects and DevOps. Based in Tel Aviv. 1,000+ LinkedIn followers.",
+            "tenure": "not confirmed",
+            "source": "https://il.linkedin.com/in/dvalariola"
+          },
+          {
+            "name": "Daria Liv",
+            "role": "VP Business Development & Marketing (also titled Director, Marketing & BD)",
+            "background": "Previously Senior CSM at Tigloo; prior role at Nesthorn GmbH. BA from Open University of Israel; Marketing training at Jolt.io.",
+            "tenure": "internal career progression within Tigloo",
+            "source": "https://www.zoominfo.com/c/trackboxai/1317442379"
+          },
+          {
+            "name": "Avi Vakrat",
+            "role": "Head of Engineering",
+            "background": "Graduate of Technion – Israel Institute of Technology. Based in Tel Aviv.",
+            "tenure": "not confirmed",
+            "source": "https://rocketreach.co/trackboxai-management_b71fc765c49337fc"
+          },
+          {
+            "name": "Shahar Krizman",
+            "role": "Head of Technical Support",
+            "background": "Internal career progression: Account Manager → Sales & Marketing Specialist → Manager Customer Success → Head of Technical Support.",
+            "tenure": "not confirmed",
+            "source": "https://www.zoominfo.com/c/trackboxai/1317442379"
+          }
+        ],
+        "recent_departures": [],
+        "locations": [
+          "40 Tuval Street, Ramat Gan, 5252247, Israel (primary HQ — confirmed on official site and legal filings)",
+          "Antwerp, Belgium (secondary — unconfirmed operational; appears on PitchBook and one LinkedIn page, likely a registered EU entity)"
+        ]
+      },
+      "recent_news": [
+        {
+          "headline": "NuxGame integrates TrackBox affiliate management technology into its betting/casino platform",
+          "date": "2024-07-17",
+          "source": "https://igamingbusiness.com/company-news/nuxgame-strengthens-affiliate-management-system-with-trackbox-integration/",
+          "significance": "Validates product as a component for white-label iGaming operators; expands distribution into casino/betting vertical"
+        },
+        {
+          "headline": "TrackBox.ai shortlisted for iGB Affiliate Awards 2024 — Best Newcomer category",
+          "date": "2024-02-08",
+          "source": "https://igamingbusiness.com/company-news/igb-affiliate-award-2024-shortlist-revealed/",
+          "significance": "Industry recognition within iGaming affiliate market; confirms positioning in that vertical"
+        },
+        {
+          "headline": "TrackBox.ai partners with CoinsPaid to accept cryptocurrency payments",
+          "date": "2023-09-01",
+          "source": "https://www.einpresswire.com/article/655746370/coinspaid-welcomed-aboard-trackbox-to-accept-crypto-payments",
+          "significance": "Signals crypto-native customer base alignment; CEO Kfir Benami quoted: 'partnership with CoinsPaid marks a significant milestone as we broaden our horizons into cryptocurrency payments'"
+        },
+        {
+          "headline": "GetLatka lists a locked 'M&A Offer' entry for trackbox.ai dated April 10, 2025",
+          "date": "2025-04-10",
+          "source": "https://getlatka.com/companies/trackbox.ai",
+          "significance": "Possible inbound acquisition inquiry; details locked behind paywall. Unconfirmed but notable given ~$2.3M ARR and bootstrapped status."
+        }
+      ]
+    },
+
+    "product": {
+      "pricing": {
+        "plans": [
+          {
+            "name": "Entry / base plan",
+            "price": "~€900/month",
+            "billing": "monthly (fixed subscription)",
+            "included": ["No commissions or revenue percentages — flat monthly fee per homepage messaging"],
+            "limits": ["Rules Limit 2/10 visible in demo (suggesting tiered rule caps)", "Distribution: Daily Leads Limit 100,000, Hourly Leads Limit 10,000 visible in demo"]
+          }
+        ],
+        "free_tier": {
+          "available": false,
+          "limitations": ["No free version confirmed by Capterra"]
+        },
+        "free_trial": {
+          "available": true,
+          "credit_card_required": false,
+          "source": "Capterra listing + SoftwareWorld"
+        },
+        "pricing_model_description": "Fixed flat monthly subscription — no commissions, no revenue share, no per-lead fees. Demo-first sales motion; full pricing above entry level is quote-based and not publicly listed.",
+        "hidden_fees": ["not publicly confirmed; per-seat or per-volume charges above base tier not disclosed"],
+        "source": "https://www.capterra.com/p/230911/Trackbox/",
+        "last_checked": "2026-04-12",
+        "price_change_history": "not found — Wayback Machine not accessible during research"
+      },
+      "development_velocity": {
+        "release_frequency": "not found — no public changelog or release notes page exists",
+        "last_release_date": "not found",
+        "roadmap_focus": "not found — no public roadmap identified",
+        "github_activity": "no public GitHub repositories found for trackbox.ai or Tigloo Ltd"
+      },
+      "market_sentiment": {
+        "g2_rating": "not confirmed — G2 page returned 403; rating not extractable",
+        "g2_reviews_count": "not confirmed",
+        "g2_badges_spring_2026": [
+          "G2 Leader Spring 2026",
+          "G2 Best Estimated ROI Mid Market Spring 2026",
+          "G2 Easiest Admin Mid Market Spring 2026",
+          "G2 Most Implementable Spring 2026",
+          "G2 Best Results Mid Market Spring 2026",
+          "G2 Lead Capture Mid Market Spring 2026"
+        ],
+        "g2_badge_source": "https://rocketreach.co/trackboxai-management_b71fc765c49337fc",
+        "g2_note": "6 category badges for Spring 2026 are notable — typically requires 10+ reviews per category. 'Easiest Admin' and 'Most Implementable' badges suggest reviewers praise ease of setup and management.",
+        "top_complaints": ["not found — review content inaccessible"],
+        "top_praises": ["Ease of administration (inferred from G2 badge)", "ROI (inferred from G2 badge)", "Implementation speed (inferred from G2 badge)"],
+        "capterra_rating": 0,
+        "capterra_reviews_count": 0,
+        "capterra_note": "Capterra listing exists but has 0 user reviews — listing may be unclaimed or newly created. Entry price €900/month listed.",
+        "notable_reviews": [
+          {
+            "source": "https://www.g2.com/products/tigloo-trackbox/reviews",
+            "summary": "G2 page inaccessible (403). Presence of 6 Spring 2026 badges inferred from RocketReach page. Specific review content not extractable.",
+            "sentiment": "positive (inferred from badge collection)"
+          },
+          {
+            "source": "https://fintechservicereviews.com/trackbox/",
+            "summary": "FinTech service review article exists but page returned 403 — content not extractable.",
+            "sentiment": "unknown"
+          }
+        ],
+        "reddit_hackernews": "No Reddit threads or HackerNews discussions found for trackbox.ai. The product has no organic community discussion on these platforms — consistent with a niche B2B tool sold via direct sales."
+      }
+    },
+
+    "marketing": {
+      "monthly_traffic_estimate": {
+        "value": "below Similarweb minimum reporting threshold (<50,000 visits/month)",
+        "note": "Consistent with a demo-led enterprise B2B sales motion. Not a PLG or high-volume inbound product.",
+        "source": "https://www.similarweb.com/website/trackbox.ai/"
+      },
+      "top_organic_keywords": ["not found — below Similarweb threshold for keyword data"],
+      "content_cadence": "No public blog found. Content distribution appears to be via LinkedIn posts only.",
+      "content_themes": [
+        "Product feature announcements",
+        "Industry positioning in affiliate/performance marketing",
+        "iGaming vertical news and events"
+      ],
+      "social_following": {
+        "linkedin": {
+          "followers": 1290,
+          "page_url": "https://il.linkedin.com/company/trackbox-ai",
+          "source": "LinkedIn post metadata, February 2025"
+        },
+        "twitter": {
+          "followers": "not found — no Twitter/X account identified",
+          "source": "not found"
+        },
+        "facebook": {
+          "presence": "mentioned in company profile; follower count not confirmed",
+          "source": "not found"
+        }
+      },
+      "paid_advertising": {
+        "active": "unknown — Meta Ads Library not accessible during research; no evidence of paid advertising in secondary sources",
+        "observed_channels": [],
+        "note": "Sub-threshold web traffic suggests minimal or no paid acquisition spend"
+      },
+      "community": {
+        "platform": "not found — no Slack, Discord, or developer forum identified",
+        "size": "not found",
+        "source": "not found"
+      },
+      "integration_marketplaces": {
+        "zapier": "not listed",
+        "make": "not listed",
+        "native_integrations": [
+          "NuxGame (betting/casino software — direct native integration, July 2024)",
+          "CoinsPaid (crypto payment processor — direct native integration, September 2023)"
+        ],
+        "api_postman_collection": "https://documenter.getpostman.com/view/4055923/TVYJ5wxS"
+      },
+      "awards_and_recognition": [
+        "iGB Affiliate Awards 2024 — Best Newcomer shortlist (February 2024, Troxy, London)",
+        "G2 Leader Spring 2026 (multiple category badges)"
+      ]
+    },
+
+    "technology": {
+      "tech_stack": [
+        {"layer": "marketing website frontend", "technology": "Wix (Thunderbolt renderer)", "source": "page source analysis"},
+        {"layer": "analytics", "technology": "Google Analytics GA4 (ID: G-DPKZ5WBXM2)", "source": "page source analysis"},
+        {"layer": "tag management", "technology": "Google Tag Manager (GTM-MLG98MHJ)", "source": "page source analysis"},
+        {"layer": "CDN / WAF", "technology": "Cloudflare", "source": "https://www.trackbox.ai/ (homepage claims)"},
+        {"layer": "error tracking", "technology": "Sentry (ingest: o1224273.ingest.sentry.io)", "source": "Postman API page source"},
+        {"layer": "performance monitoring", "technology": "New Relic", "source": "Postman API page instrumentation"},
+        {"layer": "fonts", "technology": "Poppins (Google Fonts)", "source": "page source analysis"},
+        {"layer": "bot protection", "technology": "Custom proprietary CAPTCHA with image challenges", "source": "page source analysis"},
+        {"layer": "product UI (inferred)", "technology": "React SPA (inferred from SPA navigation patterns in product recording)", "source": "analysis.json UX notes"}
+      ],
+      "integrations_count": 2,
+      "integrations_note": "Only 2 confirmed public integrations (NuxGame, CoinsPaid). No marketplace presence on Zapier, Make, or similar.",
+      "api_maturity": "intermediate",
+      "api_notes": "Postman-documented API exists (collection ID 4055923). New Relic + Sentry instrumentation confirms production-grade monitoring. No OpenAPI/Swagger spec, developer portal, or public SDK found. API is functional (confirmed by NuxGame integration) but documentation is likely minimal/internal-first.",
+      "api_source": "https://documenter.getpostman.com/view/4055923/TVYJ5wxS",
+      "compliance_certifications": [],
+      "compliance_note": "No SOC 2, ISO 27001, GDPR compliance pages, or HIPAA certifications publicly advertised. Homepage claims WAF, Cloudflare, automatic threat detection, and 24/7 server monitoring.",
+      "uptime_90d": "not verifiable — no public status page found (status.trackbox.ai returns ECONNREFUSED)",
+      "uptime_claimed": "99.999% (homepage) / 99.99% (About page) — minor inconsistency between two self-reported figures",
+      "support_sla_claimed": "58-second average response time (per LinkedIn posts)"
+    },
+
+    "signals": {
+      "growth_signals": [
+        {
+          "signal": "G2 Leader status with 6 badges in Spring 2026",
+          "evidence": "TrackBox holds G2 badges for Leader, Best Estimated ROI Mid Market, Easiest Admin Mid Market, Most Implementable, Best Results Mid Market, Lead Capture Mid Market for Spring 2026",
+          "source": "https://rocketreach.co/trackboxai-management_b71fc765c49337fc",
+          "implication": "Strong customer satisfaction signals in mid-market segment; enough verified reviewers to earn multiple category badges — suggests a growing, happy customer base"
+        },
+        {
+          "signal": "iGaming industry recognition — iGB Affiliate Awards 2024 shortlist",
+          "evidence": "Shortlisted for Best Newcomer at iGB Affiliate Awards 2024 alongside established names",
+          "source": "https://igamingbusiness.com/company-news/igb-affiliate-award-2024-shortlist-revealed/",
+          "implication": "Growing brand awareness within the iGaming affiliate niche specifically"
+        },
+        {
+          "signal": "Native integration with NuxGame (July 2024)",
+          "evidence": "NuxGame integrated TrackBox technology into its affiliate management system for betting/casino operators",
+          "source": "https://igamingbusiness.com/company-news/nuxgame-strengthens-affiliate-management-system-with-trackbox-integration/",
+          "implication": "Expanding into white-label iGaming operator segment as an embedded component, not just standalone SaaS — potential for embedded distribution model"
+        },
+        {
+          "signal": "Possible M&A interest",
+          "evidence": "GetLatka lists a locked 'M&A Offer' entry dated April 10, 2025",
+          "source": "https://getlatka.com/companies/trackbox.ai",
+          "implication": "Bootstrapped companies with $2.3M ARR and niche market leadership attract acquirers; this could be an exit signal or strategic partnership discussion"
+        }
+      ],
+      "stress_signals": [
+        {
+          "signal": "2021 security/reputational incident (Kalite Network)",
+          "evidence": "FinTelegram reported in June 2021 that Tigloo (TrackBox parent) provided infrastructure for the Kalite Network, used in fraudulent Bitcoin scam campaigns (Bitcoin Prime, Bitcoin Profit, Bitcoin Champion) targeting European retail investors. Tigloo subsequently shut down the network and added abuse reporting.",
+          "source": "https://fintelegram.com/r4i-israeli-tigloo-provides-scam-facilitating-services-to-scams-and-cysec-cifs/",
+          "implication": "Resolved incident but historically the platform's routing capabilities were exploited for scam operations. Remains a reputational liability in regulated verticals (finance, forex, crypto) — exactly the verticals TrackBox targets."
+        },
+        {
+          "signal": "Very small team (21 employees) relative to product scope",
+          "evidence": "21 confirmed employees managing a full-stack affiliate CRM with 15+ modules, API integrations, and fraud detection",
+          "source": "https://il.linkedin.com/company/trackbox-ai",
+          "implication": "Engineering bandwidth constraint may limit development velocity and feature parity with better-funded competitors"
+        },
+        {
+          "signal": "No public changelog, roadmap, or GitHub activity",
+          "evidence": "No changelog page, no public roadmap, no public GitHub repos found",
+          "source": "not found",
+          "implication": "Low development transparency; customers cannot assess release velocity or planned capabilities. May indicate slow iteration or deliberate opacity."
+        },
+        {
+          "signal": "Sub-threshold web traffic (<50K/month)",
+          "evidence": "Similarweb shows trackbox.ai below minimum reporting threshold for March 2026",
+          "source": "https://www.similarweb.com/website/trackbox.ai/",
+          "implication": "Very limited organic/inbound growth engine; company is entirely reliant on direct sales and referrals — limits scale"
+        },
+        {
+          "signal": "No compliance certifications publicly advertised",
+          "evidence": "No SOC 2, ISO 27001, GDPR compliance pages found despite operating in regulated financial verticals (forex, crypto, finance)",
+          "source": "not found",
+          "implication": "Enterprise customers in regulated industries may face procurement blockers without SOC 2 or ISO 27001"
+        }
+      ],
+      "strategic_intent": [
+        {
+          "hypothesis": "Building toward embedded B2B2B distribution through iGaming platform providers (white-label play)",
+          "supporting_evidence": [
+            "NuxGame native integration (July 2024) — TrackBox embedded inside casino/betting software as a component",
+            "System Settings show white-label capabilities: custom System Title, Brand Logo, Theme Color picker",
+            "Demo system title is 'Demo System' — supports custom branding for resellers",
+            "iGaming-focused industry presence (iGB Awards, iGaming press coverage)"
+          ]
+        },
+        {
+          "hypothesis": "Targeting crypto-adjacent finance verticals as a strategic differentiator",
+          "supporting_evidence": [
+            "CoinsPaid partnership for crypto payment acceptance (September 2023)",
+            "Campaign names in demo include 'Campaign for offer FX ETH/XRP/Bitcoin'",
+            "CEO quote emphasizes crypto payments as 'significant milestone'",
+            "Crypto-native customer base aligns with less regulated contexts where fraud prevention is critical"
+          ]
+        },
+        {
+          "hypothesis": "Possible exit / acquisition preparation",
+          "supporting_evidence": [
+            "GetLatka M&A Offer entry dated April 2025",
+            "Bootstrapped to ~$2.3M ARR — attractive acqui-hire or product acquisition target for larger affiliate platforms",
+            "Strong G2 badges but minimal marketing investment suggests focus on product quality over growth"
+          ]
+        }
+      ]
+    },
+
+    "contradictions_with_recording": [
+      {
+        "topic": "Company identity and brand",
+        "claimed_in_recording": "Product presented as 'trackbox.ai' with a clean blue 'b' logo splash screen; company name not stated",
+        "public_data_shows": "Legal entity is TIGLOO LTD (Registration #516097268, Israel). The product brand 'trackbox.ai' and legal entity 'Tigloo' are distinct. G2 lists it as 'Tigloo – TrackBox'.",
+        "source": "https://tracxn.com/d/companies/trackbox/__SzxWtQHndAMGvxM60-_Y_i3Lg68PEGN7mwXmNyqm_Q0",
+        "implication": "Sales demos present the polished product brand; buyers may not be aware they are contracting with Tigloo Ltd, which carries the 2021 reputational incident. Due diligence should check both names."
+      },
+      {
+        "topic": "Scale claims vs. actual company size",
+        "claimed_in_recording": "Demo shows 2,485 campaigns and 80 distribution rules — suggesting a large operational deployment",
+        "public_data_shows": "Company has only 21 employees and estimated ~$2.3M ARR. The demo data may be synthetic/seeded test data rather than reflective of a single live customer deployment.",
+        "source": "https://getlatka.com/companies/trackbox.ai",
+        "implication": "Demo scale (2,485 campaigns) may be aspirational or represent aggregate across multiple small customers, not a single enterprise deployment. Verify with reference customers."
+      },
+      {
+        "topic": "Security posture in demo vs. public certifications",
+        "claimed_in_recording": "Security module prominently featured — 2FA enforcement, login monitoring, export auditing, risk tiering",
+        "public_data_shows": "No SOC 2, ISO 27001, GDPR, or HIPAA certifications found publicly. Homepage claims WAF and Cloudflare but no third-party audit.",
+        "source": "not found",
+        "implication": "Security features exist in the product UI but are unvalidated by external audit. Regulated-industry buyers (finance, crypto) should request security documentation before procurement."
+      },
+      {
+        "topic": "Fraud detection capability vs. company history",
+        "claimed_in_recording": "Fraud Detection tab with credit-based scoring (999 credits shown), bot detection column, IP/phone country mismatch blocking — positioned as a differentiator",
+        "public_data_shows": "In 2021 Tigloo's own platform was used to facilitate fraudulent Bitcoin scam traffic routing. While the incident was resolved, the platform's routing architecture was exploitable for exactly the fraud types it now claims to prevent.",
+        "source": "https://fintelegram.com/r4i-israeli-tigloo-provides-scam-facilitating-services-to-scams-and-cysec-cifs/",
+        "implication": "The fraud detection features may have been added/strengthened post-2021 incident as a direct response. This is a positive product evolution but buyers should ask about the architecture changes made after the Kalite Network shutdown."
+      },
+      {
+        "topic": "Uptime guarantee",
+        "claimed_in_recording": "Not explicitly discussed in recording",
+        "public_data_shows": "Homepage claims '99.999% uptime'; About page claims '99.99% uptime' — inconsistency in their own public materials. No public status page to verify either claim.",
+        "source": "https://www.trackbox.ai/",
+        "implication": "Minor credibility issue — even their own public pages are inconsistent on a key SLA metric. Absence of a status page makes independent verification impossible."
+      }
+    ],
+
+    "data_gaps": [
+      "Exact G2 rating (out of 5.0) and review count — G2 page returned 403; only badge metadata available",
+      "Specific G2 reviewer verbatims (top complaints, top praises) — page inaccessible",
+      "Pricing tiers above the ~€900/month entry point — demo-led model, no public tier breakdown",
+      "Historical pricing changes via Wayback Machine — web.archive.org not accessible during research",
+      "Twitter/X presence — no account found; may not exist",
+      "Active job postings — no current listings found in public search",
+      "Blog or content hub — no indexed blog found despite Wix platform",
+      "Paid advertising activity — Meta Ads Library and Google Ads Transparency not accessible",
+      "Belgium office operational status — conflicting sources (PitchBook vs. operational reality)",
+      "GetLatka M&A offer (April 2025) — locked behind paywall, unverified",
+      "Exact G2 review count — needed to assess review base maturity",
+      "CPO and VP Sales titles — not publicly identified",
+      "Customer reference list or case studies — not found",
+      "Monthly active user count or customer count above 'claimed 2,500+ customers' — unverified",
+      "Specific changelog or release cadence — no public changelog exists",
+      "Full API endpoint documentation — Postman collection exists but full spec not accessible"
+    ],
+
+    "analyst_summary": "TrackBox.ai (legal entity: Tigloo Ltd, Israel) is a bootstrapped, 21-person affiliate marketing CRM targeting performance marketing networks in iGaming, forex, and crypto verticals. With ~$2.3M estimated ARR and zero external funding, it has built a functionally rich product — earning 6 G2 category badges for Spring 2026 — but operates with a very limited marketing footprint (sub-50K/month web traffic, 1,290 LinkedIn followers, no public blog). The most significant contradiction between the demo and public record is the 2021 FinTelegram-documented incident where Tigloo's routing infrastructure was exploited by the fraudulent Kalite Network for Bitcoin scam campaigns; the company resolved this but buyers in regulated verticals should conduct explicit due diligence given that fraud detection is now a core product selling point. The CoinsPaid crypto payment partnership and campaign naming conventions (FX ETH/XRP/Bitcoin) confirm the company's deliberate orientation toward crypto-adjacent finance — a higher-risk but less compliance-scrutinized customer segment. A locked GetLatka M&A inquiry entry from April 2025 combined with strong product ratings and bootstrapped status suggests the company may be evaluating exit options. The white-label system settings and NuxGame embedded integration signal a potential distribution pivot toward iGaming platform providers as OEM partners rather than direct SaaS sales — a strategic move that would let a 21-person team scale distribution without proportional headcount growth."
+  }
+}

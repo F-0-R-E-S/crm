@@ -1,0 +1,46 @@
+────────────────────────────────────────────────────────────────
+  Web Research  ·  Демо CRM GetLinked.mov
+  started: 2026-04-12 14:42:54
+────────────────────────────────────────────────────────────────
+
+Written to `/Users/f0res/video_prd_Демо_CRM_GetLinked_20260412_143126/analysis_web.json`.
+
+Here's a summary of what the research found:
+
+---
+
+## Key Findings
+
+### Company
+- **Bootstrapped** — no Crunchbase profile, no VC funding, no press coverage anywhere
+- **Offices**: Israel + Bulgaria; hosting in Ireland (confirmed from Privacy Policy)
+- **Scale**: appears to be a small team (<20 people) running a "boutique" managed-service model
+
+### Pricing (Major Discovery)
+- A **fully public pricing page** exists at `getlinked.io/getlinked-pricing.php`
+- **$500 one-time setup fee** on all plans
+- Lead Distribution System: **$250/m (Starter) → $1,000/m (Professional) → $2,000/m (Enterprise)**
+- **Contradiction with recording**: the presenter withheld pricing as though it were custom/confidential — but it's publicly listed. Based on the 3-domain requirement shown in the demo, the prospect is likely being pitched the $1,000–$2,000/m tier
+
+### Stress Signals
+1. **Zero third-party reviews** — no G2, Capterra, Trustpilot, or ProductHunt entries found
+2. **13-minute dashboard loading failure** during the sales demo — reliability risk
+3. No public changelog, roadmap, GitHub, or status page
+
+### Growth Signals
+1. AI-based lead scoring in active rollout (demoed as "new")
+2. CRG automation module is a genuine differentiator for Forex/Crypto verticals
+3. Expanding into e-commerce (dedicated landing page)
+
+### Competitors (per SoftwareWorld listing)
+Affise, Everflow, Awin, CJ Affiliate, Voluum, Avelon, ClickBank
+
+Sources:
+- [Getlinked pricing page](https://getlinked.io/getlinked-pricing.php)
+- [Getlinked why-us page](https://getlinked.io/why-us.php)
+- [Getlinked privacy policy](https://getlinked.io/privacy.php)
+- [SoftwareWorld — Getlinked alternatives](https://www.softwareworld.co/competitors/getlinked-alternatives/)
+
+────────────────────────────────────────────────────────────────
+  finished: 2026-04-12 14:47:26
+────────────────────────────────────────────────────────────────
