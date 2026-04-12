@@ -3,46 +3,45 @@ package main
 import "os"
 
 type Config struct {
-	Port      string
-	JWTSecret string
-	RedisURL  string
+	Port     string
+	DBURL    string
+	RedisURL string
+	NATSURL  string
 
-	// CORS
-	CORSAllowOrigins string
+	AnthropicAPIKey string
+	Model           string
+	MaxToolCalls    int
 
-	// Upstream service addresses
-	LeadIntakeAddr    string
+	// Upstream service addresses for action execution
 	RoutingEngineAddr string
 	BrokerAdapterAddr string
 	FraudEngineAddr   string
-	StatusSyncAddr    string
-	AutologinAddr     string
+	LeadIntakeAddr    string
 	UADAddr           string
 	NotificationAddr  string
-	IdentityAddr      string
+	AutologinAddr     string
 	AnalyticsAddr     string
-	AssistantAddr     string
 }
 
 func LoadConfig() Config {
 	return Config{
-		Port:      envOrDefault("PORT", "8080"),
-		JWTSecret: os.Getenv("JWT_SECRET"),
-		RedisURL:  envOrDefault("REDIS_URL", "redis://localhost:6379/0"),
+		Port:     envOrDefault("PORT", "8012"),
+		DBURL:    envOrDefault("DB_URL", "postgres://localhost:5432/gambchamp?sslmode=disable"),
+		RedisURL: envOrDefault("REDIS_URL", "redis://localhost:6379/0"),
+		NATSURL:  envOrDefault("NATS_URL", "nats://localhost:4222"),
 
-		CORSAllowOrigins: envOrDefault("CORS_ALLOW_ORIGINS", "*"),
+		AnthropicAPIKey: os.Getenv("ANTHROPIC_API_KEY"),
+		Model:           envOrDefault("ASSISTANT_MODEL", "claude-sonnet-4-20250514"),
+		MaxToolCalls:    50,
 
-		LeadIntakeAddr:    envOrDefault("LEAD_INTAKE_ADDR", "http://localhost:8001"),
 		RoutingEngineAddr: envOrDefault("ROUTING_ENGINE_ADDR", "http://localhost:8002"),
 		BrokerAdapterAddr: envOrDefault("BROKER_ADAPTER_ADDR", "http://localhost:8003"),
 		FraudEngineAddr:   envOrDefault("FRAUD_ENGINE_ADDR", "http://localhost:8004"),
-		StatusSyncAddr:    envOrDefault("STATUS_SYNC_ADDR", "http://localhost:8005"),
-		AutologinAddr:     envOrDefault("AUTOLOGIN_ADDR", "http://localhost:8006"),
+		LeadIntakeAddr:    envOrDefault("LEAD_INTAKE_ADDR", "http://localhost:8001"),
 		UADAddr:           envOrDefault("UAD_ADDR", "http://localhost:8007"),
 		NotificationAddr:  envOrDefault("NOTIFICATION_ADDR", "http://localhost:8008"),
-		IdentityAddr:      envOrDefault("IDENTITY_ADDR", "http://localhost:8010"),
+		AutologinAddr:     envOrDefault("AUTOLOGIN_ADDR", "http://localhost:8006"),
 		AnalyticsAddr:     envOrDefault("ANALYTICS_ADDR", "http://localhost:8011"),
-		AssistantAddr:     envOrDefault("ASSISTANT_ADDR", "http://localhost:8012"),
 	}
 }
 

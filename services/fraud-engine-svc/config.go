@@ -10,6 +10,7 @@ type Config struct {
 	IPQSKey     string
 	TwilioSID   string
 	TwilioToken string
+	NATSURL     string
 }
 
 func LoadConfig() Config {
@@ -21,6 +22,7 @@ func LoadConfig() Config {
 		IPQSKey:     os.Getenv("IPQS_KEY"),
 		TwilioSID:   os.Getenv("TWILIO_SID"),
 		TwilioToken: os.Getenv("TWILIO_TOKEN"),
+		NATSURL:     envOrDefault("NATS_URL", "nats://localhost:4222"),
 	}
 }
 

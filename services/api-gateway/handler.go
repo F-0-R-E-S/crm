@@ -51,6 +51,9 @@ func (h *Handler) Register(mux *http.ServeMux) {
 	mux.Handle("/api/v1/notifications", h.cors(h.requireAuth(h.proxyTo(h.cfg.NotificationAddr))))
 	mux.Handle("/api/v1/notifications/", h.cors(h.requireAuth(h.proxyTo(h.cfg.NotificationAddr))))
 
+	// AI Assistant — auth required, SSE needs streaming support
+	mux.Handle("/api/v1/assistant/", h.cors(h.requireAuth(h.proxyTo(h.cfg.AssistantAddr))))
+
 	// Internal endpoints — blocked from external access
 	mux.Handle("/internal/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		errors.ErrForbidden.WriteJSON(w)

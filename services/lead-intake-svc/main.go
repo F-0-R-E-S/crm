@@ -52,6 +52,9 @@ func main() {
 	store := NewStore(db)
 	h := NewHandler(logger, store, nc, rdb)
 
+	// --- NATS command handler for assistant-svc ---
+	StartCmdHandler(nc, store, rdb, logger)
+
 	mux := http.NewServeMux()
 	h.Register(mux)
 

@@ -25,9 +25,10 @@ type Broker struct {
 	DailyCap    int             `json:"daily_cap" db:"daily_cap"`
 	TotalCap    int             `json:"total_cap" db:"total_cap"`
 	CountryCaps json.RawMessage `json:"country_caps,omitempty" db:"country_caps"`
-	Priority    int             `json:"priority" db:"priority"`
-	CreatedAt   time.Time       `json:"created_at" db:"created_at"`
-	UpdatedAt   time.Time       `json:"updated_at" db:"updated_at"`
+	Priority      int             `json:"priority" db:"priority"`
+	HealthStatus  string          `json:"health_status" db:"health_status"`
+	CreatedAt     time.Time       `json:"created_at" db:"created_at"`
+	UpdatedAt     time.Time       `json:"updated_at" db:"updated_at"`
 }
 
 type BrokerTemplate struct {
