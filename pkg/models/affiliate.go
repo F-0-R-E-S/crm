@@ -18,6 +18,11 @@ type Affiliate struct {
 	AllowedIPs     []string        `json:"allowed_ips,omitempty" db:"allowed_ips"`
 	FraudProfile   json.RawMessage `json:"fraud_profile,omitempty" db:"fraud_profile"`
 	DailyCap       int             `json:"daily_cap" db:"daily_cap"`
+	TotalCap       int             `json:"total_cap" db:"total_cap"`
+	CountryCaps    json.RawMessage `json:"country_caps,omitempty" db:"country_caps"`
+	ParentID       *string         `json:"parent_id,omitempty" db:"parent_id"`
+	Level          int             `json:"level" db:"level"`
+	ManagerID      *string         `json:"manager_id,omitempty" db:"manager_id"`
 	CreatedAt      time.Time       `json:"created_at" db:"created_at"`
 	UpdatedAt      time.Time       `json:"updated_at" db:"updated_at"`
 }

@@ -155,6 +155,45 @@ func (h *Handler) CreateLead(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	// --- Affiliate daily cap check ---
+	if req.AffiliateID != "" {
+		dailyCap, capErr := h.store.GetAffiliateDailyCap(ctx, tenantID, req.AffiliateID)
+		if capErr != nil {
+			h.logger.Warn("cap check: get affiliate cap failed", "error", capErr, "affiliate_id", req.AffiliateID)
+		} else if dailyCap > 0 {
+			todayCount, countErr := h.store.CountAffiliateLeadsToday(ctx, tenantID, req.AffiliateID)
+			if countErr != nil {
+				h.logger.Warn("cap check: count leads failed", "error", countErr, "affiliate_id", req.AffiliateID)
+			} else {
+				if todayCount >= dailyCap {
+					_ = h.nats.Publish(ctx, "cap.exhausted", "lead-intake-svc", map[string]interface{}{
+						"tenant_id":    tenantID,
+						"affiliate_id": req.AffiliateID,
+						"daily_cap":    dailyCap,
+						"count":        todayCount,
+					})
+					(&apperrors.AppError{
+						Code:       "CAP_EXHAUSTED",
+						Message:    "daily cap reached",
+						Detail:     fmt.Sprintf("affiliate daily cap of %d leads has been reached", dailyCap),
+						HTTPStatus: http.StatusTooManyRequests,
+					}).WriteJSON(w)
+					return
+				}
+				// Emit threshold warning at 80%.
+				threshold := int(float64(dailyCap) * 0.8)
+				if todayCount == threshold {
+					_ = h.nats.Publish(ctx, "cap.threshold.80pct", "lead-intake-svc", map[string]interface{}{
+						"tenant_id":    tenantID,
+						"affiliate_id": req.AffiliateID,
+						"daily_cap":    dailyCap,
+						"count":        todayCount,
+					})
+				}
+			}
+		}
+	}
+
 	// --- Normalize phone ---
 	phoneE164 := phone.NormalizeE164(req.Phone, req.Country)
 

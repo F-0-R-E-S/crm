@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gambchamp/crm/pkg/database"
 	"github.com/gambchamp/crm/pkg/messaging"
 	"github.com/gambchamp/crm/pkg/telemetry"
 )
@@ -19,23 +20,39 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	nc, err := messaging.NewNATS(ctx, cfg.NATSURL, logger)
+	db, err := database.New(ctx, cfg.DBURL)
 	if err != nil {
-		logger.Warn("nats connection failed, cmd handler disabled", "error", err)
-	} else {
-		defer nc.Close()
-		StartCmdHandler(nc, logger)
+		logger.Error("failed to connect to database", "error", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+
+	nats, err := messaging.NewNATS(ctx, cfg.NATSURL, logger)
+	if err != nil {
+		logger.Error("failed to connect to NATS", "error", err)
+		os.Exit(1)
+	}
+	defer nats.Close()
+
+	store := NewStore(db)
+	telegram := NewTelegramSender(logger, cfg.TelegramToken)
+	email := NewEmailSender(logger, cfg.SMTPHost, cfg.SMTPPort, cfg.SMTPFrom, cfg.SMTPUser, cfg.SMTPPass)
+	webhook := NewWebhookSender(logger)
+
+	router := NewEventRouter(logger, store, nats, telegram, email, webhook)
+	if err := router.Start(ctx); err != nil {
+		logger.Error("failed to start event router", "error", err)
+		os.Exit(1)
 	}
 
 	mux := http.NewServeMux()
-	h := NewHandler(logger)
+	h := NewHandler(logger, store)
 	h.Register(mux)
 
-	mux.Handle("GET /health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status":"ok"}`))
-	}))
+	})
 	mux.Handle("GET /metrics", telemetry.MetricsHandler())
 
 	srv := &http.Server{
@@ -58,8 +75,9 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	srv.Shutdown(ctx)
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownCancel()
+	srv.Shutdown(shutdownCtx)
+	cancel()
 	logger.Info("server stopped")
 }
