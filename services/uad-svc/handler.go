@@ -25,6 +25,7 @@ func (h *Handler) Register(mux *http.ServeMux) {
 	mux.HandleFunc("DELETE /api/v1/uad/scenarios/{id}", h.DeleteScenario)
 	mux.HandleFunc("POST /api/v1/uad/scenarios/{id}/activate", h.ActivateScenario)
 	mux.HandleFunc("POST /api/v1/uad/scenarios/{id}/deactivate", h.DeactivateScenario)
+	mux.HandleFunc("GET /api/v1/uad/status", h.GetStatus)
 	mux.HandleFunc("GET /internal/uad/status", h.GetStatus)
 }
 
@@ -134,15 +135,33 @@ func (h *Handler) UpdateScenario(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if updates.Name != "" { existing.Name = updates.Name }
-	if updates.Mode != "" { existing.Mode = updates.Mode }
-	if updates.Schedule != nil { existing.Schedule = updates.Schedule }
-	if updates.BatchSize > 0 { existing.BatchSize = updates.BatchSize }
-	if updates.ThrottlePerMin > 0 { existing.ThrottlePerMin = updates.ThrottlePerMin }
-	if updates.MaxAttempts > 0 { existing.MaxAttempts = updates.MaxAttempts }
-	if updates.SourceFilters != nil { existing.SourceFilters = updates.SourceFilters }
-	if updates.TargetBrokers != nil { existing.TargetBrokers = updates.TargetBrokers }
-	if updates.OverflowPool != nil { existing.OverflowPool = updates.OverflowPool }
+	if updates.Name != "" {
+		existing.Name = updates.Name
+	}
+	if updates.Mode != "" {
+		existing.Mode = updates.Mode
+	}
+	if updates.Schedule != nil {
+		existing.Schedule = updates.Schedule
+	}
+	if updates.BatchSize > 0 {
+		existing.BatchSize = updates.BatchSize
+	}
+	if updates.ThrottlePerMin > 0 {
+		existing.ThrottlePerMin = updates.ThrottlePerMin
+	}
+	if updates.MaxAttempts > 0 {
+		existing.MaxAttempts = updates.MaxAttempts
+	}
+	if updates.SourceFilters != nil {
+		existing.SourceFilters = updates.SourceFilters
+	}
+	if updates.TargetBrokers != nil {
+		existing.TargetBrokers = updates.TargetBrokers
+	}
+	if updates.OverflowPool != nil {
+		existing.OverflowPool = updates.OverflowPool
+	}
 
 	if err := h.store.UpdateScenario(r.Context(), existing); err != nil {
 		apperrors.ErrInternal.WriteJSON(w)

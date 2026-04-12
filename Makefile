@@ -2,7 +2,7 @@
 
 SERVICES := lead-intake-svc routing-engine-svc broker-adapter-svc fraud-engine-svc \
             status-sync-svc autologin-svc uad-svc notification-svc api-gateway \
-            identity-svc analytics-svc
+            identity-svc analytics-svc smart-routing-svc
 
 GO := go
 GOFLAGS := -ldflags="-s -w"

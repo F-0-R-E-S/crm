@@ -22,6 +22,7 @@ type Config struct {
 	IdentityAddr      string
 	AnalyticsAddr     string
 	AssistantAddr     string
+	SmartRoutingAddr  string
 }
 
 func LoadConfig() Config {
@@ -43,6 +44,7 @@ func LoadConfig() Config {
 		IdentityAddr:      envOrDefault("IDENTITY_ADDR", "http://localhost:8010"),
 		AnalyticsAddr:     envOrDefault("ANALYTICS_ADDR", "http://localhost:8011"),
 		AssistantAddr:     envOrDefault("ASSISTANT_ADDR", "http://localhost:8012"),
+		SmartRoutingAddr:  envOrDefault("SMART_ROUTING_ADDR", "http://localhost:8013"),
 	}
 }
 

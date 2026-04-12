@@ -49,7 +49,7 @@ export default function UADPage() {
 
   const { data: statusData } = useQuery({
     queryKey: ['uad-status'],
-    queryFn: () => api.get<QueueStatus>('/internal/uad/status').catch(() => ({
+    queryFn: () => api.get<QueueStatus>('/uad/status').catch(() => ({
       queue_depth: 0,
       processing: 0,
       completed_24h: 0,
