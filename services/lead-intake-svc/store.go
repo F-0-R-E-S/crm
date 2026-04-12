@@ -235,6 +235,38 @@ func (s *Store) GetLeadEvents(ctx context.Context, leadID string) ([]*models.Lea
 	return events, nil
 }
 
+// ---------------------------------------------------------------------------
+// Affiliate cap enforcement (EPIC-04)
+// ---------------------------------------------------------------------------
+
+func (s *Store) GetAffiliateDailyCap(ctx context.Context, tenantID, affiliateID string) (cap int, err error) {
+	err = s.db.Pool.QueryRow(ctx,
+		`SELECT daily_cap FROM affiliates WHERE id = $1 AND tenant_id = $2`,
+		affiliateID, tenantID,
+	).Scan(&cap)
+	return cap, err
+}
+
+func (s *Store) CountAffiliateLeadsToday(ctx context.Context, tenantID, affiliateID string) (int, error) {
+	var count int
+	err := s.db.Pool.QueryRow(ctx,
+		`SELECT COUNT(*) FROM leads
+		 WHERE tenant_id = $1 AND affiliate_id = $2
+		   AND created_at >= CURRENT_DATE`,
+		tenantID, affiliateID,
+	).Scan(&count)
+	return count, err
+}
+
+func (s *Store) GetAffiliatePostbackConfig(ctx context.Context, tenantID, affiliateID string) (url string, events json.RawMessage, err error) {
+	err = s.db.Pool.QueryRow(ctx,
+		`SELECT COALESCE(postback_url,''), COALESCE(postback_events,'[]'::jsonb)
+		 FROM affiliates WHERE id = $1 AND tenant_id = $2`,
+		affiliateID, tenantID,
+	).Scan(&url, &events)
+	return url, events, err
+}
+
 func nilIfEmpty(s string) interface{} {
 	if s == "" {
 		return nil

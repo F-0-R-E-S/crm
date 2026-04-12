@@ -216,7 +216,301 @@ func (s *Store) ValidateAPIKey(ctx context.Context, apiKey string) (tenantID str
 		}
 		return "", nil, fmt.Errorf("validate api key: %w", err)
 	}
-	// Update last_used_at (non-critical).
 	_, _ = s.db.Pool.Exec(ctx, `UPDATE api_keys SET last_used_at = NOW() WHERE key_hash = $1`, keyHash)
 	return tenantID, scopes, nil
+}
+
+// ---------------------------------------------------------------------------
+// Sessions (EPIC-06)
+// ---------------------------------------------------------------------------
+
+func (s *Store) CreateSession(ctx context.Context, userID, tenantID, tokenHash, ip, userAgent, deviceName string, expiresAt time.Time) (*models.Session, error) {
+	sess := &models.Session{}
+	err := s.db.Pool.QueryRow(ctx,
+		`INSERT INTO sessions (user_id, tenant_id, token_hash, ip, user_agent, device_name, expires_at)
+		 VALUES ($1, $2, $3, $4::inet, $5, $6, $7)
+		 RETURNING id, user_id, tenant_id, ip, user_agent, device_name, last_active_at, expires_at, created_at`,
+		userID, tenantID, tokenHash, nilIfEmpty(ip), userAgent, deviceName, expiresAt,
+	).Scan(
+		&sess.ID, &sess.UserID, &sess.TenantID, &sess.IP, &sess.UserAgent,
+		&sess.DeviceName, &sess.LastActiveAt, &sess.ExpiresAt, &sess.CreatedAt,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("create session: %w", err)
+	}
+	return sess, nil
+}
+
+func (s *Store) ListUserSessions(ctx context.Context, userID, tenantID string) ([]*models.Session, error) {
+	rows, err := s.db.Pool.Query(ctx,
+		`SELECT id, user_id, tenant_id, COALESCE(host(ip),''), COALESCE(user_agent,''),
+		        COALESCE(device_name,''), last_active_at, expires_at, created_at
+		 FROM sessions
+		 WHERE user_id = $1 AND tenant_id = $2 AND expires_at > NOW()
+		 ORDER BY last_active_at DESC`,
+		userID, tenantID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("list sessions: %w", err)
+	}
+	defer rows.Close()
+
+	var sessions []*models.Session
+	for rows.Next() {
+		sess := &models.Session{}
+		if err := rows.Scan(
+			&sess.ID, &sess.UserID, &sess.TenantID, &sess.IP, &sess.UserAgent,
+			&sess.DeviceName, &sess.LastActiveAt, &sess.ExpiresAt, &sess.CreatedAt,
+		); err != nil {
+			return nil, fmt.Errorf("scan session: %w", err)
+		}
+		sessions = append(sessions, sess)
+	}
+	return sessions, rows.Err()
+}
+
+func (s *Store) DeleteSessionByID(ctx context.Context, sessionID, userID string) error {
+	return s.db.Exec(ctx,
+		`DELETE FROM sessions WHERE id = $1 AND user_id = $2`,
+		sessionID, userID,
+	)
+}
+
+func (s *Store) DeleteOtherSessions(ctx context.Context, userID, currentTokenHash string) error {
+	return s.db.Exec(ctx,
+		`DELETE FROM sessions WHERE user_id = $1 AND token_hash != $2`,
+		userID, currentTokenHash,
+	)
+}
+
+func (s *Store) TouchSession(ctx context.Context, tokenHash string) error {
+	return s.db.Exec(ctx,
+		`UPDATE sessions SET last_active_at = NOW() WHERE token_hash = $1`,
+		tokenHash,
+	)
+}
+
+func (s *Store) GetSessionByTokenHash(ctx context.Context, tokenHash string) (userID, tenantID string, err error) {
+	err = s.db.Pool.QueryRow(ctx,
+		`SELECT user_id, tenant_id FROM sessions WHERE token_hash = $1 AND expires_at > NOW()`,
+		tokenHash,
+	).Scan(&userID, &tenantID)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return "", "", nil
+		}
+		return "", "", fmt.Errorf("get session: %w", err)
+	}
+	return userID, tenantID, nil
+}
+
+func (s *Store) DeleteSessionByTokenHash(ctx context.Context, tokenHash string) error {
+	return s.db.Exec(ctx, `DELETE FROM sessions WHERE token_hash = $1`, tokenHash)
+}
+
+// ---------------------------------------------------------------------------
+// User invites (EPIC-06)
+// ---------------------------------------------------------------------------
+
+func (s *Store) CreateInvite(ctx context.Context, tenantID, email, role, name, tokenHash, invitedBy string, expiresAt time.Time) (*models.UserInvite, error) {
+	inv := &models.UserInvite{}
+	err := s.db.Pool.QueryRow(ctx,
+		`INSERT INTO user_invites (tenant_id, email, role, name, token_hash, invited_by, expires_at)
+		 VALUES ($1, $2, $3, $4, $5, $6, $7)
+		 RETURNING id, tenant_id, email, role, name, invited_by, accepted_at, expires_at, created_at`,
+		tenantID, email, role, name, tokenHash, invitedBy, expiresAt,
+	).Scan(
+		&inv.ID, &inv.TenantID, &inv.Email, &inv.Role, &inv.Name,
+		&inv.InvitedBy, &inv.AcceptedAt, &inv.ExpiresAt, &inv.CreatedAt,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("create invite: %w", err)
+	}
+	return inv, nil
+}
+
+func (s *Store) GetInviteByToken(ctx context.Context, tokenHash string) (*models.UserInvite, error) {
+	inv := &models.UserInvite{}
+	err := s.db.Pool.QueryRow(ctx,
+		`SELECT id, tenant_id, email, role, COALESCE(name,''), invited_by, accepted_at, expires_at, created_at
+		 FROM user_invites
+		 WHERE token_hash = $1 AND accepted_at IS NULL AND expires_at > NOW()`,
+		tokenHash,
+	).Scan(
+		&inv.ID, &inv.TenantID, &inv.Email, &inv.Role, &inv.Name,
+		&inv.InvitedBy, &inv.AcceptedAt, &inv.ExpiresAt, &inv.CreatedAt,
+	)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("get invite: %w", err)
+	}
+	return inv, nil
+}
+
+func (s *Store) AcceptInvite(ctx context.Context, inviteID string) error {
+	return s.db.Exec(ctx,
+		`UPDATE user_invites SET accepted_at = NOW() WHERE id = $1`,
+		inviteID,
+	)
+}
+
+func (s *Store) ListPendingInvites(ctx context.Context, tenantID string) ([]*models.UserInvite, error) {
+	rows, err := s.db.Pool.Query(ctx,
+		`SELECT id, tenant_id, email, role, COALESCE(name,''), invited_by, accepted_at, expires_at, created_at
+		 FROM user_invites
+		 WHERE tenant_id = $1 AND accepted_at IS NULL AND expires_at > NOW()
+		 ORDER BY created_at DESC`,
+		tenantID,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("list invites: %w", err)
+	}
+	defer rows.Close()
+
+	var invites []*models.UserInvite
+	for rows.Next() {
+		inv := &models.UserInvite{}
+		if err := rows.Scan(
+			&inv.ID, &inv.TenantID, &inv.Email, &inv.Role, &inv.Name,
+			&inv.InvitedBy, &inv.AcceptedAt, &inv.ExpiresAt, &inv.CreatedAt,
+		); err != nil {
+			return nil, fmt.Errorf("scan invite: %w", err)
+		}
+		invites = append(invites, inv)
+	}
+	return invites, rows.Err()
+}
+
+func (s *Store) DeleteInvite(ctx context.Context, inviteID, tenantID string) error {
+	return s.db.Exec(ctx,
+		`DELETE FROM user_invites WHERE id = $1 AND tenant_id = $2`,
+		inviteID, tenantID,
+	)
+}
+
+// ---------------------------------------------------------------------------
+// Password resets (EPIC-06)
+// ---------------------------------------------------------------------------
+
+func (s *Store) CreatePasswordReset(ctx context.Context, userID, tenantID, tokenHash string, expiresAt time.Time) error {
+	return s.db.Exec(ctx,
+		`INSERT INTO password_resets (user_id, tenant_id, token_hash, expires_at)
+		 VALUES ($1, $2, $3, $4)`,
+		userID, tenantID, tokenHash, expiresAt,
+	)
+}
+
+func (s *Store) GetPasswordReset(ctx context.Context, tokenHash string) (userID, tenantID string, err error) {
+	err = s.db.Pool.QueryRow(ctx,
+		`SELECT user_id, tenant_id
+		 FROM password_resets
+		 WHERE token_hash = $1 AND used_at IS NULL AND expires_at > NOW()`,
+		tokenHash,
+	).Scan(&userID, &tenantID)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return "", "", nil
+		}
+		return "", "", fmt.Errorf("get password reset: %w", err)
+	}
+	return userID, tenantID, nil
+}
+
+func (s *Store) MarkPasswordResetUsed(ctx context.Context, tokenHash string) error {
+	return s.db.Exec(ctx,
+		`UPDATE password_resets SET used_at = NOW() WHERE token_hash = $1`,
+		tokenHash,
+	)
+}
+
+// ---------------------------------------------------------------------------
+// Password change
+// ---------------------------------------------------------------------------
+
+func (s *Store) UpdatePassword(ctx context.Context, userID, passwordHash string) error {
+	return s.db.Exec(ctx,
+		`UPDATE users SET password_hash = $2 WHERE id = $1`,
+		userID, passwordHash,
+	)
+}
+
+// ---------------------------------------------------------------------------
+// Users management (EPIC-06)
+// ---------------------------------------------------------------------------
+
+func (s *Store) ListUsers(ctx context.Context, tenantID string, limit, offset int) ([]*models.User, int, error) {
+	var total int
+	if err := s.db.Pool.QueryRow(ctx,
+		`SELECT count(*) FROM users WHERE tenant_id = $1`, tenantID,
+	).Scan(&total); err != nil {
+		return nil, 0, fmt.Errorf("count users: %w", err)
+	}
+
+	rows, err := s.db.Pool.Query(ctx,
+		`SELECT id, tenant_id, email, name, role, is_2fa_enabled, is_active, last_login_at, created_at, updated_at
+		 FROM users WHERE tenant_id = $1
+		 ORDER BY created_at DESC LIMIT $2 OFFSET $3`,
+		tenantID, limit, offset,
+	)
+	if err != nil {
+		return nil, 0, fmt.Errorf("list users: %w", err)
+	}
+	defer rows.Close()
+
+	var users []*models.User
+	for rows.Next() {
+		u := &models.User{}
+		if err := rows.Scan(
+			&u.ID, &u.TenantID, &u.Email, &u.Name, &u.Role,
+			&u.Is2FAEnabled, &u.IsActive, &u.LastLoginAt, &u.CreatedAt, &u.UpdatedAt,
+		); err != nil {
+			return nil, 0, fmt.Errorf("scan user: %w", err)
+		}
+		users = append(users, u)
+	}
+	return users, total, rows.Err()
+}
+
+func (s *Store) UpdateUserRole(ctx context.Context, userID, tenantID string, role models.Role) error {
+	return s.db.Exec(ctx,
+		`UPDATE users SET role = $3 WHERE id = $1 AND tenant_id = $2`,
+		userID, tenantID, string(role),
+	)
+}
+
+func (s *Store) DeactivateUser(ctx context.Context, userID, tenantID string) error {
+	return s.db.Exec(ctx,
+		`UPDATE users SET is_active = false WHERE id = $1 AND tenant_id = $2`,
+		userID, tenantID,
+	)
+}
+
+func (s *Store) ActivateUser(ctx context.Context, userID, tenantID string) error {
+	return s.db.Exec(ctx,
+		`UPDATE users SET is_active = true WHERE id = $1 AND tenant_id = $2`,
+		userID, tenantID,
+	)
+}
+
+// ---------------------------------------------------------------------------
+// Audit log (EPIC-06)
+// ---------------------------------------------------------------------------
+
+func (s *Store) WriteAuditLog(ctx context.Context, tenantID, userID, action, resourceType, resourceID, ip, userAgent string, beforeState, afterState []byte) error {
+	return s.db.Exec(ctx,
+		`INSERT INTO audit_log (tenant_id, user_id, action, resource_type, resource_id, before_state, after_state, ip, user_agent)
+		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8::inet, $9)`,
+		tenantID, nilIfEmpty(userID), action, resourceType, nilIfEmpty(resourceID),
+		nilIfEmpty(string(beforeState)), nilIfEmpty(string(afterState)),
+		nilIfEmpty(ip), nilIfEmpty(userAgent),
+	)
+}
+
+func nilIfEmpty(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
 }

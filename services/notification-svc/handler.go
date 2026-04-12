@@ -4,53 +4,163 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
-	"time"
+	"strconv"
 )
 
 type Handler struct {
 	logger *slog.Logger
+	store  *Store
 }
 
-func NewHandler(logger *slog.Logger) *Handler {
-	return &Handler{logger: logger}
+func NewHandler(logger *slog.Logger, store *Store) *Handler {
+	return &Handler{logger: logger, store: store}
 }
 
 func (h *Handler) Register(mux *http.ServeMux) {
-	mux.Handle("GET /api/v1/notifications", http.HandlerFunc(h.ListNotifications))
-}
-
-type Notification struct {
-	ID        string `json:"id"`
-	TenantID  string `json:"tenant_id"`
-	Channel   string `json:"channel"`
-	EventType string `json:"event_type"`
-	Subject   string `json:"subject"`
-	Body      string `json:"body"`
-	Status    string `json:"status"`
-	CreatedAt string `json:"created_at"`
-}
-
-type NotificationListResponse struct {
-	Data       []Notification `json:"data"`
-	TotalCount int            `json:"total_count"`
-	Page       int            `json:"page"`
-	PageSize   int            `json:"page_size"`
+	mux.HandleFunc("GET /api/v1/notifications", h.ListNotifications)
+	mux.HandleFunc("POST /api/v1/notifications/{id}/read", h.MarkRead)
+	mux.HandleFunc("POST /api/v1/notifications/read-all", h.MarkAllRead)
+	mux.HandleFunc("GET /api/v1/notifications/preferences", h.GetPreferences)
+	mux.HandleFunc("PUT /api/v1/notifications/preferences", h.UpdatePreferences)
+	mux.HandleFunc("GET /api/v1/notifications/event-types", h.ListEventTypes)
 }
 
 func (h *Handler) ListNotifications(w http.ResponseWriter, r *http.Request) {
-	h.logger.Debug("listing notifications")
-
-	// TODO: read from DB with pagination, filter by tenant from JWT context
-	resp := NotificationListResponse{
-		Data:       []Notification{},
-		TotalCount: 0,
-		Page:       1,
-		PageSize:   50,
+	tenantID := r.Header.Get("X-Tenant-ID")
+	userID := r.Header.Get("X-User-ID")
+	if tenantID == "" || userID == "" {
+		writeError(w, http.StatusUnauthorized, "authentication required")
+		return
 	}
 
-	_ = time.Now()
+	limit := parseIntQuery(r, "limit", 50)
+	offset := parseIntQuery(r, "offset", 0)
 
+	nots, total, err := h.store.ListNotifications(r.Context(), tenantID, userID, limit, offset)
+	if err != nil {
+		h.logger.Error("list notifications", "error", err)
+		writeError(w, http.StatusInternalServerError, "internal error")
+		return
+	}
+	if nots == nil {
+		nots = []NotificationRecord{}
+	}
+
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"data":       nots,
+		"total":      total,
+		"limit":      limit,
+		"offset":     offset,
+	})
+}
+
+func (h *Handler) MarkRead(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	id := r.PathValue("id")
+	if tenantID == "" || id == "" {
+		writeError(w, http.StatusBadRequest, "missing parameters")
+		return
+	}
+
+	if err := h.store.MarkRead(r.Context(), tenantID, id); err != nil {
+		h.logger.Error("mark read", "error", err)
+		writeError(w, http.StatusInternalServerError, "internal error")
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]string{"message": "marked as read"})
+}
+
+func (h *Handler) MarkAllRead(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	userID := r.Header.Get("X-User-ID")
+	if tenantID == "" || userID == "" {
+		writeError(w, http.StatusUnauthorized, "authentication required")
+		return
+	}
+
+	if err := h.store.MarkAllRead(r.Context(), tenantID, userID); err != nil {
+		h.logger.Error("mark all read", "error", err)
+		writeError(w, http.StatusInternalServerError, "internal error")
+		return
+	}
+	writeJSON(w, http.StatusOK, map[string]string{"message": "all marked as read"})
+}
+
+func (h *Handler) GetPreferences(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	userID := r.Header.Get("X-User-ID")
+	if tenantID == "" || userID == "" {
+		writeError(w, http.StatusUnauthorized, "authentication required")
+		return
+	}
+
+	prefs, err := h.store.GetPreferences(r.Context(), tenantID, userID)
+	if err != nil {
+		h.logger.Error("get preferences", "error", err)
+		writeError(w, http.StatusInternalServerError, "internal error")
+		return
+	}
+	if prefs == nil {
+		prefs = &NotificationPrefs{
+			TenantID:     tenantID,
+			UserID:       userID,
+			EmailEnabled: true,
+		}
+	}
+	writeJSON(w, http.StatusOK, prefs)
+}
+
+func (h *Handler) UpdatePreferences(w http.ResponseWriter, r *http.Request) {
+	tenantID := r.Header.Get("X-Tenant-ID")
+	userID := r.Header.Get("X-User-ID")
+	if tenantID == "" || userID == "" {
+		writeError(w, http.StatusUnauthorized, "authentication required")
+		return
+	}
+
+	var prefs NotificationPrefs
+	if err := json.NewDecoder(r.Body).Decode(&prefs); err != nil {
+		writeError(w, http.StatusBadRequest, "invalid JSON")
+		return
+	}
+	prefs.TenantID = tenantID
+	prefs.UserID = userID
+
+	if err := h.store.UpsertPreferences(r.Context(), &prefs); err != nil {
+		h.logger.Error("update preferences", "error", err)
+		writeError(w, http.StatusInternalServerError, "internal error")
+		return
+	}
+
+	writeJSON(w, http.StatusOK, map[string]string{"message": "preferences updated"})
+}
+
+func (h *Handler) ListEventTypes(w http.ResponseWriter, _ *http.Request) {
+	writeJSON(w, http.StatusOK, map[string]interface{}{
+		"event_types": AllEventTypes,
+	})
+}
+
+func writeJSON(w http.ResponseWriter, status int, v interface{}) {
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(resp)
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(v)
+}
+
+func writeError(w http.ResponseWriter, status int, message string) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(map[string]string{"error": message})
+}
+
+func parseIntQuery(r *http.Request, key string, def int) int {
+	v := r.URL.Query().Get(key)
+	if v == "" {
+		return def
+	}
+	n, err := strconv.Atoi(v)
+	if err != nil || n < 0 {
+		return def
+	}
+	return n
 }

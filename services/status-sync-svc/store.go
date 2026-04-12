@@ -165,6 +165,91 @@ func (s *Store) GetLeadStatusHistory(ctx context.Context, leadID string) ([]Stat
 	return entries, nil
 }
 
+// ---------------------------------------------------------------------------
+// Postback delivery queue (EPIC-04)
+// ---------------------------------------------------------------------------
+
+type PostbackJob struct {
+	ID           string          `json:"id"`
+	TenantID     string          `json:"tenant_id"`
+	AffiliateID  string          `json:"affiliate_id"`
+	LeadID       string          `json:"lead_id"`
+	EventType    string          `json:"event_type"`
+	URL          string          `json:"url"`
+	Payload      json.RawMessage `json:"payload"`
+	Status       string          `json:"status"`
+	Attempts     int             `json:"attempts"`
+	MaxAttempts  int             `json:"max_attempts"`
+	LastError    string          `json:"last_error,omitempty"`
+	NextAttemptAt time.Time      `json:"next_attempt_at"`
+}
+
+func (s *Store) EnqueuePostback(ctx context.Context, tenantID, affiliateID, leadID, eventType, url string, payload json.RawMessage) error {
+	return s.db.Exec(ctx,
+		`INSERT INTO postback_queue (tenant_id, affiliate_id, lead_id, event_type, url, payload)
+		 VALUES ($1, $2, $3, $4, $5, $6::jsonb)`,
+		tenantID, affiliateID, leadID, eventType, url, payload,
+	)
+}
+
+func (s *Store) FetchPendingPostbacks(ctx context.Context, limit int) ([]PostbackJob, error) {
+	rows, err := s.db.Pool.Query(ctx,
+		`SELECT id, tenant_id, affiliate_id, lead_id, event_type, url, payload, status, attempts, max_attempts, next_attempt_at
+		 FROM postback_queue
+		 WHERE status = 'pending' AND next_attempt_at <= NOW()
+		 ORDER BY next_attempt_at ASC
+		 LIMIT $1
+		 FOR UPDATE SKIP LOCKED`,
+		limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var jobs []PostbackJob
+	for rows.Next() {
+		var j PostbackJob
+		if err := rows.Scan(
+			&j.ID, &j.TenantID, &j.AffiliateID, &j.LeadID, &j.EventType,
+			&j.URL, &j.Payload, &j.Status, &j.Attempts, &j.MaxAttempts, &j.NextAttemptAt,
+		); err != nil {
+			return nil, err
+		}
+		jobs = append(jobs, j)
+	}
+	return jobs, rows.Err()
+}
+
+func (s *Store) MarkPostbackComplete(ctx context.Context, jobID string) error {
+	return s.db.Exec(ctx,
+		`UPDATE postback_queue SET status = 'completed', completed_at = NOW() WHERE id = $1`,
+		jobID,
+	)
+}
+
+func (s *Store) MarkPostbackFailed(ctx context.Context, jobID string, lastError string, statusCode int) error {
+	return s.db.Exec(ctx,
+		`UPDATE postback_queue
+		 SET attempts = attempts + 1,
+		     last_error = $2,
+		     last_status_code = $3,
+		     next_attempt_at = NOW() + (INTERVAL '1 minute' * POWER(2, attempts)),
+		     status = CASE WHEN attempts + 1 >= max_attempts THEN 'failed' ELSE 'pending' END
+		 WHERE id = $1`,
+		jobID, lastError, statusCode,
+	)
+}
+
+func (s *Store) GetAffiliatePostback(ctx context.Context, tenantID, affiliateID string) (url string, eventsJSON json.RawMessage, err error) {
+	err = s.db.Pool.QueryRow(ctx,
+		`SELECT COALESCE(postback_url,''), COALESCE(postback_events,'[]'::jsonb)
+		 FROM affiliates WHERE id = $1 AND tenant_id = $2`,
+		affiliateID, tenantID,
+	).Scan(&url, &eventsJSON)
+	return
+}
+
 func nilIfEmpty(s string) interface{} {
 	if s == "" {
 		return nil

@@ -9,6 +9,9 @@ type Config struct {
 	TelegramToken string
 	SMTPHost      string
 	SMTPPort      string
+	SMTPFrom      string
+	SMTPUser      string
+	SMTPPass      string
 }
 
 func LoadConfig() Config {
@@ -19,6 +22,9 @@ func LoadConfig() Config {
 		TelegramToken: os.Getenv("TELEGRAM_TOKEN"),
 		SMTPHost:      envOrDefault("SMTP_HOST", "localhost"),
 		SMTPPort:      envOrDefault("SMTP_PORT", "587"),
+		SMTPFrom:      envOrDefault("SMTP_FROM", "noreply@gambchamp.com"),
+		SMTPUser:      os.Getenv("SMTP_USER"),
+		SMTPPass:      os.Getenv("SMTP_PASS"),
 	}
 }
 
