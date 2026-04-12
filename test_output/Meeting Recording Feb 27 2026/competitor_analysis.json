@@ -1,0 +1,1148 @@
+{
+  "analysis_meta": {
+    "date": "2026-03-26",
+    "source_video": "Meeting Recording Feb 27 2026",
+    "transcript_language": "Russian (ru)",
+    "recording_date": "2026-02-27",
+    "recording_duration_approx": "~40 минут (9:01 — 9:40)",
+    "recording_platform": "Google Meet",
+    "recording_tool": "Fireflies.ai Notetaker"
+  },
+  "company_identification": {
+    "product_name": "Elnopy Affiliate System",
+    "product_url": "elnopy.com",
+    "company_name": "Elnopy",
+    "product_version": "v2.0",
+    "positioning": "CRM/платформа для дистрибуции лидов, заточенная под крипто/инвест вертикаль (отдельный продукт для гейминга/бейтинга/дейтинга)",
+    "target_market": "Affiliate-сети, медиабайеры, нетворки в крипто/forex/invest вертикали; отдельный продукт для gambling/betting/dating",
+    "years_on_market": "Не указано явно, но продукт зрелый (v2.0, 200+ интеграционных шаблонов CRM)",
+    "team_info": "Демо проводил Пётр (сейлз/аккаунт-менеджер), участвовал также Назар Elnopy (вероятно, фаундер или ключевой сотрудник)",
+    "pricing_model": "Не раскрыта на демо",
+    "pricing_details": "Не обсуждалось в рамках записи",
+    "language": "Интерфейс на английском, поддержка/мануалы на английском и русском",
+    "logo_description": "Шахматный конь (рыцарь) красно-чёрного цвета, текст ELNOPY",
+    "key_competitors_mentioned": [
+      {
+        "name": "Seremate",
+        "context": "Проспект договорился на звонок с ними"
+      },
+      {
+        "name": "Pyrimon (Pirimon/Aero)",
+        "context": "Проспект договорился на звонок с ними, уточнение — Аэро"
+      }
+    ],
+    "prospect_pain_points": [
+      "Необходимость единой системы для крипто И гейминга одновременно, чтобы не искать отдельные решения",
+      "Buying и сетка — новый проект, нужна система с нуля",
+      "Потребность в понимании специфичных функций, заточенных под крипту (УТП)",
+      "Проспект не глубоко знаком с подобными системами — нужен полный explainer"
+    ]
+  },
+  "product_analysis": {
+    "feature_map": {
+      "Dashboard": {
+        "available": true,
+        "description": "Главная панель с ключевыми метриками по лидам, конверсиям и фрод-скорингу",
+        "sub_features": {
+          "profit_tracking": {
+            "available": true,
+            "description": "Отображение профита: система умеет считать прибыль на основе buy/sell price — полезно для нетворков, не нужно вести отдельные Excel-таблицы",
+            "ui_elements": [
+              "Profit widget"
+            ],
+            "details": "Считает как по депозитам, так и по лидам"
+          },
+          "active_offers_count": {
+            "available": true,
+            "description": "Счётчик активных потоков (оферов), где соединяются поставщики и получатели",
+            "ui_elements": [
+              "Active offers counter"
+            ],
+            "details": "Потоки = связки аффилиат-реципиент"
+          },
+          "active_recipients_count": {
+            "available": true,
+            "description": "Счётчик активных получателей (реципиентов/брокеров)",
+            "ui_elements": [
+              "Active recipients counter"
+            ],
+            "details": ""
+          },
+          "active_affiliates_count": {
+            "available": true,
+            "description": "Счётчик активных поставщиков/аффилиатов",
+            "ui_elements": [
+              "Active affiliates counter"
+            ],
+            "details": ""
+          },
+          "registration_chart": {
+            "available": true,
+            "description": "Графики регистраций по дням с краткой информацией: количество лидов, конверсия, acquisitions (FTD)",
+            "ui_elements": [
+              "Bar chart по дням недели (Sat-Fri)",
+              "Day Count",
+              "Week Count",
+              "Month Count"
+            ],
+            "details": "На скриншоте: Day Count 1(0), Week Count 143(50), Month Count 2458(815). В скобках — количество конверсий/FTD"
+          },
+          "fraud_scoring_dashboard": {
+            "available": true,
+            "description": "Панель фрод-скоринга с категориями: Error (0), Pending (0), Allow (730), Flag (233), Block (414)",
+            "ui_elements": [
+              "Error counter (красный)",
+              "Pending counter (жёлтый)",
+              "Allow counter (зелёный)",
+              "Flag counter (оранжевый)",
+              "Block counter (фиолетовый)"
+            ],
+            "details": "Визуальная сводка по фрод-оценке всех входящих лидов"
+          }
+        }
+      },
+      "Leads_Management": {
+        "available": true,
+        "description": "Полноценный модуль управления лидами с детальной информацией, фильтрацией и массовыми действиями",
+        "sub_features": {
+          "leads_list": {
+            "available": true,
+            "description": "Таблица всех лидов с колонками: ID, страна (флаги), дата регистрации, автологин, фрод-скоринг, реципиент, аффилиат, внутренний статус, внешний статус",
+            "ui_elements": [
+              "Таблица с цветовой индикацией строк (зелёный/красный/жёлтый)",
+              "Флаги стран",
+              "Статус-бейджи (цветные)",
+              "Фильтры: Date, Affiliates, Recipients, Country, Hide Errors, Hide Tests"
+            ],
+            "details": "На скриншоте видно: All Leads 11353, Error Leads 1141, Not Valid Leads 4647, Valid Leads 1146, Sent Leads 4417, Acquisitions 3310, конверсия 36.52%"
+          },
+          "lead_detail_page": {
+            "available": true,
+            "description": "Детальная карточка лида с полной информацией и множеством вкладок",
+            "ui_elements": [
+              "Вкладки: Details, Devices, Acquisition, Statuses, Http-Logs, Resend, Fraud Scoring, Error History, Attempts History"
+            ],
+            "details": "Поля: Id, Last Registration Date, IP, Domain, Country, Language, Error, Affiliate, Offer, Recipient, External Status, Internal Status. Все поля с кнопкой копирования"
+          },
+          "source_detector": {
+            "available": true,
+            "description": "Автоматическое определение источника лида по auto-login: Telegram bot, Facebook, Instagram, TikTok, Google, YouTube, браузер и другие",
+            "ui_elements": [
+              "Source detector badge/column в таблице лидов",
+              "Иконки источников (Telegram icon видна на скриншотах)"
+            ],
+            "details": "Определяется через анализ auto-login данных. Колонка AUTOLOGIN видна в таблице лидов"
+          },
+          "fingerprint_detection": {
+            "available": true,
+            "description": "Цифровой отпечаток (Fingerprint ID) устройства лида — определяет, сколько регистраций было с одного физического устройства",
+            "ui_elements": [
+              "Fingerprint ID на карточке лида"
+            ],
+            "details": "Если с одного устройства множество регистраций — прямой индикатор имитации живого трафика (фрод). Показывает количество совпадающих отпечатков"
+          },
+          "ip_mismatch_detection": {
+            "available": true,
+            "description": "Проверка совпадения IP и auto-login IP — если не совпадает, подозрительная активность (VPN/прокси)",
+            "ui_elements": [
+              "IP field",
+              "Auto-login IP comparison"
+            ],
+            "details": "Автоматическая детекция расхождений между реальным IP и IP при авторизации"
+          },
+          "lead_actions": {
+            "available": true,
+            "description": "Массовые и индивидуальные действия с лидами: изменение статуса, заморозка, пометка как тест, добавление/удаление FTD",
+            "ui_elements": [
+              "Action buttons",
+              "Status change dropdown",
+              "Freeze toggle",
+              "Test mark toggle"
+            ],
+            "details": "Можно: изменять статус, прайсы, заморозить статус, позначить тест, добавить/убрать FTD"
+          },
+          "lead_resend": {
+            "available": true,
+            "description": "Пересылка лида через Resend — можно изменить любые данные и отправить как нового лида другому реципиенту",
+            "ui_elements": [
+              "Resend tab на карточке лида"
+            ],
+            "details": "При ошибке можно зайти на лида, через Resend изменить информацию, поставить другого аффилиата (даже несуществующего) и отправить на другой поток. Предыдущий аффилиат не получит информацию"
+          },
+          "lead_edit": {
+            "available": true,
+            "description": "Редактирование данных лидов через механизм Resend — изменение полей и переотправка",
+            "ui_elements": [
+              "Resend form"
+            ],
+            "details": "Прямое редактирование полей лида с последующей переотправкой как нового лида"
+          },
+          "user_agent_device_tracking": {
+            "available": true,
+            "description": "Сохранение и отображение user-agent и device информации по каждому лиду",
+            "ui_elements": [
+              "Devices tab на карточке лида"
+            ],
+            "details": "Полная информация об устройстве и браузере"
+          },
+          "http_logs": {
+            "available": true,
+            "description": "Логирование HTTP-запросов по каждому лиду",
+            "ui_elements": [
+              "Http-Logs tab на карточке лида"
+            ],
+            "details": "Для отладки интеграций и проверки запросов"
+          },
+          "error_history": {
+            "available": true,
+            "description": "История ошибок по лиду",
+            "ui_elements": [
+              "Error History tab"
+            ],
+            "details": ""
+          },
+          "attempts_history": {
+            "available": true,
+            "description": "История попыток отправки лида",
+            "ui_elements": [
+              "Attempts History tab"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "Anti_Shave_System": {
+        "available": true,
+        "description": "Система антишейва — автоматическое обнаружение нелогичных изменений статусов лидов со стороны брокеров/получателей",
+        "sub_features": {
+          "status_logic_monitoring": {
+            "available": true,
+            "description": "Мониторинг логики проставления статусов: система отслеживает последовательность статусов и выявляет нарушения логики (например: New → Callback → Callback 2 → Callback 4 → Wrong Language)",
+            "ui_elements": [
+              "Оранжевый индикатор Pending на лидах с нелогичными статусами"
+            ],
+            "details": "При обнаружении нелогичной смены статуса лид помечается оранжевым цветом как Pending — ожидает ручного подтверждения от пользователя"
+          },
+          "manual_approval": {
+            "available": true,
+            "description": "Ручной аппрув/отклонение подозрительных статусов через фильтр Status Pipe Pending",
+            "ui_elements": [
+              "Status Pipe filter",
+              "Approve/Decline buttons"
+            ],
+            "details": "Можно отфильтровать все Pending лиды по конкретному реципиенту и проверить историю статусов каждого"
+          },
+          "status_history": {
+            "available": true,
+            "description": "Полная история статусов лида для анализа поведения брокера",
+            "ui_elements": [
+              "Statuses tab на карточке лида"
+            ],
+            "details": "Вся цепочка изменений статусов с датами"
+          }
+        }
+      },
+      "Leads_Pool": {
+        "available": true,
+        "description": "Отдельная папка для лидов, отбитых с ошибкой/дубликатом от получателей, с функцией автоматической переотправки",
+        "sub_features": {
+          "auto_resend": {
+            "available": true,
+            "description": "Автоматическая переотправка лидов из пула с настраиваемыми интервалами",
+            "ui_elements": [
+              "Auto Resend settings",
+              "Interval range picker"
+            ],
+            "details": "Можно настроить фиксированный интервал (напр. каждые 8 минут) или рандомный диапазон (от 2 до 20 минут). Система сама выбирает случайное время между отправками"
+          },
+          "freshness_sorting": {
+            "available": true,
+            "description": "Выбор порядка отправки — более свежие или более старые лиды первыми",
+            "ui_elements": [
+              "Sort order selector"
+            ],
+            "details": ""
+          },
+          "scheduled_resend": {
+            "available": true,
+            "description": "Планирование отложенной отправки — можно настроить на выходных с началом в понедельник",
+            "ui_elements": [
+              "Date picker",
+              "Time picker",
+              "Range settings"
+            ],
+            "details": "Полная автоматизация: настроил и забыл"
+          },
+          "lead_import": {
+            "available": true,
+            "description": "Импорт лидов из Excel-файлов в систему для последующей автоматической рассылки",
+            "ui_elements": [
+              "Import button",
+              "File upload"
+            ],
+            "details": "Загруженные лиды попадают в Leads Pool и могут быть автоматически разосланы"
+          },
+          "lead_export": {
+            "available": true,
+            "description": "Экспорт лидов из системы",
+            "ui_elements": [
+              "Export button"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "Affiliates_Management": {
+        "available": true,
+        "description": "Управление аффилиатами/поставщиками с быстрой интеграцией",
+        "sub_features": {
+          "quick_integration": {
+            "available": true,
+            "description": "Интеграция аффилиата за 30 секунд: имя, email (может быть выдуманным), домен, генерация пароля — всё",
+            "ui_elements": [
+              "Add New button (единая кнопка во всех папках)",
+              "Name field",
+              "Email field",
+              "Domain selector",
+              "Generate Password button"
+            ],
+            "details": "Минимум полей, максимум скорости. Скопировать данные и отправить аффилиату — интеграция завершена"
+          },
+          "link_groups": {
+            "available": true,
+            "description": "Группировка аффилиатов в Link Groups для упрощения управления — вместо 25 потоков (5 аффилиатов × 5 реципиентов) создаётся только 5",
+            "ui_elements": [
+              "Link Group dropdown в настройках потока",
+              "Link Group management page"
+            ],
+            "details": "Объединение аффилиатов в группу с процентным распределением трафика между реципиентами"
+          },
+          "link_id_management": {
+            "available": true,
+            "description": "Управление Link ID для технической настройки трекинга",
+            "ui_elements": [
+              "Link ID dropdown"
+            ],
+            "details": "Техническая настройка идентификаторов ссылок"
+          }
+        }
+      },
+      "Recipients_Management": {
+        "available": true,
+        "description": "Управление получателями (брокеры/нетворки) с шаблонной системой CRM-интеграций",
+        "sub_features": {
+          "template_crm_integration": {
+            "available": true,
+            "description": "Более 200 шаблонов CRM для интеграции с брокерами — выбрал тип, вставил ключи, готово",
+            "ui_elements": [
+              "CRM Type dropdown (200+ вариантов)",
+              "Add New button"
+            ],
+            "details": "Шаблонная система: не нужно писать код или настраивать API вручную. Выбираете тип CRM, копируете значения от партнёра — интеграция завершена"
+          }
+        }
+      },
+      "Offers_Streams": {
+        "available": true,
+        "description": "Потоки (офферы) — центральный модуль, где настраивается связка аффилиат → реципиент с полным контролем параметров",
+        "sub_features": {
+          "daily_limits": {
+            "available": true,
+            "description": "Дневные лимиты на количество лидов в потоке",
+            "ui_elements": [
+              "Daily Limits field с checkbox Unlimited",
+              "Значение -1 = безлимит"
+            ],
+            "details": ""
+          },
+          "total_limits": {
+            "available": true,
+            "description": "Общие лимиты на весь поток",
+            "ui_elements": [
+              "Total Limits field с checkbox Unlimited"
+            ],
+            "details": ""
+          },
+          "allowed_blocked_parameters": {
+            "available": true,
+            "description": "Whitelist/blacklist параметров: страны, источники, воронки, компании, языки, типы источников",
+            "ui_elements": [
+              "Enable Allowed/Blocked Parameters toggle",
+              "Country filter",
+              "Source filter",
+              "Funnel filter",
+              "Language filter"
+            ],
+            "details": "Работает в двух режимах: Allow (только указанные) и Block (все, кроме указанных). Применяется к странам, сорсам, воронкам, компаниям, языкам"
+          },
+          "hold_ftd": {
+            "available": true,
+            "description": "Удержание FTD (Hold FTD) — все первые депозиты замораживаются от 6 минут до 1 года до ручного одобрения",
+            "ui_elements": [
+              "Pending ACQ toggle"
+            ],
+            "details": "FTD не показываются аффилиату до тех пор, пока вы не approve или decline. Период удержания от 6 минут до 1 года"
+          },
+          "freeze_status_on_acquisition": {
+            "available": true,
+            "description": "Заморозка статуса для аффилиата при поступлении FTD — аффилиат видит последний статус до FTD",
+            "ui_elements": [
+              "Freeze status on ACQ toggle"
+            ],
+            "details": "Пример: был New → Callback → Callback 2 → Callback 3, пришёл FTD → аффилиат продолжает видеть Callback 3"
+          },
+          "cr_limit": {
+            "available": true,
+            "description": "Лимит конверсии (CR Limit) для CRG-сделок — автоматическое ограничение процента FTD, передаваемых аффилиату",
+            "ui_elements": [
+              "CR Limit toggle",
+              "CR Limit % field",
+              "Period dropdown (Weekly/Biweekly/Monthly)",
+              "Period Start Date",
+              "Period End Date",
+              "Calendar picker"
+            ],
+            "details": "Пример: установили 15% недельный CR Limit. Система считает конверсию, и всё что выше 15% — не передаётся аффилиату. На скриншоте: CR Limit 15%, Period Weekly, 2026-02-27 — 2026-03-05"
+          },
+          "pricing_on_offer": {
+            "available": true,
+            "description": "Настройка прайсов прямо на потоке: Buy Price, Sell Price, тип сделки (CPL/CPA/CRG), с разграничением по странам и воронкам",
+            "ui_elements": [
+              "Buy Price field",
+              "Sell Price field",
+              "Buy Type dropdown (CRG/CPL/CPA)",
+              "Sell Type dropdown",
+              "CR(Coefficient Replace)% field",
+              "Weekday date range",
+              "Invalid Leads toggle",
+              "Link ID selector",
+              "Countries multi-select",
+              "Funnels multi-select"
+            ],
+            "details": "Можно создавать несколько прайсов на одном потоке с разными условиями: страна А — одна цена CPL, страна Б — другая цена CPA"
+          },
+          "substitutes": {
+            "available": true,
+            "description": "Замена любого параметра при передаче от аффилиата к реципиенту: воронка, язык, source, UTM и др.",
+            "ui_elements": [
+              "Substitutes section на потоке"
+            ],
+            "details": "Пример: аффилиат передаёт воронку 'FB' — вы заменяете на 'Binance_FB_v2'. Реципиент получает ваше название"
+          },
+          "schedule": {
+            "available": true,
+            "description": "Расписание работы потока с автоматическим включением/выключением",
+            "ui_elements": [
+              "Schedule settings",
+              "Overnight toggle"
+            ],
+            "details": "Стандартное расписание по дням недели"
+          },
+          "overnight_mode": {
+            "available": true,
+            "description": "Режим ночного графика (Overnight) — бесшовная работа потока в ночное время без ошибок при смене суток",
+            "ui_elements": [
+              "Overnight toggle",
+              "Day transition pairs (Пн→Вт, Вт→Ср и т.д.)"
+            ],
+            "details": "Решает проблему разрыва при переходе 23:55 → 00:05, когда обычный график генерирует ошибки и может привести к блокировке со стороны брокера"
+          },
+          "fraud_scoring_on_offer": {
+            "available": true,
+            "description": "Включение/выключение фрод-скоринга на уровне отдельного потока",
+            "ui_elements": [
+              "Fraud Scoring toggle в форме создания потока"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "Fraud_Scoring": {
+        "available": true,
+        "description": "Комплексная система фрод-скоринга для оценки качества входящих лидов",
+        "sub_features": {
+          "scoring_categories": {
+            "available": true,
+            "description": "Категоризация лидов: Error, Pending, Allow, Flag, Block",
+            "ui_elements": [
+              "Цветные индикаторы на Dashboard",
+              "FRAUD SCORING колонка в таблице лидов"
+            ],
+            "details": "Allow (730), Flag (233), Block (414) — видно на скриншоте Dashboard"
+          },
+          "source_verification": {
+            "available": true,
+            "description": "Верификация источника трафика через auto-login",
+            "ui_elements": [
+              "Source detector"
+            ],
+            "details": ""
+          },
+          "device_fingerprinting": {
+            "available": true,
+            "description": "Цифровой отпечаток устройства для обнаружения множественных регистраций с одного устройства",
+            "ui_elements": [
+              "Fingerprint ID"
+            ],
+            "details": ""
+          },
+          "ip_verification": {
+            "available": true,
+            "description": "Проверка совпадения IP адресов",
+            "ui_elements": [
+              "IP mismatch indicator"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "Users_Permissions": {
+        "available": true,
+        "description": "Система управления пользователями с гранулярными правами доступа, без ограничений по количеству",
+        "sub_features": {
+          "roles": {
+            "available": true,
+            "description": "Три роли: Super Admin (полный доступ), Admin, Manager (настраиваемые права)",
+            "ui_elements": [
+              "Role selector"
+            ],
+            "details": ""
+          },
+          "granular_permissions": {
+            "available": true,
+            "description": "Детальные права по каждому модулю: View, Add, Edit, Delete — всё кликабельно",
+            "ui_elements": [
+              "Permissions tab",
+              "Select All / Revoke All buttons",
+              "Чекбоксы по категориям: Affiliates (Can View Affiliates, Can View Affiliate Name, Can View Links Tab, Can View Recipients Tab / Can Create Affiliates / Can Edit Affiliates, Can Edit Affiliates Min ACQ, Can Assign Recipients, Can Edit Resend Pool Settings, Can Change Api Token)",
+              "Analytics (Can View BI Insights, Can View Analytics)",
+              "Country Groups (Can View/Create/Edit/Delete Country Groups)"
+            ],
+            "details": "Вкладки на менеджере: Profile, Affiliates, Links, Recipients, Link Groups, Offers, Ip Access, Permissions, Logs"
+          },
+          "ip_whitelisting": {
+            "available": true,
+            "description": "Привязка пользователя к IP-адресу — вход только с указанного IP",
+            "ui_elements": [
+              "Ip Access tab"
+            ],
+            "details": ""
+          },
+          "login_profiles": {
+            "available": true,
+            "description": "Отслеживание профилей входа — откуда логинятся пользователи",
+            "ui_elements": [
+              "Profile tab"
+            ],
+            "details": ""
+          },
+          "activity_logging": {
+            "available": true,
+            "description": "Полное логирование всех действий пользователей — невозможно скрыть действие",
+            "ui_elements": [
+              "Logs tab"
+            ],
+            "details": ""
+          },
+          "unlimited_users": {
+            "available": true,
+            "description": "Нет ограничений по количеству пользователей в системе",
+            "ui_elements": [],
+            "details": ""
+          },
+          "user_creation": {
+            "available": true,
+            "description": "Создание пользователей с полями: Name, Email, Alias, Password (генерация), Send Mail, Create Link",
+            "ui_elements": [
+              "Create New User modal",
+              "Name field",
+              "Email field",
+              "Alias dropdown",
+              "Password field (10+ characters)",
+              "Generate Password button",
+              "Send Mail toggle",
+              "Create Link toggle"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "Analytics": {
+        "available": true,
+        "description": "Многоуровневая аналитика с различными типами отчётов",
+        "sub_features": {
+          "system_report": {
+            "available": true,
+            "description": "Стандартная аналитика с фильтрами по аффилиатам, потокам, реципиентам, менеджерам",
+            "ui_elements": [
+              "Фильтры: Affiliates, Links, Countries, Languages",
+              "Колонки: Columns настраиваемые",
+              "Calendar picker (Today/Yesterday/This week/Last week/This month/Last month/Last 7 days/Last month/This year)",
+              "Time range (From HH:MM — To HH:MM)",
+              "Export button",
+              "Recommendations dropdown"
+            ],
+            "details": "Метрики в таблице: COUNTRY, ALL, VALID, NOT VALID, WRONG, UND, NA, NA%, ACQ, CONV, TACO, TCONV, TBP, TSC, PROFIT"
+          },
+          "funnel_report": {
+            "available": true,
+            "description": "Аналитика по воронкам — какие воронки лучше конвертят у каких байеров на каких клиентов",
+            "ui_elements": [
+              "Funnel analytics view"
+            ],
+            "details": "Полезно для медиабаинга: видно, какие воронки конвертят, % конверсий, количество валидных/невалидных"
+          },
+          "beyond_science_bi": {
+            "available": true,
+            "description": "BI Insights — визуальные топы в стиле карточек FIFA: топ по конверсии, по профиту, топ аффилиатов, топ клиентов",
+            "ui_elements": [
+              "Ромбики/карточки в стиле FIFA",
+              "Top by conversion",
+              "Top by profit",
+              "Top affiliates",
+              "Top recipients"
+            ],
+            "details": "Визуальная геймификация аналитики"
+          },
+          "advanced_report": {
+            "available": true,
+            "description": "Настраиваемая аналитика — создание кастомных отчётов с выбором группировки и колонок",
+            "ui_elements": [
+              "Add New Report modal",
+              "Name field",
+              "Group By Fields dropdown (Affiliate, Link, Link Group, Recipient, Offer, Country, Language, Funnel, Source, UTM Campaign, UTM Content, UTM Medium, UTM Source)",
+              "Columns checkboxes (Valid, Invalid, TACQ, ACQ, CONV, TCONV, Buy Type, Buy Price, Sell Type, Sell Price, TBuy, TSell, Profit)"
+            ],
+            "details": "Полностью кастомизируемые отчёты для специфических нужд"
+          },
+          "profit_analytics": {
+            "available": true,
+            "description": "Аналитика прибыли: Buy Price, Sell Price, Profit по каждой сделке вместо Excel",
+            "ui_elements": [
+              "Buy Price column",
+              "Sell Price column",
+              "Profit column"
+            ],
+            "details": "Указывается тип сделки, суммы покупки/продажи и автоматически рассчитывается профит"
+          }
+        }
+      },
+      "Utils": {
+        "available": true,
+        "description": "Вспомогательные утилиты для автоматизации и настройки",
+        "sub_features": {
+          "lead_rotation": {
+            "available": true,
+            "description": "Ротация лидов между реципиентами: при отбивке дубликатом/ошибкой лид автоматически переходит к следующему реципиенту",
+            "ui_elements": [
+              "Rotation settings"
+            ],
+            "details": "Также можно настроить дефолтного аффилиата, на которого будет заходить ответ при дубликате/ошибке"
+          },
+          "status_groups": {
+            "available": true,
+            "description": "Группировка статусов от разных брокеров в единые внутренние статусы с валидацией (valid/invalid/acquisition)",
+            "ui_elements": [
+              "Status Groups management",
+              "Status type validation (valid/invalid/acquisition)"
+            ],
+            "details": "Решает проблему: один и тот же статус у разных брокеров может быть валидным или невалидным. Можно создавать свои внутренние статусы с любыми названиями. Упрощает сверки с нескольких дней до 30 минут"
+          },
+          "country_groups": {
+            "available": true,
+            "description": "Объединение стран в группы: tier 1, tier 2, EU и т.д.",
+            "ui_elements": [
+              "Country Groups management"
+            ],
+            "details": ""
+          },
+          "postbacks": {
+            "available": true,
+            "description": "Постбеки для байеров: по регистрации, статусу, acquisition, deposit",
+            "ui_elements": [
+              "Postback settings"
+            ],
+            "details": "Полезно для медиабайеров, использующих постбеки на пикселе"
+          }
+        }
+      },
+      "Support": {
+        "available": true,
+        "description": "Многоканальная поддержка",
+        "sub_features": {
+          "ticket_system": {
+            "available": true,
+            "description": "Система тикетов для техподдержки",
+            "ui_elements": [
+              "Support → Tickets"
+            ],
+            "details": ""
+          },
+          "telegram_support": {
+            "available": true,
+            "description": "Поддержка через Telegram",
+            "ui_elements": [],
+            "details": ""
+          },
+          "manual_documentation": {
+            "available": true,
+            "description": "Мануальная документация на английском и русском языках",
+            "ui_elements": [
+              "Manual section"
+            ],
+            "details": "Полное описание: куда нажимать, какие кнопки, что за что отвечает"
+          },
+          "api_documentation": {
+            "available": true,
+            "description": "API-документация для технической интеграции",
+            "ui_elements": [
+              "API Documentation page"
+            ],
+            "details": ""
+          }
+        }
+      },
+      "Finance": {
+        "available": true,
+        "description": "Финансовый модуль (отдельная вкладка в навигации, детали не показаны в демо)",
+        "sub_features": {
+          "finance_tab": {
+            "available": true,
+            "description": "Отдельная вкладка Finance в главном меню навигации",
+            "ui_elements": [
+              "Finance menu item"
+            ],
+            "details": "Не была продемонстрирована подробно в рамках демо"
+          }
+        }
+      },
+      "Multi_Vertical_Support": {
+        "available": true,
+        "description": "Поддержка нескольких вертикалей через раздельные продукты",
+        "sub_features": {
+          "crypto_invest_system": {
+            "available": true,
+            "description": "Текущая система (Elnopy Affiliate) — полноценный функционал для крипто/инвест вертикали",
+            "ui_elements": [],
+            "details": "Полноценные метрики, аналитика и фичи заточены под крипто"
+          },
+          "gaming_betting_system": {
+            "available": true,
+            "description": "Отдельная система для gaming/betting/dating — другие метрики, создание потоков по URL (клик-модель), поддержка app-потоков",
+            "ui_elements": [],
+            "details": "Отдельный продукт с метриками под гейминг. Крипту тоже можно прогонять через трекинг, но функционал проще"
+          }
+        }
+      }
+    }
+  },
+  "technology_stack": {
+    "frontend_hints": "Тёмная тема (dark mode), SPA-подобный интерфейс, современный веб-фреймворк (вероятно React/Vue). Версия v2.0. Адаптивные модальные окна, dropdown-селекторы, toggle-переключатели, datepicker с calendar. UI консистентный с единым дизайн-паттерном",
+    "api_hints": "RESTful API (есть API-документация). Шаблонная система интеграций с 200+ CRM. Postback-система для обратных вызовов. Auto-login трекинг. Webhook-подобная архитектура для получения статусов от брокеров",
+    "integrations": [
+      "200+ шаблонов CRM брокеров/нетворков",
+      "Postback интеграции (регистрация, статус, acquisition, deposit)",
+      "Excel import/export",
+      "Telegram bot (source detection)",
+      "Facebook (source detection)",
+      "Instagram (source detection)",
+      "TikTok (source detection)",
+      "Google (source detection)",
+      "YouTube (source detection)",
+      "API для внешних интеграций"
+    ]
+  },
+  "sales_marketing": {
+    "demo_style": "Консультативная продажа на русском языке. Сначала квалификация (вопросы о проекте, конкурентах, нише). Затем полный walk-through системы с объяснениями. Демо проводит один человек (Пётр), присутствует также Назар. Стиль дружелюбный, неформальный ('ты'), готов отвечать на вопросы по ходу. Длительность ~40 минут",
+    "selling_points": [
+      "Быстрая интеграция — до 30 секунд на подключение аффилиата или реципиента",
+      "200+ шаблонов CRM — не нужно писать код",
+      "Антишейв-система — автоматическое обнаружение мошенничества со стороны брокеров",
+      "Фрод-скоринг — защита от некачественного трафика (fingerprint, IP mismatch, source detection)",
+      "Автоматизация — Lead Pool с auto-resend, расписание, overnight mode",
+      "Замена Excel — профит считается автоматически, сверки за 30 минут вместо нескольких дней",
+      "Link Groups — сокращение количества потоков в 5 раз (25 → 5)",
+      "Hold FTD — контроль над конверсиями до передачи аффилиату",
+      "CR Limit — автоматическое ограничение конверсии для CRG-сделок",
+      "Неограниченное количество пользователей с гранулярными правами",
+      "Overnight mode — уникальная фича для ночного трафика без ошибок",
+      "Два продукта — крипто и гейминг раздельно, каждый со своими метриками",
+      "Substitutes — замена любого параметра при передаче лидов"
+    ],
+    "objection_handling": [
+      {
+        "objection": "Нужна одна система и для крипто, и для гейминга",
+        "response": "Есть два отдельных продукта, каждый оптимизирован под свою вертикаль. Гейминг можно подключить позже, когда будет готовность"
+      },
+      {
+        "objection": "Можно ли редактировать данные лидов?",
+        "response": "Да, через механизм Resend — можно изменить любые данные и переотправить как нового лида"
+      }
+    ]
+  },
+  "behavioral_analysis": {
+    "navigation_flow": [
+      "1. Начало звонка — квалификация проспекта (проект, ниша, конкуренты)",
+      "2. Объяснение двух продуктов (крипто vs гейминг)",
+      "3. Dashboard — обзор метрик и фрод-скоринга",
+      "4. Leads — список лидов, source detector, fingerprint, карточка лида",
+      "5. Anti-Shave система — объяснение логики статусов",
+      "6. Leads Pool — auto-resend, import",
+      "7. Affiliates — быстрая интеграция, Link Groups",
+      "8. Recipients — шаблонная CRM-интеграция (200+ типов)",
+      "9. Offers/Streams — настройка потоков (лимиты, параметры, Hold FTD, Freeze, CR Limit, Pricing, Substitutes, Schedule, Overnight)",
+      "10. Users — создание, роли, гранулярные permissions, IP whitelist, логирование",
+      "11. Analytics — System Report, Funnel Report, Beyond Science (BI), Advanced Report",
+      "12. Utils — ротация, статус-группы, country groups, postbacks",
+      "13. Support — тикеты, Telegram, мануалы, API-документация",
+      "14. Показ сайта elnopy.com"
+    ],
+    "key_interactions": [
+      {
+        "timestamp": "~9:01",
+        "action": "Начало звонка, представление (Пётр)",
+        "detail": "Квалификация: новый проект buying + сетка, крипто + гейминг, конкуренты Seremate и Pyrimon/Aero"
+      },
+      {
+        "timestamp": "~9:07",
+        "action": "Показ Dashboard",
+        "detail": "Day/Week/Month Count, графики регистраций, фрод-скоринг"
+      },
+      {
+        "timestamp": "~9:08",
+        "action": "Настройка прайсов на потоке",
+        "detail": "Buy/Sell Price, CRG type, CR Coefficient, Weekday ranges, Countries, Funnels"
+      },
+      {
+        "timestamp": "~9:09",
+        "action": "Карточка лида #8792",
+        "detail": "Вкладки Details/Devices/Acquisition/Statuses/Http-Logs/Resend/Fraud Scoring/Error History/Attempts History"
+      },
+      {
+        "timestamp": "~9:13",
+        "action": "Список лидов с фильтрами",
+        "detail": "Цветовая индикация, статусы, источники, флаги стран"
+      },
+      {
+        "timestamp": "~9:16",
+        "action": "Создание пользователя",
+        "detail": "Create New User modal"
+      },
+      {
+        "timestamp": "~9:19",
+        "action": "Создание потока/оффера",
+        "detail": "Fraud Scoring, Recipient, Link Group, Limits, Freeze ACQ, Allowed/Blocked Parameters, Pending ACQ, CR Limit"
+      },
+      {
+        "timestamp": "~9:22",
+        "action": "Настройка CR Limit",
+        "detail": "CR Limit 15%, Weekly, calendar picker 2026-02-27 — 2026-03-05"
+      },
+      {
+        "timestamp": "~9:26",
+        "action": "Права менеджера",
+        "detail": "Гранулярные permissions: View/Add/Edit/Delete по модулям"
+      },
+      {
+        "timestamp": "~9:27",
+        "action": "System Report",
+        "detail": "Calendar, фильтры, метрики по странам, Export"
+      },
+      {
+        "timestamp": "~9:29-9:40",
+        "action": "Advanced Report, полный список лидов, сайт Elnopy",
+        "detail": "Создание кастомного отчёта, Group By Fields, Summary stats, сайт с BOOK A DEMO"
+      }
+    ]
+  },
+  "key_quotes": [
+    {
+      "speaker": "Проспект (Денис)",
+      "text": "И гейминг хотелось бы потенциально иметь, потому что сейчас его нет, но... Да, он уже будет, и не хотелось бы потом искать дополнительно ещё",
+      "context": "Ключевая потребность — единая платформа для крипто и гейминга, чтобы не менять систему в будущем"
+    },
+    {
+      "speaker": "Проспект",
+      "text": "Мы ещё договорились на звонок с Seremate и Pyrimon (Aero)",
+      "context": "Конкурентная разведка — проспект рассматривает минимум 3 системы"
+    },
+    {
+      "speaker": "Пётр (Elnopy)",
+      "text": "Интеграция в основном до 30 секунд",
+      "context": "Ключевое УТП — скорость интеграции"
+    },
+    {
+      "speaker": "Пётр (Elnopy)",
+      "text": "Вместо 25 потоков — всего лишь 5. Создали и распихали по странам, в процентном соотношении регулируете",
+      "context": "Преимущество Link Groups для масштабирования"
+    },
+    {
+      "speaker": "Пётр (Elnopy)",
+      "text": "Вместо того чтобы эти сверки, каждый месяц закрывать по несколько дней, вы их закрываете буквально полчаса",
+      "context": "Экономия времени на reconciliation благодаря статус-группам"
+    },
+    {
+      "speaker": "Пётр (Elnopy)",
+      "text": "Система Elnopy считает проценты, которые приходят по конверсии. Если конверсия наступила 15% и перешагнула, всё что выше — не передаётся",
+      "context": "Объяснение работы CR Limit для CRG-сделок"
+    },
+    {
+      "speaker": "Проспект",
+      "text": "Будет интересно услышать разного рода специфичные функции, заточенные под специфику крипты. Чтобы мы понимали вашу УТП на рынке между конкурентами",
+      "context": "Проспект ищет дифференциацию между конкурентами"
+    },
+    {
+      "speaker": "Пётр (Elnopy)",
+      "text": "Скрыть что-то, какое-то действие нереально от ваших глаз. Вся информация логируется",
+      "context": "Безопасность и контроль над действиями сотрудников"
+    }
+  ],
+  "scorecard": {
+    "lead_management": {
+      "score_1_to_10": 9,
+      "rationale": "Полноценный модуль лидов с детальными карточками, 9+ вкладок на лиде, массовые действия, фильтрация, import/export, resend, source detection, fingerprinting. Очень зрелый функционал"
+    },
+    "fraud_prevention": {
+      "score_1_to_10": 9,
+      "rationale": "Многоуровневый фрод-скоринг (fingerprint, IP mismatch, source detection), антишейв-система с мониторингом логики статусов, Hold FTD, Freeze status. Уникальное конкурентное преимущество"
+    },
+    "integration_speed": {
+      "score_1_to_10": 9,
+      "rationale": "200+ шаблонов CRM, интеграция за 30 секунд, минимум полей. Одна из самых быстрых на рынке"
+    },
+    "analytics_reporting": {
+      "score_1_to_10": 8,
+      "rationale": "4 типа отчётов (System, Funnel, BI/Beyond Science, Advanced), кастомизация, profit tracking. Есть Export. Нет real-time dashboards или BI-интеграции с внешними системами"
+    },
+    "automation": {
+      "score_1_to_10": 8,
+      "rationale": "Auto-resend из Lead Pool с рандомизацией, Schedule, Overnight mode, ротация, CR Limit автоматический. Хороший уровень автоматизации для daily operations"
+    },
+    "user_management_security": {
+      "score_1_to_10": 8,
+      "rationale": "Безлимитные пользователи, гранулярные permissions (View/Add/Edit/Delete по модулям), IP whitelisting, полное логирование. Нет 2FA на демо"
+    },
+    "ui_ux": {
+      "score_1_to_10": 7,
+      "rationale": "Тёмная тема, консистентный дизайн, единая кнопка Add New везде. Интерфейс функциональный но визуально плотный, может быть сложен для новичков. Цветовая индикация лидов удобна"
+    },
+    "pricing_deal_management": {
+      "score_1_to_10": 9,
+      "rationale": "CPL/CPA/CRG сделки, Buy/Sell Price на уровне потока, разграничение по странам и воронкам, CR Limit с периодами, CR Coefficient — очень гибкая система прайсинга"
+    },
+    "scalability": {
+      "score_1_to_10": 8,
+      "rationale": "Link Groups для сокращения потоков, безлимитные пользователи, статус-группы для унификации. Month Count 2458 лидов видно на демо — средний объём"
+    },
+    "competitive_differentiation": {
+      "score_1_to_10": 8,
+      "rationale": "Уникальные фичи: антишейв, fingerprinting, overnight mode, CR Limit, Hold FTD. Два продукта для разных вертикалей. Сильная заточка под крипто/инвест"
+    }
+  },
+  "functional_breakdown": [
+    {
+      "module": "Dashboard",
+      "capability": "Сводная панель метрик (Day/Week/Month Count, график регистраций, фрод-скоринг)",
+      "depth": "intermediate",
+      "notes": "Отображает профит, активные оферы/реципиенты/аффилиаты, метрику регистраций по дням"
+    },
+    {
+      "module": "Leads",
+      "capability": "Управление лидами — список, карточка, детали, фильтрация",
+      "depth": "advanced",
+      "notes": "9 вкладок на карточке лида: Details, Devices, Acquisition, Statuses, Http-Logs, Resend, Fraud Scoring, Error History, Attempts History"
+    },
+    {
+      "module": "Leads",
+      "capability": "Source Detector — определение источника лида через auto-login",
+      "depth": "advanced",
+      "notes": "Определяет Telegram, Facebook, Instagram, TikTok, Google, YouTube, браузер"
+    },
+    {
+      "module": "Leads",
+      "capability": "Fingerprint Detection — цифровой отпечаток устройства",
+      "depth": "advanced",
+      "notes": "Уникальная фича для обнаружения множественных регистраций с одного устройства"
+    },
+    {
+      "module": "Leads",
+      "capability": "IP Mismatch Detection",
+      "depth": "intermediate",
+      "notes": "Сравнение IP и auto-login IP для обнаружения VPN/прокси"
+    },
+    {
+      "module": "Leads",
+      "capability": "Anti-Shave система — мониторинг логики статусов",
+      "depth": "advanced",
+      "notes": "Автоматическое обнаружение нелогичных смен статусов, пометка Pending для ручного аппрува"
+    },
+    {
+      "module": "Leads",
+      "capability": "Resend — пересылка лидов с изменением данных",
+      "depth": "advanced",
+      "notes": "Полное редактирование данных лида, смена аффилиата, отправка на другой поток как нового лида"
+    },
+    {
+      "module": "Leads Pool",
+      "capability": "Автоматический re-send с рандомизированными интервалами",
+      "depth": "advanced",
+      "notes": "Фиксированный или рандомный интервал (2-20 мин), сортировка по свежести, планирование на дату"
+    },
+    {
+      "module": "Leads Pool",
+      "capability": "Import лидов из Excel",
+      "depth": "intermediate",
+      "notes": "Загрузка файла, попадание в пул, автоматическая рассылка"
+    },
+    {
+      "module": "Affiliates",
+      "capability": "Быстрая интеграция аффилиата (30 сек)",
+      "depth": "basic",
+      "notes": "Имя, email, домен, пароль — копировать и отправить"
+    },
+    {
+      "module": "Affiliates",
+      "capability": "Link Groups — группировка аффилиатов",
+      "depth": "advanced",
+      "notes": "Сокращение потоков в N раз, процентное распределение трафика"
+    },
+    {
+      "module": "Recipients",
+      "capability": "Шаблонная CRM-интеграция (200+ типов)",
+      "depth": "advanced",
+      "notes": "Выбрал тип CRM, вставил значения — интеграция завершена. Не нужно писать код"
+    },
+    {
+      "module": "Offers/Streams",
+      "capability": "Daily и Total Limits",
+      "depth": "basic",
+      "notes": "Ограничение количества лидов в день и всего"
+    },
+    {
+      "module": "Offers/Streams",
+      "capability": "Allowed/Blocked Parameters (страны, сорсы, воронки, языки)",
+      "depth": "intermediate",
+      "notes": "Whitelist или blacklist режим для каждого параметра"
+    },
+    {
+      "module": "Offers/Streams",
+      "capability": "Hold FTD (Pending ACQ) — удержание конверсий",
+      "depth": "advanced",
+      "notes": "От 6 минут до 1 года. Ручной approve/decline. Аффилиат не видит FTD до подтверждения"
+    },
+    {
+      "module": "Offers/Streams",
+      "capability": "Freeze Status on Acquisition",
+      "depth": "advanced",
+      "notes": "Заморозка статуса для аффилиата при поступлении FTD"
+    },
+    {
+      "module": "Offers/Streams",
+      "capability": "CR Limit — автоматическое ограничение конверсии",
+      "depth": "advanced",
+      "notes": "% лимит, период (Weekly/Biweekly/Monthly), дата начала/конца. Автоматическая отсечка при превышении"
+    },
+    {
+      "module": "Offers/Streams",
+      "capability": "Pricing (Buy/Sell Price, CPL/CPA/CRG, по странам/воронкам)",
+      "depth": "advanced",
+      "notes": "Множественные прайсы на потоке с разными условиями, CR Coefficient, разграничение по параметрам"
+    },
+    {
+      "module": "Offers/Streams",
+      "capability": "Substitutes — замена параметров",
+      "depth": "intermediate",
+      "notes": "Замена любого параметра (воронка, язык, source, UTM) при передаче от аффилиата к реципиенту"
+    },
+    {
+      "module": "Offers/Streams",
+      "capability": "Schedule с Overnight mode",
+      "depth": "advanced",
+      "notes": "Уникальная фича: бесшовная работа в ночном графике без ошибок при смене суток"
+    },
+    {
+      "module": "Offers/Streams",
+      "capability": "Fraud Scoring toggle на уровне потока",
+      "depth": "basic",
+      "notes": "Включение/выключение фрод-скоринга на отдельном потоке"
+    },
+    {
+      "module": "Users",
+      "capability": "Управление пользователями (Super Admin/Admin/Manager)",
+      "depth": "intermediate",
+      "notes": "Безлимитное количество, создание с генерацией пароля"
+    },
+    {
+      "module": "Users",
+      "capability": "Гранулярные Permissions (View/Add/Edit/Delete по модулям)",
+      "depth": "advanced",
+      "notes": "Чекбоксы по каждому модулю и действию: Affiliates, Analytics, Country Groups, Links, Recipients, Link Groups, Offers, IP Access, Logs"
+    },
+    {
+      "module": "Users",
+      "capability": "IP Whitelisting",
+      "depth": "intermediate",
+      "notes": "Привязка пользователя к конкретному IP"
+    },
+    {
+      "module": "Users",
+      "capability": "Полное логирование действий",
+      "depth": "intermediate",
+      "notes": "Все действия записываются, невозможно скрыть"
+    },
+    {
+      "module": "Analytics",
+      "capability": "System Report — стандартная аналитика с фильтрами",
+      "depth": "intermediate",
+      "notes": "Фильтры: Affiliates, Links, Countries, Languages. Метрики: ALL, VALID, NOT VALID, WRONG, UND, NA, NA%, ACQ, CONV, TACO, TCONV, TBP, TSC, PROFIT. Export"
+    },
+    {
+      "module": "Analytics",
+      "capability": "Funnel Report — аналитика по воронкам",
+      "depth": "intermediate",
+      "notes": "Какие воронки конвертят лучше у каких байеров на каких клиентов"
+    },
+    {
+      "module": "Analytics",
+      "capability": "Beyond Science (BI Insights) — визуальные топы",
+      "depth": "intermediate",
+      "notes": "Карточки в стиле FIFA с топами по конверсии, профиту, аффилиатам, клиентам"
+    },
+    {
+      "module": "Analytics",
+      "capability": "Advanced Report — кастомные отчёты",
+      "depth": "advanced",
+      "notes": "Group By: 13 полей (Affiliate, Link, Link Group, Recipient, Offer, Country, Language, Funnel, Source, UTM Campaign/Content/Medium/Source). Columns: 15 метрик включая Buy/Sell/Profit"
+    },
+    {
+      "module": "Utils",
+      "capability": "Ротация лидов между реципиентами",
+      "depth": "intermediate",
+      "notes": "Автоматический переход к следующему реципиенту при ошибке/дубликате. Дефолтный аффилиат для ответов"
+    },
+    {
+      "module": "Utils",
+      "capability": "Status Groups — унификация статусов",
+      "depth": "advanced",
+      "notes": "Группировка статусов разных брокеров в единые внутренние (valid/invalid/acquisition). Сверки за 30 мин вместо дней"
+    },
+    {
+      "module": "Utils",
+      "capability": "Country Groups",
+      "depth": "basic",
+      "notes": "Объединение стран в группы (tier 1, tier 2, EU и т.д.)"
+    },
+    {
+      "module": "Utils",
+      "capability": "Postbacks для байеров",
+      "depth": "intermediate",
+      "notes": "По регистрации, статусу, acquisition, deposit"
+    },
+    {
+      "module": "Support",
+      "capability": "Тикеты, Telegram, документация (EN/RU), API docs",
+      "depth": "intermediate",
+      "notes": "Мануалы на двух языках, система тикетов, Telegram-канал поддержки"
+    }
+  ]
+}
