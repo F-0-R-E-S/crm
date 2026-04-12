@@ -37,12 +37,12 @@ type TokenPair struct {
 
 // Service handles authentication operations.
 type Service struct {
-	DB  *sqlc.Queries
+	DB  AuthQuerier
 	Cfg *config.Config
 }
 
 // NewService creates an auth service.
-func NewService(db *sqlc.Queries, cfg *config.Config) *Service {
+func NewService(db AuthQuerier, cfg *config.Config) *Service {
 	return &Service{DB: db, Cfg: cfg}
 }
 
