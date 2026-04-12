@@ -9,6 +9,11 @@ import AffiliatesPage from './pages/AffiliatesPage'
 import RoutingPage from './pages/RoutingPage'
 import AnalyticsPage from './pages/AnalyticsPage'
 import SettingsPage from './pages/SettingsPage'
+import UsersPage from './pages/UsersPage'
+import SessionsPage from './pages/SessionsPage'
+import NotificationPreferencesPage from './pages/NotificationPreferencesPage'
+import OnboardingPage from './pages/OnboardingPage'
+import AcceptInvitePage from './pages/AcceptInvitePage'
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -18,7 +23,11 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <Routes>
+      {/* Public routes */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/accept-invite" element={<AcceptInvitePage />} />
+
+      {/* Protected routes */}
       <Route
         path="/"
         element={
@@ -34,7 +43,11 @@ export default function App() {
         <Route path="affiliates" element={<AffiliatesPage />} />
         <Route path="routing" element={<RoutingPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
+        <Route path="users" element={<UsersPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="settings/sessions" element={<SessionsPage />} />
+        <Route path="settings/notifications" element={<NotificationPreferencesPage />} />
+        <Route path="onboarding" element={<OnboardingPage />} />
       </Route>
     </Routes>
   )
