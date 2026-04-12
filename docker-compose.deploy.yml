@@ -30,6 +30,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./migrations/001_initial_schema.up.sql:/docker-entrypoint-initdb.d/001_schema.sql
       - ./migrations/003_seed_broker_templates.up.sql:/docker-entrypoint-initdb.d/003_seed.sql
+      - ./migrations/004_assistant_schema.up.sql:/docker-entrypoint-initdb.d/004_assistant.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gambchamp}"]
       interval: 10s
@@ -98,6 +99,7 @@ services:
       NOTIFICATION_ADDR: "http://notification:8008"
       IDENTITY_ADDR: "http://identity:8010"
       ANALYTICS_ADDR: "http://analytics:8011"
+      ASSISTANT_ADDR: "http://assistant:8012"
 
   identity:
     <<: *go-service
@@ -161,6 +163,7 @@ services:
       PORT: "8004"
       DB_URL: "postgres://${POSTGRES_USER:-gambchamp}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-gambchamp}?sslmode=disable"
       REDIS_URL: "redis://:${REDIS_PASSWORD}@redis:6379"
+      NATS_URL: "nats://nats:4222"
       MAXMIND_KEY: ${MAXMIND_KEY:-}
       IPQS_KEY: ${IPQS_KEY:-}
 
@@ -227,6 +230,29 @@ services:
       DB_URL: "postgres://${POSTGRES_USER:-gambchamp}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-gambchamp}?sslmode=disable"
       CLICKHOUSE_URL: "clickhouse://${CLICKHOUSE_USER:-gambchamp}:${CLICKHOUSE_PASSWORD}@clickhouse:9000/gambchamp"
       NATS_URL: "nats://nats:4222"
+
+  assistant:
+    <<: *go-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE: assistant-svc
+    environment:
+      PORT: "8012"
+      DB_URL: "postgres://${POSTGRES_USER:-gambchamp}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-gambchamp}?sslmode=disable"
+      REDIS_URL: "redis://:${REDIS_PASSWORD}@redis:6379"
+      NATS_URL: "nats://nats:4222"
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ASSISTANT_MODEL: "claude-sonnet-4-20250514"
+      ROUTING_ENGINE_ADDR: "http://routing-engine:8002"
+      BROKER_ADAPTER_ADDR: "http://broker-adapter:8003"
+      FRAUD_ENGINE_ADDR: "http://fraud-engine:8004"
+      LEAD_INTAKE_ADDR: "http://lead-intake:8001"
+      UAD_ADDR: "http://uad:8007"
+      NOTIFICATION_ADDR: "http://notification:8008"
+      AUTOLOGIN_ADDR: "http://autologin:8006"
+      ANALYTICS_ADDR: "http://analytics:8011"
 
   web:
     <<: *common
