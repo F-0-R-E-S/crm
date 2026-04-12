@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/gambchamp/crm/pkg/database"
 	"github.com/gambchamp/crm/pkg/telemetry"
 )
 
@@ -15,15 +16,26 @@ func main() {
 	logger := telemetry.NewLogger("identity-svc")
 	cfg := LoadConfig()
 
+	ctx := context.Background()
+
+	db, err := database.New(ctx, cfg.DBURL)
+	if err != nil {
+		logger.Error("failed to connect to database", "error", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+
+	store := NewStore(db)
+	jwtMgr := NewJWTManager(cfg.JWTSecret, cfg.TokenExpiry, cfg.RefreshExpiry)
+
 	mux := http.NewServeMux()
-	h := NewHandler(logger)
+	h := NewHandler(logger, store, jwtMgr)
 	h.Register(mux)
 
-	mux.Handle("GET /health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status":"ok"}`))
-	}))
+	})
 	mux.Handle("GET /metrics", telemetry.MetricsHandler())
 
 	srv := &http.Server{
@@ -46,8 +58,8 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	srv.Shutdown(ctx)
+	srv.Shutdown(shutdownCtx)
 	logger.Info("server stopped")
 }
