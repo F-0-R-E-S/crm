@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
-import clsx from 'clsx'
 import { api } from '../lib/api'
 import StatusBadge from '../components/StatusBadge'
 import LeadDetail from '../components/LeadDetail'
@@ -28,142 +27,109 @@ interface LeadsResponse {
 
 const PAGE_SIZE = 20
 
+function fraudColor(score: number) {
+  return score >= 70 ? '#34d399' : score >= 50 ? '#fbbf24' : '#f87171'
+}
+
 export default function LeadsPage() {
   const [page, setPage] = useState(0)
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null)
 
   const { data, isLoading, error, isFetching } = useQuery({
     queryKey: ['leads', page],
-    queryFn: () =>
-      api.get<LeadsResponse>(`/leads?limit=${PAGE_SIZE}&offset=${page * PAGE_SIZE}`),
+    queryFn: () => api.get<LeadsResponse>(`/leads?limit=${PAGE_SIZE}&offset=${page * PAGE_SIZE}`),
     placeholderData: (prev) => prev,
   })
 
-  const leads = data?.leads ?? []
-  const total = data?.total ?? 0
+  const leads      = data?.leads ?? []
+  const total      = data?.total ?? 0
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
 
   return (
-    <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="page-section">
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 }}>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Leads</h2>
-          {total > 0 && (
-            <p className="text-sm text-gray-500 mt-1">
-              {total} lead{total !== 1 ? 's' : ''} total
-            </p>
-          )}
+          <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: -0.5, color: 'var(--text-1)' }}>Leads</h1>
+          <p style={{ fontSize: 13, color: 'var(--text-2)', marginTop: 2 }}>
+            {total > 0 ? `${total.toLocaleString()} total` : 'No leads yet'}
+          </p>
         </div>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            placeholder="Search leads..."
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500"
-          />
-          <button className="px-4 py-2 bg-brand-600 text-white rounded-lg text-sm hover:bg-brand-700">
-            Export
-          </button>
+        <button className="btn-glass" style={{ fontSize: 12, padding: '7px 14px' }}>⬇ Export CSV</button>
+      </div>
+
+      {/* Toolbar */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
+        <div style={{ position: 'relative', flex: 1, maxWidth: 320 }}>
+          <span style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: 'var(--text-3)', fontSize: 14, pointerEvents: 'none' }}>⌕</span>
+          <input className="glass-input" style={{ paddingLeft: 34 }} placeholder="Search leads…" />
         </div>
+        <button className="btn-ghost">Status ▾</button>
+        <button className="btn-ghost">Country ▾</button>
+        <button className="btn-ghost">Date ▾</button>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg text-sm mb-4">
+        <div style={{ background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 12, padding: '10px 16px', fontSize: 13, color: '#f87171', marginBottom: 14 }}>
           {error instanceof Error ? error.message : 'Failed to load leads'}
         </div>
       )}
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      {/* Table */}
+      <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
         {/* Loading bar */}
         {isFetching && (
-          <div className="h-0.5 bg-brand-100">
-            <div className="h-full bg-brand-500 animate-pulse w-full" />
+          <div style={{ height: 2, background: 'var(--glass-bright)', overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: '100%', background: 'linear-gradient(90deg, #4facfe, #00f2fe)', animation: 'pulse 1.5s infinite' }} />
           </div>
         )}
 
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+        <table className="glass-table">
+          <thead>
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                ID
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Name
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Email
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Country
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Status
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Score
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Created
-              </th>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Country</th>
+              <th>Status</th>
+              <th>Fraud Score</th>
+              <th>Created</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
-            {isLoading &&
-              Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i}>
-                  {Array.from({ length: 7 }).map((_, j) => (
-                    <td key={j} className="px-4 py-3">
-                      <div className="h-4 bg-gray-200 animate-pulse rounded w-20" />
-                    </td>
-                  ))}
-                </tr>
-              ))}
+          <tbody>
+            {isLoading && Array.from({ length: 6 }).map((_, i) => (
+              <tr key={i}>
+                {Array.from({ length: 7 }).map((_, j) => (
+                  <td key={j}><div style={{ height: 14, borderRadius: 7, background: 'var(--glass-bright)', width: j === 0 ? 80 : j === 1 ? 120 : 100 }} /></td>
+                ))}
+              </tr>
+            ))}
 
             {!isLoading && leads.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-gray-500">
+                <td colSpan={7} style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-3)', fontSize: 14 }}>
                   No leads yet. Send your first lead via the API.
                 </td>
               </tr>
             )}
 
             {leads.map((lead) => (
-              <tr
-                key={lead.id}
-                onClick={() => setSelectedLeadId(lead.id)}
-                className="hover:bg-gray-50 cursor-pointer transition-colors"
-              >
-                <td className="px-4 py-3 text-sm text-gray-500 font-mono">
-                  {lead.id.slice(0, 8)}...
-                </td>
-                <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                  {lead.first_name} {lead.last_name}
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-600">{lead.email}</td>
-                <td className="px-4 py-3 text-sm text-gray-600">{lead.country}</td>
-                <td className="px-4 py-3">
-                  <StatusBadge status={lead.status} />
-                </td>
-                <td className="px-4 py-3 text-sm">
-                  {lead.fraud_score !== undefined && lead.fraud_score !== null ? (
-                    <span
-                      className={clsx(
-                        'font-medium',
-                        lead.fraud_score >= 80
-                          ? 'text-green-600'
-                          : lead.fraud_score >= 50
-                            ? 'text-yellow-600'
-                            : 'text-red-600'
-                      )}
-                    >
+              <tr key={lead.id} onClick={() => setSelectedLeadId(lead.id)}>
+                <td className="td-mono" style={{ color: 'var(--text-3)' }}>{lead.id.slice(0, 8)}…</td>
+                <td className="td-primary">{lead.first_name} {lead.last_name}</td>
+                <td>{lead.email}</td>
+                <td>{lead.country}</td>
+                <td><StatusBadge status={lead.status} /></td>
+                <td>
+                  {lead.fraud_score != null ? (
+                    <span style={{ fontWeight: 600, color: fraudColor(lead.fraud_score) }}>
                       {lead.fraud_score}
                     </span>
                   ) : (
-                    <span className="text-gray-400">--</span>
+                    <span style={{ color: 'var(--text-3)' }}>—</span>
                   )}
                 </td>
-                <td className="px-4 py-3 text-sm text-gray-500">
-                  {format(new Date(lead.created_at), 'MMM d, yyyy HH:mm')}
-                </td>
+                <td>{format(new Date(lead.created_at), 'MMM d, HH:mm')}</td>
               </tr>
             ))}
           </tbody>
@@ -171,50 +137,36 @@ export default function LeadsPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-gray-50">
-            <div className="text-sm text-gray-500">
-              Showing {page * PAGE_SIZE + 1}--
-              {Math.min((page + 1) * PAGE_SIZE, total)} of {total}
-            </div>
-            <div className="flex items-center gap-2">
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+            padding: '12px 16px', borderTop: '1px solid var(--glass-border)',
+          }}>
+            <span style={{ fontSize: 12, color: 'var(--text-3)' }}>
+              Showing {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} of {total.toLocaleString()}
+            </span>
+            <div style={{ display: 'flex', gap: 8 }}>
               <button
+                className="btn-ghost"
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0}
-                className={clsx(
-                  'px-3 py-1.5 text-sm rounded-lg border transition-colors',
-                  page === 0
-                    ? 'text-gray-300 border-gray-200 cursor-not-allowed'
-                    : 'text-gray-600 border-gray-300 hover:bg-gray-100'
-                )}
-              >
-                Previous
-              </button>
-              <span className="text-sm text-gray-600">
-                Page {page + 1} of {totalPages}
+                style={{ opacity: page === 0 ? 0.4 : 1 }}
+              >← Prev</button>
+              <span style={{ fontSize: 12, color: 'var(--text-2)', padding: '7px 0' }}>
+                {page + 1} / {totalPages}
               </span>
               <button
+                className="btn-ghost"
                 onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={page >= totalPages - 1}
-                className={clsx(
-                  'px-3 py-1.5 text-sm rounded-lg border transition-colors',
-                  page >= totalPages - 1
-                    ? 'text-gray-300 border-gray-200 cursor-not-allowed'
-                    : 'text-gray-600 border-gray-300 hover:bg-gray-100'
-                )}
-              >
-                Next
-              </button>
+                style={{ opacity: page >= totalPages - 1 ? 0.4 : 1 }}
+              >Next →</button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Lead Detail Modal */}
       {selectedLeadId && (
-        <LeadDetail
-          leadId={selectedLeadId}
-          onClose={() => setSelectedLeadId(null)}
-        />
+        <LeadDetail leadId={selectedLeadId} onClose={() => setSelectedLeadId(null)} />
       )}
     </div>
   )

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../stores/auth'
 import { api } from '../lib/api'
-import clsx from 'clsx'
 
 type Mode = 'login' | 'register'
 
@@ -20,6 +19,25 @@ interface RegisterResponse {
   tenant: { id: string; name: string }
 }
 
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(255,255,255,0.10)',
+  borderRadius: 12,
+  padding: '11px 14px',
+  fontSize: 14,
+  color: 'rgba(255,255,255,0.95)',
+  outline: 'none',
+  fontFamily: 'inherit',
+  transition: 'border-color 0.2s, box-shadow 0.2s',
+}
+
+const labelStyle: React.CSSProperties = {
+  display: 'block', fontSize: 12, fontWeight: 600,
+  color: 'rgba(255,255,255,0.50)', marginBottom: 7,
+  textTransform: 'uppercase', letterSpacing: '0.07em',
+}
+
 export default function LoginPage() {
   const [mode, setMode] = useState<Mode>('login')
   const [email, setEmail] = useState('')
@@ -32,189 +50,155 @@ export default function LoginPage() {
   const { login, register } = useAuthStore()
   const navigate = useNavigate()
 
-  function switchMode(newMode: Mode) {
-    setMode(newMode)
-    setError('')
-  }
+  function switchMode(m: Mode) { setMode(m); setError('') }
 
   async function handleLogin(e: React.FormEvent) {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+    e.preventDefault(); setError(''); setLoading(true)
     try {
       const res = await api.post<LoginResponse>('/auth/login', { email, password })
       login(res.token, res.refresh_token, res.user)
       navigate('/dashboard')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed')
-    } finally {
-      setLoading(false)
-    }
+    } finally { setLoading(false) }
   }
 
   async function handleRegister(e: React.FormEvent) {
-    e.preventDefault()
-    setError('')
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match')
-      return
-    }
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters')
-      return
-    }
-
+    e.preventDefault(); setError('')
+    if (password !== confirmPassword) { setError('Passwords do not match'); return }
+    if (password.length < 8) { setError('Password must be at least 8 characters'); return }
     setLoading(true)
     try {
       const res = await api.post<RegisterResponse>('/auth/register', {
-        email,
-        password,
-        name,
-        company_name: companyName,
+        email, password, name, company_name: companyName,
       })
       register(res.token, res.refresh_token, res.user, res.tenant)
       navigate('/dashboard')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed')
-    } finally {
-      setLoading(false)
-    }
+    } finally { setLoading(false) }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-900">
-      <div className="bg-white rounded-xl shadow-xl p-8 w-full max-w-md">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">GambChamp CRM</h1>
-        <p className="text-gray-500 mb-6">
-          {mode === 'login' ? 'Sign in to your account' : 'Create a new account'}
-        </p>
+    <div style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: 'var(--bg-deep)', position: 'relative', overflow: 'hidden',
+    }}>
+      {/* Aurora */}
+      <div className="aurora">
+        <div className="aurora-orb aurora-orb-1" />
+        <div className="aurora-orb aurora-orb-2" />
+        <div className="aurora-orb aurora-orb-3" />
+      </div>
 
-        {/* Mode toggle */}
-        <div className="flex rounded-lg bg-gray-100 p-1 mb-6">
-          <button
-            type="button"
-            onClick={() => switchMode('login')}
-            className={clsx(
-              'flex-1 py-2 text-sm font-medium rounded-md transition-colors',
-              mode === 'login'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-            )}
-          >
-            Sign In
-          </button>
-          <button
-            type="button"
-            onClick={() => switchMode('register')}
-            className={clsx(
-              'flex-1 py-2 text-sm font-medium rounded-md transition-colors',
-              mode === 'register'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-            )}
-          >
-            Register
-          </button>
+      {/* Card */}
+      <div style={{
+        position: 'relative', zIndex: 1,
+        background: 'rgba(13,21,38,0.85)',
+        backdropFilter: 'blur(32px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(32px) saturate(180%)',
+        border: '1px solid rgba(255,255,255,0.12)',
+        borderRadius: 28,
+        padding: 40, width: '100%', maxWidth: 420,
+        boxShadow: '0 40px 100px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08)',
+        animation: 'slide-up 0.4s cubic-bezier(.4,0,.2,1)',
+      }}>
+        {/* Logo */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: 14,
+            background: 'linear-gradient(135deg, #4facfe, #00f2fe)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 20, fontWeight: 800, color: '#fff',
+            boxShadow: '0 0 24px rgba(79,172,254,0.45)',
+          }}>G</div>
+          <div>
+            <div style={{
+              fontSize: 18, fontWeight: 700,
+              background: 'linear-gradient(135deg, #4facfe, #00f2fe)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            }}>GambChamp CRM</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>
+              {mode === 'login' ? 'Sign in to your workspace' : 'Create a new workspace'}
+            </div>
+          </div>
         </div>
 
+        {/* Toggle */}
+        <div style={{
+          display: 'flex', gap: 4, padding: 4,
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: 12, marginBottom: 28,
+        }}>
+          {(['login','register'] as Mode[]).map(m => (
+            <button key={m} type="button" onClick={() => switchMode(m)} style={{
+              flex: 1, padding: '9px 0',
+              borderRadius: 9, border: 'none', cursor: 'pointer',
+              fontSize: 13, fontWeight: 600,
+              background: mode === m ? 'rgba(255,255,255,0.10)' : 'transparent',
+              color: mode === m ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.40)',
+              boxShadow: mode === m ? '0 2px 8px rgba(0,0,0,0.25)' : 'none',
+              transition: 'all 0.2s',
+            }}>
+              {m === 'login' ? 'Sign In' : 'Register'}
+            </button>
+          ))}
+        </div>
+
+        {/* Error */}
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-lg mb-4 text-sm">{error}</div>
+          <div style={{
+            background: 'rgba(248,113,113,0.10)',
+            border: '1px solid rgba(248,113,113,0.22)',
+            borderRadius: 10, padding: '10px 14px',
+            fontSize: 13, color: '#f87171', marginBottom: 18,
+          }}>{error}</div>
         )}
 
+        {/* Form */}
         {mode === 'login' ? (
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                required
+              <label style={labelStyle}>Email</label>
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                style={inputStyle} required
+                onFocus={e => { e.currentTarget.style.borderColor = 'rgba(79,172,254,0.45)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(79,172,254,0.12)' }}
+                onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)'; e.currentTarget.style.boxShadow = 'none' }}
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                required
+              <label style={labelStyle}>Password</label>
+              <input type="password" value={password} onChange={e => setPassword(e.target.value)}
+                style={inputStyle} required
+                onFocus={e => { e.currentTarget.style.borderColor = 'rgba(79,172,254,0.45)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(79,172,254,0.12)' }}
+                onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)'; e.currentTarget.style.boxShadow = 'none' }}
               />
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2 px-4 bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-50 transition-colors"
-            >
-              {loading ? 'Signing in...' : 'Sign In'}
+            <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: 4, opacity: loading ? 0.6 : 1 }}>
+              {loading ? 'Signing in…' : 'Sign In →'}
             </button>
           </form>
         ) : (
-          <form onSubmit={handleRegister} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="John Smith"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
-              <input
-                type="text"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                placeholder="Acme Corp"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Min. 8 characters"
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                required
-                minLength={8}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-brand-500"
-                required
-                minLength={8}
-              />
-            </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2 px-4 bg-brand-600 text-white rounded-lg hover:bg-brand-700 disabled:opacity-50 transition-colors"
-            >
-              {loading ? 'Creating account...' : 'Create Account'}
+          <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {[
+              { label: 'Full Name',    val: name,            set: setName,            type: 'text',     ph: 'Alex Petrov' },
+              { label: 'Company Name', val: companyName,     set: setCompanyName,     type: 'text',     ph: 'Acme Corp' },
+              { label: 'Email',        val: email,           set: setEmail,           type: 'email',    ph: '' },
+              { label: 'Password',     val: password,        set: setPassword,        type: 'password', ph: 'Min 8 chars' },
+              { label: 'Confirm',      val: confirmPassword, set: setConfirmPassword, type: 'password', ph: '' },
+            ].map(f => (
+              <div key={f.label}>
+                <label style={labelStyle}>{f.label}</label>
+                <input type={f.type} value={f.val} onChange={e => f.set(e.target.value)}
+                  placeholder={f.ph} style={inputStyle} required minLength={f.type === 'password' ? 8 : undefined}
+                  onFocus={e => { e.currentTarget.style.borderColor = 'rgba(79,172,254,0.45)'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(79,172,254,0.12)' }}
+                  onBlur={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.10)'; e.currentTarget.style.boxShadow = 'none' }}
+                />
+              </div>
+            ))}
+            <button type="submit" disabled={loading} className="btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: 4, opacity: loading ? 0.6 : 1 }}>
+              {loading ? 'Creating…' : 'Create Account →'}
             </button>
           </form>
         )}

@@ -17,35 +17,40 @@ export default function AssistantMessage({ message, isStreaming }: Props) {
   const toolCalls = streaming ? message.toolCalls : []
 
   return (
-    <div className={clsx('flex gap-3 py-3', isUser ? 'flex-row-reverse' : '')}>
-      <div
-        className={clsx(
-          'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0',
-          isUser ? 'bg-brand-600 text-white' : 'bg-gray-200 text-gray-700'
-        )}
-      >
+    <div style={{ display: 'flex', gap: 10, padding: '8px 0', flexDirection: isUser ? 'row-reverse' : 'row' }}>
+      <div style={{
+        width: 28, height: 28, borderRadius: '50%', flexShrink: 0,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: 11, fontWeight: 700,
+        background: isUser ? 'linear-gradient(135deg,#4facfe,#00f2fe)' : 'rgba(167,139,250,0.2)',
+        color: isUser ? '#fff' : '#a78bfa',
+        border: isUser ? 'none' : '1px solid rgba(167,139,250,0.3)',
+      }}>
         {isUser ? 'U' : 'AI'}
       </div>
 
-      <div className={clsx('max-w-[85%] space-y-2', isUser ? 'text-right' : '')}>
-        <div
-          className={clsx(
-            'inline-block px-3 py-2 rounded-lg text-sm leading-relaxed',
-            isUser
-              ? 'bg-brand-600 text-white rounded-br-none'
-              : 'bg-gray-100 text-gray-900 rounded-bl-none'
-          )}
-        >
-          <div className="whitespace-pre-wrap break-words">
+      <div style={{ maxWidth: '85%', display: 'flex', flexDirection: 'column', gap: 6, alignItems: isUser ? 'flex-end' : 'flex-start' }}>
+        <div style={{
+          display: 'inline-block', padding: '9px 13px', borderRadius: 14,
+          fontSize: 13, lineHeight: 1.55,
+          background: isUser
+            ? 'linear-gradient(135deg,rgba(79,172,254,0.22),rgba(0,242,254,0.14))'
+            : 'rgba(255,255,255,0.06)',
+          border: isUser ? '1px solid rgba(79,172,254,0.3)' : '1px solid rgba(255,255,255,0.08)',
+          color: 'rgba(255,255,255,0.88)',
+          borderBottomRightRadius: isUser ? 4 : 14,
+          borderBottomLeftRadius: isUser ? 14 : 4,
+        }}>
+          <div style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
             {message.content}
             {isStreaming && (
-              <span className="inline-block w-1.5 h-4 bg-brand-500 ml-0.5 animate-pulse" />
+              <span style={{ display: 'inline-block', width: 6, height: 14, background: '#4facfe', marginLeft: 2, borderRadius: 1, animation: 'pulse 1s infinite' }} />
             )}
           </div>
         </div>
 
         {toolCalls.length > 0 && (
-          <div className="space-y-1">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {toolCalls.map((tc: ToolCall) => (
               <ToolCallBadge key={tc.id} toolCall={tc} />
             ))}
@@ -58,12 +63,12 @@ export default function AssistantMessage({ message, isStreaming }: Props) {
 
 function ToolCallBadge({ toolCall }: { toolCall: ToolCall }) {
   return (
-    <div className="inline-flex items-center gap-1.5 px-2 py-1 bg-blue-50 border border-blue-200 rounded text-xs text-blue-700">
-      <span className="font-mono">{toolCall.name}</span>
+    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '3px 10px', borderRadius: 999, background: 'rgba(79,172,254,0.12)', border: '1px solid rgba(79,172,254,0.25)', fontSize: 11, color: '#4facfe' }}>
+      <span style={{ fontFamily: 'monospace' }}>{toolCall.name}</span>
       {toolCall.result ? (
-        <span className="text-green-600">done</span>
+        <span style={{ color: '#34d399' }}>✓</span>
       ) : (
-        <span className="animate-spin">...</span>
+        <span>…</span>
       )}
     </div>
   )
