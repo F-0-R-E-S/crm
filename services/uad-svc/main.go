@@ -2,12 +2,16 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/gambchamp/crm/pkg/cache"
+	"github.com/gambchamp/crm/pkg/database"
+	"github.com/gambchamp/crm/pkg/messaging"
 	"github.com/gambchamp/crm/pkg/telemetry"
 )
 
@@ -15,15 +19,71 @@ func main() {
 	logger := telemetry.NewLogger("uad-svc")
 	cfg := LoadConfig()
 
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	db, err := database.New(ctx, cfg.DBURL)
+	if err != nil {
+		logger.Error("failed to connect to database", "error", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+	logger.Info("connected to database")
+
+	rdb, err := cache.NewRedis(ctx, cfg.RedisURL)
+	if err != nil {
+		logger.Error("failed to connect to redis", "error", err)
+		os.Exit(1)
+	}
+	defer rdb.Close()
+	logger.Info("connected to redis")
+
+	nc, err := messaging.NewNATS(ctx, cfg.NATSURL, logger)
+	if err != nil {
+		logger.Error("failed to connect to nats", "error", err)
+		os.Exit(1)
+	}
+	defer nc.Close()
+	logger.Info("connected to nats")
+
+	store := NewStore(db)
+	engine := NewEngine(store, nc, rdb, logger)
+	h := NewHandler(logger, store)
+
+	// Subscribe to delivery failures for continuous mode auto-enqueue
+	err = nc.Subscribe(ctx, "leads", "uad-delivery-failed", func(subCtx context.Context, event messaging.CloudEvent) error {
+		if event.Type != "lead.delivery_failed" {
+			return nil
+		}
+		return engine.HandleDeliveryFailed(subCtx, event)
+	})
+	if err != nil {
+		logger.Warn("failed to subscribe to delivery failures", "error", err)
+	}
+
+	// Start background loops
+	go engine.RunSchedulerLoop(ctx)
+	go engine.RunProcessorLoop(ctx)
+	logger.Info("UAD engine started (scheduler + processor)")
+
 	mux := http.NewServeMux()
-	h := NewHandler(logger)
 	h.Register(mux)
 
-	mux.Handle("GET /health", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
+		checkCtx, checkCancel := context.WithTimeout(r.Context(), 2*time.Second)
+		defer checkCancel()
+
+		status := "ok"
+		httpCode := http.StatusOK
+		if err := db.Pool.Ping(checkCtx); err != nil {
+			status = "degraded"
+			httpCode = http.StatusServiceUnavailable
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"status":"ok"}`))
-	}))
+		w.WriteHeader(httpCode)
+		json.NewEncoder(w).Encode(map[string]string{"status": status, "service": "uad-svc"})
+	})
 	mux.Handle("GET /metrics", telemetry.MetricsHandler())
 
 	srv := &http.Server{
@@ -46,8 +106,11 @@ func main() {
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	srv.Shutdown(ctx)
+	logger.Info("shutting down")
+	cancel()
+
+	shutdownCtx, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer shutdownCancel()
+	srv.Shutdown(shutdownCtx)
 	logger.Info("server stopped")
 }
