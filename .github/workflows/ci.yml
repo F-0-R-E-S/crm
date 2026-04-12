@@ -120,6 +120,49 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+  e2e:
+    name: E2E Integration Tests
+    runs-on: ubuntu-latest
+    needs: [build]
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: gambchamp_e2e
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+      - name: Start NATS with JetStream
+        run: |
+          docker run -d --name nats -p 4222:4222 -p 8222:8222 nats:2.10-alpine -js
+          for i in $(seq 1 30); do wget -q -O /dev/null http://localhost:8222/healthz 2>/dev/null && break || sleep 1; done
+      - name: Run E2E tests
+        env:
+          E2E_PG_DSN: postgres://postgres:postgres@localhost:5432/gambchamp_e2e?sslmode=disable
+          E2E_REDIS_URL: redis://localhost:6379/15
+          E2E_NATS_URL: nats://localhost:4222
+        run: go test -v -timeout 180s -tags=e2e -count=1 ./tests/e2e/...
+
   docker:
     name: Docker Build
     runs-on: ubuntu-latest
