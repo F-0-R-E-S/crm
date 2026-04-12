@@ -35,7 +35,7 @@ jobs:
       - name: Build
         working-directory: web
         env:
-          VITE_API_URL: ${{ vars.API_URL || 'https://api.gambchamp.com' }}
+          VITE_API_URL: /api
         run: npm run build
 
       - name: Upload artifact
