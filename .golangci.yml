@@ -1,0 +1,47 @@
+run:
+  timeout: 5m
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - staticcheck
+    - gosec
+    - gofumpt
+    - exhaustive
+    - wrapcheck
+    - noctx
+    - sqlclosecheck
+    - bodyclose
+    - prealloc
+    - unconvert
+    - unparam
+    - misspell
+
+linters-settings:
+  exhaustive:
+    default-signifies-exhaustive: true
+  gosec:
+    excludes:
+      - G104
+  wrapcheck:
+    ignoreSigs:
+      - ".Errorf("
+      - "errors.New("
+      - "errors.Unwrap("
+      - ".Wrap("
+      - ".Wrapf("
+      - ".WithMessage("
+      - ".WithMessagef("
+      - ".WithStack("
+      - "fiber.NewError("
+
+issues:
+  exclude-dirs:
+    - internal/db/sqlc
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - wrapcheck
+        - gosec
+        - errcheck
