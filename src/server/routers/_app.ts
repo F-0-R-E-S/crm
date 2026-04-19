@@ -1,5 +1,6 @@
 import { router } from "../trpc";
 import { affiliateRouter } from "./affiliate";
+import { auditRouter } from "./audit";
 import { blacklistRouter } from "./blacklist";
 import { brokerRouter } from "./broker";
 import { leadRouter } from "./lead";
@@ -13,5 +14,6 @@ export const appRouter = router({
   rotation: rotationRouter,
   blacklist: blacklistRouter,
   user: userRouter,
+  audit: auditRouter,
 });
 export type AppRouter = typeof appRouter;
