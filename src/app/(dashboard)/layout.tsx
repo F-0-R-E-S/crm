@@ -1,8 +1,18 @@
+import { auth, signOut } from "@/auth";
+import { AppProviders } from "@/components/app-providers";
 import Link from "next/link";
-import { signOut } from "@/auth";
-import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
-const nav: Array<{ href: string; label: string }> = [];
+const NAV = [
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/dashboard/leads", label: "Leads" },
+  { href: "/dashboard/affiliates", label: "Affiliates" },
+  { href: "/dashboard/brokers", label: "Brokers" },
+  { href: "/dashboard/routing", label: "Routing" },
+  { href: "/dashboard/settings/blacklist", label: "Blacklist" },
+  { href: "/dashboard/settings/users", label: "Users" },
+  { href: "/dashboard/settings/audit", label: "Audit" },
+] as const;
 
 export default async function DashboardLayout({
   children,
@@ -10,37 +20,38 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
-
+  if (!session?.user) redirect("/login");
   return (
-    <div className="flex min-h-screen">
-      <aside className="w-56 border-r border-slate-200 bg-white p-4">
-        <div className="mb-6 text-lg font-semibold">CRM</div>
-        <nav className="flex flex-col gap-1">
-          {nav.map((n) => (
+    <AppProviders>
+      <div className="flex min-h-screen">
+        <aside className="w-56 border-r p-4 space-y-1">
+          <div className="font-semibold mb-4">GambChamp CRM</div>
+          {NAV.map((n) => (
             <Link
               key={n.href}
               href={n.href as never}
-              className="rounded-md px-3 py-2 text-sm hover:bg-slate-100"
+              className="block px-2 py-1 rounded hover:bg-gray-100"
             >
               {n.label}
             </Link>
           ))}
-        </nav>
-        <div className="mt-8 border-t pt-4 text-xs text-slate-500">
-          <div className="mb-2">{session?.user?.email}</div>
           <form
             action={async () => {
               "use server";
               await signOut({ redirectTo: "/login" });
             }}
+            className="mt-6"
           >
-            <button type="submit" className="text-slate-700 hover:underline">
+            <button type="submit" className="text-sm text-gray-600 hover:underline">
               Sign out
             </button>
           </form>
-        </div>
-      </aside>
-      <main className="flex-1 p-6">{children}</main>
-    </div>
+          <div className="mt-4 text-xs text-gray-500">
+            {session.user.email} ({session.user.role})
+          </div>
+        </aside>
+        <main className="flex-1 p-6">{children}</main>
+      </div>
+    </AppProviders>
   );
 }
