@@ -8,11 +8,123 @@ type Tab = "overview" | "keys" | "postback" | "history";
 
 const EVENT_KINDS = ["lead_pushed", "accepted", "declined", "ftd", "failed"] as const;
 
+type SeriesPoint = { ts: string; leads: number; ftds: number; rejects: number };
+
+function Sparkline({ series }: { series: SeriesPoint[] }) {
+  const W = 800;
+  const H = 140;
+  const PAD = { t: 8, r: 8, b: 18, l: 28 };
+  const n = series.length || 24;
+  const bw = (W - PAD.l - PAD.r) / n;
+  const max = Math.max(1, ...series.map((p) => p.leads));
+  const gridLines = 4;
+
+  return (
+    <div style={{ width: "100%", overflow: "hidden" }}>
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        preserveAspectRatio="none"
+        style={{ width: "100%", height: H, display: "block" }}
+        role="img"
+        aria-label="leads by hour"
+      >
+        {/* grid */}
+        {Array.from({ length: gridLines + 1 }, (_, i) => {
+          const y = PAD.t + ((H - PAD.t - PAD.b) * i) / gridLines;
+          const v = Math.round(max - (max * i) / gridLines);
+          return (
+            <g key={i}>
+              <line
+                x1={PAD.l}
+                x2={W - PAD.r}
+                y1={y}
+                y2={y}
+                stroke="var(--bd-1)"
+                strokeDasharray={i === gridLines ? "0" : "2 3"}
+                strokeWidth={0.8}
+              />
+              <text
+                x={PAD.l - 6}
+                y={y + 3}
+                fontSize={9}
+                fontFamily="var(--mono)"
+                fill="var(--fg-2)"
+                textAnchor="end"
+              >
+                {v}
+              </text>
+            </g>
+          );
+        })}
+        {/* bars */}
+        {series.map((p, i) => {
+          const x = PAD.l + i * bw;
+          const hLead = ((H - PAD.t - PAD.b) * p.leads) / max;
+          const hRej = ((H - PAD.t - PAD.b) * p.rejects) / max;
+          const barW = Math.max(1, bw - 2);
+          return (
+            <g key={p.ts}>
+              <rect
+                x={x + 1}
+                y={H - PAD.b - hLead}
+                width={barW}
+                height={Math.max(0, hLead)}
+                fill="var(--accent)"
+                opacity={0.85}
+              >
+                <title>
+                  {new Date(p.ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  {" · "}
+                  {p.leads} leads · {p.rejects} rejects · {p.ftds} ftds
+                </title>
+              </rect>
+              {p.rejects > 0 && (
+                <rect
+                  x={x + 1}
+                  y={H - PAD.b - hRej}
+                  width={barW}
+                  height={Math.max(0, hRej)}
+                  fill="oklch(72% 0.15 25)"
+                  opacity={0.9}
+                />
+              )}
+            </g>
+          );
+        })}
+        {/* x-axis tick labels every 6h */}
+        {series.map((p, i) => {
+          if (i % 6 !== 0 && i !== series.length - 1) return null;
+          const x = PAD.l + i * bw + bw / 2;
+          const d = new Date(p.ts);
+          const h = String(d.getUTCHours()).padStart(2, "0");
+          return (
+            <text
+              key={`x-${p.ts}`}
+              x={x}
+              y={H - 4}
+              fontSize={9}
+              fontFamily="var(--mono)"
+              fill="var(--fg-2)"
+              textAnchor="middle"
+            >
+              {h}:00
+            </text>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
 export default function AffiliateDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { theme } = useThemeCtx();
   const utils = trpc.useUtils();
   const { data } = trpc.affiliate.byId.useQuery({ id });
+  const { data: stats } = trpc.affiliate.stats.useQuery(
+    { id },
+    { refetchInterval: 15_000 },
+  );
   const update = trpc.affiliate.update.useMutation({
     onSuccess: () => utils.affiliate.byId.invalidate({ id }),
   });
@@ -45,16 +157,60 @@ export default function AffiliateDetail({ params }: { params: Promise<{ id: stri
       />
 
       {tab === "overview" && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
-          {[
-            { label: "leads / 24h", value: 0 },
-            { label: "ftds / 24h", value: 0 },
-            { label: "rejects / 24h", value: 0 },
-            { label: "cap usage", value: `0 / ${data.totalDailyCap ?? "∞"}` },
-          ].map((t) => (
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
+            {[
+              { label: "leads / 24h", value: stats?.kpi.leads24h ?? "—" },
+              { label: "ftds / 24h", value: stats?.kpi.ftds24h ?? "—" },
+              { label: "rejects / 24h", value: stats?.kpi.rejects24h ?? "—" },
+              {
+                label: "cap usage (today)",
+                value: `${stats?.kpi.capUsed ?? 0} / ${data.totalDailyCap ?? "∞"}`,
+              },
+            ].map((t) => (
+              <div
+                key={t.label}
+                style={{ padding: "14px 16px", border: "1px solid var(--bd-1)", borderRadius: 6 }}
+              >
+                <div
+                  style={{
+                    fontSize: 11,
+                    fontFamily: "var(--mono)",
+                    color: "var(--fg-2)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  {t.label}
+                </div>
+                <div
+                  style={{
+                    fontSize: 28,
+                    fontWeight: 500,
+                    marginTop: 6,
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {t.value}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div
+            style={{
+              border: "1px solid var(--bd-1)",
+              borderRadius: 6,
+              padding: "14px 16px",
+            }}
+          >
             <div
-              key={t.label}
-              style={{ padding: "14px 16px", border: "1px solid var(--bd-1)", borderRadius: 6 }}
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "baseline",
+                marginBottom: 10,
+              }}
             >
               <div
                 style={{
@@ -65,20 +221,47 @@ export default function AffiliateDetail({ params }: { params: Promise<{ id: stri
                   letterSpacing: "0.06em",
                 }}
               >
-                {t.label}
+                leads · last 24h (hourly)
               </div>
               <div
                 style={{
-                  fontSize: 28,
-                  fontWeight: 500,
-                  marginTop: 6,
-                  fontVariantNumeric: "tabular-nums",
+                  fontSize: 10,
+                  fontFamily: "var(--mono)",
+                  color: "var(--fg-2)",
+                  display: "flex",
+                  gap: 14,
                 }}
               >
-                {t.value}
+                <span>
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: 8,
+                      height: 8,
+                      background: "var(--accent)",
+                      marginRight: 5,
+                      verticalAlign: "middle",
+                    }}
+                  />
+                  leads
+                </span>
+                <span>
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: 8,
+                      height: 8,
+                      background: "oklch(72% 0.15 25)",
+                      marginRight: 5,
+                      verticalAlign: "middle",
+                    }}
+                  />
+                  rejects
+                </span>
               </div>
             </div>
-          ))}
+            <Sparkline series={stats?.series ?? []} />
+          </div>
         </div>
       )}
 

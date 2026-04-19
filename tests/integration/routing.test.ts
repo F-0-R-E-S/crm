@@ -59,13 +59,21 @@ describe("handlePushLead", () => {
   });
 
   it(
-    "FAILS when broker returns 500 after 3 retries",
+    "FAILS with pool_exhausted when the only broker returns 500 repeatedly",
     async () => {
       mb.respondWith(500, { error: "boom" });
       await handlePushLead({ leadId, traceId: "rt-t-1" });
       const lead = await prisma.lead.findUnique({ where: { id: leadId } });
       expect(lead?.state).toBe("FAILED");
-      expect(lead?.rejectReason).toBe("broker_push_failed");
+      // Pool iteration tried every broker and they all push-failed.
+      expect(lead?.rejectReason).toBe("pool_exhausted");
+      const events = await prisma.leadEvent.findMany({
+        where: { leadId },
+        orderBy: { createdAt: "asc" },
+      });
+      const kinds = events.map((e) => e.kind);
+      expect(kinds).toContain("BROKER_PUSH_FAIL");
+      expect(kinds).toContain("NO_BROKER_AVAILABLE");
     },
     { timeout: 20_000 },
   );

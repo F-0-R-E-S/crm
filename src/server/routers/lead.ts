@@ -6,7 +6,7 @@ import { z } from "zod";
 
 const ListInput = z.object({
   page: z.number().int().min(1).default(1),
-  pageSize: z.number().int().min(1).max(100).default(50),
+  pageSize: z.number().int().min(1).max(500).default(50),
   state: z.string().optional(),
   geo: z.string().length(2).optional(),
   affiliateId: z.string().optional(),

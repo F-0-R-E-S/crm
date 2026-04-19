@@ -9,6 +9,7 @@ export default auth((req) => {
     pathname.startsWith("/login") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/v1/health") ||
+    pathname.startsWith("/api/v1/leads") ||
     pathname.startsWith("/api/v1/postbacks/");
   if (!isLoggedIn && !isPublic) {
     const loginUrl = new URL("/login", req.nextUrl.origin);
