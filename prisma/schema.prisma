@@ -6,3 +6,48 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(OPERATOR)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  auditLogs    AuditLog[]
+}
+
+enum UserRole {
+  ADMIN
+  OPERATOR
+}
+
+model Affiliate {
+  id                String             @id @default(cuid())
+  name              String
+  contactEmail      String?
+  isActive          Boolean            @default(true)
+  totalDailyCap     Int?
+  postbackUrl       String?
+  postbackSecret    String?
+  postbackEvents    String[]           @default([])
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  apiKeys           ApiKey[]
+  leads             Lead[]
+  outboundPostbacks OutboundPostback[]
+  @@index([isActive])
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  affiliateId String
+  keyHash     String    @unique
+  keyPrefix   String
+  label       String
+  lastUsedAt  DateTime?
+  isRevoked   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  affiliate   Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  @@index([affiliateId, isRevoked])
+}
