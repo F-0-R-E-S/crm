@@ -4,6 +4,7 @@ import { isDuplicate } from "@/server/antifraud/dedup";
 import { normalizePhone } from "@/server/antifraud/phone";
 import { verifyApiKey } from "@/server/auth-api-key";
 import { prisma } from "@/server/db";
+import { JOB_NAMES, startBossOnce } from "@/server/jobs/queue";
 import { logger, runWithTrace } from "@/server/observability";
 import { checkRateLimit } from "@/server/ratelimit";
 import { incrementCap, todayUtc } from "@/server/routing/caps";
@@ -154,7 +155,13 @@ export async function POST(req: Request) {
       "lead received",
     );
 
-    // TODO Task 22: enqueue push-lead job if state === NEW
+    if (lead.state === "NEW") {
+      const boss = await startBossOnce();
+      await boss.send(JOB_NAMES.pushLead, { leadId: lead.id, traceId: trace_id });
+      if (process.env.ANTIFRAUD_VOIP_CHECK_ENABLED === "true" && phoneE164) {
+        await boss.send(JOB_NAMES.voipCheck, { leadId: lead.id });
+      }
+    }
 
     return NextResponse.json(body, { status });
   });
