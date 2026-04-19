@@ -1,79 +1,83 @@
-# CRM Boilerplate
+# GambChamp CRM — MVP v0.1
 
-Agent-friendly CRM skeleton: Next.js 15 (App Router) + tRPC v11 + Prisma + PostgreSQL + NextAuth v5 + Tailwind + Biome + Vitest.
+Lead distribution platform. Takes leads from affiliates, routes to brokers by GEO/priority/cap, tracks their lifecycle via inbound postbacks, notifies affiliate trackers via outbound postbacks.
 
-## Quickstart
+See design spec: `../docs/superpowers/specs/2026-04-19-gambchamp-mvp-v0.1-design.md`.
+Implementation plan: `../docs/superpowers/plans/2026-04-19-gambchamp-mvp-v0.1-plan.md`.
+
+## Local dev
 
 ```bash
-# 1. Install deps (corepack will install pnpm 9 on first run)
 corepack enable
 pnpm install
-
-# 2. Env
 cp .env.example .env
-# generate AUTH_SECRET
 node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
-# paste into .env as AUTH_SECRET
+# paste into AUTH_SECRET
 
-# 3. Database
-pnpm db:up          # docker compose up postgres
-pnpm db:push        # create schema
-pnpm db:seed        # admin@example.com / password123
+pnpm db:up            # Postgres + Redis via docker-compose
+pnpm db:migrate       # apply Prisma migrations
+pnpm db:seed          # admin@gambchamp.local / changeme + test affiliate/broker/rotation
 
-# 4. Dev server
-pnpm dev
-# open http://localhost:3000
+# Terminal 1:
+pnpm dev              # Next.js on :3000
+
+# Terminal 2:
+pnpm worker           # pg-boss consumer (push-lead, notify-affiliate, voip-check)
 ```
 
-## Stack rationale (agent-friendly)
+## Public API (v1)
 
-- **TypeScript everywhere** — one language, one mental model
-- **tRPC** — end-to-end types without a codegen step; agent sees client/server contract as a single object
-- **Prisma** — schema is the source of truth for DB + TS types
-- **Biome** — single binary for lint + format, fast feedback loop
-- **NextAuth v5** — credentials provider wired to Prisma `User.passwordHash`
+| Method | Path | Auth | Purpose |
+|---|---|---|---|
+| POST | `/api/v1/leads` | `Authorization: Bearer <api_key>` | Submit a lead |
+| POST | `/api/v1/postbacks/{brokerId}` | `X-Signature: <hmac_sha256>` | Broker pushes status update |
+| GET | `/api/v1/health` | none | Liveness probe |
 
-## Layout
+### Intake payload
 
+```json
+{
+  "external_lead_id": "aff-12345",
+  "first_name": "Ivan",
+  "last_name": "Petrenko",
+  "email": "ivan@example.com",
+  "phone": "+380671234567",
+  "geo": "UA",
+  "ip": "1.2.3.4",
+  "landing_url": "https://landing.example.com",
+  "sub_id": "click-abc",
+  "utm": { "source": "fb", "medium": "cpc" },
+  "event_ts": "2026-04-19T12:00:00Z"
+}
 ```
-src/
-├── app/                       # Next.js routes
-│   ├── (auth)/login/          # credentials login
-│   ├── (dashboard)/           # authenticated pages
-│   └── api/{trpc,auth}/       # API handlers
-├── server/
-│   ├── db.ts                  # singleton PrismaClient
-│   ├── trpc.ts                # context + protectedProcedure
-│   └── routers/               # contact, deal, activity
-├── components/ui/             # minimal button/input/table/card
-├── lib/                       # trpc client, utils
-├── styles/globals.css
-├── auth.ts                    # NextAuth config
-└── middleware.ts              # route protection
+
+At least one of `email`/`phone` required. Accepts `X-Idempotency-Key` header for safe retries (24h TTL).
+
+### Intake response
+
+```json
+{
+  "lead_id": "cuid…",
+  "status": "received" | "rejected",
+  "reject_reason": null | "ip_blocked" | "duplicate" | ...,
+  "trace_id": "nanoid",
+  "received_at": "2026-04-19T12:00:00.123Z"
+}
 ```
 
-## Scripts
+## Domain glossary
 
-| Command | What it does |
-| --- | --- |
-| `pnpm dev` | Next dev server (Turbo) |
-| `pnpm build` / `pnpm start` | Production build + run |
-| `pnpm typecheck` | `tsc --noEmit` |
-| `pnpm lint` / `pnpm format` | Biome |
-| `pnpm test` | Vitest |
-| `pnpm db:up` / `pnpm db:down` | Postgres via docker compose |
-| `pnpm db:push` | Sync Prisma schema to DB (no migrations) |
-| `pnpm db:migrate` | Create + apply a migration |
-| `pnpm db:seed` | Seed admin user + demo data |
-| `pnpm db:studio` | Prisma Studio |
-| `pnpm db:reset` | Drop DB + re-seed |
+- **Affiliate** — lead source. Has API keys and subscribes to outbound postback events.
+- **Broker** — lead destination. Configured with a generic HTTP template (endpoint, field mapping, auth).
+- **Rotation rule** — `(GEO, broker, priority, active)`. Brokers form a priority-ordered **pool** per GEO. No primary/fallback — the worker polls sequentially until one accepts capacity.
+- **Daily cap** — atomic counter per `(scope, scopeId, day)`. Applied to affiliates (intake-time) and brokers (routing-time).
+- **Outbound postback** — HTTP GET to the affiliate's tracker with `{sub_id}/{status}/{payout}/…` macros. Triggered on state transitions the affiliate subscribes to.
 
-## Next steps (not in this skeleton)
+## Stack
 
-- Kanban board for deals (dnd-kit)
-- CSV import/export
-- Email sync (Gmail/IMAP)
-- Multi-tenant / team scoping
-- Full-text search (pg_trgm or Meilisearch)
-- Rate limiting + audit log
-- E2E tests with Playwright
+- **Runtime:** Next.js 15 (App Router) + tRPC v11 + NextAuth v5 (JWT + Credentials)
+- **DB:** Postgres 16 via Prisma 5
+- **Queue:** pg-boss (same Postgres)
+- **Cache / rate limit:** Redis 7 via ioredis
+- **Tests:** Vitest (unit + integration + e2e)
+- **Lint:** Biome
