@@ -1,8 +1,12 @@
 import "dotenv/config";
 import { cleanupExpiredIdempotency } from "./src/server/jobs/cleanup-idempotency";
-import { handleNotifyAffiliate, type NotifyAffiliatePayload } from "./src/server/jobs/notify-affiliate";
+import {
+  type NotifyAffiliatePayload,
+  handleNotifyAffiliate,
+} from "./src/server/jobs/notify-affiliate";
 import { type PushLeadPayload, handlePushLead } from "./src/server/jobs/push-lead";
 import { JOB_NAMES, startBossOnce } from "./src/server/jobs/queue";
+import { type VoipCheckPayload, handleVoipCheck } from "./src/server/jobs/voip-check";
 import { logger, runWithTrace } from "./src/server/observability";
 
 async function main() {
@@ -15,6 +19,10 @@ async function main() {
 
   await boss.work<NotifyAffiliatePayload>(JOB_NAMES.notifyAffiliate, async ([job]) => {
     await handleNotifyAffiliate(job.data);
+  });
+
+  await boss.work<VoipCheckPayload>(JOB_NAMES.voipCheck, async ([job]) => {
+    await handleVoipCheck(job.data);
   });
 
   // Every hour, sweep expired idempotency rows
