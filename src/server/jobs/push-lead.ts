@@ -6,6 +6,7 @@ import { incrementCap, decrementCap, todayUtc } from "@/server/routing/caps";
 import { buildPayload } from "@/server/broker-adapter/template";
 import { applyBrokerAuth } from "@/server/broker-adapter/auth";
 import { pushToBroker } from "@/server/broker-adapter/push";
+import { writeLeadEvent } from "@/server/lead-event";
 import { logger } from "@/server/observability";
 import { getBoss, JOB_NAMES, startBossOnce } from "./queue";
 
@@ -27,12 +28,9 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
   for (const broker of pool) {
     if (!isWithinWorkingHours(broker.workingHours as WorkingHours | null)) {
       tried.push({ id: broker.id, reason: "outside_hours" });
-      await prisma.leadEvent.create({
-        data: {
-          leadId: lead.id,
-          kind: "CAP_BLOCKED",
-          meta: { brokerId: broker.id, reason: "outside_hours" },
-        },
+      await writeLeadEvent(lead.id, "CAP_BLOCKED", {
+        brokerId: broker.id,
+        reason: "outside_hours",
       });
       continue;
     }
@@ -41,12 +39,10 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
       if (count > broker.dailyCap) {
         await decrementCap("BROKER", broker.id, todayUtc());
         tried.push({ id: broker.id, reason: "cap_full" });
-        await prisma.leadEvent.create({
-          data: {
-            leadId: lead.id,
-            kind: "CAP_BLOCKED",
-            meta: { brokerId: broker.id, dailyCap: broker.dailyCap, count },
-          },
+        await writeLeadEvent(lead.id, "CAP_BLOCKED", {
+          brokerId: broker.id,
+          dailyCap: broker.dailyCap,
+          count,
         });
         continue;
       }
@@ -60,9 +56,7 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
       where: { id: lead.id },
       data: { state: "FAILED", rejectReason: "no_broker_available" },
     });
-    await prisma.leadEvent.create({
-      data: { leadId: lead.id, kind: "NO_BROKER_AVAILABLE", meta: { tried } },
-    });
+    await writeLeadEvent(lead.id, "NO_BROKER_AVAILABLE", { tried });
     logger.warn(
       { event: "no_broker_available", lead_id: lead.id, geo: lead.geo, tried },
       "no broker",
@@ -74,12 +68,10 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
     where: { id: lead.id },
     data: { brokerId: winner.id, state: "PUSHING" },
   });
-  await prisma.leadEvent.create({
-    data: {
-      leadId: lead.id,
-      kind: "ROUTING_DECIDED",
-      meta: { brokerId: winner.id, poolSize: pool.length, tried },
-    },
+  await writeLeadEvent(lead.id, "ROUTING_DECIDED", {
+    brokerId: winner.id,
+    poolSize: pool.length,
+    tried,
   });
 
   const payloadBody = buildPayload(
@@ -94,9 +86,7 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
     winner.authConfig as Record<string, unknown>,
   );
 
-  await prisma.leadEvent.create({
-    data: { leadId: lead.id, kind: "BROKER_PUSH_ATTEMPT", meta: { brokerId: winner.id } },
-  });
+  await writeLeadEvent(lead.id, "BROKER_PUSH_ATTEMPT", { brokerId: winner.id });
 
   const result = await pushToBroker({
     url: authed.url,
@@ -117,17 +107,11 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
         brokerExternalId: result.externalId ?? null,
       },
     });
-    await prisma.leadEvent.create({
-      data: {
-        leadId: lead.id,
-        kind: "BROKER_PUSH_SUCCESS",
-        meta: {
-          httpStatus: result.httpStatus,
-          durationMs: result.durationMs,
-          attemptN: result.attemptN,
-          externalId: result.externalId,
-        },
-      },
+    await writeLeadEvent(lead.id, "BROKER_PUSH_SUCCESS", {
+      httpStatus: result.httpStatus,
+      durationMs: result.durationMs,
+      attemptN: result.attemptN,
+      externalId: result.externalId,
     });
     await startBossOnce();
     const boss = getBoss();
@@ -138,16 +122,10 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
       where: { id: lead.id },
       data: { state: "FAILED", rejectReason: "broker_push_failed" },
     });
-    await prisma.leadEvent.create({
-      data: {
-        leadId: lead.id,
-        kind: "BROKER_PUSH_FAIL",
-        meta: {
-          httpStatus: result.httpStatus,
-          error: result.error,
-          attemptN: result.attemptN,
-        },
-      },
+    await writeLeadEvent(lead.id, "BROKER_PUSH_FAIL", {
+      httpStatus: result.httpStatus,
+      error: result.error,
+      attemptN: result.attemptN,
     });
     await startBossOnce();
     const boss = getBoss();
