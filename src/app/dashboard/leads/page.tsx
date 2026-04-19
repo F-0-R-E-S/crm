@@ -1,107 +1,81 @@
 "use client";
-import { trpc } from "@/lib/trpc";
-import Link from "next/link";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { trpc, type RouterOutputs } from "@/lib/trpc";
+import { FilterBar, type Filters } from "./components/FilterBar";
+import { LeadsGrid } from "./components/LeadsGrid";
+import { LeadDrawer } from "./components/LeadDrawer";
 
-const STATES = [
-  "",
-  "NEW",
-  "PUSHING",
-  "PUSHED",
-  "ACCEPTED",
-  "DECLINED",
-  "FTD",
-  "REJECTED",
-  "FAILED",
-];
+type Lead = RouterOutputs["lead"]["list"]["items"][number];
 
 export default function LeadsPage() {
-  const [state, setState] = useState("");
-  const [geo, setGeo] = useState("");
-  const [page, setPage] = useState(1);
-  const { data } = trpc.lead.list.useQuery({
-    page,
-    pageSize: 50,
-    state: state || undefined,
-    geo: geo.toUpperCase() || undefined,
+  const params = useSearchParams();
+  const [filters, setFilters] = useState<Filters>({
+    search: "", state: params.get("state") ?? "",
+    geo: "", affiliateId: "", brokerId: "",
+  });
+  const [selected, setSelected] = useState<Lead | null>(null);
+  const [newIds, setNewIds] = useState<Set<string>>(new Set());
+  const seen = useRef<Set<string>>(new Set());
+
+  const list = trpc.lead.list.useQuery(
+    {
+      page: 1, pageSize: 200,
+      state: filters.state || undefined,
+      geo: filters.geo || undefined,
+      affiliateId: filters.affiliateId || undefined,
+      brokerId: filters.brokerId || undefined,
+    },
+    { refetchInterval: 4000 },
+  );
+
+  useEffect(() => {
+    if (!list.data) return;
+    const freshIds = new Set<string>();
+    for (const l of list.data.items) {
+      if (!seen.current.has(l.id)) {
+        freshIds.add(l.id);
+        seen.current.add(l.id);
+      }
+    }
+    if (freshIds.size === 0) return;
+    setNewIds(prev => new Set([...prev, ...freshIds]));
+    const t = setTimeout(() => {
+      setNewIds(prev => {
+        const next = new Set(prev);
+        for (const id of freshIds) next.delete(id);
+        return next;
+      });
+    }, 1800);
+    return () => clearTimeout(t);
+  }, [list.data]);
+
+  const filtered = (list.data?.items ?? []).filter(l => {
+    if (!filters.search) return true;
+    const q = filters.search.toLowerCase();
+    return (
+      l.traceId.toLowerCase().includes(q) ||
+      (l.email ?? "").toLowerCase().includes(q) ||
+      (l.phone ?? "").toLowerCase().includes(q) ||
+      `${l.firstName ?? ""} ${l.lastName ?? ""}`.toLowerCase().includes(q)
+    );
   });
 
   return (
     <div>
-      <h1 className="text-xl font-semibold mb-4">Leads</h1>
-      <div className="flex gap-2 mb-3">
-        <select
-          value={state}
-          onChange={(e) => {
-            setState(e.target.value);
-            setPage(1);
-          }}
-          className="border rounded px-2 py-1"
-        >
-          {STATES.map((s) => (
-            <option key={s} value={s}>
-              {s || "any state"}
-            </option>
-          ))}
-        </select>
-        <input
-          value={geo}
-          onChange={(e) => {
-            setGeo(e.target.value);
-            setPage(1);
-          }}
-          placeholder="GEO (UA)"
-          className="border rounded px-2 py-1 w-24"
-        />
-      </div>
-      <table className="w-full text-sm">
-        <thead className="text-left border-b">
-          <tr>
-            <th className="py-2">Created</th>
-            <th>Affiliate</th>
-            <th>GEO</th>
-            <th>Phone</th>
-            <th>State</th>
-            <th>Broker</th>
-            <th>Reject</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data?.items.map((l) => (
-            <tr key={l.id} className="border-b hover:bg-gray-50">
-              <td className="py-2">
-                <Link href={`/dashboard/leads/${l.id}` as never} className="text-blue-600">
-                  {new Date(l.createdAt).toLocaleString()}
-                </Link>
-              </td>
-              <td>{l.affiliate.name}</td>
-              <td>{l.geo}</td>
-              <td>{l.phone ? `${l.phone.slice(0, 4)}…${l.phone.slice(-2)}` : "—"}</td>
-              <td>{l.state}</td>
-              <td>{l.broker?.name ?? "—"}</td>
-              <td>{l.rejectReason ?? ""}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <div className="mt-3 flex gap-2">
-        <button
-          disabled={page <= 1}
-          onClick={() => setPage((p) => p - 1)}
-          className="border rounded px-3 py-1 disabled:opacity-50"
-        >
-          Prev
-        </button>
-        <span className="text-sm">Page {page}</span>
-        <button
-          disabled={(data?.items.length ?? 0) < 50}
-          onClick={() => setPage((p) => p + 1)}
-          className="border rounded px-3 py-1 disabled:opacity-50"
-        >
-          Next
-        </button>
-        <span className="text-sm text-gray-500 ml-4">{data?.total ?? 0} total</span>
-      </div>
+      <FilterBar
+        filters={filters}
+        onChange={p => setFilters(f => ({ ...f, ...p }))}
+        total={list.data?.total}
+        showing={filtered.length}
+      />
+      <LeadsGrid
+        leads={filtered}
+        selectedId={selected?.id}
+        onSelect={setSelected}
+        newIds={newIds}
+      />
+      {selected && <LeadDrawer leadId={selected.id} onClose={() => setSelected(null)} />}
     </div>
   );
 }
