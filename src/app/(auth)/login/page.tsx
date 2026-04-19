@@ -1,69 +1,28 @@
 "use client";
-
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function LoginPage() {
-  const router = useRouter();
-  const params = useSearchParams();
-  const callbackUrl = params.get("callbackUrl") ?? "/";
-  const [email, setEmail] = useState("admin@example.com");
-  const [password, setPassword] = useState("password123");
-  const [err, setErr] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [err, setErr] = useState("");
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    setErr(null);
-    const res = await signIn("credentials", { email, password, redirect: false });
-    setLoading(false);
-    if (res?.error) {
-      setErr("Invalid email or password");
-      return;
-    }
-    router.push(callbackUrl as never);
-    router.refresh();
+    const r = await signIn("credentials", { email, password, redirect: false, callbackUrl: "/dashboard" });
+    if (r?.ok) window.location.assign(r.url ?? "/dashboard");
+    else setErr("invalid credentials");
   }
 
   return (
-    <div className="grid min-h-screen place-items-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>Sign in</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={submit} className="space-y-3">
-            <Input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              required
-            />
-            <Input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
-            {err && <p className="text-sm text-red-600">{err}</p>}
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? "Signing in..." : "Sign in"}
-            </Button>
-            <p className="text-xs text-slate-500">
-              Seeded: admin@example.com / password123
-            </p>
-          </form>
-        </CardContent>
-      </Card>
+    <div className="flex min-h-screen items-center justify-center">
+      <form onSubmit={submit} className="w-80 space-y-3 border p-6 rounded">
+        <h1 className="font-semibold">Sign in</h1>
+        <input autoFocus value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="w-full border rounded px-2 py-1" />
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" className="w-full border rounded px-2 py-1" />
+        <button className="w-full bg-black text-white rounded py-2">Sign in</button>
+        {err && <div className="text-red-600 text-sm">{err}</div>}
+      </form>
     </div>
   );
 }
