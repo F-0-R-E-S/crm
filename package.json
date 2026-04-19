@@ -64,7 +64,7 @@
     "@types/supertest": "^7.2.0",
     "@vitejs/plugin-react": "^4",
     "autoprefixer": "^10.4.20",
-    "jsdom": "^29.0.2",
+    "jsdom": "^25.0.1",
     "postcss": "^8.4.49",
     "prisma": "^5.22.0",
     "supertest": "^7.2.2",
