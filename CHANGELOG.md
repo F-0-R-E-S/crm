@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.2.0 — 2026-04-20 (Design Port)
+
+Ports the ROUTER CRM design prototype (`crm-design/project/ROUTER CRM.html`) into
+the Next.js app. Visual-only release — no backend or schema changes.
+
+### Added
+- Dark graphite + light cream theme system via CSS variables in `globals.css`.
+- Design primitives (`src/components/router-crm/`): Pill, StatePill, Dot, Sparkline,
+  MiniBars, LeadFunnelSankey, CounterTile, Card, Field, Select, CodeBlock, TabStrip.
+- Shell with 220px sidebar (kbd nav hints D/L/A/B/R/K/U/G, user chip, queue counter)
+  + 46px topbar (live intake rate, theme toggle).
+- Dashboard: 4 counter tiles, full-width Sankey, broker performance table, top geos
+  stacked bars (backed by new tRPC queries `lead.funnelCounts`, `lead.brokerPerformance`,
+  `lead.topGeos`).
+- Leads grid (9 columns, new-row highlight animation) + right-anchored 540px drawer
+  with timeline / payload / broker / postbacks tabs.
+- Restyled affiliates / brokers / routing / blacklist / users / audit pages.
+
+### Changed
+- All dashboard routes now under `/dashboard/*` (matches sidebar hrefs).
+- Login page restyled with ROUTER logo + tokens.
+
 ## 0.1.0 — 2026-04-19 (MVP)
 
 First shippable build. Local-only. See `../docs/superpowers/specs/2026-04-19-gambchamp-mvp-v0.1-design.md` for the design.
