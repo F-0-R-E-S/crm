@@ -51,3 +51,132 @@ model ApiKey {
   affiliate   Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
   @@index([affiliateId, isRevoked])
 }
+
+model Broker {
+  id                 String         @id @default(cuid())
+  name               String
+  isActive           Boolean        @default(true)
+  dailyCap           Int?
+  workingHours       Json?
+  endpointUrl        String
+  httpMethod         HttpMethod     @default(POST)
+  headers            Json           @default("{}")
+  authType           BrokerAuthType @default(NONE)
+  authConfig         Json           @default("{}")
+  fieldMapping       Json
+  staticPayload      Json           @default("{}")
+  responseIdPath     String?
+  postbackSecret     String
+  postbackLeadIdPath String
+  postbackStatusPath String
+  statusMapping      Json           @default("{}")
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  rotationRules      RotationRule[]
+  leads              Lead[]
+  @@index([isActive])
+}
+
+enum HttpMethod {
+  POST
+  PUT
+}
+
+enum BrokerAuthType {
+  NONE
+  BEARER
+  BASIC
+  API_KEY_HEADER
+  API_KEY_QUERY
+}
+
+model RotationRule {
+  id       String  @id @default(cuid())
+  geo      String
+  brokerId String
+  priority Int
+  isActive Boolean @default(true)
+  broker   Broker  @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  @@unique([geo, brokerId])
+  @@index([geo, isActive, priority])
+}
+
+model Lead {
+  id                String      @id @default(cuid())
+  externalLeadId    String?
+  affiliateId       String
+  brokerId          String?
+  state             LeadState   @default(NEW)
+  rejectReason      String?
+  firstName         String?
+  lastName          String?
+  email             String?
+  phone             String?
+  phoneHash         String?
+  emailHash         String?
+  geo               String
+  ip                String
+  landingUrl        String?
+  subId             String?
+  utm               Json        @default("{}")
+  eventTs           DateTime
+  brokerExternalId  String?
+  lastBrokerStatus  String?
+  lastPushAt        DateTime?
+  acceptedAt        DateTime?
+  ftdAt             DateTime?
+  traceId           String      @unique
+  receivedAt        DateTime    @default(now())
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  affiliate         Affiliate   @relation(fields: [affiliateId], references: [id])
+  broker            Broker?     @relation(fields: [brokerId], references: [id])
+  events            LeadEvent[]
+  outboundPostbacks OutboundPostback[]
+  @@index([affiliateId, createdAt])
+  @@index([brokerId, createdAt])
+  @@index([geo, state])
+  @@index([phoneHash])
+  @@index([emailHash])
+  @@index([state, createdAt])
+  @@index([externalLeadId, affiliateId])
+}
+
+enum LeadState {
+  NEW
+  VALIDATING
+  REJECTED
+  PUSHING
+  PUSHED
+  ACCEPTED
+  DECLINED
+  FTD
+  FAILED
+}
+
+model LeadEvent {
+  id        String        @id @default(cuid())
+  leadId    String
+  kind      LeadEventKind
+  meta      Json          @default("{}")
+  createdAt DateTime      @default(now())
+  lead      Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  @@index([leadId, createdAt])
+}
+
+enum LeadEventKind {
+  RECEIVED
+  VALIDATION_FAIL
+  REJECTED_ANTIFRAUD
+  ROUTING_DECIDED
+  CAP_BLOCKED
+  NO_BROKER_AVAILABLE
+  BROKER_PUSH_ATTEMPT
+  BROKER_PUSH_SUCCESS
+  BROKER_PUSH_FAIL
+  POSTBACK_RECEIVED
+  STATE_TRANSITION
+  MANUAL_OVERRIDE
+  OUTBOUND_POSTBACK_SENT
+  OUTBOUND_POSTBACK_FAILED
+}
