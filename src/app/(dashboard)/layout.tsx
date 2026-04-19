@@ -2,11 +2,7 @@ import Link from "next/link";
 import { signOut } from "@/auth";
 import { auth } from "@/auth";
 
-const nav = [
-  { href: "/contacts", label: "Contacts" },
-  { href: "/deals", label: "Deals" },
-  { href: "/activities", label: "Activities" },
-];
+const nav: Array<{ href: string; label: string }> = [];
 
 export default async function DashboardLayout({
   children,
@@ -23,7 +19,7 @@ export default async function DashboardLayout({
           {nav.map((n) => (
             <Link
               key={n.href}
-              href={n.href}
+              href={n.href as never}
               className="rounded-md px-3 py-2 text-sm hover:bg-slate-100"
             >
               {n.label}
