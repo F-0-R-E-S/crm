@@ -1,95 +1,64 @@
 "use client";
-import { trpc } from "@/lib/trpc";
 import { useState } from "react";
+import { btnStyle, inputStyle, Pill, TabStrip } from "@/components/router-crm";
+import { trpc } from "@/lib/trpc";
+import { useThemeCtx } from "@/components/shell/ThemeProvider";
 
-const KINDS = ["IP_CIDR", "IP_EXACT", "EMAIL_DOMAIN", "PHONE_E164"] as const;
+type Kind = "IP_CIDR" | "IP_EXACT" | "EMAIL_DOMAIN" | "PHONE_E164";
+
+const PLACEHOLDERS: Record<Kind, string> = {
+  IP_CIDR: "10.0.0.0/8",
+  IP_EXACT: "1.2.3.4",
+  EMAIL_DOMAIN: "mailinator.com",
+  PHONE_E164: "+380671234567",
+};
+
+const TABS: { key: Kind; label: string }[] = [
+  { key: "IP_CIDR",      label: "ip cidr" },
+  { key: "IP_EXACT",     label: "ip exact" },
+  { key: "EMAIL_DOMAIN", label: "email domain" },
+  { key: "PHONE_E164",   label: "phone" },
+];
 
 export default function BlacklistPage() {
-  const [kind, setKind] = useState<(typeof KINDS)[number]>("IP_EXACT");
+  const { theme } = useThemeCtx();
+  const [kind, setKind] = useState<Kind>("IP_CIDR");
   const utils = trpc.useUtils();
   const { data } = trpc.blacklist.list.useQuery({ kind });
-  const add = trpc.blacklist.add.useMutation({
-    onSuccess: () => utils.blacklist.list.invalidate(),
-  });
-  const remove = trpc.blacklist.remove.useMutation({
-    onSuccess: () => utils.blacklist.list.invalidate(),
-  });
+  const add = trpc.blacklist.add.useMutation({ onSuccess: () => utils.blacklist.list.invalidate() });
+  const remove = trpc.blacklist.remove.useMutation({ onSuccess: () => utils.blacklist.list.invalidate() });
   const [value, setValue] = useState("");
   const [reason, setReason] = useState("");
 
   return (
-    <div>
-      <h1 className="text-xl font-semibold mb-4">Blacklist</h1>
-      <div className="flex gap-2 mb-4 border-b">
-        {KINDS.map((k) => (
-          <button
-            key={k}
-            type="button"
-            onClick={() => setKind(k)}
-            className={`px-3 py-2 ${kind === k ? "border-b-2 border-black font-medium" : ""}`}
-          >
-            {k}
-          </button>
-        ))}
-      </div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!value) return;
-          add.mutate({ kind, value, reason: reason || undefined });
-          setValue("");
-          setReason("");
-        }}
-        className="flex gap-2 mb-4"
-      >
-        <input
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder={
-            kind === "IP_CIDR"
-              ? "10.0.0.0/8"
-              : kind === "EMAIL_DOMAIN"
-                ? "mailinator.com"
-                : kind === "PHONE_E164"
-                  ? "+380671234567"
-                  : "1.2.3.4"
-          }
-          className="border rounded px-2 py-1 flex-1"
-        />
-        <input
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          placeholder="Reason (optional)"
-          className="border rounded px-2 py-1 flex-1"
-        />
-        <button type="submit" className="border rounded px-3 py-1 bg-black text-white">
-          Add
-        </button>
+    <div style={{ padding: "20px 28px", maxWidth: 860 }}>
+      <h1 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em", margin: "0 0 16px" }}>Blacklist</h1>
+      <TabStrip<Kind>
+        tabs={TABS}
+        active={kind}
+        onChange={k => { setKind(k); setValue(""); setReason(""); }}
+      />
+      <form onSubmit={e => {
+        e.preventDefault();
+        if (!value) return;
+        add.mutate({ kind, value, reason: reason || undefined });
+        setValue(""); setReason("");
+      }} style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <input value={value} onChange={e => setValue(e.target.value)} placeholder={PLACEHOLDERS[kind]} style={{ ...inputStyle(theme), flex: 1 }} />
+        <input value={reason} onChange={e => setReason(e.target.value)} placeholder="reason (optional)" style={{ ...inputStyle(theme), flex: 1 }} />
+        <button type="submit" style={btnStyle(theme, "primary")}>Add</button>
       </form>
-      <table className="w-full text-sm">
-        <thead className="text-left border-b">
-          <tr>
-            <th className="py-2">Value</th>
-            <th>Reason</th>
-            <th>Added</th>
-            <th />
-          </tr>
-        </thead>
+      <table style={{ width: "100%", fontSize: 12 }}>
+        <thead><tr style={{ textAlign: "left", color: "var(--fg-2)", fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+          <th style={{ padding: "8px 0" }}>value</th><th>reason</th><th>added</th><th></th>
+        </tr></thead>
         <tbody>
-          {data?.map((r) => (
-            <tr key={r.id} className="border-b">
-              <td className="py-1 font-mono">{r.value}</td>
-              <td>{r.reason ?? ""}</td>
-              <td>{new Date(r.createdAt).toLocaleString()}</td>
-              <td>
-                <button
-                  type="button"
-                  onClick={() => remove.mutate({ id: r.id })}
-                  className="text-red-600"
-                >
-                  remove
-                </button>
-              </td>
+          {data?.map(r => (
+            <tr key={r.id} style={{ borderTop: "1px solid var(--bd-1)" }}>
+              <td style={{ padding: "8px 0", fontFamily: "var(--mono)" }}>{r.value}</td>
+              <td style={{ color: "var(--fg-2)" }}>{r.reason ?? ""}</td>
+              <td style={{ fontFamily: "var(--mono)", color: "var(--fg-2)", fontSize: 11 }}>{new Date(r.createdAt).toLocaleString()}</td>
+              <td><button type="button" onClick={() => remove.mutate({ id: r.id })} style={{ ...btnStyle(theme), color: "oklch(72% 0.15 25)" }}>remove</button></td>
             </tr>
           ))}
         </tbody>
