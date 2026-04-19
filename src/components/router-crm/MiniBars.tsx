@@ -8,7 +8,13 @@ interface MiniBarsProps {
   gap?: number;
 }
 
-export function MiniBars({ values, width = 120, height = 28, color = "currentColor", gap = 2 }: MiniBarsProps) {
+export function MiniBars({
+  values,
+  width = 120,
+  height = 28,
+  color = "currentColor",
+  gap = 2,
+}: MiniBarsProps) {
   if (values.length === 0) return null;
   const max = Math.max(...values, 1);
   const bw = (width - gap * (values.length - 1)) / values.length;

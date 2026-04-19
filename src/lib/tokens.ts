@@ -1,33 +1,40 @@
 export type Theme = "dark" | "light";
 
 export type LeadStateKey =
-  | "NEW" | "VALIDATING" | "REJECTED" | "PUSHING" | "PUSHED"
-  | "ACCEPTED" | "DECLINED" | "FTD" | "FAILED";
+  | "NEW"
+  | "VALIDATING"
+  | "REJECTED"
+  | "PUSHING"
+  | "PUSHED"
+  | "ACCEPTED"
+  | "DECLINED"
+  | "FTD"
+  | "FAILED";
 
 export type Tone = "neutral" | "success" | "warn" | "danger" | "info" | "accent";
 
 const STATE_COLORS: Record<Theme, Record<LeadStateKey, string>> = {
   dark: {
-    NEW:        "oklch(75% 0.02 250)",
+    NEW: "oklch(75% 0.02 250)",
     VALIDATING: "oklch(78% 0.11 75)",
-    PUSHING:    "oklch(76% 0.12 220)",
-    PUSHED:     "oklch(78% 0.14 200)",
-    ACCEPTED:   "oklch(78% 0.13 155)",
-    FTD:        "oklch(82% 0.17 135)",
-    DECLINED:   "oklch(72% 0.14 25)",
-    REJECTED:   "oklch(65% 0.03 20)",
-    FAILED:     "oklch(62% 0.15 20)",
+    PUSHING: "oklch(76% 0.12 220)",
+    PUSHED: "oklch(78% 0.14 200)",
+    ACCEPTED: "oklch(78% 0.13 155)",
+    FTD: "oklch(82% 0.17 135)",
+    DECLINED: "oklch(72% 0.14 25)",
+    REJECTED: "oklch(65% 0.03 20)",
+    FAILED: "oklch(62% 0.15 20)",
   },
   light: {
-    NEW:        "oklch(55% 0.02 250)",
+    NEW: "oklch(55% 0.02 250)",
     VALIDATING: "oklch(58% 0.14 75)",
-    PUSHING:    "oklch(52% 0.15 220)",
-    PUSHED:     "oklch(50% 0.15 200)",
-    ACCEPTED:   "oklch(48% 0.14 155)",
-    FTD:        "oklch(45% 0.17 135)",
-    DECLINED:   "oklch(52% 0.18 25)",
-    REJECTED:   "oklch(50% 0.03 20)",
-    FAILED:     "oklch(45% 0.18 20)",
+    PUSHING: "oklch(52% 0.15 220)",
+    PUSHED: "oklch(50% 0.15 200)",
+    ACCEPTED: "oklch(48% 0.14 155)",
+    FTD: "oklch(45% 0.17 135)",
+    DECLINED: "oklch(52% 0.18 25)",
+    REJECTED: "oklch(50% 0.03 20)",
+    FAILED: "oklch(45% 0.18 20)",
   },
 };
 

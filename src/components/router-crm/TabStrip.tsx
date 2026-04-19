@@ -1,11 +1,16 @@
 "use client";
-import type { CSSProperties } from "react";
 import { useThemeCtx } from "@/components/shell/ThemeProvider";
+import type { CSSProperties } from "react";
 
-interface Tab<K extends string> { key: K; label: string }
+interface Tab<K extends string> {
+  key: K;
+  label: string;
+}
 
 export function TabStrip<K extends string>({
-  tabs, active, onChange,
+  tabs,
+  active,
+  onChange,
 }: {
   tabs: Tab<K>[];
   active: K;
@@ -18,7 +23,7 @@ export function TabStrip<K extends string>({
 
   return (
     <div style={{ display: "flex", gap: 2, borderBottom: `1px solid ${bd}`, marginBottom: 16 }}>
-      {tabs.map(t => {
+      {tabs.map((t) => {
         const on = t.key === active;
         const style: CSSProperties = {
           padding: "8px 14px",

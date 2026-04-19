@@ -11,7 +11,7 @@ describe("<Sparkline>", () => {
     expect(paths.length).toBeGreaterThanOrEqual(1);
   });
   it("renders an area path when fill is set", () => {
-    const { container } = render(<Sparkline points={[1,2,3]} fill="rgba(0,255,0,0.2)" />);
+    const { container } = render(<Sparkline points={[1, 2, 3]} fill="rgba(0,255,0,0.2)" />);
     expect(container.querySelectorAll("path")).toHaveLength(2);
   });
   it("handles flat (all-equal) series without NaN", () => {

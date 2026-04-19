@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { stateColor, stateToTone, type LeadStateKey } from "./tokens";
+import { type LeadStateKey, stateColor, stateToTone } from "./tokens";
 
 describe("stateColor", () => {
   it("returns dark-theme colour for FTD", () => {
@@ -9,7 +9,17 @@ describe("stateColor", () => {
     expect(stateColor("FTD", "light")).toBe("oklch(45% 0.17 135)");
   });
   it("returns all 9 states without crash", () => {
-    const states: LeadStateKey[] = ["NEW","VALIDATING","REJECTED","PUSHING","PUSHED","ACCEPTED","DECLINED","FTD","FAILED"];
+    const states: LeadStateKey[] = [
+      "NEW",
+      "VALIDATING",
+      "REJECTED",
+      "PUSHING",
+      "PUSHED",
+      "ACCEPTED",
+      "DECLINED",
+      "FTD",
+      "FAILED",
+    ];
     for (const s of states) {
       expect(stateColor(s, "dark")).toMatch(/^oklch/);
       expect(stateColor(s, "light")).toMatch(/^oklch/);

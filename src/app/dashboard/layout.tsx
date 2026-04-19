@@ -1,10 +1,10 @@
-import { redirect } from "next/navigation";
 import { auth, signOut } from "@/auth";
 import { AppProviders } from "@/components/app-providers";
 import { KeyboardNav } from "@/components/shell/KeyboardNav";
 import { Sidebar } from "@/components/shell/Sidebar";
 import { ThemeProvider } from "@/components/shell/ThemeProvider";
 import { Topbar } from "@/components/shell/Topbar";
+import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -14,11 +14,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <AppProviders>
         <div style={{ display: "flex", height: "100vh", width: "100vw", overflow: "hidden" }}>
           <Sidebar userEmail={session.user.email} userRole={session.user.role} />
-          <main style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0, position: "relative" }}>
+          <main
+            style={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              minWidth: 0,
+              position: "relative",
+            }}
+          >
             <Topbar />
-            <div style={{ flex: 1, overflow: "auto", position: "relative" }}>
-              {children}
-            </div>
+            <div style={{ flex: 1, overflow: "auto", position: "relative" }}>{children}</div>
           </main>
           <KeyboardNav />
           <SignOutForm />

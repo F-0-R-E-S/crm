@@ -1,6 +1,6 @@
 "use client";
-import { createContext, useContext, type ReactNode } from "react";
-import { useTheme, type Theme } from "@/lib/use-theme";
+import { type Theme, useTheme } from "@/lib/use-theme";
+import { type ReactNode, createContext, useContext } from "react";
 
 interface Ctx {
   theme: Theme;

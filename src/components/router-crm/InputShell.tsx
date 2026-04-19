@@ -1,6 +1,6 @@
 "use client";
-import type { CSSProperties } from "react";
 import type { Theme } from "@/lib/use-theme";
+import type { CSSProperties } from "react";
 
 export function inputStyle(theme: Theme): CSSProperties {
   return {

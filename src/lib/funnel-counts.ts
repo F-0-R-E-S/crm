@@ -18,12 +18,27 @@ export interface FunnelCounts {
   ftd: number;
 }
 
-const ROUTED_STATES: LeadStateKey[] = ["PUSHING", "PUSHED", "ACCEPTED", "FTD", "DECLINED", "FAILED"];
+const ROUTED_STATES: LeadStateKey[] = [
+  "PUSHING",
+  "PUSHED",
+  "ACCEPTED",
+  "FTD",
+  "DECLINED",
+  "FAILED",
+];
 
 export function funnelCounts(leads: LeadLike[]): FunnelCounts {
   const out: FunnelCounts = {
-    received: 0, validated: 0, rejected: 0, routed: 0, no_broker: 0,
-    pushed: 0, push_failed: 0, accepted: 0, declined: 0, ftd: 0,
+    received: 0,
+    validated: 0,
+    rejected: 0,
+    routed: 0,
+    no_broker: 0,
+    pushed: 0,
+    push_failed: 0,
+    accepted: 0,
+    declined: 0,
+    ftd: 0,
   };
   for (const l of leads) {
     out.received++;

@@ -1,18 +1,21 @@
 "use client";
+import { type RouterOutputs, trpc } from "@/lib/trpc";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { trpc, type RouterOutputs } from "@/lib/trpc";
 import { FilterBar, type Filters } from "./components/FilterBar";
-import { LeadsGrid } from "./components/LeadsGrid";
 import { LeadDrawer } from "./components/LeadDrawer";
+import { LeadsGrid } from "./components/LeadsGrid";
 
 type Lead = RouterOutputs["lead"]["list"]["items"][number];
 
 export default function LeadsPage() {
   const params = useSearchParams();
   const [filters, setFilters] = useState<Filters>({
-    search: "", state: params.get("state") ?? "",
-    geo: "", affiliateId: "", brokerId: "",
+    search: "",
+    state: params.get("state") ?? "",
+    geo: "",
+    affiliateId: "",
+    brokerId: "",
   });
   const [selected, setSelected] = useState<Lead | null>(null);
   const [newIds, setNewIds] = useState<Set<string>>(new Set());
@@ -20,10 +23,15 @@ export default function LeadsPage() {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") { setSelected(null); return; }
+      if (e.key === "Escape") {
+        setSelected(null);
+        return;
+      }
       if (e.key === "/" && !(e.target as HTMLElement).matches("input, textarea, select")) {
         e.preventDefault();
-        (document.querySelector('input[placeholder*="trace_id"]') as HTMLInputElement | null)?.focus();
+        (
+          document.querySelector('input[placeholder*="trace_id"]') as HTMLInputElement | null
+        )?.focus();
       }
     };
     window.addEventListener("keydown", onKey);
@@ -32,7 +40,8 @@ export default function LeadsPage() {
 
   const list = trpc.lead.list.useQuery(
     {
-      page: 1, pageSize: 200,
+      page: 1,
+      pageSize: 200,
       state: filters.state || undefined,
       geo: filters.geo || undefined,
       affiliateId: filters.affiliateId || undefined,
@@ -51,9 +60,9 @@ export default function LeadsPage() {
       }
     }
     if (freshIds.size === 0) return;
-    setNewIds(prev => new Set([...prev, ...freshIds]));
+    setNewIds((prev) => new Set([...prev, ...freshIds]));
     const t = setTimeout(() => {
-      setNewIds(prev => {
+      setNewIds((prev) => {
         const next = new Set(prev);
         for (const id of freshIds) next.delete(id);
         return next;
@@ -62,7 +71,7 @@ export default function LeadsPage() {
     return () => clearTimeout(t);
   }, [list.data]);
 
-  const filtered = (list.data?.items ?? []).filter(l => {
+  const filtered = (list.data?.items ?? []).filter((l) => {
     if (!filters.search) return true;
     const q = filters.search.toLowerCase();
     return (
@@ -77,7 +86,7 @@ export default function LeadsPage() {
     <div>
       <FilterBar
         filters={filters}
-        onChange={p => setFilters(f => ({ ...f, ...p }))}
+        onChange={(p) => setFilters((f) => ({ ...f, ...p }))}
         total={list.data?.total}
         showing={filtered.length}
       />

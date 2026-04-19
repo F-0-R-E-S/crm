@@ -1,6 +1,6 @@
 "use client";
-import { Sparkline } from "./Sparkline";
 import { useThemeCtx } from "@/components/shell/ThemeProvider";
+import { Sparkline } from "./Sparkline";
 
 interface CounterTileProps {
   label: string;
@@ -12,7 +12,15 @@ interface CounterTileProps {
   onClick?: () => void;
 }
 
-export function CounterTile({ label, value, delta, spark, sparkColor, accent, onClick }: CounterTileProps) {
+export function CounterTile({
+  label,
+  value,
+  delta,
+  spark,
+  sparkColor,
+  accent,
+  onClick,
+}: CounterTileProps) {
   const { theme } = useThemeCtx();
   const bd = theme === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)";
   const bg = theme === "dark" ? "rgba(255,255,255,0.02)" : "#fff";
@@ -25,18 +33,37 @@ export function CounterTile({ label, value, delta, spark, sparkColor, accent, on
       type="button"
       onClick={onClick}
       style={{
-        display: "flex", flexDirection: "column", gap: 12,
-        padding: "16px 18px", background: bg,
-        border: `1px solid ${bd}`, borderRadius: 6,
-        textAlign: "left", cursor: onClick ? "pointer" : "default",
-        fontFamily: "inherit", color: "inherit",
+        display: "flex",
+        flexDirection: "column",
+        gap: 12,
+        padding: "16px 18px",
+        background: bg,
+        border: `1px solid ${bd}`,
+        borderRadius: 6,
+        textAlign: "left",
+        cursor: onClick ? "pointer" : "default",
+        fontFamily: "inherit",
+        color: "inherit",
         transition: "border-color 120ms",
       }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = accent ?? (theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)"); }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = bd; }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.borderColor =
+          accent ?? (theme === "dark" ? "rgba(255,255,255,0.2)" : "rgba(0,0,0,0.2)");
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.borderColor = bd;
+      }}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 11, fontFamily: "var(--mono)", color: fg, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+        <span
+          style={{
+            fontSize: 11,
+            fontFamily: "var(--mono)",
+            color: fg,
+            textTransform: "uppercase",
+            letterSpacing: "0.06em",
+          }}
+        >
           {label}
         </span>
         {delta != null && (
@@ -45,10 +72,26 @@ export function CounterTile({ label, value, delta, spark, sparkColor, accent, on
           </span>
         )}
       </div>
-      <div style={{ fontSize: 32, fontWeight: 500, color: fgStrong, fontVariantNumeric: "tabular-nums", letterSpacing: "-0.02em", lineHeight: 1 }}>
+      <div
+        style={{
+          fontSize: 32,
+          fontWeight: 500,
+          color: fgStrong,
+          fontVariantNumeric: "tabular-nums",
+          letterSpacing: "-0.02em",
+          lineHeight: 1,
+        }}
+      >
         {value}
       </div>
-      {spark && <Sparkline points={spark} stroke={sparkColor ?? accent ?? "currentColor"} width={160} height={24} />}
+      {spark && (
+        <Sparkline
+          points={spark}
+          stroke={sparkColor ?? accent ?? "currentColor"}
+          width={160}
+          height={24}
+        />
+      )}
     </button>
   );
 }

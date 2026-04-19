@@ -6,14 +6,12 @@ describe("pushToBroker", () => {
   afterEach(() => vi.restoreAllMocks());
 
   it("succeeds on 2xx and extracts id via JSONPath", async () => {
-    global.fetch = vi
-      .fn()
-      .mockResolvedValue(
-        new Response(JSON.stringify({ lead: { id: "ext-123" } }), {
-          status: 200,
-          headers: { "content-type": "application/json" },
-        }),
-      );
+    global.fetch = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ lead: { id: "ext-123" } }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      }),
+    );
     const r = await pushToBroker({
       url: "http://x",
       method: "POST",

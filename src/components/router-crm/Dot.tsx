@@ -1,6 +1,6 @@
 "use client";
-import { stateColor, type LeadStateKey } from "@/lib/tokens";
 import { useThemeCtx } from "@/components/shell/ThemeProvider";
+import { type LeadStateKey, stateColor } from "@/lib/tokens";
 
 interface DotProps {
   state: LeadStateKey;
