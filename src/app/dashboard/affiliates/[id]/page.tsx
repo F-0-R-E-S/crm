@@ -1,119 +1,88 @@
 "use client";
-import { trpc } from "@/lib/trpc";
 import { use, useState } from "react";
+import { btnStyle, inputStyle, Pill, TabStrip } from "@/components/router-crm";
+import { trpc } from "@/lib/trpc";
+import { useThemeCtx } from "@/components/shell/ThemeProvider";
 
-const TABS = ["general", "postback", "history"] as const;
+type Tab = "overview" | "keys" | "postback" | "history";
+
+const EVENT_KINDS = ["lead_pushed", "accepted", "declined", "ftd", "failed"] as const;
 
 export default function AffiliateDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const { theme } = useThemeCtx();
   const utils = trpc.useUtils();
   const { data } = trpc.affiliate.byId.useQuery({ id });
-  const update = trpc.affiliate.update.useMutation({
-    onSuccess: () => utils.affiliate.byId.invalidate({ id }),
-  });
-  const gen = trpc.affiliate.generateApiKey.useMutation({
-    onSuccess: () => utils.affiliate.byId.invalidate({ id }),
-  });
-  const revoke = trpc.affiliate.revokeApiKey.useMutation({
-    onSuccess: () => utils.affiliate.byId.invalidate({ id }),
-  });
-  const [tab, setTab] = useState<(typeof TABS)[number]>("general");
+  const update = trpc.affiliate.update.useMutation({ onSuccess: () => utils.affiliate.byId.invalidate({ id }) });
+  const gen = trpc.affiliate.generateApiKey.useMutation({ onSuccess: () => utils.affiliate.byId.invalidate({ id }) });
+  const revoke = trpc.affiliate.revokeApiKey.useMutation({ onSuccess: () => utils.affiliate.byId.invalidate({ id }) });
+  const [tab, setTab] = useState<Tab>("overview");
   const [newKeyLabel, setNewKeyLabel] = useState("");
   const [showRaw, setShowRaw] = useState<string | null>(null);
 
-  if (!data) return <div>Loading…</div>;
+  if (!data) return <div style={{ padding: 28 }}>Loading…</div>;
 
   return (
-    <div>
-      <h1 className="text-xl font-semibold mb-4">{data.name}</h1>
-      <div className="flex gap-2 mb-4 border-b">
-        {TABS.map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`px-3 py-2 ${tab === t ? "border-b-2 border-black font-medium" : ""}`}
-          >
-            {t}
-          </button>
-        ))}
-      </div>
+    <div style={{ padding: "20px 28px" }}>
+      <h1 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em", margin: "0 0 16px" }}>{data.name}</h1>
+      <TabStrip<Tab>
+        tabs={[
+          { key: "overview", label: "overview" },
+          { key: "keys",     label: "api keys" },
+          { key: "postback", label: "postback" },
+          { key: "history",  label: "history" },
+        ]}
+        active={tab}
+        onChange={setTab}
+      />
 
-      {tab === "general" && (
-        <div className="space-y-4 max-w-xl">
-          <label className="block">
-            <span className="text-sm">Total daily cap</span>
-            <input
-              type="number"
-              defaultValue={data.totalDailyCap ?? ""}
-              onBlur={(e) =>
-                update.mutate({ id, totalDailyCap: e.target.value ? Number(e.target.value) : null })
-              }
-              className="block border rounded px-2 py-1 mt-1"
-            />
-          </label>
-          <label className="block">
-            <span className="text-sm">Active</span>
-            <input
-              type="checkbox"
-              defaultChecked={data.isActive}
-              onChange={(e) => update.mutate({ id, isActive: e.target.checked })}
-              className="ml-2"
-            />
-          </label>
+      {tab === "overview" && (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
+          {[
+            { label: "leads / 24h", value: 0 },
+            { label: "ftds / 24h", value: 0 },
+            { label: "rejects / 24h", value: 0 },
+            { label: "cap usage", value: `0 / ${data.totalDailyCap ?? "∞"}` },
+          ].map(t => (
+            <div key={t.label} style={{ padding: "14px 16px", border: "1px solid var(--bd-1)", borderRadius: 6 }}>
+              <div style={{ fontSize: 11, fontFamily: "var(--mono)", color: "var(--fg-2)", textTransform: "uppercase", letterSpacing: "0.06em" }}>{t.label}</div>
+              <div style={{ fontSize: 28, fontWeight: 500, marginTop: 6, fontVariantNumeric: "tabular-nums" }}>{t.value}</div>
+            </div>
+          ))}
+        </div>
+      )}
 
-          <h3 className="font-medium mt-6">API Keys</h3>
-          <form
-            onSubmit={async (e) => {
-              e.preventDefault();
-              if (!newKeyLabel) return;
-              const r = await gen.mutateAsync({ affiliateId: id, label: newKeyLabel });
-              setShowRaw(r.rawKey);
-              setNewKeyLabel("");
-            }}
-            className="flex gap-2"
-          >
-            <input
-              value={newKeyLabel}
-              onChange={(e) => setNewKeyLabel(e.target.value)}
-              placeholder="Label"
-              className="border rounded px-2 py-1"
-            />
-            <button className="border rounded px-3 py-1 bg-black text-white">Generate</button>
+      {tab === "keys" && (
+        <div style={{ maxWidth: 640 }}>
+          <h3 style={{ fontSize: 13, fontWeight: 500, marginBottom: 12 }}>API Keys</h3>
+          <form onSubmit={async e => {
+            e.preventDefault();
+            if (!newKeyLabel) return;
+            const r = await gen.mutateAsync({ affiliateId: id, label: newKeyLabel });
+            setShowRaw(r.rawKey); setNewKeyLabel("");
+          }} style={{ display: "flex", gap: 8 }}>
+            <input value={newKeyLabel} onChange={e => setNewKeyLabel(e.target.value)} placeholder="Label" style={{ ...inputStyle(theme), width: 200 }} />
+            <button type="submit" style={btnStyle(theme, "primary")}>Generate</button>
           </form>
           {showRaw && (
-            <div className="bg-yellow-50 border rounded p-3 mt-2 font-mono text-sm">
-              Save this now — it won't be shown again:
-              <br />
+            <div style={{ padding: 12, marginTop: 12, background: "rgba(230,180,80,0.08)", border: "1px solid rgba(230,180,80,0.25)", borderRadius: 4, fontFamily: "var(--mono)", fontSize: 12 }}>
+              Save this now — won't be shown again:<br />
               <strong>{showRaw}</strong>
-              <button onClick={() => setShowRaw(null)} className="ml-4 text-gray-600">
-                Dismiss
-              </button>
+              <button type="button" onClick={() => setShowRaw(null)} style={{ marginLeft: 12, color: "var(--fg-2)", background: "transparent", border: "none", cursor: "pointer" }}>Dismiss</button>
             </div>
           )}
-          <table className="w-full text-sm mt-2">
-            <thead>
-              <tr>
-                <th className="text-left">Prefix</th>
-                <th>Label</th>
-                <th>Last used</th>
-                <th>Revoked</th>
-                <th></th>
-              </tr>
-            </thead>
+          <table style={{ width: "100%", fontSize: 12, marginTop: 12 }}>
+            <thead><tr style={{ textAlign: "left", color: "var(--fg-2)", fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              <th style={{ padding: "8px 0" }}>prefix</th><th>label</th><th>last used</th><th>status</th><th></th>
+            </tr></thead>
             <tbody>
-              {data.apiKeys.map((k) => (
-                <tr key={k.id} className="border-b">
-                  <td className="font-mono">{k.keyPrefix}…</td>
+              {data.apiKeys.map(k => (
+                <tr key={k.id} style={{ borderTop: "1px solid var(--bd-1)" }}>
+                  <td style={{ padding: "8px 0", fontFamily: "var(--mono)" }}>{k.keyPrefix}…</td>
                   <td>{k.label}</td>
-                  <td>{k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleString() : "—"}</td>
-                  <td>{k.isRevoked ? "✗" : "✓"}</td>
-                  <td>
-                    {!k.isRevoked && (
-                      <button onClick={() => revoke.mutate({ id: k.id })} className="text-red-600">
-                        Revoke
-                      </button>
-                    )}
-                  </td>
+                  <td style={{ fontFamily: "var(--mono)", color: "var(--fg-2)" }}>{k.lastUsedAt ? new Date(k.lastUsedAt).toLocaleString() : "—"}</td>
+                  <td>{k.isRevoked ? <Pill tone="danger" size="xs">revoked</Pill> : <Pill tone="success" size="xs">active</Pill>}</td>
+                  <td>{!k.isRevoked && <button type="button" onClick={() => revoke.mutate({ id: k.id })} style={{ ...btnStyle(theme), color: "oklch(72% 0.15 25)" }}>revoke</button>}</td>
                 </tr>
               ))}
             </tbody>
@@ -122,66 +91,61 @@ export default function AffiliateDetail({ params }: { params: Promise<{ id: stri
       )}
 
       {tab === "postback" && (
-        <div className="space-y-4 max-w-2xl">
-          <label className="block">
-            <span className="text-sm">Postback URL</span>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 720 }}>
+          <label style={{ display: "block" }}>
+            <span style={{ fontSize: 10, fontFamily: "var(--mono)", color: "var(--fg-2)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: 6 }}>Postback URL</span>
             <input
               defaultValue={data.postbackUrl ?? ""}
-              onBlur={(e) => update.mutate({ id, postbackUrl: e.target.value || null })}
+              onBlur={e => update.mutate({ id, postbackUrl: e.target.value || null })}
               placeholder="http://tracker.example.com/?click_id={sub_id}&status={status}"
-              className="block border rounded px-2 py-1 mt-1 w-full"
+              style={{ ...inputStyle(theme), width: "100%" }}
             />
           </label>
-          <label className="block">
-            <span className="text-sm">HMAC secret (optional)</span>
+          <label style={{ display: "block" }}>
+            <span style={{ fontSize: 10, fontFamily: "var(--mono)", color: "var(--fg-2)", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: 6 }}>HMAC secret (optional)</span>
             <input
               defaultValue={data.postbackSecret ?? ""}
-              onBlur={(e) => update.mutate({ id, postbackSecret: e.target.value || null })}
-              className="block border rounded px-2 py-1 mt-1 w-full"
+              onBlur={e => update.mutate({ id, postbackSecret: e.target.value || null })}
+              style={{ ...inputStyle(theme), width: "100%" }}
             />
           </label>
-          <fieldset>
-            <legend className="text-sm mb-1">Events</legend>
-            {["lead_pushed", "accepted", "declined", "ftd", "failed"].map((ev) => (
-              <label key={ev} className="block">
-                <input
-                  type="checkbox"
-                  defaultChecked={data.postbackEvents.includes(ev)}
-                  onChange={(e) => {
-                    const next = e.target.checked
-                      ? [...data.postbackEvents, ev]
-                      : data.postbackEvents.filter((x) => x !== ev);
-                    update.mutate({ id, postbackEvents: next as never });
-                  }}
-                />{" "}
-                {ev}
-              </label>
-            ))}
+          <fieldset style={{ border: "1px solid var(--bd-1)", borderRadius: 4, padding: 12 }}>
+            <legend style={{ fontSize: 10, fontFamily: "var(--mono)", color: "var(--fg-2)", letterSpacing: "0.08em", textTransform: "uppercase", padding: "0 6px" }}>Events</legend>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {EVENT_KINDS.map(ev => (
+                <label key={ev} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12, fontFamily: "var(--mono)" }}>
+                  <input
+                    type="checkbox"
+                    defaultChecked={data.postbackEvents.includes(ev)}
+                    onChange={e => {
+                      const next = e.target.checked
+                        ? [...data.postbackEvents, ev]
+                        : data.postbackEvents.filter(x => x !== ev);
+                      update.mutate({ id, postbackEvents: next as never });
+                    }}
+                  />
+                  {ev}
+                </label>
+              ))}
+            </div>
           </fieldset>
         </div>
       )}
 
       {tab === "history" && (
-        <table className="w-full text-sm">
-          <thead>
-            <tr>
-              <th className="text-left">When</th>
-              <th>Event</th>
-              <th>URL</th>
-              <th>Status</th>
-              <th>Delivered</th>
-              <th>Attempts</th>
-            </tr>
-          </thead>
+        <table style={{ width: "100%", fontSize: 11 }}>
+          <thead><tr style={{ textAlign: "left", color: "var(--fg-2)", fontFamily: "var(--mono)", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+            <th style={{ padding: "8px 0" }}>when</th><th>event</th><th>url</th><th>status</th><th>delivered</th><th>attempts</th>
+          </tr></thead>
           <tbody>
-            {data.outboundPostbacks.map((o) => (
-              <tr key={o.id} className="border-b">
-                <td>{new Date(o.createdAt).toLocaleString()}</td>
-                <td>{o.event}</td>
-                <td className="truncate max-w-md">{o.url}</td>
-                <td>{o.httpStatus ?? "—"}</td>
+            {data.outboundPostbacks.map(o => (
+              <tr key={o.id} style={{ borderTop: "1px solid var(--bd-1)" }}>
+                <td style={{ padding: "6px 0", fontFamily: "var(--mono)", color: "var(--fg-2)" }}>{new Date(o.createdAt).toLocaleString()}</td>
+                <td><Pill size="xs">{o.event}</Pill></td>
+                <td style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--fg-2)", maxWidth: 360, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{o.url}</td>
+                <td style={{ fontFamily: "var(--mono)" }}>{o.httpStatus ?? "—"}</td>
                 <td>{o.deliveredAt ? "✓" : "✗"}</td>
-                <td>{o.attemptN}</td>
+                <td style={{ fontFamily: "var(--mono)" }}>{o.attemptN}</td>
               </tr>
             ))}
           </tbody>
