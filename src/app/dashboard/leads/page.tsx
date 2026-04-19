@@ -18,6 +18,18 @@ export default function LeadsPage() {
   const [newIds, setNewIds] = useState<Set<string>>(new Set());
   const seen = useRef<Set<string>>(new Set());
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { setSelected(null); return; }
+      if (e.key === "/" && !(e.target as HTMLElement).matches("input, textarea, select")) {
+        e.preventDefault();
+        (document.querySelector('input[placeholder*="trace_id"]') as HTMLInputElement | null)?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   const list = trpc.lead.list.useQuery(
     {
       page: 1, pageSize: 200,
