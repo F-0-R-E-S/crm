@@ -8,12 +8,12 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
+  id           String     @id @default(cuid())
+  email        String     @unique
   passwordHash String
-  role         UserRole @default(OPERATOR)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  role         UserRole   @default(OPERATOR)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
   auditLogs    AuditLog[]
 }
 
@@ -36,6 +36,7 @@ model Affiliate {
   apiKeys           ApiKey[]
   leads             Lead[]
   outboundPostbacks OutboundPostback[]
+
   @@index([isActive])
 }
 
@@ -49,6 +50,7 @@ model ApiKey {
   isRevoked   Boolean   @default(false)
   createdAt   DateTime  @default(now())
   affiliate   Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
   @@index([affiliateId, isRevoked])
 }
 
@@ -74,6 +76,7 @@ model Broker {
   updatedAt          DateTime       @updatedAt
   rotationRules      RotationRule[]
   leads              Lead[]
+
   @@index([isActive])
 }
 
@@ -97,16 +100,17 @@ model RotationRule {
   priority Int
   isActive Boolean @default(true)
   broker   Broker  @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
   @@unique([geo, brokerId])
   @@index([geo, isActive, priority])
 }
 
 model Lead {
-  id                String      @id @default(cuid())
+  id                String             @id @default(cuid())
   externalLeadId    String?
   affiliateId       String
   brokerId          String?
-  state             LeadState   @default(NEW)
+  state             LeadState          @default(NEW)
   rejectReason      String?
   firstName         String?
   lastName          String?
@@ -118,21 +122,22 @@ model Lead {
   ip                String
   landingUrl        String?
   subId             String?
-  utm               Json        @default("{}")
+  utm               Json               @default("{}")
   eventTs           DateTime
   brokerExternalId  String?
   lastBrokerStatus  String?
   lastPushAt        DateTime?
   acceptedAt        DateTime?
   ftdAt             DateTime?
-  traceId           String      @unique
-  receivedAt        DateTime    @default(now())
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  affiliate         Affiliate   @relation(fields: [affiliateId], references: [id])
-  broker            Broker?     @relation(fields: [brokerId], references: [id])
+  traceId           String             @unique
+  receivedAt        DateTime           @default(now())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  affiliate         Affiliate          @relation(fields: [affiliateId], references: [id])
+  broker            Broker?            @relation(fields: [brokerId], references: [id])
   events            LeadEvent[]
   outboundPostbacks OutboundPostback[]
+
   @@index([affiliateId, createdAt])
   @@index([brokerId, createdAt])
   @@index([geo, state])
@@ -161,6 +166,7 @@ model LeadEvent {
   meta      Json          @default("{}")
   createdAt DateTime      @default(now())
   lead      Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
   @@index([leadId, createdAt])
 }
 
@@ -179,4 +185,104 @@ enum LeadEventKind {
   MANUAL_OVERRIDE
   OUTBOUND_POSTBACK_SENT
   OUTBOUND_POSTBACK_FAILED
+}
+
+model IdempotencyKey {
+  key          String   @id
+  affiliateId  String
+  leadId       String?
+  responseCode Int
+  responseBody Json
+  createdAt    DateTime @default(now())
+  expiresAt    DateTime
+
+  @@unique([affiliateId, key])
+  @@index([expiresAt])
+}
+
+model DailyCap {
+  id      String   @id @default(cuid())
+  scope   CapScope
+  scopeId String
+  day     DateTime
+  count   Int      @default(0)
+
+  @@unique([scope, scopeId, day])
+  @@index([day])
+}
+
+enum CapScope {
+  AFFILIATE
+  BROKER
+}
+
+model Blacklist {
+  id        String        @id @default(cuid())
+  kind      BlacklistKind
+  value     String
+  reason    String?
+  createdBy String?
+  createdAt DateTime      @default(now())
+
+  @@unique([kind, value])
+  @@index([kind])
+}
+
+enum BlacklistKind {
+  IP_CIDR
+  IP_EXACT
+  EMAIL_DOMAIN
+  PHONE_E164
+}
+
+model PostbackReceipt {
+  id        String   @id @default(cuid())
+  brokerId  String
+  payload   Json
+  headers   Json
+  verified  Boolean
+  leadId    String?
+  traceId   String
+  createdAt DateTime @default(now())
+
+  @@index([brokerId, createdAt])
+  @@index([leadId])
+}
+
+model OutboundPostback {
+  id           String    @id @default(cuid())
+  leadId       String
+  affiliateId  String
+  event        String
+  url          String
+  httpStatus   Int?
+  requestBody  Json?
+  responseBody Json?
+  errorMessage String?
+  attemptN     Int       @default(1)
+  deliveredAt  DateTime?
+  nextRetryAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lead         Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  affiliate    Affiliate @relation(fields: [affiliateId], references: [id])
+
+  @@index([affiliateId, createdAt])
+  @@index([leadId, createdAt])
+  @@index([deliveredAt, nextRetryAt])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  entity    String
+  entityId  String?
+  diff      Json     @default("{}")
+  traceId   String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([entity, entityId])
 }
