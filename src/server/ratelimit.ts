@@ -31,6 +31,9 @@ export async function checkRateLimit(
   key: string,
   opts: RateLimitOpts,
 ): Promise<{ allowed: boolean; retryAfterSec: number }> {
+  if (opts.capacity <= 0 || opts.refillPerSec <= 0) {
+    throw new Error("rate limit opts invalid: capacity and refillPerSec must be > 0");
+  }
   const now = Math.floor(Date.now() / 1000);
   const res = (await redis.eval(SCRIPT, 1, key, opts.capacity, opts.refillPerSec, now)) as [
     number,
