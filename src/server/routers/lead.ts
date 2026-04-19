@@ -1,3 +1,4 @@
+import { funnelCounts } from "@/lib/funnel-counts";
 import { writeAuditLog } from "@/server/audit";
 import { JOB_NAMES, getBoss, startBossOnce } from "@/server/jobs/queue";
 import { protectedProcedure, router } from "@/server/trpc";
@@ -144,4 +145,63 @@ export const leadRouter = router({
       });
       return { ok: true };
     }),
+
+  funnelCounts: protectedProcedure.query(async ({ ctx }) => {
+    const since = new Date(Date.now() - 24 * 3600 * 1000);
+    const leads = await ctx.prisma.lead.findMany({
+      where: { createdAt: { gte: since } },
+      select: { state: true, rejectReason: true },
+    });
+    return funnelCounts(leads as never);
+  }),
+
+  brokerPerformance: protectedProcedure.query(async ({ ctx }) => {
+    const since = new Date(Date.now() - 7 * 24 * 3600 * 1000);
+    const brokers = await ctx.prisma.broker.findMany({
+      include: {
+        leads: { where: { createdAt: { gte: since } }, select: { state: true, createdAt: true } },
+      },
+    });
+    return brokers.map((b) => {
+      const pushed = b.leads.filter((l) =>
+        ["PUSHED", "ACCEPTED", "FTD", "DECLINED"].includes(l.state),
+      ).length;
+      const ftd = b.leads.filter((l) => l.state === "FTD").length;
+      const failed = b.leads.filter((l) => l.state === "FAILED").length;
+      const days: number[] = Array.from({ length: 7 }, () => 0);
+      for (const l of b.leads) {
+        const daysAgo = Math.floor((Date.now() - l.createdAt.getTime()) / (24 * 3600 * 1000));
+        if (daysAgo < 7) days[6 - daysAgo]++;
+      }
+      return {
+        id: b.id,
+        name: b.name,
+        pushed,
+        ftd,
+        failed,
+        last7: days,
+        ftdPct: pushed > 0 ? Math.round((ftd / pushed) * 1000) / 10 : 0,
+      };
+    });
+  }),
+
+  topGeos: protectedProcedure.query(async ({ ctx }) => {
+    const since = new Date(Date.now() - 24 * 3600 * 1000);
+    const groups = await ctx.prisma.lead.groupBy({
+      by: ["geo", "state"],
+      where: { createdAt: { gte: since } },
+      _count: { _all: true },
+    });
+    const byGeo = new Map<string, { volume: number; ftd: number }>();
+    for (const g of groups) {
+      const cur = byGeo.get(g.geo) ?? { volume: 0, ftd: 0 };
+      cur.volume += g._count._all;
+      if (g.state === "FTD") cur.ftd += g._count._all;
+      byGeo.set(g.geo, cur);
+    }
+    return Array.from(byGeo.entries())
+      .map(([geo, v]) => ({ geo, ...v }))
+      .sort((a, b) => b.volume - a.volume)
+      .slice(0, 8);
+  }),
 });
