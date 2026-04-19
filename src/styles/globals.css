@@ -1,8 +1,84 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap");
+
+:root {
+  --sans: "Inter", system-ui, -apple-system, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; font-family: var(--sans); }
+
+:root, body {
+  --bg-0: #1a1c1e;
+  --bg-1: #202326;
+  --bg-2: #262a2e;
+  --bg-3: #2e3337;
+  --bg-4: #363c41;
+  --bd-1: rgba(255,255,255,0.07);
+  --bd-2: rgba(255,255,255,0.11);
+  --bd-3: rgba(255,255,255,0.17);
+  --fg-0: #eef0f2;
+  --fg-1: rgba(238,240,242,0.70);
+  --fg-2: rgba(238,240,242,0.50);
+  --fg-3: rgba(238,240,242,0.32);
+  --accent: oklch(78% 0.14 150);
+  --warn: oklch(80% 0.14 75);
+  --danger: oklch(72% 0.14 25);
+  --info: oklch(74% 0.13 230);
+  --ink: #14181b;
+}
+
+body.light {
+  --bg-0: #f5f3ef;
+  --bg-1: #ffffff;
+  --bg-2: #faf8f4;
+  --bg-3: #eeebe5;
+  --bg-4: #f0ede7;
+  --bd-1: rgba(20,24,27,0.08);
+  --bd-2: rgba(20,24,27,0.13);
+  --bd-3: rgba(20,24,27,0.22);
+  --fg-0: #14181b;
+  --fg-1: rgba(20,24,27,0.68);
+  --fg-2: rgba(20,24,27,0.48);
+  --fg-3: rgba(20,24,27,0.30);
+}
+
+body {
+  background: var(--bg-0);
+  color: var(--fg-0);
+  overflow: hidden;
+  font-size: 14px;
+}
+
+button, input, select, textarea { font-family: inherit; }
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(150,150,150,0.22); border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(150,150,150,0.38); }
+::selection { background: rgba(180,200,170,0.25); }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
+}
+.fade-in { animation: fadeIn 200ms ease-out; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.pulse { animation: pulse 1.4s ease-in-out infinite; }
+
+/* New-row highlight for leads grid (Task 20) */
+@keyframes newRowBarFade {
+  from { background: oklch(78% 0.14 150); }
+  to   { background: transparent; }
+}
+@keyframes newRowBgFade {
+  from { background: rgba(120, 210, 150, 0.08); }
+  to   { background: transparent; }
+}
+.new-row-bar { animation: newRowBarFade 1800ms ease-out forwards; }
+.new-row-bg  { animation: newRowBgFade 1800ms ease-out forwards; }
+
+/* Tailwind layer reset we keep */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-html,
-body {
-  height: 100%;
-}
