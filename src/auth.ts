@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
+import type { UserRole } from "@prisma/client";
 import { prisma } from "@/server/db";
 
 const credentialsSchema = z.object({
@@ -42,8 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.uid = user.id;
-        const dbUser = await prisma.user.findUnique({ where: { id: user.id }, select: { role: true } });
-        token.role = dbUser?.role;
+        token.role = (user as { role?: UserRole }).role;
       }
       return token;
     },
