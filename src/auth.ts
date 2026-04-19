@@ -1,9 +1,9 @@
+import { prisma } from "@/server/db";
+import type { UserRole } from "@prisma/client";
+import bcrypt from "bcryptjs";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
 import { z } from "zod";
-import type { UserRole } from "@prisma/client";
-import { prisma } from "@/server/db";
 
 const credentialsSchema = z.object({
   email: z.string().email(),

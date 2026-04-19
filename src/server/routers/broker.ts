@@ -1,9 +1,9 @@
-import { z } from "zod";
-import { router, protectedProcedure, adminProcedure } from "@/server/trpc";
 import { writeAuditLog } from "@/server/audit";
-import { buildPayload } from "@/server/broker-adapter/template";
 import { applyBrokerAuth } from "@/server/broker-adapter/auth";
 import { pushToBroker } from "@/server/broker-adapter/push";
+import { buildPayload } from "@/server/broker-adapter/template";
+import { adminProcedure, protectedProcedure, router } from "@/server/trpc";
+import { z } from "zod";
 
 const BrokerInput = z.object({
   name: z.string().min(1),
@@ -27,9 +27,9 @@ export const brokerRouter = router({
   list: protectedProcedure.query(async ({ ctx }) =>
     ctx.prisma.broker.findMany({ orderBy: { createdAt: "desc" } }),
   ),
-  byId: protectedProcedure.input(z.object({ id: z.string() })).query(({ ctx, input }) =>
-    ctx.prisma.broker.findUniqueOrThrow({ where: { id: input.id } }),
-  ),
+  byId: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(({ ctx, input }) => ctx.prisma.broker.findUniqueOrThrow({ where: { id: input.id } })),
   create: adminProcedure.input(BrokerInput).mutation(async ({ ctx, input }) => {
     const row = await ctx.prisma.broker.create({ data: input as never });
     await writeAuditLog({
@@ -55,36 +55,34 @@ export const brokerRouter = router({
       });
       return after;
     }),
-  testSend: adminProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const b = await ctx.prisma.broker.findUniqueOrThrow({ where: { id: input.id } });
-      const body = buildPayload(
-        {
-          firstName: "Test",
-          lastName: "Lead",
-          email: "test@example.com",
-          phone: "+10000000000",
-          geo: "XX",
-        } as never,
-        b.fieldMapping as Record<string, string>,
-        b.staticPayload as Record<string, unknown>,
-      );
-      const authed = applyBrokerAuth(
-        b.endpointUrl,
-        b.headers as Record<string, string>,
-        b.authType,
-        b.authConfig as Record<string, unknown>,
-      );
-      const res = await pushToBroker({
-        url: authed.url,
-        method: b.httpMethod,
-        headers: authed.headers,
-        body,
-        responseIdPath: b.responseIdPath,
-        timeoutMs: 10_000,
-        maxAttempts: 1,
-      });
-      return res;
-    }),
+  testSend: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    const b = await ctx.prisma.broker.findUniqueOrThrow({ where: { id: input.id } });
+    const body = buildPayload(
+      {
+        firstName: "Test",
+        lastName: "Lead",
+        email: "test@example.com",
+        phone: "+10000000000",
+        geo: "XX",
+      } as never,
+      b.fieldMapping as Record<string, string>,
+      b.staticPayload as Record<string, unknown>,
+    );
+    const authed = applyBrokerAuth(
+      b.endpointUrl,
+      b.headers as Record<string, string>,
+      b.authType,
+      b.authConfig as Record<string, unknown>,
+    );
+    const res = await pushToBroker({
+      url: authed.url,
+      method: b.httpMethod,
+      headers: authed.headers,
+      body,
+      responseIdPath: b.responseIdPath,
+      timeoutMs: 10_000,
+      maxAttempts: 1,
+    });
+    return res;
+  }),
 });

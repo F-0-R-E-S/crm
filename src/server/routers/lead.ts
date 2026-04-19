@@ -1,7 +1,7 @@
-import { z } from "zod";
-import { router, protectedProcedure } from "@/server/trpc";
 import { writeAuditLog } from "@/server/audit";
-import { getBoss, JOB_NAMES, startBossOnce } from "@/server/jobs/queue";
+import { JOB_NAMES, getBoss, startBossOnce } from "@/server/jobs/queue";
+import { protectedProcedure, router } from "@/server/trpc";
+import { z } from "zod";
 
 const ListInput = z.object({
   page: z.number().int().min(1).default(1),
@@ -48,19 +48,17 @@ export const leadRouter = router({
     return { items, total };
   }),
 
-  byId: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      return ctx.prisma.lead.findUniqueOrThrow({
-        where: { id: input.id },
-        include: {
-          affiliate: true,
-          broker: true,
-          events: { orderBy: { createdAt: "asc" } },
-          outboundPostbacks: { orderBy: { createdAt: "desc" } },
-        },
-      });
-    }),
+  byId: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    return ctx.prisma.lead.findUniqueOrThrow({
+      where: { id: input.id },
+      include: {
+        affiliate: true,
+        broker: true,
+        events: { orderBy: { createdAt: "asc" } },
+        outboundPostbacks: { orderBy: { createdAt: "desc" } },
+      },
+    });
+  }),
 
   counters: protectedProcedure.query(async ({ ctx }) => {
     const today = new Date();

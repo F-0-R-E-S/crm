@@ -1,7 +1,7 @@
-import bcrypt from "bcryptjs";
-import { z } from "zod";
 import { writeAuditLog } from "@/server/audit";
 import { adminProcedure, router } from "@/server/trpc";
+import bcrypt from "bcryptjs";
+import { z } from "zod";
 
 export const userRouter = router({
   list: adminProcedure.query(({ ctx }) =>

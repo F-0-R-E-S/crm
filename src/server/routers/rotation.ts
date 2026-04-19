@@ -1,6 +1,6 @@
-import { z } from "zod";
-import { router, protectedProcedure, adminProcedure } from "@/server/trpc";
 import { writeAuditLog } from "@/server/audit";
+import { adminProcedure, protectedProcedure, router } from "@/server/trpc";
+import { z } from "zod";
 
 export const rotationRouter = router({
   listByGeo: protectedProcedure.query(async ({ ctx }) => {
@@ -47,8 +47,14 @@ export const rotationRouter = router({
       if (swapIdx < 0 || swapIdx >= siblings.length) return rule;
       const other = siblings[swapIdx];
       await ctx.prisma.$transaction([
-        ctx.prisma.rotationRule.update({ where: { id: rule.id }, data: { priority: other.priority } }),
-        ctx.prisma.rotationRule.update({ where: { id: other.id }, data: { priority: rule.priority } }),
+        ctx.prisma.rotationRule.update({
+          where: { id: rule.id },
+          data: { priority: other.priority },
+        }),
+        ctx.prisma.rotationRule.update({
+          where: { id: other.id },
+          data: { priority: rule.priority },
+        }),
       ]);
       await writeAuditLog({
         userId: ctx.userId,
@@ -75,15 +81,13 @@ export const rotationRouter = router({
       return row;
     }),
 
-  delete: adminProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      await ctx.prisma.rotationRule.delete({ where: { id: input.id } });
-      await writeAuditLog({
-        userId: ctx.userId,
-        action: "rotation.delete",
-        entity: "RotationRule",
-        entityId: input.id,
-      });
-    }),
+  delete: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    await ctx.prisma.rotationRule.delete({ where: { id: input.id } });
+    await writeAuditLog({
+      userId: ctx.userId,
+      action: "rotation.delete",
+      entity: "RotationRule",
+      entityId: input.id,
+    });
+  }),
 });

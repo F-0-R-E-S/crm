@@ -1,18 +1,23 @@
 import { prisma } from "@/server/db";
-import { signHmac } from "@/server/postback/hmac";
-import { renderPostbackUrl } from "./render-postback-url";
 import { writeLeadEvent } from "@/server/lead-event";
 import { logger } from "@/server/observability";
+import { signHmac } from "@/server/postback/hmac";
+import { renderPostbackUrl } from "./render-postback-url";
 
 export interface NotifyAffiliatePayload {
   leadId: string;
   event: string; // "lead_pushed" | "ftd" | "accepted" | "declined" | "failed"
 }
 
-function sleep(ms: number) { return new Promise((r) => setTimeout(r, ms)); }
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
 
 export async function handleNotifyAffiliate(payload: NotifyAffiliatePayload): Promise<void> {
-  const lead = await prisma.lead.findUnique({ where: { id: payload.leadId }, include: { affiliate: true } });
+  const lead = await prisma.lead.findUnique({
+    where: { id: payload.leadId },
+    include: { affiliate: true },
+  });
   if (!lead) return;
   const aff = lead.affiliate;
   if (!aff.postbackUrl || !aff.postbackEvents.includes(payload.event)) return;
@@ -42,10 +47,30 @@ export async function handleNotifyAffiliate(payload: NotifyAffiliatePayload): Pr
       lastStatus = res.status;
       if (res.status >= 200 && res.status < 300) {
         await prisma.outboundPostback.create({
-          data: { leadId: lead.id, affiliateId: aff.id, event: payload.event, url, httpStatus: res.status, deliveredAt: new Date(), attemptN: attempt },
+          data: {
+            leadId: lead.id,
+            affiliateId: aff.id,
+            event: payload.event,
+            url,
+            httpStatus: res.status,
+            deliveredAt: new Date(),
+            attemptN: attempt,
+          },
         });
-        await writeLeadEvent(lead.id, "OUTBOUND_POSTBACK_SENT", { event: payload.event, httpStatus: res.status, attemptN: attempt });
-        logger.info({ event: "outbound_postback_sent", lead_id: lead.id, pb_event: payload.event, status: res.status }, "outbound ok");
+        await writeLeadEvent(lead.id, "OUTBOUND_POSTBACK_SENT", {
+          event: payload.event,
+          httpStatus: res.status,
+          attemptN: attempt,
+        });
+        logger.info(
+          {
+            event: "outbound_postback_sent",
+            lead_id: lead.id,
+            pb_event: payload.event,
+            status: res.status,
+          },
+          "outbound ok",
+        );
         return;
       }
       if (res.status >= 400 && res.status < 500) {
@@ -61,7 +86,18 @@ export async function handleNotifyAffiliate(payload: NotifyAffiliatePayload): Pr
   }
 
   await prisma.outboundPostback.create({
-    data: { leadId: lead.id, affiliateId: aff.id, event: payload.event, url, httpStatus: lastStatus, errorMessage: lastErr, attemptN: 3 },
+    data: {
+      leadId: lead.id,
+      affiliateId: aff.id,
+      event: payload.event,
+      url,
+      httpStatus: lastStatus,
+      errorMessage: lastErr,
+      attemptN: 3,
+    },
   });
-  await writeLeadEvent(lead.id, "OUTBOUND_POSTBACK_FAILED", { event: payload.event, error: lastErr });
+  await writeLeadEvent(lead.id, "OUTBOUND_POSTBACK_FAILED", {
+    event: payload.event,
+    error: lastErr,
+  });
 }

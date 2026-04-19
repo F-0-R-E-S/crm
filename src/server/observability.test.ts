@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { runWithTrace, getTraceId, logger } from "./observability";
+import { getTraceId, logger, runWithTrace } from "./observability";
 
 describe("observability", () => {
   it("returns undefined outside of a trace context", () => {

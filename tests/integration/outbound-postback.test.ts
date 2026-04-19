@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { prisma } from "@/server/db";
-import { resetDb } from "../helpers/db";
-import { startMockTracker, type MockTracker } from "../helpers/mock-affiliate-tracker";
 import { handleNotifyAffiliate } from "@/server/jobs/notify-affiliate";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { resetDb } from "../helpers/db";
+import { type MockTracker, startMockTracker } from "../helpers/mock-affiliate-tracker";
 
 describe("handleNotifyAffiliate", () => {
   let tr: MockTracker;
@@ -19,7 +19,15 @@ describe("handleNotifyAffiliate", () => {
       },
     });
     const lead = await prisma.lead.create({
-      data: { affiliateId: aff.id, geo: "UA", ip: "1.1.1.1", eventTs: new Date(), traceId: "op-t", subId: "click-1", state: "PUSHED" },
+      data: {
+        affiliateId: aff.id,
+        geo: "UA",
+        ip: "1.1.1.1",
+        eventTs: new Date(),
+        traceId: "op-t",
+        subId: "click-1",
+        state: "PUSHED",
+      },
     });
     leadId = lead.id;
   });

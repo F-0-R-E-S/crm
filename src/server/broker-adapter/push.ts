@@ -21,7 +21,9 @@ export interface PushResult {
   error?: string;
 }
 
-function sleep(ms: number) { return new Promise((r) => setTimeout(r, ms)); }
+function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
 
 export async function pushToBroker(opts: PushOpts): Promise<PushResult> {
   const backoffs = opts.backoffMs ?? [1000, 2000, 4000];
@@ -49,13 +51,30 @@ export async function pushToBroker(opts: PushOpts): Promise<PushResult> {
           // preventEval: true disables JS eval in path strings (security hardening).
           // In jsonpath-plus v10, the types omit this legacy option but runtime still honors it.
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const matches = (JSONPath as any)({ path: opts.responseIdPath, json: raw, preventEval: true }) as unknown[];
+          const matches = (JSONPath as any)({
+            path: opts.responseIdPath,
+            json: raw,
+            preventEval: true,
+          }) as unknown[];
           if (matches.length) externalId = String(matches[0]);
         }
-        return { success: true, httpStatus: res.status, durationMs: duration, attemptN: attempt, externalId, rawResponse: raw };
+        return {
+          success: true,
+          httpStatus: res.status,
+          durationMs: duration,
+          attemptN: attempt,
+          externalId,
+          rawResponse: raw,
+        };
       }
       if (res.status >= 400 && res.status < 500) {
-        return { success: false, httpStatus: res.status, durationMs: duration, attemptN: attempt, error: `http ${res.status}` };
+        return {
+          success: false,
+          httpStatus: res.status,
+          durationMs: duration,
+          attemptN: attempt,
+          error: `http ${res.status}`,
+        };
       }
       lastErr = `http ${res.status}`;
     } catch (e) {
@@ -64,5 +83,11 @@ export async function pushToBroker(opts: PushOpts): Promise<PushResult> {
     }
     if (attempt < opts.maxAttempts) await sleep(backoffs[attempt - 1] ?? 4000);
   }
-  return { success: false, httpStatus: lastStatus, durationMs: 0, attemptN: opts.maxAttempts, error: lastErr };
+  return {
+    success: false,
+    httpStatus: lastStatus,
+    durationMs: 0,
+    attemptN: opts.maxAttempts,
+    error: lastErr,
+  };
 }

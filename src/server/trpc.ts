@@ -1,6 +1,6 @@
-import { initTRPC, TRPCError } from "@trpc/server";
-import superjson from "superjson";
 import { auth } from "@/auth";
+import { TRPCError, initTRPC } from "@trpc/server";
+import superjson from "superjson";
 import { prisma } from "./db";
 
 export async function createTRPCContext() {

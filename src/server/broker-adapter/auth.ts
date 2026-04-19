@@ -21,7 +21,10 @@ export function applyBrokerAuth(
       return { url, headers: h };
     case "API_KEY_QUERY": {
       const sep = url.includes("?") ? "&" : "?";
-      return { url: `${url}${sep}${authConfig.paramName as string}=${encodeURIComponent(authConfig.token as string)}`, headers: h };
+      return {
+        url: `${url}${sep}${authConfig.paramName as string}=${encodeURIComponent(authConfig.token as string)}`,
+        headers: h,
+      };
     }
     default:
       return { url, headers: h };

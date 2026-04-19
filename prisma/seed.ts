@@ -1,6 +1,6 @@
+import { createHash, randomBytes } from "node:crypto";
 import { PrismaClient, UserRole } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { randomBytes, createHash } from "node:crypto";
 
 const prisma = new PrismaClient();
 
@@ -27,7 +27,8 @@ async function main() {
       name: "Test Affiliate",
       contactEmail: "aff@example.com",
       totalDailyCap: 1000,
-      postbackUrl: "http://localhost:4001/tracker?click_id={sub_id}&status={status}&payout={payout}",
+      postbackUrl:
+        "http://localhost:4001/tracker?click_id={sub_id}&status={status}&payout={payout}",
       postbackEvents: ["lead_pushed", "ftd", "declined"],
     },
   });
@@ -53,7 +54,13 @@ async function main() {
       name: "Mock Broker",
       dailyCap: 500,
       endpointUrl: "http://localhost:4000/push",
-      fieldMapping: { firstName: "first_name", lastName: "last_name", email: "email", phone: "phone", geo: "country" },
+      fieldMapping: {
+        firstName: "first_name",
+        lastName: "last_name",
+        email: "email",
+        phone: "phone",
+        geo: "country",
+      },
       postbackSecret: "seed-secret-change-me",
       postbackLeadIdPath: "lead_id",
       postbackStatusPath: "status",
@@ -71,4 +78,9 @@ async function main() {
   console.log("seed complete");
 }
 
-main().catch((e) => { console.error(e); process.exit(1); }).finally(() => prisma.$disconnect());
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(() => prisma.$disconnect());

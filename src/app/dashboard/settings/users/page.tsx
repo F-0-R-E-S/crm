@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
 import { trpc } from "@/lib/trpc";
+import { useState } from "react";
 
 export default function UsersPage() {
   const utils = trpc.useUtils();

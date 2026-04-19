@@ -8,7 +8,12 @@ describe("buildPayload", () => {
       { firstName: "first_name", phone: "phone", geo: "country" } as never,
       { partner_id: 42 } as never,
     );
-    expect(out).toEqual({ first_name: "Ivan", phone: "+380671234567", country: "UA", partner_id: 42 });
+    expect(out).toEqual({
+      first_name: "Ivan",
+      phone: "+380671234567",
+      country: "UA",
+      partner_id: 42,
+    });
   });
 
   it("ignores unmapped lead fields", () => {

@@ -1,4 +1,4 @@
-import { createServer, type Server } from "node:http";
+import { type Server, createServer } from "node:http";
 
 export interface MockTracker {
   server: Server;
@@ -16,6 +16,16 @@ export async function startMockTracker(): Promise<MockTracker> {
     res.statusCode = nextStatus;
     res.end("ok");
   });
-  const port = await new Promise<number>((r) => server.listen(0, () => r((server.address() as { port: number }).port)));
-  return { server, port, hits, respondWith: (s) => { nextStatus = s; }, stop: () => new Promise((r) => server.close(() => r())) };
+  const port = await new Promise<number>((r) =>
+    server.listen(0, () => r((server.address() as { port: number }).port)),
+  );
+  return {
+    server,
+    port,
+    hits,
+    respondWith: (s) => {
+      nextStatus = s;
+    },
+    stop: () => new Promise((r) => server.close(() => r())),
+  };
 }

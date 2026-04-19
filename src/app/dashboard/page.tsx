@@ -1,6 +1,6 @@
 "use client";
-import Link from "next/link";
 import { trpc } from "@/lib/trpc";
+import Link from "next/link";
 
 function Tile({ label, value, href }: { label: string; value: number; href: string }) {
   return (
@@ -19,7 +19,11 @@ export default function DashboardHome() {
       <Tile label="Leads today" value={data.leadsToday} href="/dashboard/leads" />
       <Tile label="FTDs today" value={data.ftdsToday} href="/dashboard/leads?state=FTD" />
       <Tile label="Active brokers" value={data.activeBrokers} href="/dashboard/brokers" />
-      <Tile label="Rejects today" value={data.rejectsToday} href="/dashboard/leads?state=REJECTED" />
+      <Tile
+        label="Rejects today"
+        value={data.rejectsToday}
+        href="/dashboard/leads?state=REJECTED"
+      />
     </div>
   );
 }
