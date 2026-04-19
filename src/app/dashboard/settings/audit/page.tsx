@@ -1,57 +1,53 @@
 "use client";
-import { trpc } from "@/lib/trpc";
 import { useState } from "react";
+import { btnStyle, inputStyle, Pill } from "@/components/router-crm";
+import { trpc } from "@/lib/trpc";
+import { useThemeCtx } from "@/components/shell/ThemeProvider";
 
 export default function AuditPage() {
+  const { theme } = useThemeCtx();
   const [entity, setEntity] = useState("");
   const [page, setPage] = useState(1);
   const { data } = trpc.audit.list.useQuery({ page, entity: entity || undefined });
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
 
   return (
-    <div>
-      <h1 className="text-xl font-semibold mb-4">Audit log</h1>
-      <div className="flex gap-2 mb-3">
+    <div style={{ padding: "20px 28px", maxWidth: 1100 }}>
+      <h1 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em", margin: "0 0 16px" }}>Audit log</h1>
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
         <input
           value={entity}
-          onChange={(e) => {
-            setEntity(e.target.value);
-            setPage(1);
-          }}
-          placeholder="Entity (e.g., Broker)"
-          className="border rounded px-2 py-1"
+          onChange={e => { setEntity(e.target.value); setPage(1); }}
+          placeholder="Entity (e.g. Broker, Affiliate, Lead)"
+          style={{ ...inputStyle(theme), width: 280 }}
         />
       </div>
-      <table className="w-full text-sm">
-        <thead className="text-left border-b">
-          <tr>
-            <th className="py-2">When</th>
-            <th>User</th>
-            <th>Action</th>
-            <th>Entity</th>
-            <th>Diff</th>
-          </tr>
-        </thead>
+      <table style={{ width: "100%", fontSize: 12 }}>
+        <thead><tr style={{ textAlign: "left", color: "var(--fg-2)", fontFamily: "var(--mono)", fontSize: 10, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+          <th style={{ padding: "8px 0" }}>when</th><th>user</th><th>action</th><th>entity</th><th>diff</th>
+        </tr></thead>
         <tbody>
-          {data?.items.map((r) => (
-            <tr key={r.id} className="border-b align-top">
-              <td className="py-2">{new Date(r.createdAt).toLocaleString()}</td>
+          {data?.items.map(r => (
+            <tr key={r.id} style={{ borderTop: "1px solid var(--bd-1)", verticalAlign: "top" }}>
+              <td style={{ padding: "8px 0", fontFamily: "var(--mono)", color: "var(--fg-2)", fontSize: 11 }}>
+                {new Date(r.createdAt).toLocaleString()}
+              </td>
               <td>{r.user.email}</td>
-              <td className="font-mono">{r.action}</td>
+              <td><code style={{ fontFamily: "var(--mono)", fontSize: 11 }}>{r.action}</code></td>
               <td>
-                {r.entity}
-                {r.entityId ? ` / ${r.entityId}` : ""}
+                <Pill size="xs">{r.entity}</Pill>
+                {r.entityId && <span style={{ fontFamily: "var(--mono)", color: "var(--fg-2)", fontSize: 10, marginLeft: 6 }}>{r.entityId.slice(0, 6)}…</span>}
               </td>
               <td>
                 <button
                   type="button"
-                  onClick={() => setExpanded((s) => ({ ...s, [r.id]: !s[r.id] }))}
-                  className="text-blue-600 text-xs"
+                  onClick={() => setExpanded(s => ({ ...s, [r.id]: !s[r.id] }))}
+                  style={{ ...btnStyle(theme), padding: "2px 8px", fontSize: 10 }}
                 >
                   {expanded[r.id] ? "hide" : "show"}
                 </button>
                 {expanded[r.id] && (
-                  <pre className="text-xs bg-gray-50 p-2 mt-1 whitespace-pre-wrap">
+                  <pre style={{ fontSize: 10, fontFamily: "var(--mono)", color: "var(--fg-2)", background: "rgba(255,255,255,0.03)", border: "1px solid var(--bd-1)", borderRadius: 4, padding: 8, marginTop: 6, whiteSpace: "pre-wrap" }}>
                     {JSON.stringify(r.diff, null, 2)}
                   </pre>
                 )}
@@ -60,25 +56,11 @@ export default function AuditPage() {
           ))}
         </tbody>
       </table>
-      <div className="mt-3 flex gap-2">
-        <button
-          type="button"
-          disabled={page <= 1}
-          onClick={() => setPage((p) => p - 1)}
-          className="border rounded px-3 py-1 disabled:opacity-50"
-        >
-          Prev
-        </button>
-        <span className="text-sm">Page {page}</span>
-        <button
-          type="button"
-          disabled={(data?.items.length ?? 0) < 50}
-          onClick={() => setPage((p) => p + 1)}
-          className="border rounded px-3 py-1 disabled:opacity-50"
-        >
-          Next
-        </button>
-        <span className="text-sm text-gray-500 ml-4">{data?.total ?? 0} total</span>
+      <div style={{ display: "flex", gap: 8, marginTop: 16, alignItems: "center" }}>
+        <button type="button" disabled={page <= 1} onClick={() => setPage(p => p - 1)} style={{ ...btnStyle(theme), opacity: page <= 1 ? 0.4 : 1 }}>Prev</button>
+        <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--fg-2)" }}>Page {page}</span>
+        <button type="button" disabled={(data?.items.length ?? 0) < 50} onClick={() => setPage(p => p + 1)} style={{ ...btnStyle(theme), opacity: (data?.items.length ?? 0) < 50 ? 0.4 : 1 }}>Next</button>
+        <span style={{ marginLeft: 16, fontFamily: "var(--mono)", fontSize: 11, color: "var(--fg-2)" }}>{data?.total ?? 0} total</span>
       </div>
     </div>
   );
