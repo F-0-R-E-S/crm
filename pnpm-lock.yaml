@@ -87,9 +87,6 @@ importers:
       '@types/bcryptjs':
         specifier: ^2.4.6
         version: 2.4.6
-      '@types/jsonpath-plus':
-        specifier: ^5.0.5
-        version: 5.0.5
       '@types/node':
         specifier: ^22.10.2
         version: 22.19.17
@@ -968,9 +965,6 @@ packages:
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
-
-  '@types/jsonpath-plus@5.0.5':
-    resolution: {integrity: sha512-aaqqDf5LcGOtAfEntO5qKZS6ixT0MpNhUXNwbVPdLf7ET9hKsufJq+buZr7eXSnWoLRyGzVj2Yz2hbjVSK3wsA==}
 
   '@types/methods@1.1.4':
     resolution: {integrity: sha512-ymXWVrDiCxTBE3+RIrrP533E70eA+9qu7zdWoHuOmGujkYtzf4HQF96b8nwHLqhuf4ykX61IGRIB38CC6/sImQ==}
@@ -2552,8 +2546,6 @@ snapshots:
   '@types/cookiejar@2.1.5': {}
 
   '@types/estree@1.0.8': {}
-
-  '@types/jsonpath-plus@5.0.5': {}
 
   '@types/methods@1.1.4': {}
 
