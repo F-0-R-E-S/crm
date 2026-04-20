@@ -10,6 +10,7 @@ import { leadRouter } from "./lead";
 import { manualReviewRouter } from "./manualReview";
 import { rotationRouter } from "./rotation";
 import { routingRouter } from "./routing";
+import { telegramRouter } from "./telegram";
 import { userRouter } from "./user";
 
 export const appRouter = router({
@@ -25,5 +26,6 @@ export const appRouter = router({
   manualReview: manualReviewRouter,
   rbacPreview: rbacPreviewRouter,
   analytics: analyticsRouter,
+  telegram: telegramRouter,
 });
 export type AppRouter = typeof appRouter;
