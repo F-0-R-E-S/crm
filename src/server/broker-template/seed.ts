@@ -1,5 +1,15 @@
 import { prisma } from "@/server/db";
 import type { Prisma } from "@prisma/client";
+import { binarycentStyle } from "./seeds/binarycent-style";
+import { expertoptionStyle } from "./seeds/expertoption-style";
+import { fbsStyle } from "./seeds/fbs-style";
+import { iqoptionStyle } from "./seeds/iqoption-style";
+import { octafxStyle } from "./seeds/octafx-style";
+import { olymptradeStyle } from "./seeds/olymptrade-style";
+import { plus500Style } from "./seeds/plus500-style";
+import { pocketoptionStyle } from "./seeds/pocketoption-style";
+import { quotexStyle } from "./seeds/quotex-style";
+import { xmStyle } from "./seeds/xm-style";
 
 type SeedRow = Prisma.BrokerTemplateCreateInput;
 
@@ -138,6 +148,16 @@ export async function seedBrokerTemplates(): Promise<number> {
     row(18, "gambling", ["PT"]),
     row(19, "gambling", ["CZ", "SK"]),
     row(20, "gambling", ["GR", "CY"]),
+    octafxStyle,
+    expertoptionStyle,
+    iqoptionStyle,
+    plus500Style,
+    fbsStyle,
+    binarycentStyle,
+    olymptradeStyle,
+    pocketoptionStyle,
+    quotexStyle,
+    xmStyle,
   ];
 
   let created = 0;
@@ -150,4 +170,16 @@ export async function seedBrokerTemplates(): Promise<number> {
     created++;
   }
   return created;
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  seedBrokerTemplates()
+    .then((n) => {
+      console.log(`seeded ${n} broker templates`);
+      process.exit(0);
+    })
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    });
 }

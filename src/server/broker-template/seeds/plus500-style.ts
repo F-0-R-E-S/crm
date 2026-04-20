@@ -1,0 +1,52 @@
+import type { Prisma } from "@prisma/client";
+
+export const plus500Style: Prisma.BrokerTemplateCreateInput = {
+  slug: "plus500-style-v1",
+  name: "Plus500-style (regulated EU/UK)",
+  vendor: "Plus500-style",
+  vertical: "forex",
+  protocol: "rest-json",
+  status: "active",
+  countries: ["DE", "UK", "AU"],
+  description: "Template modeled after Plus500's regulated-market CRM shape — Basic auth.",
+  defaultHttpMethod: "POST",
+  defaultHeaders: { "content-type": "application/json" },
+  defaultAuthType: "BASIC",
+  authConfigSchema: {
+    type: "object",
+    required: ["user", "password"],
+    properties: {
+      user: { type: "string", minLength: 3 },
+      password: { type: "string", minLength: 8 },
+    },
+  },
+  fieldMapping: {
+    firstName: "given_name",
+    lastName: "family_name",
+    email: "email_address",
+    phone: "phone_e164",
+    geo: "residency_country",
+    subId: "partner_ref",
+  },
+  requiredFields: ["given_name", "family_name", "email_address", "phone_e164", "residency_country"],
+  staticPayload: { compliance: { gdpr: true }, source: "gambchamp" },
+  responseIdPath: "$.customer.id",
+  postbackLeadIdPath: "$.customer_id",
+  postbackStatusPath: "$.lifecycle",
+  statusMapping: {
+    applied: "NEW",
+    approved: "ACCEPTED",
+    kyc_failed: "DECLINED",
+    funded: "FTD",
+  },
+  rateLimitPerMin: 30,
+  samplePayload: {
+    given_name: "Max",
+    family_name: "Mueller",
+    email_address: "max@t.io",
+    phone_e164: "+4915201234567",
+    residency_country: "DE",
+    partner_ref: "ref-plus-01",
+  },
+  sampleResponse: { customer: { id: "pl5-7788", lifecycle: "applied" } },
+};

@@ -1,0 +1,52 @@
+import type { Prisma } from "@prisma/client";
+
+export const pocketoptionStyle: Prisma.BrokerTemplateCreateInput = {
+  slug: "pocketoption-style-v1",
+  name: "PocketOption-style (emerging markets)",
+  vendor: "PocketOption-style",
+  vertical: "forex",
+  protocol: "rest-json",
+  status: "active",
+  countries: ["BR", "PH", "ZA"],
+  description: "PocketOption-style intake — X-API-Key header, thin payload.",
+  defaultHttpMethod: "POST",
+  defaultHeaders: { "content-type": "application/json" },
+  defaultAuthType: "API_KEY_HEADER",
+  authConfigSchema: {
+    type: "object",
+    required: ["headerName", "token"],
+    properties: {
+      headerName: { type: "string", default: "X-API-Key" },
+      token: { type: "string", minLength: 24 },
+    },
+  },
+  fieldMapping: {
+    firstName: "first_name",
+    lastName: "last_name",
+    email: "email",
+    phone: "phone",
+    geo: "country",
+    subId: "sub1",
+  },
+  requiredFields: ["first_name", "email", "phone", "country"],
+  staticPayload: { source: "gambchamp" },
+  responseIdPath: "$.result.user_id",
+  postbackLeadIdPath: "$.user_id",
+  postbackStatusPath: "$.event",
+  statusMapping: {
+    registration: "NEW",
+    confirmed: "ACCEPTED",
+    banned: "DECLINED",
+    deposit: "FTD",
+  },
+  rateLimitPerMin: 60,
+  samplePayload: {
+    first_name: "João",
+    last_name: "Santos",
+    email: "joao@t.io",
+    phone: "+5521991234567",
+    country: "BR",
+    sub1: "po-click",
+  },
+  sampleResponse: { result: { user_id: "po-445566", event: "registration" } },
+};

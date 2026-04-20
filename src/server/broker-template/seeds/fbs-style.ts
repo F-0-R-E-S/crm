@@ -1,0 +1,52 @@
+import type { Prisma } from "@prisma/client";
+
+export const fbsStyle: Prisma.BrokerTemplateCreateInput = {
+  slug: "fbs-style-v1",
+  name: "FBS-style (APAC form-encoded)",
+  vendor: "FBS-style",
+  vertical: "forex",
+  protocol: "rest-form",
+  status: "active",
+  countries: ["CN", "VN", "ID"],
+  description: "FBS-style intake — legacy form-urlencoded POST with API key in query string.",
+  defaultHttpMethod: "POST",
+  defaultHeaders: { "content-type": "application/x-www-form-urlencoded" },
+  defaultAuthType: "API_KEY_QUERY",
+  authConfigSchema: {
+    type: "object",
+    required: ["paramName", "token"],
+    properties: {
+      paramName: { type: "string", default: "api_key" },
+      token: { type: "string", minLength: 20 },
+    },
+  },
+  fieldMapping: {
+    firstName: "fname",
+    lastName: "lname",
+    email: "email",
+    phone: "mobile",
+    geo: "cc",
+    subId: "click_id",
+  },
+  requiredFields: ["fname", "lname", "email", "mobile", "cc"],
+  staticPayload: { platform: "gambchamp" },
+  responseIdPath: "$.client_id",
+  postbackLeadIdPath: "$.client_id",
+  postbackStatusPath: "$.state",
+  statusMapping: {
+    registered: "NEW",
+    active: "ACCEPTED",
+    blacklisted: "DECLINED",
+    funded: "FTD",
+  },
+  rateLimitPerMin: 45,
+  samplePayload: {
+    fname: "Chen",
+    lname: "Wei",
+    email: "chen@t.io",
+    mobile: "+8613912345678",
+    cc: "CN",
+    click_id: "fbs-click-1",
+  },
+  sampleResponse: { client_id: "fbs-556677", state: "registered" },
+};

@@ -1,0 +1,52 @@
+import type { Prisma } from "@prisma/client";
+
+export const expertoptionStyle: Prisma.BrokerTemplateCreateInput = {
+  slug: "expertoption-style-v1",
+  name: "ExpertOption-style (binary-options leaning)",
+  vendor: "ExpertOption-style",
+  vertical: "forex",
+  protocol: "rest-json",
+  status: "active",
+  countries: ["RU", "UA", "KZ"],
+  description: "Template modeled after ExpertOption's partner API — header API key auth.",
+  defaultHttpMethod: "POST",
+  defaultHeaders: { "content-type": "application/json" },
+  defaultAuthType: "API_KEY_HEADER",
+  authConfigSchema: {
+    type: "object",
+    required: ["headerName", "token"],
+    properties: {
+      headerName: { type: "string", default: "X-Partner-Key" },
+      token: { type: "string", minLength: 20 },
+    },
+  },
+  fieldMapping: {
+    firstName: "firstname",
+    lastName: "lastname",
+    email: "email",
+    phone: "phoneNumber",
+    geo: "geo",
+    subId: "partner_sub",
+  },
+  requiredFields: ["firstname", "lastname", "email", "phoneNumber", "geo"],
+  staticPayload: { partner_id: "gambchamp" },
+  responseIdPath: "$.result.trader_id",
+  postbackLeadIdPath: "$.trader_id",
+  postbackStatusPath: "$.status",
+  statusMapping: {
+    new: "NEW",
+    confirmed: "ACCEPTED",
+    spam: "DECLINED",
+    deposit: "FTD",
+  },
+  rateLimitPerMin: 60,
+  samplePayload: {
+    firstname: "Alex",
+    lastname: "Ivanov",
+    email: "alex@t.io",
+    phoneNumber: "+79991234567",
+    geo: "RU",
+    partner_sub: "aff-eo-001",
+  },
+  sampleResponse: { result: { trader_id: "eo-991234", status: "new" } },
+};
