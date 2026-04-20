@@ -28,6 +28,8 @@ export const JOB_NAMES = {
   autologinAttempt: "autologin-attempt",
   proxyHealth: "proxy-health",
   manualQueueDepthCheck: "manual-queue-depth-check",
+  analyticsRollDaily: "analytics-roll-daily",
+  analyticsRollHourly: "analytics-roll-hourly",
 } as const;
 
 const globalForBossStarted = globalThis as unknown as { bossStarted?: boolean };

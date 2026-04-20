@@ -1,4 +1,9 @@
 import "dotenv/config";
+import {
+  type AnalyticsRollPayload,
+  handleAnalyticsRollDaily,
+} from "./src/server/jobs/analytics-roll-daily";
+import { handleAnalyticsRollHourly } from "./src/server/jobs/analytics-roll-hourly";
 import { cleanupExpiredIdempotency } from "./src/server/jobs/cleanup-idempotency";
 import {
   type NotifyAffiliatePayload,
@@ -55,6 +60,18 @@ async function main() {
   await boss.work<AutologinAttemptPayload>(JOB_NAMES.autologinAttempt, async ([job]) => {
     await handleAutologinAttempt(job.data);
   });
+
+  await boss.work<AnalyticsRollPayload>(JOB_NAMES.analyticsRollDaily, async ([job]) => {
+    await handleAnalyticsRollDaily(job.data);
+  });
+
+  await boss.work<AnalyticsRollPayload>(JOB_NAMES.analyticsRollHourly, async ([job]) => {
+    await handleAnalyticsRollHourly(job.data);
+  });
+
+  // Schedules — pg-boss uses cron syntax
+  await boss.schedule(JOB_NAMES.analyticsRollDaily, "*/15 * * * *", {});
+  await boss.schedule(JOB_NAMES.analyticsRollHourly, "*/5 * * * *", {});
 
   // Every hour, sweep expired idempotency rows
   setInterval(async () => {
