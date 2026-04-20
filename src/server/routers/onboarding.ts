@@ -1,4 +1,5 @@
 import { prisma } from "@/server/db";
+import { probeBrokerEndpoint } from "@/server/onboarding/broker-health";
 import { protectedProcedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
 import type { Prisma } from "@prisma/client";
@@ -80,6 +81,31 @@ export const onboardingRouter = router({
         where: { id: orgId },
         data: { name: input.name, timezone: input.timezone, currency: input.currency },
       });
+    }),
+
+  healthCheckBroker: protectedProcedure
+    .input(
+      z.object({
+        url: z.string().url(),
+        method: z.enum(["GET", "POST"]).default("POST"),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      return probeBrokerEndpoint(input.url, input.method);
+    }),
+
+  createBrokerFromWizard: protectedProcedure
+    .input(
+      z.object({
+        templateId: z.string(),
+        name: z.string().min(2).max(80),
+        endpointUrl: z.string().url(),
+        authConfig: z.record(z.string(), z.unknown()).default({}),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const { createBrokerFromTemplate } = await import("@/server/broker-template/from-template");
+      return createBrokerFromTemplate(input);
     }),
 
   complete: protectedProcedure.mutation(async ({ ctx }) => {
