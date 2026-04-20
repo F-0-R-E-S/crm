@@ -1054,3 +1054,29 @@ git commit -m "docs(plan): s4 retrospective"
 - Cross-tenant view. Tables have no `tenantId` filter in queries; v2.0 white-label adds it when `tenantId` is populated repo-wide.
 - Drill-through from tile → filtered `/leads` (listed in spec `/dashboard`). Can be layered in by making tile `<Link>`s — trivial follow-up.
 - Anomaly detection / alerts on metric drops. Covered by EPIC-11 Telegram (Sprint 5).
+
+---
+
+## Retrospective
+
+**Shipped (end-to-end):** all 14 tasks landed as planned. 13 feat commits + 1 docs commit before the tag; schema → rollup routine → cron handlers → service (metric/conversion/reject/revenue + period-compare) → 60s Redis LRU cache → tRPC router → share links → presets → recharts-based UI (tiles / line chart / breakdowns / filter bar with share + preset) → CSV export. Tag `v1.0-sprint-4-complete` set.
+
+**Tests:** 418 → 436 (+18, 1 todo). Files added: `tests/unit/analytics/{rollup,metric-series,breakdowns,cache,presets}.test.ts`, `tests/integration/{analytics-share,analytics-export}.test.ts`.
+
+**Deviations from the plan:**
+- `LeadState.REJECTED_FRAUD` (added in earlier sprints) wasn't mentioned in the plan's rollup SQL. Treated it as rejected (same bucket as `REJECTED`) in `refreshDailyRollups` / `refreshHourlyRollups` so fraud rejects aren't double-counted as validated.
+- Test seeder needed the fully-qualified broker columns (`postbackSecret`, `postbackLeadIdPath`, `postbackStatusPath`, `endpointUrl`, `fieldMapping`); the plan's example `broker.create({adapterKind:"MOCK", config:{}})` doesn't match the on-main schema. Caller helpers in tests now mirror `tests/integration/routing.test.ts`.
+- Cache test needed a `beforeAll(waitForRedis)` guard because the shared ioredis instance uses `enableOfflineQueue:false` — a cold first call raced the TCP handshake. One extra helper, no semantics change.
+- Export button placement: kept them as small `<a>` links above each breakdown widget rather than next to the title text, so visible styling stays ≤11px mono — same effect, cleaner layout.
+- Nav shortcut chosen: `Y` for analytics (plan suggested `Y` or `N`; `Y` picked because it's adjacent to existing operator keys).
+
+**Deferred (per plan's out-of-scope + new):**
+- Weekly / monthly rollup tables — still computed on the fly from daily.
+- Revenue numbers — `sumRevenue` stays zero until EPIC-12 wires `Lead.revenueAmount`.
+- Streaming CSV — TODO comment in `src/app/api/v1/analytics/export/route.ts`.
+- Cron observability: duration_ms log lines exist (`analytics_roll_daily_done`) but no worker is booted yet (S8 parks this, matching S3 disposition).
+- Manual end-to-end smoke (worker → rollup → UI) was not performed because the worker runner still isn't wired. Integration tests exercise every layer that runs in request-path code, and the rollup routine is unit-tested against real Postgres.
+
+**Time:** ~80 minutes agent wall-clock across 14 commits. Schema + cron scaffolding fast; service + breakdowns took the longest (3 SQL builders sharing the same `buildWhere` / `groupExpr` helpers).
+
+**Query-plan note:** not re-verified via `EXPLAIN` in this session. The indexes declared in Task 1 (`(affiliateId, date)`, `(brokerId, date)`, `(geo, date)`) should cover the common dashboards — revisit with a real data set on S8 perf pass.
