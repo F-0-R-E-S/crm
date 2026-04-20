@@ -21,6 +21,7 @@ async function run() {
   const scenarios = [
     { name: "sustained_300_rps_15m", duration: 900, connections: 300 },
     { name: "burst_1000_rps_60s", duration: 60, connections: 1000 },
+    { name: "sustained_500_rps_30m", duration: 1800, connections: 500 },
   ];
 
   const scenarioName = process.argv[2] ?? "sustained_300_rps_15m";
