@@ -18,14 +18,14 @@ type Cap = {
 
 // Editable country→limit row
 type CountryLimitRow = {
-  _uid: number; // stable React key
+  _uid: string; // stable React key
   country: string;
   limit: string; // kept as string for input; parsed on save
 };
 
 // Editable cap definition row
 type CapDefRow = {
-  _uid: number; // stable React key
+  _uid: string; // stable React key
   scope: "AFFILIATE" | "BROKER" | "FLOW" | "BRANCH" | "TARGET";
   scopeRefId: string;
   window: "HOURLY" | "DAILY" | "WEEKLY";
@@ -35,9 +35,8 @@ type CapDefRow = {
   countryLimits: CountryLimitRow[];
 };
 
-let _nextUid = 1;
 function nextUid() {
-  return _nextUid++;
+  return crypto.randomUUID();
 }
 
 function makeEmptyCapDef(): CapDefRow {
@@ -213,7 +212,8 @@ export default function FlowDetailPage({ params }: { params: Promise<{ flowId: s
 
   const isDraft = flow?.status === "DRAFT";
   const perCountryError = hasPerCountryError(capRows);
-  const canSave = isDraft && !perCountryError && !updateCaps.isPending;
+  const hasScopeRefIdError = capRows.some((r) => r.scopeRefId.trim() === "");
+  const canSave = isDraft && !perCountryError && !hasScopeRefIdError && !updateCaps.isPending;
 
   if (isLoading) return <div style={{ padding: 28 }}>Loading…</div>;
   if (!flow) return <div style={{ padding: 28 }}>Flow not found.</div>;
@@ -638,6 +638,11 @@ function CapDefEditor({
             placeholder="e.g. broker-uuid"
             style={{ ...inp, width: 180 }}
           />
+          {!readOnly && row.scopeRefId.trim() === "" && (
+            <span style={{ fontSize: 10, color: "oklch(72% 0.15 25)", marginTop: 3 }}>
+              Scope ref ID required
+            </span>
+          )}
         </div>
 
         {/* Window */}
@@ -712,7 +717,12 @@ function CapDefEditor({
               type="checkbox"
               disabled={readOnly}
               checked={row.perCountry}
-              onChange={(e) => onChange({ perCountry: e.target.checked })}
+              onChange={(e) =>
+                onChange({
+                  perCountry: e.target.checked,
+                  countryLimits: e.target.checked ? row.countryLimits : [],
+                })
+              }
               style={{ width: 14, height: 14 }}
             />
             <span style={{ color: row.perCountry ? "var(--fg-0)" : "var(--fg-2)" }}>
