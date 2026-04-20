@@ -2331,3 +2331,28 @@ git commit -m "docs(plan): s6 retrospective"
 - **Multi-currency with FX snapshot at invoice time** — v2.0.
 - **Conversion backfill job** for historical leads that accumulated before broker postback went live — ad-hoc script, not productized.
 - **Clawback invoice** for CRG shortfalls (today the shortfall is a positive line item inside the next broker invoice; v2.0 splits it into a dedicated credit-note document).
+
+---
+
+## Retrospective
+
+**Shipped vs planned:** All 12 tasks shipped. 12 commits, tag `v1.0-sprint-6-complete` applied at commit `71aa525`. 19 new tests (3 conversion-emit + 5 unit pnl + 2 integration pnl + 3 finance router + 2 crg settle + 2 invoice generate + 2 sprint6 smoke). Total suite 476 passing (up from 457), 1 todo, 136 test files.
+
+**Deviations from plan:**
+- `ConversionKind` vs `LeadState` overlap. The plan's Step 2/3 code assumed the broker `statusMapping` value is a `ConversionKind` (`REGISTRATION` / `FTD` / `REDEPOSIT`), but in the existing codebase `statusMapping` values are cast to `LeadState`. Resolution: the postback handler now treats mapping values as either — `FTD` (both), `REDEPOSIT` (routes to LeadState `FTD` + ConversionKind REDEPOSIT), `REGISTRATION` (routes to LeadState `ACCEPTED` + ConversionKind REGISTRATION), `ACCEPTED` (LeadState ACCEPTED + ConversionKind REGISTRATION). Everything else keeps pre-S6 behaviour.
+- Plan's filter-bar / pages used Tailwind class utilities (`className=`), but this codebase uses inline `style={{ ... }}` (see `Sidebar.tsx`, `analytics/page.tsx`). Re-wrote all 7 finance UI files to inline-style the same way, preserving the 13px body / uppercase-label / monospace pattern from `crm-design/project/SPEC.md`.
+- Plan's nav keyboard shortcuts were unreserved — plan notes `F` for Finance, but `F` is already used by routing-flows. Picked `P` (p&l), `N` (invoices), `C` (crg cohorts) — unused in `NavConfig.ts`.
+- Plan did not reserve a `crg-cohort-settle` job name — added `JOB_NAMES.crgCohortSettle` to `queue.ts` for future worker boot, matching the pattern from prior sprints.
+- CRG settle with empty cohorts: the plan's logic would mark cohorts with `cohortSize=0` as SHORTFALL (since 0 < guaranteed) with `shortfallAmount=0`. The smoke test hit this when `ensureCohortsUpTo` materialized weekly cohorts going back to `activeFrom`. Guarded: cohortSize=0 ⇒ MET with null shortfall. Matches real semantics (nothing to guarantee) and keeps invoice line items tidy.
+- Added `tests/helpers/seed.ts` + `tests/helpers/postback-signature.ts` (plan assumed they existed but they didn't — created minimal versions wrapping `prisma.*.create` + `signHmac`). `resetDb()` extended for 6 new tables in FK-safe order.
+
+**Surprises:**
+- `@/server/db` import resolution in tests worked out-of-the-box via existing vitest config — didn't need extra tsconfig paths.
+- `next-auth` session-type stricture re-surfaced (needs `expires`); eased by declaring `seedAdminSession(): Promise<any>` (matches existing `makeCtx` pattern in other router tests).
+- Existing `inbound-postback.test.ts` (8 cases) continued to pass unchanged despite the emit-hook addition — idempotent REGISTRATION guard prevented disruption.
+
+**Time per task (estimated):** T1 schema 4m · T2 emit+hook 10m · T3 pnl 7m · T4 router 5m · T5 crg cron 6m · T6 invoice 6m · T7 pnl UI 5m · T8 invoices UI 5m · T9 crg UI 3m · T10 broker payout editor 4m · T11 affiliate editor 3m · T12 smoke+docs+tag 6m. Total ≈ 1h.
+
+**Deferred (per plan's "Operational follow-ups"):**
+- pg-boss worker registration for `crgCohortSettle` (with other S3/S4 crons → S8).
+- Manual conversion entry, partial payments, chargebacks, many:many linkage, real PDF rendering, multi-currency, conversion backfill, clawback invoice document — all v1.5 / v2.0.
