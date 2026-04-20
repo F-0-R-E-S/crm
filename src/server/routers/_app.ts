@@ -1,6 +1,7 @@
 import { rbacPreviewRouter } from "../rbac/preview";
 import { router } from "../trpc";
 import { affiliateRouter } from "./affiliate";
+import { analyticsRouter } from "./analytics";
 import { auditRouter } from "./audit";
 import { blacklistRouter } from "./blacklist";
 import { brokerRouter } from "./broker";
@@ -23,5 +24,6 @@ export const appRouter = router({
   audit: auditRouter,
   manualReview: manualReviewRouter,
   rbacPreview: rbacPreviewRouter,
+  analytics: analyticsRouter,
 });
 export type AppRouter = typeof appRouter;
