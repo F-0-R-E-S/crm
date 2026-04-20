@@ -1,3 +1,4 @@
+import { TELEGRAM_EVENT_TYPES } from "@/server/telegram/event-catalog";
 import { TEMPLATES } from "@/server/telegram/templates";
 import { describe, expect, it } from "vitest";
 
@@ -31,6 +32,12 @@ describe("telegram templates — non-empty and within 4096", () => {
       expect(out).toBeTruthy();
       expect((out ?? "").length).toBeGreaterThan(0);
       expect((out ?? "").length).toBeLessThanOrEqual(4096);
+    }
+  });
+
+  it("all 23 event types have a registered template", () => {
+    for (const t of TELEGRAM_EVENT_TYPES) {
+      expect(TEMPLATES[t], `missing template for ${t}`).toBeDefined();
     }
   });
 });
