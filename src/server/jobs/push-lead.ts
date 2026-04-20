@@ -8,6 +8,7 @@ import { decrementCap, incrementCap, todayUtc } from "@/server/routing/caps";
 import { type WorkingHours, isWithinWorkingHours } from "@/server/routing/filters";
 import { selectBrokerPool } from "@/server/routing/select-broker";
 import type { Broker, Lead } from "@prisma/client";
+import type { AutologinAttemptPayload } from "./autologin-attempt";
 import { JOB_NAMES, getBoss, startBossOnce } from "./queue";
 
 export interface PushLeadPayload {
@@ -170,6 +171,22 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
   });
   await startBossOnce();
   const boss = getBoss();
+  if (winner.autologinEnabled && winner.autologinLoginUrl) {
+    const adapterId =
+      (winner as unknown as { template?: { slug?: string } }).template?.slug ?? "mock";
+    await boss.send(JOB_NAMES.autologinAttempt, {
+      traceId: payload.traceId,
+      leadId: lead.id,
+      brokerId: winner.id,
+      adapterId,
+      loginUrl: winner.autologinLoginUrl,
+      credentials: { username: lead.email ?? "", password: "" },
+    } satisfies AutologinAttemptPayload);
+    await writeLeadEvent(lead.id, "STATE_TRANSITION", {
+      kind: "autologin_enqueued",
+      brokerId: winner.id,
+    });
+  }
   if (holdUntil && holdMin) {
     await writeLeadEvent(lead.id, "PENDING_HOLD_STARTED", {
       brokerId: winner.id,
