@@ -13,6 +13,14 @@ async function activeSub(chatId: string) {
   });
 }
 
+async function requireAdmin(
+  chatId: string,
+): Promise<{ userId: string; subId: string } | null> {
+  const sub = await activeSub(chatId);
+  if (!sub || sub.user?.role !== "ADMIN") return null;
+  return { userId: sub.userId, subId: sub.id };
+}
+
 function uniq<T>(arr: T[]): T[] {
   return Array.from(new Set(arr));
 }
@@ -133,5 +141,87 @@ export function registerCommands(bot: Bot) {
       data: { mutedBrokerIds: next },
     });
     await ctx.reply(`Muted broker *${broker.name}*.`, MD);
+  });
+
+  bot.command("ack", async (ctx) => {
+    const chatId = String(ctx.chat?.id ?? "");
+    const admin = await requireAdmin(chatId);
+    if (!admin) {
+      await ctx.reply("This command requires an ADMIN-role linked account.", MD);
+      return;
+    }
+    const leadId = (ctx.match ?? "").trim();
+    if (!leadId) {
+      await ctx.reply("Usage: `/ack <leadId>`", MD);
+      return;
+    }
+    await prisma.leadEvent.create({
+      data: {
+        leadId,
+        kind: "MANUAL_OVERRIDE",
+        meta: { action: "fraud_hit_ack", by: "telegram", userId: admin.userId },
+      },
+    });
+    await ctx.reply(`Acknowledged fraud hit for lead \`${leadId}\`.`, MD);
+  });
+
+  bot.command("pause_broker", async (ctx) => {
+    const chatId = String(ctx.chat?.id ?? "");
+    const admin = await requireAdmin(chatId);
+    if (!admin) {
+      await ctx.reply("This command requires an ADMIN-role linked account.", MD);
+      return;
+    }
+    const id = (ctx.match ?? "").trim();
+    if (!id) {
+      await ctx.reply("Usage: `/pause_broker <id>`", MD);
+      return;
+    }
+    const broker = await prisma.broker.findUnique({ where: { id } });
+    if (!broker) {
+      await ctx.reply(`Broker \`${id}\` not found.`, MD);
+      return;
+    }
+    await prisma.broker.update({ where: { id }, data: { isActive: false } });
+    await prisma.auditLog.create({
+      data: {
+        action: "broker.pause",
+        entity: "Broker",
+        entityId: id,
+        diff: { via: "telegram" },
+        userId: admin.userId,
+      },
+    });
+    await ctx.reply(`Paused broker *${broker.name}*.`, MD);
+  });
+
+  bot.command("resume_broker", async (ctx) => {
+    const chatId = String(ctx.chat?.id ?? "");
+    const admin = await requireAdmin(chatId);
+    if (!admin) {
+      await ctx.reply("This command requires an ADMIN-role linked account.", MD);
+      return;
+    }
+    const id = (ctx.match ?? "").trim();
+    if (!id) {
+      await ctx.reply("Usage: `/resume_broker <id>`", MD);
+      return;
+    }
+    const broker = await prisma.broker.findUnique({ where: { id } });
+    if (!broker) {
+      await ctx.reply(`Broker \`${id}\` not found.`, MD);
+      return;
+    }
+    await prisma.broker.update({ where: { id }, data: { isActive: true } });
+    await prisma.auditLog.create({
+      data: {
+        action: "broker.resume",
+        entity: "Broker",
+        entityId: id,
+        diff: { via: "telegram" },
+        userId: admin.userId,
+      },
+    });
+    await ctx.reply(`Resumed broker *${broker.name}*.`, MD);
   });
 }
