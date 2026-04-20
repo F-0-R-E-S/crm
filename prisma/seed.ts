@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import { PrismaClient, UserRole } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { backfillDefaultOrg } from "../src/server/onboarding/backfill";
 
 const prisma = new PrismaClient();
 
@@ -98,6 +99,9 @@ async function main() {
     });
     console.log("proxy endpoint: bd-us-residential-1");
   }
+
+  await backfillDefaultOrg();
+  console.log("default org backfilled");
 
   console.log("seed complete");
 }

@@ -8,19 +8,23 @@ datasource db {
 }
 
 model User {
-  id             String              @id @default(cuid())
-  tenantId       String?
-  email          String              @unique
-  passwordHash   String
-  role           UserRole            @default(OPERATOR)
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
-  auditLogs      AuditLog[]
-  manualClaims   ManualReviewQueue[] @relation("ManualReviewClaimer")
-  manualResolves ManualReviewQueue[] @relation("ManualReviewResolver")
+  id              String              @id @default(cuid())
+  tenantId        String?
+  email           String              @unique
+  passwordHash    String
+  role            UserRole            @default(OPERATOR)
+  orgId           String?
+  emailVerifiedAt DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  org             Org?                @relation("OrgUsers", fields: [orgId], references: [id], onDelete: SetNull)
+  auditLogs       AuditLog[]
+  manualClaims    ManualReviewQueue[] @relation("ManualReviewClaimer")
+  manualResolves  ManualReviewQueue[] @relation("ManualReviewResolver")
   telegramSubscriptions TelegramSubscription[]
 
   @@index([tenantId])
+  @@index([orgId])
 }
 
 enum UserRole {
@@ -28,6 +32,52 @@ enum UserRole {
   OPERATOR
   AFFILIATE_VIEWER
   BROKER_VIEWER
+}
+
+enum OrgPlan {
+  TRIAL
+  STARTER
+  GROWTH
+  PRO
+}
+
+model Org {
+  id                 String              @id @default(cuid())
+  name               String
+  slug               String              @unique
+  timezone           String              @default("UTC")
+  currency           String              @default("USD")
+  plan               OrgPlan             @default(TRIAL)
+  trialStartedAt     DateTime?
+  trialEndsAt        DateTime?
+  createdById        String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  users              User[]              @relation("OrgUsers")
+  onboardingProgress OnboardingProgress?
+
+  @@index([plan])
+  @@index([trialEndsAt])
+}
+
+model OnboardingProgress {
+  id               String    @id @default(cuid())
+  orgId            String    @unique
+  currentStep      Int       @default(1)
+  stepData         Json      @default("{}")
+  step1CompletedAt DateTime?
+  step2CompletedAt DateTime?
+  step3CompletedAt DateTime?
+  step4CompletedAt DateTime?
+  step5CompletedAt DateTime?
+  startedAt        DateTime  @default(now())
+  completedAt      DateTime?
+  abandonedAt      DateTime?
+  durationSeconds  Int?
+  org              Org       @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([completedAt])
+  @@index([startedAt])
 }
 
 model Affiliate {

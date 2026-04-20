@@ -48,5 +48,7 @@ export async function resetDb() {
     prisma.fraudPolicy.deleteMany(),
     prisma.auditLog.deleteMany(),
     prisma.user.deleteMany(),
+    prisma.onboardingProgress.deleteMany(),
+    prisma.org.deleteMany(),
   ]);
 }
