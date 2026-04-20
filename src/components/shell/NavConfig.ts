@@ -7,6 +7,7 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   { path: "/dashboard", label: "dashboard", kbd: "D" },
+  { path: "/dashboard/analytics", label: "analytics", kbd: "Y" },
   { path: "/dashboard/leads", label: "leads", kbd: "L" },
   { path: "/dashboard/affiliates", label: "affiliates", kbd: "A" },
   { path: "/dashboard/brokers", label: "brokers", kbd: "B" },
