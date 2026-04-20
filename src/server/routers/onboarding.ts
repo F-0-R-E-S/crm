@@ -142,6 +142,39 @@ export const onboardingRouter = router({
       return { affiliateId: affiliate.id, plaintextKey: plaintext };
     }),
 
+  goLive: protectedProcedure.mutation(async ({ ctx }) => {
+    const orgId = await getOrgIdOrThrow(ctx.userId);
+    const progress = await prisma.onboardingProgress.findUnique({ where: { orgId } });
+    if (!progress) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "no progress" });
+    }
+    const stepData = (progress.stepData as Record<string, unknown> | null | undefined) ?? {};
+    const affiliateId = typeof stepData.affiliateId === "string" ? stepData.affiliateId : null;
+    if (!affiliateId) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "no affiliate recorded — finish Step 3 first",
+      });
+    }
+    await prisma.apiKey.updateMany({
+      where: { affiliateId, isSandbox: true },
+      data: { isSandbox: false },
+    });
+    const now = new Date();
+    const durationSeconds = Math.round(
+      (now.getTime() - new Date(progress.startedAt).getTime()) / 1000,
+    );
+    return prisma.onboardingProgress.update({
+      where: { orgId },
+      data: {
+        completedAt: now,
+        step5CompletedAt: now,
+        durationSeconds,
+        currentStep: 5,
+      },
+    });
+  }),
+
   complete: protectedProcedure.mutation(async ({ ctx }) => {
     const orgId = await getOrgIdOrThrow(ctx.userId);
     const progress = await prisma.onboardingProgress.findUnique({ where: { orgId } });

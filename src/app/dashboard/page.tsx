@@ -1,10 +1,14 @@
 "use client";
 import { Card, CounterTile, LeadFunnelSankey, MiniBars } from "@/components/router-crm";
 import { trpc } from "@/lib/trpc";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 export default function DashboardHome() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const onboarded = searchParams.get("onboarded") === "1";
+  const [bannerDismissed, setBannerDismissed] = useState(false);
   const counters = trpc.lead.counters.useQuery();
   const funnel = trpc.lead.funnelCounts.useQuery();
   const brokers = trpc.lead.brokerPerformance.useQuery();
@@ -16,6 +20,42 @@ export default function DashboardHome() {
 
   return (
     <div style={{ padding: "20px 28px", display: "flex", flexDirection: "column", gap: 18 }}>
+      {onboarded && !bannerDismissed && (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            background: "oklch(72% 0.15 145 / 0.12)",
+            border: "1px solid oklch(72% 0.15 145)",
+            borderRadius: 6,
+            padding: "10px 14px",
+            fontSize: 13,
+            color: "var(--fg-0)",
+          }}
+        >
+          <span>
+            You're live. Your first test lead is visible in{" "}
+            <a href="/dashboard/leads" style={{ color: "var(--fg-0)" }}>
+              /leads
+            </a>{" "}
+            — try sending one from your app now.
+          </span>
+          <button
+            type="button"
+            onClick={() => setBannerDismissed(true)}
+            style={{
+              background: "transparent",
+              color: "var(--fg-2)",
+              border: "none",
+              fontSize: 13,
+              cursor: "pointer",
+            }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
       <header style={{ display: "flex", alignItems: "baseline", gap: 16 }}>
         <h1 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em", margin: 0 }}>
           Operations
