@@ -76,7 +76,7 @@ export async function loadFlowById(id: string) {
     where: { id },
     include: {
       versions: { orderBy: { versionNumber: "asc" } },
-      activeVersion: { include: { branches: true, fallbackSteps: true, capDefs: true } },
+      activeVersion: { include: { branches: true, fallbackSteps: true, capDefs: { include: { countryLimits: true } } } },
     },
   });
   if (!flow) throw new Error("flow_not_found");
