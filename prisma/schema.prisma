@@ -144,12 +144,15 @@ model Broker {
   lastHealthStatus   String         @default("unknown")
   lastHealthCheckAt  DateTime?
   lastPolledAt       DateTime?
+  autologinEnabled   Boolean        @default(false)
+  autologinLoginUrl  String?
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
   rotationRules      RotationRule[]
   leads              Lead[]
   healthChecks       BrokerHealthCheck[]
   errorSamples       BrokerErrorSample[]
+  autologinAttempts  AutologinAttempt[]
 
   @@index([isActive])
   @@index([syncMode, isActive])
@@ -213,6 +216,8 @@ model Lead {
   shaveSuspected    Boolean            @default(false)
   fraudScore        Int?
   fraudSignals      Json               @default("[]")
+  qualityScore      Int?
+  qualitySignals    Json               @default("{}")
   needsReview       Boolean            @default(false)
   traceId           String             @unique
   receivedAt        DateTime           @default(now())
@@ -222,6 +227,7 @@ model Lead {
   broker            Broker?            @relation(fields: [brokerId], references: [id])
   events            LeadEvent[]
   outboundPostbacks OutboundPostback[]
+  autologinAttempts AutologinAttempt[]
 
   @@index([affiliateId, createdAt])
   @@index([brokerId, createdAt])
@@ -616,4 +622,66 @@ model BrokerErrorSample {
 
   @@unique([brokerId, bucketStart, bucketIntervalSec])
   @@index([brokerId, bucketStart])
+}
+
+// --- EPIC-08 Autologin + SLA ---
+
+model ProxyEndpoint {
+  id               String             @id @default(cuid())
+  label            String
+  provider         String             @default("brightdata")
+  host             String
+  port             Int
+  username         String
+  password         String
+  country          String?
+  isActive         Boolean            @default(true)
+  lastHealthStatus String             @default("unknown")
+  lastLatencyMs    Int?
+  lastCheckedAt    DateTime?
+  consecutiveFails Int                @default(0)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  attempts         AutologinAttempt[]
+
+  @@index([isActive, lastHealthStatus])
+  @@index([country])
+}
+
+model AutologinAttempt {
+  id              String          @id @default(cuid())
+  leadId          String
+  brokerId        String
+  proxyEndpointId String?
+  stage           AutologinStage  @default(INITIATING)
+  status          AutologinStatus @default(RUNNING)
+  startedAt       DateTime        @default(now())
+  completedAt     DateTime?
+  durationMs      Int?
+  errorMessage    String?
+  errorStage      AutologinStage?
+  captchaUsed     Boolean         @default(false)
+  sessionTokenRef String?
+  createdAt       DateTime        @default(now())
+  lead            Lead            @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  broker          Broker          @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+  proxyEndpoint   ProxyEndpoint?  @relation(fields: [proxyEndpointId], references: [id])
+
+  @@index([brokerId, startedAt])
+  @@index([leadId, startedAt])
+  @@index([status, startedAt])
+  @@index([startedAt])
+}
+
+enum AutologinStage {
+  INITIATING
+  CAPTCHA
+  AUTHENTICATING
+  SESSION_READY
+}
+
+enum AutologinStatus {
+  RUNNING
+  SUCCEEDED
+  FAILED
 }
