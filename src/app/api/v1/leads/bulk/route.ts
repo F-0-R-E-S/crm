@@ -1,5 +1,7 @@
+import { createHash } from "node:crypto";
 import { env } from "@/lib/env";
 import { verifyApiKey } from "@/server/auth-api-key";
+import { prisma } from "@/server/db";
 import { processBulkSync } from "@/server/intake/bulk";
 import { JOB_NAMES, startBossOnce } from "@/server/jobs/queue";
 import { logger, runWithTrace } from "@/server/observability";
@@ -8,6 +10,9 @@ import { DEFAULT_VERSION } from "@/server/schema/registry";
 import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+const sha256 = (s: string) => createHash("sha256").update(s).digest("hex");
+const IDEMPOTENCY_TTL_MS = 24 * 60 * 60 * 1000;
 
 const BulkBodySchema = z.object({ leads: z.array(z.unknown()).min(1) });
 
@@ -37,6 +42,34 @@ export async function POST(req: Request) {
         trace_id,
       );
     }
+
+    const payloadHash = sha256(bodyText);
+    const idemKey = req.headers.get("x-idempotency-key");
+    if (idemKey) {
+      const cached = await prisma.idempotencyKey.findUnique({
+        where: { affiliateId_key: { affiliateId: ctx.affiliateId, key: idemKey } },
+      });
+      if (cached) {
+        if (cached.expiresAt && cached.expiresAt < new Date()) {
+          await prisma.idempotencyKey
+            .delete({ where: { id: cached.id } })
+            .catch(() => undefined);
+        } else if (cached.payloadHash !== payloadHash) {
+          return err(
+            "idempotency_conflict",
+            "idempotency key reused with different payload",
+            409,
+            trace_id,
+          );
+        } else {
+          return new NextResponse(cached.responseBody, {
+            status: cached.responseCode,
+            headers: { "content-type": "application/json" },
+          });
+        }
+      }
+    }
+
     let raw: unknown;
     try {
       raw = JSON.parse(bodyText);
@@ -53,6 +86,7 @@ export async function POST(req: Request) {
 
     const version = req.headers.get("x-api-version") ?? DEFAULT_VERSION;
 
+    let response: NextResponse;
     if (items.length > env.INTAKE_BULK_SYNC_THRESHOLD) {
       const boss = await startBossOnce();
       const jobId = await boss.send(JOB_NAMES.bulkIntake, {
@@ -61,14 +95,40 @@ export async function POST(req: Request) {
         version,
         traceId: trace_id,
       });
-      return NextResponse.json({ status: "queued", job_id: jobId, trace_id }, { status: 202 });
+      response = NextResponse.json(
+        { status: "queued", job_id: jobId, trace_id },
+        { status: 202 },
+      );
+    } else {
+      const results = await processBulkSync(ctx.affiliateId, items, version, trace_id);
+      logger.info(
+        { event: "bulk_intake_sync", affiliate_id: ctx.affiliateId, count: items.length },
+        "bulk processed",
+      );
+      response = NextResponse.json({ results, trace_id }, { status: 207 });
     }
 
-    const results = await processBulkSync(ctx.affiliateId, items, version, trace_id);
-    logger.info(
-      { event: "bulk_intake_sync", affiliate_id: ctx.affiliateId, count: items.length },
-      "bulk processed",
-    );
-    return NextResponse.json({ results, trace_id }, { status: 207 });
+    if (idemKey) {
+      const responseBody = await response.clone().text();
+      await prisma.idempotencyKey.upsert({
+        where: { affiliateId_key: { affiliateId: ctx.affiliateId, key: idemKey } },
+        update: {
+          payloadHash,
+          responseCode: response.status,
+          responseBody,
+          expiresAt: new Date(Date.now() + IDEMPOTENCY_TTL_MS),
+        },
+        create: {
+          affiliateId: ctx.affiliateId,
+          key: idemKey,
+          payloadHash,
+          responseCode: response.status,
+          responseBody,
+          expiresAt: new Date(Date.now() + IDEMPOTENCY_TTL_MS),
+        },
+      });
+    }
+
+    return response;
   });
 }
