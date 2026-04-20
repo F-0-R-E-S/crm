@@ -62,7 +62,8 @@ describe("handlePushLead", () => {
     "FAILS with pool_exhausted when the only broker returns 500 repeatedly",
     async () => {
       mb.respondWith(500, { error: "boom" });
-      await handlePushLead({ leadId, traceId: "rt-t-1" });
+      // attemptN=5 exhausts the default retry schedule (5 slots) so we reach FAILED.
+      await handlePushLead({ leadId, traceId: "rt-t-1", attemptN: 5 });
       const lead = await prisma.lead.findUnique({ where: { id: leadId } });
       expect(lead?.state).toBe("FAILED");
       // Pool iteration tried every broker and they all push-failed.

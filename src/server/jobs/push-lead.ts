@@ -6,6 +6,7 @@ import { writeLeadEvent } from "@/server/lead-event";
 import { logger } from "@/server/observability";
 import { decrementCap, incrementCap, todayUtc } from "@/server/routing/caps";
 import { type WorkingHours, isWithinWorkingHours } from "@/server/routing/filters";
+import { enqueueManualReview } from "@/server/routing/manual-queue";
 import { nthRetryDelay, parseRetrySchedule } from "@/server/routing/retry-schedule";
 import { selectBrokerPool } from "@/server/routing/select-broker";
 import type { Broker, Lead } from "@prisma/client";
@@ -144,6 +145,19 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
       }
     }
 
+    // Classify cold-overflow reason for manual review.
+    const anyCapFull = tried.length > 0 && tried.every((t) => t.reason === "cap_full");
+    const anyPushFailed = tried.some((t) => t.reason === "push_failed");
+    const nothingTried = tried.length === 0;
+    const mrReason = nothingTried
+      ? ("NO_BROKER_MATCH" as const)
+      : anyCapFull
+        ? ("CAP_REACHED" as const)
+        : anyPushFailed
+          ? ("BROKER_FAILED" as const)
+          : ("NO_BROKER_MATCH" as const);
+    const lastPushFail = [...tried].reverse().find((t) => t.reason === "push_failed");
+
     await prisma.lead.update({
       where: { id: lead.id },
       data: {
@@ -165,6 +179,12 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
       },
       "no broker available",
     );
+    await enqueueManualReview({
+      leadId: lead.id,
+      reason: mrReason,
+      lastBrokerId: lastPushFail?.id ?? null,
+      lastError: lastPushFail?.error ?? null,
+    });
     await startBossOnce();
     const boss = getBoss();
     await boss.send(JOB_NAMES.notifyAffiliate, { leadId: lead.id, event: "failed" });
