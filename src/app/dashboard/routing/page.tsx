@@ -39,9 +39,17 @@ export default function RoutingPage() {
         gap: 14,
       }}
     >
-      <h1 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em", margin: 0 }}>
-        Routing
-      </h1>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
+        <h1 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em", margin: 0 }}>
+          Routing (legacy rules)
+        </h1>
+        <a
+          href="/dashboard/routing/flows"
+          style={{ fontSize: 12, color: "var(--fg-1)", textDecoration: "none", marginLeft: "auto" }}
+        >
+          Routing Flows (new) →
+        </a>
+      </div>
       <div
         style={{
           display: "grid",

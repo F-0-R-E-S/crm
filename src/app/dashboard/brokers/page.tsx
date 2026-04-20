@@ -7,9 +7,17 @@ export default function BrokersPage() {
   const { data } = trpc.broker.list.useQuery();
   return (
     <div style={{ padding: "20px 28px" }}>
-      <h1 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em", margin: "0 0 16px" }}>
-        Brokers
-      </h1>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 12, margin: "0 0 16px" }}>
+        <h1 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em", margin: 0 }}>
+          Brokers
+        </h1>
+        <Link
+          href={"/dashboard/brokers/templates" as never}
+          style={{ fontSize: 12, color: "var(--fg-1)", textDecoration: "none", marginLeft: "auto" }}
+        >
+          + Create from template →
+        </Link>
+      </div>
       <table style={{ width: "100%", fontSize: 12 }}>
         <thead>
           <tr

@@ -1,5 +1,6 @@
 import { prisma } from "@/server/db";
 import { logger } from "@/server/observability";
+import { type FallbackStepSpec, detectFallbackCycle } from "../fallback/orchestrator";
 import { validateDraftOrThrow } from "./repository";
 
 function lockKey(flowId: string): bigint {
@@ -10,6 +11,23 @@ function lockKey(flowId: string): bigint {
 
 export async function publishFlow(flowId: string, userId: string) {
   const { latest } = await validateDraftOrThrow(flowId);
+  const fallbackRows = await prisma.fallbackStep.findMany({
+    where: { flowVersionId: latest.id },
+  });
+  const steps: FallbackStepSpec[] = fallbackRows.map((r) => ({
+    fromNodeId: r.fromNodeId,
+    toNodeId: r.toNodeId,
+    hopOrder: r.hopOrder,
+    triggers: r.triggers as unknown as FallbackStepSpec["triggers"],
+  }));
+  const cyc = detectFallbackCycle(steps);
+  if (!cyc.ok) {
+    const err = new Error("fallback_cycle_detected");
+    (err as Error & { details?: unknown }).details = [
+      { code: "fallback_cycle_detected", node_id: cyc.cycleStart },
+    ];
+    throw err;
+  }
   return prisma.$transaction(async (tx) => {
     const key = lockKey(flowId);
     const locked = await tx.$queryRaw<{ pg_try_advisory_xact_lock: boolean }[]>`

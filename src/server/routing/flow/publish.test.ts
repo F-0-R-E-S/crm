@@ -1,3 +1,4 @@
+import { prisma } from "@/server/db";
 import { beforeEach, describe, expect, it } from "vitest";
 import { resetDb } from "../../../../tests/helpers/db";
 import type { FlowGraph } from "./model";
@@ -33,9 +34,12 @@ describe("publishFlow", () => {
   it("повторный publish свежайшей версии атомарно переключает activeVersionId", async () => {
     const flow = await createDraftFlow({ name: "X", timezone: "UTC", graph });
     await publishFlow(flow.id, "u1");
+    // Modify graph by changing broker weight (valid minor change) — creates new version
     const updated = await updateDraftGraph(flow.id, {
       ...graph,
-      nodes: [...graph.nodes, { id: "y", kind: "Exit" }],
+      nodes: graph.nodes.map((n) =>
+        n.kind === "BrokerTarget" ? { ...n, weight: 200 } : n,
+      ) as FlowGraph["nodes"],
     });
     const v2 = updated.versions[1];
     const after = await publishFlow(flow.id, "u1");
@@ -54,5 +58,29 @@ describe("publishFlow", () => {
     const arch = await archiveFlow(flow.id, "u1");
     expect(arch.status).toBe("ARCHIVED");
     expect(arch.activeVersionId).toBeNull();
+  });
+
+  it("publish с fallback-циклом → fallback_cycle_detected 422", async () => {
+    const flow = await createDraftFlow({ name: "C", timezone: "UTC", graph });
+    const latest = flow.versions[0];
+    await prisma.fallbackStep.createMany({
+      data: [
+        {
+          flowVersionId: latest.id,
+          fromNodeId: "t-a",
+          toNodeId: "t-b",
+          hopOrder: 1,
+          triggers: {},
+        },
+        {
+          flowVersionId: latest.id,
+          fromNodeId: "t-b",
+          toNodeId: "t-a",
+          hopOrder: 1,
+          triggers: {},
+        },
+      ],
+    });
+    await expect(publishFlow(flow.id, "u1")).rejects.toThrow(/fallback_cycle_detected/);
   });
 });

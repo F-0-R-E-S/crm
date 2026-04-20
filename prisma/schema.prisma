@@ -124,12 +124,25 @@ model Broker {
   postbackLeadIdPath String
   postbackStatusPath String
   statusMapping      Json           @default("{}")
+  templateId         String?
+  template           BrokerTemplate? @relation(fields: [templateId], references: [id])
+  syncMode           String         @default("webhook")
+  pollIntervalMin    Int?
+  statusPollPath     String?
+  statusPollIdsParam String?
+  lastHealthStatus   String         @default("unknown")
+  lastHealthCheckAt  DateTime?
+  lastPolledAt       DateTime?
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
   rotationRules      RotationRule[]
   leads              Lead[]
+  healthChecks       BrokerHealthCheck[]
+  errorSamples       BrokerErrorSample[]
 
   @@index([isActive])
+  @@index([syncMode, isActive])
+  @@index([templateId])
 }
 
 enum HttpMethod {
@@ -478,4 +491,73 @@ model CapCounter {
 
   @@unique([scope, scopeId, window, bucketKey])
   @@index([resetsAt])
+}
+
+// --- EPIC-03 Broker Integration ---
+
+model BrokerTemplate {
+  id                 String         @id @default(cuid())
+  slug               String         @unique
+  name               String
+  vendor             String
+  vertical           String
+  protocol           String
+  status             String         @default("active")
+  countries          String[]
+  description        String?
+  logoUrl            String?
+  docsUrl            String?
+  defaultHttpMethod  HttpMethod     @default(POST)
+  defaultHeaders     Json           @default("{}")
+  defaultAuthType    BrokerAuthType @default(NONE)
+  authConfigSchema   Json           @default("{}")
+  fieldMapping       Json
+  requiredFields     String[]
+  staticPayload      Json           @default("{}")
+  responseIdPath     String?
+  postbackLeadIdPath String
+  postbackStatusPath String
+  statusMapping      Json
+  rateLimitPerMin    Int?
+  samplePayload      Json
+  sampleResponse     Json?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  brokers            Broker[]
+
+  @@index([vertical, status])
+  @@index([protocol, status])
+  @@index([countries])
+  @@index([name])
+}
+
+model BrokerHealthCheck {
+  id         String   @id @default(cuid())
+  brokerId   String
+  status     String
+  latencyMs  Int
+  httpStatus Int?
+  errorText  String?
+  checkedAt  DateTime @default(now())
+  broker     Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@index([brokerId, checkedAt])
+}
+
+model BrokerErrorSample {
+  id                String   @id @default(cuid())
+  brokerId          String
+  bucketStart       DateTime
+  bucketIntervalSec Int
+  totalPushes       Int      @default(0)
+  successPushes     Int      @default(0)
+  errorPushes       Int      @default(0)
+  timeoutPushes     Int      @default(0)
+  latencyP95Ms      Int?
+  topErrorCodes     Json     @default("[]")
+  createdAt         DateTime @default(now())
+  broker            Broker   @relation(fields: [brokerId], references: [id], onDelete: Cascade)
+
+  @@unique([brokerId, bucketStart, bucketIntervalSec])
+  @@index([brokerId, bucketStart])
 }
