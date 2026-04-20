@@ -12,7 +12,7 @@ describe("applyBrokerAuth", () => {
 
   it("BASIC base64-encodes", () => {
     const r = applyBrokerAuth("https://x", {}, "BASIC", { user: "u", password: "p" });
-    expect(r.headers.Authorization).toBe("Basic " + Buffer.from("u:p").toString("base64"));
+    expect(r.headers.Authorization).toBe(`Basic ${Buffer.from("u:p").toString("base64")}`);
   });
 
   it("API_KEY_HEADER sets custom header", () => {

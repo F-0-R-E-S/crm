@@ -60,9 +60,7 @@ describe("intake route → telegram NEW_LEAD emission", () => {
     );
     expect(res.status).toBe(202);
 
-    const tgCalls = sendMock.mock.calls.filter(
-      (c) => c[0] === "telegram-send",
-    );
+    const tgCalls = sendMock.mock.calls.filter((c) => c[0] === "telegram-send");
     expect(tgCalls.length).toBeGreaterThanOrEqual(1);
     expect(tgCalls[0][1].eventType).toBe("NEW_LEAD");
   });

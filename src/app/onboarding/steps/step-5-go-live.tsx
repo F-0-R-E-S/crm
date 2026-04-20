@@ -53,7 +53,9 @@ export function Step5GoLive({ value, onBack }: Props) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
       <div>
-        <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 4 }}>You're ready to go live</div>
+        <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 4 }}>
+          You're ready to go live
+        </div>
         <div style={{ fontSize: 12, color: "var(--fg-2)" }}>
           Review your setup. Switching to production flips your API key off sandbox mode so real
           leads reach your broker.
@@ -69,7 +71,11 @@ export function Step5GoLive({ value, onBack }: Props) {
         }}
       >
         <SummaryRow label="Organization" value={String(value.orgName ?? "—")} />
-        <SummaryRow label="First broker" value={String(value.brokerName ?? "—")} sub={String(value.endpointUrl ?? "")} />
+        <SummaryRow
+          label="First broker"
+          value={String(value.brokerName ?? "—")}
+          sub={String(value.endpointUrl ?? "")}
+        />
         <SummaryRow
           label="First affiliate"
           value={String(value.affiliateName ?? "—")}
@@ -97,7 +103,12 @@ export function Step5GoLive({ value, onBack }: Props) {
           ← back
         </button>
         <div style={{ display: "flex", gap: 8 }}>
-          <button type="button" onClick={handleStaySandbox} disabled={!!busy} style={secondaryBtn(!!busy)}>
+          <button
+            type="button"
+            onClick={handleStaySandbox}
+            disabled={!!busy}
+            style={secondaryBtn(!!busy)}
+          >
             {busy === "sandbox" ? "Saving…" : "Keep in sandbox"}
           </button>
           <button type="button" onClick={handleGoLive} disabled={!!busy} style={primaryBtn(!!busy)}>
@@ -123,7 +134,9 @@ function SummaryRow({ label, value, sub }: { label: string; value: string; sub?:
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 13 }}>{value}</div>
         {sub && (
-          <div style={{ fontSize: 11, fontFamily: "var(--mono)", color: "var(--fg-2)", marginTop: 2 }}>
+          <div
+            style={{ fontSize: 11, fontFamily: "var(--mono)", color: "var(--fg-2)", marginTop: 2 }}
+          >
             {sub}
           </div>
         )}

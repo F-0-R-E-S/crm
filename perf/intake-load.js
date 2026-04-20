@@ -55,7 +55,7 @@ async function run() {
     const slo = {
       p95_ms: result.latency.p95,
       p99_ms: result.latency.p99,
-      err_pct: (result["non2xx"] / result.requests.total) * 100,
+      err_pct: (result.non2xx / result.requests.total) * 100,
       accepted_pct: ((result["2xx"] ?? 0) / result.requests.total) * 100,
     };
     console.log("\n=== SLO ===");

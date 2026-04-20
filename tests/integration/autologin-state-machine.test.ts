@@ -1,7 +1,4 @@
-import {
-  __setCaptchaSolverForTests,
-  StubCaptchaSolver,
-} from "@/server/autologin/captcha-solver";
+import { StubCaptchaSolver, __setCaptchaSolverForTests } from "@/server/autologin/captcha-solver";
 import { runAutologinAttempt } from "@/server/autologin/run-attempt";
 import { prisma } from "@/server/db";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";

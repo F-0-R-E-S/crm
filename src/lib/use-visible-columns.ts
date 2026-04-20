@@ -8,13 +8,10 @@ type Row = Record<string, unknown>;
  * auto-hide columns that would be blank for every row — e.g. when a role has
  * redaction applied server-side and every `phone` field comes back undefined.
  */
-export function useVisibleColumns<T extends Row>(
-	rows: T[],
-	candidates: (keyof T)[],
-): (keyof T)[] {
-	return useMemo(() => {
-		return candidates.filter((k) =>
-			rows.some((r) => r[k] !== undefined && r[k] !== null && r[k] !== ""),
-		);
-	}, [rows, candidates]);
+export function useVisibleColumns<T extends Row>(rows: T[], candidates: (keyof T)[]): (keyof T)[] {
+  return useMemo(() => {
+    return candidates.filter((k) =>
+      rows.some((r) => r[k] !== undefined && r[k] !== null && r[k] !== ""),
+    );
+  }, [rows, candidates]);
 }

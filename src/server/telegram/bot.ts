@@ -1,5 +1,5 @@
-import { Bot } from "grammy";
 import { prisma } from "@/server/db";
+import { Bot } from "grammy";
 import { registerCommands } from "./commands";
 
 interface CachedBot {

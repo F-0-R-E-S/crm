@@ -346,7 +346,7 @@ export default function AffiliateDetail({ params }: { params: Promise<{ id: stri
                 <th>label</th>
                 <th>last used</th>
                 <th>status</th>
-                <th></th>
+                <th />
               </tr>
             </thead>
             <tbody>

@@ -7,10 +7,7 @@ import { useState } from "react";
 export default function TelegramAdminPage() {
   const { theme } = useThemeCtx();
   const cfg = trpc.telegram.adminConfig.useQuery();
-  const events = trpc.telegram.recentEvents.useQuery(
-    { limit: 50 },
-    { refetchInterval: 30_000 },
-  );
+  const events = trpc.telegram.recentEvents.useQuery({ limit: 50 }, { refetchInterval: 30_000 });
   const utils = trpc.useUtils();
 
   const [tokenInput, setTokenInput] = useState("");
@@ -43,7 +40,9 @@ export default function TelegramAdminPage() {
               <code>{cfg.data.botUsername ?? "—"}</code>
             </Row>
             <Row label="Webhook URL">
-              <code style={{ fontSize: 10 }}>{cfg.data.webhookUrl ?? "(set TELEGRAM_WEBHOOK_BASE_URL env)"}</code>
+              <code style={{ fontSize: 10 }}>
+                {cfg.data.webhookUrl ?? "(set TELEGRAM_WEBHOOK_BASE_URL env)"}
+              </code>
             </Row>
             <Row label="Webhook secret">
               <code style={{ fontSize: 11 }}>
@@ -104,7 +103,9 @@ export default function TelegramAdminPage() {
               style={btnStyle(theme)}
               disabled={rotate.isPending || !cfg.data}
               onClick={() => {
-                if (confirm("Rotate webhook secret? You must re-register the webhook with Telegram.")) {
+                if (
+                  confirm("Rotate webhook secret? You must re-register the webhook with Telegram.")
+                ) {
                   rotate.mutate();
                 }
               }}

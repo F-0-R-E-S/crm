@@ -139,18 +139,13 @@ export async function pollBrokerStatuses(brokerId: string): Promise<PollResult> 
           "FTD",
           { leadId: lead.id, brokerId, brokerName: broker.name },
           { brokerId, affiliateId: lead.affiliateId },
-        ).catch((e) =>
-          logger.warn({ err: (e as Error).message }, "[telegram-emit] FTD failed"),
-        );
+        ).catch((e) => logger.warn({ err: (e as Error).message }, "[telegram-emit] FTD failed"));
         void emitTelegramEvent(
           "AFFILIATE_FTD",
           { leadId: lead.id, brokerName: broker.name, at: new Date().toISOString() },
           { affiliateId: lead.affiliateId },
         ).catch((e) =>
-          logger.warn(
-            { err: (e as Error).message },
-            "[telegram-emit] AFFILIATE_FTD failed",
-          ),
+          logger.warn({ err: (e as Error).message }, "[telegram-emit] AFFILIATE_FTD failed"),
         );
       }
     }

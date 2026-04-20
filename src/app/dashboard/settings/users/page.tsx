@@ -74,7 +74,7 @@ export default function UsersPage() {
             <th style={{ padding: "8px 0" }}>email</th>
             <th>role</th>
             <th>created</th>
-            <th></th>
+            <th />
           </tr>
         </thead>
         <tbody>

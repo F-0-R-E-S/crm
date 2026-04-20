@@ -15,11 +15,7 @@ export async function emitTelegramEvent(
   });
   const matching = subs.filter((s) => {
     if (s.eventTypes.length && !s.eventTypes.includes(type)) return false;
-    if (
-      filters.brokerId &&
-      s.brokerFilter.length &&
-      !s.brokerFilter.includes(filters.brokerId)
-    )
+    if (filters.brokerId && s.brokerFilter.length && !s.brokerFilter.includes(filters.brokerId))
       return false;
     if (
       filters.affiliateId &&

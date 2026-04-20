@@ -9,7 +9,10 @@ export const rotationRouter = router({
       include: { broker: { select: { id: true, name: true, isActive: true } } },
     });
     const byGeo: Record<string, typeof rules> = {};
-    for (const r of rules) (byGeo[r.geo] ??= []).push(r);
+    for (const r of rules) {
+      byGeo[r.geo] ??= [];
+      byGeo[r.geo].push(r);
+    }
     return byGeo;
   }),
 

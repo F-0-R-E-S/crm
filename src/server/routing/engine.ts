@@ -57,8 +57,8 @@ function matchCondition(
 ): boolean {
   const field = cond.field as keyof LeadSnapshot;
   let left: unknown;
-  if (cond.field === "utm_source") left = (lead.utm ?? {}).source;
-  else if (cond.field === "utm_medium") left = (lead.utm ?? {}).medium;
+  if (cond.field === "utm_source") left = lead.utm?.source;
+  else if (cond.field === "utm_medium") left = lead.utm?.medium;
   else left = (lead as unknown as Record<string, unknown>)[field];
   const v = cond.value;
   switch (cond.op) {

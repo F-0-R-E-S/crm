@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { env } from "@/lib/env";
 import { prisma } from "@/server/db";
 import { resetBotCache } from "@/server/telegram/bot";
 import {
@@ -10,7 +11,6 @@ import { issueLinkToken } from "@/server/telegram/link-token";
 import { adminProcedure, protectedProcedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
-import { env } from "@/lib/env";
 
 const eventTypeZ = z.enum(
   TELEGRAM_EVENT_TYPES as unknown as [TelegramEventType, ...TelegramEventType[]],
@@ -84,7 +84,9 @@ export const telegramRouter = router({
       webhookSecret: cfg.webhookSecret,
       hasToken: true,
       isActive: cfg.isActive,
-      webhookUrl: base ? `${base.replace(/\/$/, "")}/api/telegram/webhook/${cfg.webhookSecret}` : null,
+      webhookUrl: base
+        ? `${base.replace(/\/$/, "")}/api/telegram/webhook/${cfg.webhookSecret}`
+        : null,
       createdAt: cfg.createdAt,
       updatedAt: cfg.updatedAt,
     };
@@ -104,7 +106,10 @@ export const telegramRouter = router({
       if (existing) {
         const updated = await prisma.telegramBotConfig.update({
           where: { id: existing.id },
-          data: { botToken: input.botToken, botUsername: input.botUsername ?? existing.botUsername },
+          data: {
+            botToken: input.botToken,
+            botUsername: input.botUsername ?? existing.botUsername,
+          },
         });
         resetBotCache();
         return { id: updated.id };

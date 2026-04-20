@@ -15,8 +15,7 @@ export function Step1Org({ value, onNext }: Props) {
   const updateOrg = trpc.onboarding.updateOrg.useMutation();
 
   const org = progress?.org;
-  const prefillName =
-    (value.orgName as string | undefined) ?? org?.name ?? "";
+  const prefillName = (value.orgName as string | undefined) ?? org?.name ?? "";
   const prefillTz =
     (value.timezone as string | undefined) ??
     org?.timezone ??
@@ -41,7 +40,7 @@ export function Step1Org({ value, onNext }: Props) {
       const supported = (Intl as unknown as { supportedValuesOf?: (k: string) => string[] })
         .supportedValuesOf;
       const tzs = supported?.("timeZone");
-      if (tzs && tzs.length) setTzList(tzs);
+      if (tzs?.length) setTzList(tzs);
       else setTzList(["UTC", "Europe/London", "Europe/Warsaw", "America/New_York", "Asia/Tokyo"]);
     } catch {
       setTzList(["UTC", "Europe/London", "Europe/Warsaw", "America/New_York", "Asia/Tokyo"]);
@@ -88,11 +87,7 @@ export function Step1Org({ value, onNext }: Props) {
       />
 
       <label style={labelStyle}>Timezone</label>
-      <select
-        value={timezone}
-        onChange={(e) => setTimezone(e.target.value)}
-        style={inputStyle}
-      >
+      <select value={timezone} onChange={(e) => setTimezone(e.target.value)} style={inputStyle}>
         {tzList.map((tz) => (
           <option key={tz} value={tz}>
             {tz}
@@ -101,11 +96,7 @@ export function Step1Org({ value, onNext }: Props) {
       </select>
 
       <label style={labelStyle}>Reporting currency</label>
-      <select
-        value={currency}
-        onChange={(e) => setCurrency(e.target.value)}
-        style={inputStyle}
-      >
+      <select value={currency} onChange={(e) => setCurrency(e.target.value)} style={inputStyle}>
         {CURRENCIES.map((c) => (
           <option key={c} value={c}>
             {c}

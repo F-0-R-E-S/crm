@@ -64,7 +64,6 @@ export default function SignupPage() {
 
         <label style={{ fontSize: 11, color: "var(--fg-2)" }}>Work email</label>
         <input
-          autoFocus
           type="email"
           name="email"
           required

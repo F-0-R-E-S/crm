@@ -42,10 +42,7 @@ export function computeQualityScore(input: QualityInput): QualityResult {
   if (input.affiliate.leadCount >= 20) {
     const ftdRate = input.affiliate.ftdCount / input.affiliate.leadCount;
     const rejRate = input.affiliate.rejectedCount / input.affiliate.leadCount;
-    affiliateComponent = Math.max(
-      0,
-      Math.min(20, ftdRate * 100) + 10 - Math.min(10, rejRate * 50),
-    );
+    affiliateComponent = Math.max(0, Math.min(20, ftdRate * 100) + 10 - Math.min(10, rejRate * 50));
   } else if (input.affiliate.leadCount > 0) {
     const partial = input.affiliate.leadCount / 20;
     const ftdRate = input.affiliate.ftdCount / Math.max(1, input.affiliate.leadCount);
@@ -70,9 +67,7 @@ export function computeQualityScore(input: QualityInput): QualityResult {
 
 const D30 = 30 * 86_400_000;
 
-export async function loadAffiliateHistory(
-  affiliateId: string,
-): Promise<AffiliateHistory> {
+export async function loadAffiliateHistory(affiliateId: string): Promise<AffiliateHistory> {
   const since = new Date(Date.now() - D30);
   const rows = await prisma.$queryRaw<
     Array<{

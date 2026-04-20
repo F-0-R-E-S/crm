@@ -94,8 +94,7 @@ export async function runAutologinAttempt(input: RunAttemptInput): Promise<RunAt
       username: input.credentials.username,
       password: input.credentials.password,
       solveCaptcha: (k, u) => getCaptchaSolver().solve(k, u),
-      log: (msg, extra) =>
-        logger.info({ attemptId: attempt.id, msg, ...extra }, "autologin"),
+      log: (msg, extra) => logger.info({ attemptId: attempt.id, msg, ...extra }, "autologin"),
     });
     if (!outcome.ok) return await fail(outcome.stageFailed, outcome.error);
     const durationMs = Date.now() - startedAt;
@@ -124,9 +123,6 @@ export async function runAutologinAttempt(input: RunAttemptInput): Promise<RunAt
       durationMs,
     };
   } catch (err) {
-    return await fail(
-      "AUTHENTICATING",
-      err instanceof Error ? err.message : "unexpected_error",
-    );
+    return await fail("AUTHENTICATING", err instanceof Error ? err.message : "unexpected_error");
   }
 }

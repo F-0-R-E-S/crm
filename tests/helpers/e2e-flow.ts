@@ -105,9 +105,7 @@ export async function runE2EFlow(): Promise<E2EFlowResult> {
   );
   const body = (await intakeRes.json()) as { lead_id: string; trace_id?: string };
   if (!body.lead_id) {
-    throw new Error(
-      `e2e intake failed: status=${intakeRes.status} body=${JSON.stringify(body)}`,
-    );
+    throw new Error(`e2e intake failed: status=${intakeRes.status} body=${JSON.stringify(body)}`);
   }
 
   // 2. push-lead

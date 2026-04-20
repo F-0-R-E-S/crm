@@ -49,11 +49,15 @@ export default function PricingPage() {
           <div style={{ fontWeight: 600 }}>GambChamp CRM</div>
         </div>
         <nav style={{ display: "flex", gap: 20, fontSize: 12, color: "var(--fg-2)" }}>
-          <a href="/" style={linkStyle}>Home</a>
+          <a href="/" style={linkStyle}>
+            Home
+          </a>
           <a href="/pricing" style={{ ...linkStyle, color: "var(--fg-0)" }}>
             Pricing
           </a>
-          <a href="/login" style={linkStyle}>Login</a>
+          <a href="/login" style={linkStyle}>
+            Login
+          </a>
           <a
             href="/signup"
             style={{
@@ -90,9 +94,9 @@ export default function PricingPage() {
             lineHeight: 1.5,
           }}
         >
-          While competitors quote you $500–$5,000 setup plus opaque "per-lead" add-ons,
-          we publish every number on this page. Pick a tier, start a 14-day trial, and
-          pay only when you're ready.
+          While competitors quote you $500–$5,000 setup plus opaque "per-lead" add-ons, we publish
+          every number on this page. Pick a tier, start a 14-day trial, and pay only when you're
+          ready.
         </p>
       </section>
 
@@ -159,10 +163,7 @@ export default function PricingPage() {
               <FeatureRow label="Leads / month" value={t.features.leadsPerMonth} />
               <FeatureRow label="Broker slots" value={t.features.brokerSlots} />
               <FeatureRow label="Team seats" value={t.features.teamSeats} />
-              <FeatureRow
-                label="Telegram bot"
-                value={t.features.telegramBot ? "included" : "—"}
-              />
+              <FeatureRow label="Telegram bot" value={t.features.telegramBot ? "included" : "—"} />
               <FeatureRow label="SLA" value={t.features.sla} />
               <FeatureRow label="Support" value={t.features.support} />
             </ul>
@@ -214,7 +215,12 @@ export default function PricingPage() {
             <Row feature="Team seats" s="2" g="10" p="Unlimited" />
             <Row feature="Telegram ops bot" s="✓" g="✓" p="✓" />
             <Row feature="SLA" s="Business hours" g="15-min" p="15-min + dedicated" />
-            <Row feature="Support channels" s="Email" g="Email + Telegram" p="Email + Telegram + phone" />
+            <Row
+              feature="Support channels"
+              s="Email"
+              g="Email + Telegram"
+              p="Email + Telegram + phone"
+            />
           </tbody>
         </table>
       </section>

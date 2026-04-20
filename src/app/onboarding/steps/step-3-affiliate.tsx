@@ -13,9 +13,7 @@ export function Step3Affiliate({ value, onNext, onBack }: Props) {
   const createAffiliate = trpc.onboarding.createAffiliateWithKey.useMutation();
 
   const [name, setName] = useState<string>((value.affiliateName as string | undefined) ?? "");
-  const [email, setEmail] = useState<string>(
-    (value.affiliateEmail as string | undefined) ?? "",
-  );
+  const [email, setEmail] = useState<string>((value.affiliateEmail as string | undefined) ?? "");
   const [plaintext, setPlaintext] = useState<string | null>(
     (value.plaintextKey as string | undefined) ?? null,
   );
@@ -95,7 +93,11 @@ export function Step3Affiliate({ value, onNext, onBack }: Props) {
           <button type="button" onClick={onBack} style={secondaryBtn(false)}>
             ← back
           </button>
-          <button type="submit" disabled={createAffiliate.isPending} style={nextBtn(createAffiliate.isPending)}>
+          <button
+            type="submit"
+            disabled={createAffiliate.isPending}
+            style={nextBtn(createAffiliate.isPending)}
+          >
             {createAffiliate.isPending ? "Creating…" : "Create affiliate"}
           </button>
         </div>

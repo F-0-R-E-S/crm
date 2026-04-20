@@ -1,5 +1,5 @@
-import type { Bot } from "grammy";
 import { prisma } from "@/server/db";
+import type { Bot } from "grammy";
 import { TELEGRAM_EVENT_TYPES, isTelegramEventType } from "./event-catalog";
 import { consumeLinkToken } from "./link-token";
 import { todayStats } from "./stats";
@@ -13,9 +13,7 @@ async function activeSub(chatId: string) {
   });
 }
 
-async function requireAdmin(
-  chatId: string,
-): Promise<{ userId: string; subId: string } | null> {
+async function requireAdmin(chatId: string): Promise<{ userId: string; subId: string } | null> {
   const sub = await activeSub(chatId);
   if (!sub || sub.user?.role !== "ADMIN") return null;
   return { userId: sub.userId, subId: sub.id };
@@ -81,10 +79,7 @@ export function registerCommands(bot: Bot) {
     }
     const val = (ctx.match ?? "").trim().toUpperCase();
     if (!val || !isTelegramEventType(val)) {
-      await ctx.reply(
-        `Invalid event type. Valid types:\n${TELEGRAM_EVENT_TYPES.join(", ")}`,
-        MD,
-      );
+      await ctx.reply(`Invalid event type. Valid types:\n${TELEGRAM_EVENT_TYPES.join(", ")}`, MD);
       return;
     }
     const next = uniq([...sub.eventTypes, val]);
@@ -104,10 +99,7 @@ export function registerCommands(bot: Bot) {
     }
     const val = (ctx.match ?? "").trim().toUpperCase();
     if (!val || !isTelegramEventType(val)) {
-      await ctx.reply(
-        `Invalid event type. Valid types:\n${TELEGRAM_EVENT_TYPES.join(", ")}`,
-        MD,
-      );
+      await ctx.reply(`Invalid event type. Valid types:\n${TELEGRAM_EVENT_TYPES.join(", ")}`, MD);
       return;
     }
     const next = sub.eventTypes.filter((e) => e !== val);

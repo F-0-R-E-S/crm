@@ -12,9 +12,7 @@ export default function TemplateDetailPage() {
   const [copied, setCopied] = useState(false);
 
   if (isLoading) {
-    return (
-      <div style={{ padding: "20px 28px", fontSize: 13, color: "var(--fg-2)" }}>loading…</div>
-    );
+    return <div style={{ padding: "20px 28px", fontSize: 13, color: "var(--fg-2)" }}>loading…</div>;
   }
   if (error || !data) {
     return (
@@ -76,9 +74,7 @@ export default function TemplateDetailPage() {
         <KV label="Rate limit" value={data.rateLimitPerMin ? `${data.rateLimitPerMin}/min` : "—"} />
         <KV
           label="Default headers"
-          value={
-            <pre style={preStyle}>{JSON.stringify(data.defaultHeaders ?? {}, null, 2)}</pre>
-          }
+          value={<pre style={preStyle}>{JSON.stringify(data.defaultHeaders ?? {}, null, 2)}</pre>}
         />
         <KV
           label="Countries"

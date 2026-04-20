@@ -1,6 +1,6 @@
+import { getBot, getWebhookSecret } from "@/server/telegram/bot";
 import { webhookCallback } from "grammy";
 import { NextResponse } from "next/server";
-import { getBot, getWebhookSecret } from "@/server/telegram/bot";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

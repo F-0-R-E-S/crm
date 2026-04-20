@@ -12,9 +12,7 @@ describe("GET /api/v1/autologin/sla", () => {
   });
 
   it("400 when from param is not parseable as a date", async () => {
-    const res = await slaGET(
-      new Request("http://x/api/v1/autologin/sla?from=nope"),
-    );
+    const res = await slaGET(new Request("http://x/api/v1/autologin/sla?from=nope"));
     expect(res.status).toBe(400);
     const body = await res.json();
     expect(body.error).toBe("invalid_date");

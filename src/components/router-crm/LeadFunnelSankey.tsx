@@ -86,10 +86,10 @@ export function LeadFunnelSankey({ counts: c, width = 720, height = 240 }: Sanke
   });
 
   const fA = colsLaid[0].items[0];
-  const fB_pass = colsLaid[1].items[0],
-    fB_rej = colsLaid[1].items[1];
-  const fC_rout = colsLaid[2].items[0],
-    fC_nob = colsLaid[2].items[1];
+  const fB_pass = colsLaid[1].items[0];
+  const fB_rej = colsLaid[1].items[1];
+  const fC_rout = colsLaid[2].items[0];
+  const fC_nob = colsLaid[2].items[1];
   const [fD_ftd, fD_acc, fD_dec, fD_fail] = colsLaid[3].items;
 
   const flows: { from: ColItem; to: ColItem; value: number; color: string }[] = [
@@ -103,8 +103,8 @@ export function LeadFunnelSankey({ counts: c, width = 720, height = 240 }: Sanke
     { from: fC_rout, to: fD_fail, value: c.push_failed, color: NODE_COLORS.failed },
   ];
 
-  const offOut = new Map<ColItem, number>(),
-    offIn = new Map<ColItem, number>();
+  const offOut = new Map<ColItem, number>();
+  const offIn = new Map<ColItem, number>();
   const scaleFor = (it: ColItem) => (it.v > 0 ? it.h / it.v : 0);
 
   const paths = flows.map((f, idx) => {

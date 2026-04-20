@@ -3,12 +3,12 @@ import { Prisma } from "@prisma/client";
 import type { ConversionKind } from "@prisma/client";
 
 export type EmitConversionInput = {
-	leadId: string;
-	kind: ConversionKind;
-	amount: Prisma.Decimal | number | string;
-	currency?: string;
-	occurredAt: Date;
-	brokerReportedAt: Date;
+  leadId: string;
+  kind: ConversionKind;
+  amount: Prisma.Decimal | number | string;
+  currency?: string;
+  occurredAt: Date;
+  brokerReportedAt: Date;
 };
 
 /**
@@ -19,35 +19,28 @@ export type EmitConversionInput = {
  * event id.
  */
 export async function emitConversion(input: EmitConversionInput) {
-	const {
-		leadId,
-		kind,
-		amount,
-		currency = "USD",
-		occurredAt,
-		brokerReportedAt,
-	} = input;
+  const { leadId, kind, amount, currency = "USD", occurredAt, brokerReportedAt } = input;
 
-	if (currency !== "USD") {
-		throw new Error(`multi-currency not supported in v1.0 (got ${currency})`);
-	}
+  if (currency !== "USD") {
+    throw new Error(`multi-currency not supported in v1.0 (got ${currency})`);
+  }
 
-	if (kind === "REGISTRATION" || kind === "FTD") {
-		const existing = await prisma.conversion.findFirst({
-			where: { leadId, kind },
-			select: { id: true },
-		});
-		if (existing) return existing;
-	}
+  if (kind === "REGISTRATION" || kind === "FTD") {
+    const existing = await prisma.conversion.findFirst({
+      where: { leadId, kind },
+      select: { id: true },
+    });
+    if (existing) return existing;
+  }
 
-	return prisma.conversion.create({
-		data: {
-			leadId,
-			kind,
-			amount: new Prisma.Decimal(amount),
-			currency,
-			occurredAt,
-			brokerReportedAt,
-		},
-	});
+  return prisma.conversion.create({
+    data: {
+      leadId,
+      kind,
+      amount: new Prisma.Decimal(amount),
+      currency,
+      occurredAt,
+      brokerReportedAt,
+    },
+  });
 }

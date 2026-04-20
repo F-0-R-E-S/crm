@@ -21,7 +21,7 @@ async function intake(rawKey: string, body: object) {
 
 describe("E2E edge cases", () => {
   let mb: MockBroker;
-  const rawKey = "ak_edge_" + "x".repeat(40);
+  const rawKey = `ak_edge_${"x".repeat(40)}`;
 
   beforeEach(async () => {
     await resetDb();

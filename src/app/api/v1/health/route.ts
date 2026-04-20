@@ -10,9 +10,9 @@ let cachedVersion: string | null = null;
 function getVersion(): string {
   if (cachedVersion) return cachedVersion;
   try {
-    const pkg = JSON.parse(
-      readFileSync(join(process.cwd(), "package.json"), "utf8"),
-    ) as { version?: string };
+    const pkg = JSON.parse(readFileSync(join(process.cwd(), "package.json"), "utf8")) as {
+      version?: string;
+    };
     cachedVersion = pkg.version ?? "0.0.0";
   } catch {
     cachedVersion = "0.0.0";

@@ -6,9 +6,7 @@ export default function Login() {
   const [email, setEmail] = useState(
     process.env.NODE_ENV === "production" ? "" : "admin@gambchamp.local",
   );
-  const [password, setPassword] = useState(
-    process.env.NODE_ENV === "production" ? "" : "changeme",
-  );
+  const [password, setPassword] = useState(process.env.NODE_ENV === "production" ? "" : "changeme");
   const [err, setErr] = useState("");
 
   async function submit(e: React.FormEvent) {
@@ -80,7 +78,6 @@ export default function Login() {
           </div>
         </div>
         <input
-          autoFocus
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}

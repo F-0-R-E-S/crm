@@ -3,8 +3,8 @@ import { prisma } from "@/server/db";
 import { probeBrokerEndpoint } from "@/server/onboarding/broker-health";
 import { getTimeToFirstLeadLast30Days } from "@/server/onboarding/metrics";
 import { protectedProcedure, router } from "@/server/trpc";
-import { TRPCError } from "@trpc/server";
 import type { Prisma } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 function sha256(s: string): string {
@@ -50,8 +50,7 @@ export const onboardingRouter = router({
     .mutation(async ({ ctx, input }) => {
       const orgId = await getOrgIdOrThrow(ctx.userId);
       const existing = await prisma.onboardingProgress.findUnique({ where: { orgId } });
-      const prevData =
-        (existing?.stepData as Record<string, unknown> | null | undefined) ?? {};
+      const prevData = (existing?.stepData as Record<string, unknown> | null | undefined) ?? {};
       const scrubbed = scrubSecrets(input.data ?? {});
       const nextData = { ...prevData, ...scrubbed };
 

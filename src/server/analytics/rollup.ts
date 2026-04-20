@@ -3,32 +3,32 @@ import { logger } from "@/server/observability";
 import { Prisma } from "@prisma/client";
 
 export interface RollupRange {
-	from: Date;
-	to: Date;
+  from: Date;
+  to: Date;
 }
 
 /** Emit UTC-midnight timestamps for every day that intersects [from, to). */
 function enumerateUtcDays(from: Date, to: Date): Date[] {
-	const out: Date[] = [];
-	const cursor = new Date(from);
-	cursor.setUTCHours(0, 0, 0, 0);
-	while (cursor < to) {
-		out.push(new Date(cursor));
-		cursor.setUTCDate(cursor.getUTCDate() + 1);
-	}
-	return out;
+  const out: Date[] = [];
+  const cursor = new Date(from);
+  cursor.setUTCHours(0, 0, 0, 0);
+  while (cursor < to) {
+    out.push(new Date(cursor));
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+  return out;
 }
 
 /** Emit UTC on-the-hour timestamps for every hour that intersects [from, to). */
 function enumerateUtcHours(from: Date, to: Date): Date[] {
-	const out: Date[] = [];
-	const cursor = new Date(from);
-	cursor.setUTCMinutes(0, 0, 0);
-	while (cursor < to) {
-		out.push(new Date(cursor));
-		cursor.setUTCHours(cursor.getUTCHours() + 1);
-	}
-	return out;
+  const out: Date[] = [];
+  const cursor = new Date(from);
+  cursor.setUTCMinutes(0, 0, 0);
+  while (cursor < to) {
+    out.push(new Date(cursor));
+    cursor.setUTCHours(cursor.getUTCHours() + 1);
+  }
+  return out;
 }
 
 /**
@@ -36,11 +36,11 @@ function enumerateUtcHours(from: Date, to: Date): Date[] {
  * Idempotent: one ON CONFLICT DO UPDATE statement per day.
  */
 export async function refreshDailyRollups({ from, to }: RollupRange): Promise<void> {
-	const days = enumerateUtcDays(from, to);
-	for (const dayStart of days) {
-		const dayEnd = new Date(dayStart);
-		dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
-		await prisma.$executeRaw(Prisma.sql`
+  const days = enumerateUtcDays(from, to);
+  for (const dayStart of days) {
+    const dayEnd = new Date(dayStart);
+    dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
+    await prisma.$executeRaw(Prisma.sql`
 			INSERT INTO "LeadDailyRoll" (
 				id, date, "affiliateId", "brokerId", geo,
 				"totalReceived", "totalValidated", "totalRejected",
@@ -76,17 +76,17 @@ export async function refreshDailyRollups({ from, to }: RollupRange): Promise<vo
 				"sumRevenue"     = EXCLUDED."sumRevenue",
 				"updatedAt"      = NOW();
 		`);
-		logger.debug({ event: "rollup_daily", day: dayStart.toISOString() });
-	}
+    logger.debug({ event: "rollup_daily", day: dayStart.toISOString() });
+  }
 }
 
 /** Refresh hourly rollups for every UTC hour that intersects [from, to). */
 export async function refreshHourlyRollups({ from, to }: RollupRange): Promise<void> {
-	const hours = enumerateUtcHours(from, to);
-	for (const hourStart of hours) {
-		const hourEnd = new Date(hourStart);
-		hourEnd.setUTCHours(hourEnd.getUTCHours() + 1);
-		await prisma.$executeRaw(Prisma.sql`
+  const hours = enumerateUtcHours(from, to);
+  for (const hourStart of hours) {
+    const hourEnd = new Date(hourStart);
+    hourEnd.setUTCHours(hourEnd.getUTCHours() + 1);
+    await prisma.$executeRaw(Prisma.sql`
 			INSERT INTO "LeadHourlyRoll" (
 				id, hour, "affiliateId", "brokerId", geo,
 				"totalReceived", "totalValidated", "totalRejected",
@@ -122,6 +122,6 @@ export async function refreshHourlyRollups({ from, to }: RollupRange): Promise<v
 				"sumRevenue"     = EXCLUDED."sumRevenue",
 				"updatedAt"      = NOW();
 		`);
-		logger.debug({ event: "rollup_hourly", hour: hourStart.toISOString() });
-	}
+    logger.debug({ event: "rollup_hourly", hour: hourStart.toISOString() });
+  }
 }

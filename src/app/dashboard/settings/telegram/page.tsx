@@ -11,9 +11,11 @@ export default function TelegramSettingsPage() {
   const catalog = trpc.telegram.catalog.useQuery();
   const subs = trpc.telegram.mySubscriptions.useQuery();
   const utils = trpc.useUtils();
-  const [link, setLink] = useState<{ token: string; deepLink: string | null; ttlMin: number } | null>(
-    null,
-  );
+  const [link, setLink] = useState<{
+    token: string;
+    deepLink: string | null;
+    ttlMin: number;
+  } | null>(null);
 
   const issue = trpc.telegram.issueLinkToken.useMutation({
     onSuccess: (r) => setLink(r),
@@ -72,8 +74,8 @@ export default function TelegramSettingsPage() {
                 <div style={{ fontSize: 12 }}>
                   Token: <code>{link.token}</code>
                   <div style={{ fontSize: 10, color: "var(--fg-2)", marginTop: 4 }}>
-                    Admin has not configured the bot username. Run <code>/start {link.token}</code>
-                    {" "}manually in the bot chat.
+                    Admin has not configured the bot username. Run <code>/start {link.token}</code>{" "}
+                    manually in the bot chat.
                   </div>
                 </div>
               )}
@@ -136,8 +138,7 @@ function SubscriptionCard({ sub, catalog, onSave, saving, theme }: SubProps) {
       }}
     >
       <div style={{ fontSize: 12, color: "var(--fg-2)", marginBottom: 8 }}>
-        chat <code>{sub.chatId}</code> · tg user{" "}
-        <code>{sub.telegramUserId ?? "—"}</code>
+        chat <code>{sub.chatId}</code> · tg user <code>{sub.telegramUserId ?? "—"}</code>
       </div>
       <FieldGroup label="Event types (empty = all)">
         <MultiSelect

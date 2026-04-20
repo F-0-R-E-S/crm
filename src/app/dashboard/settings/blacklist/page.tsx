@@ -89,7 +89,7 @@ export default function BlacklistPage() {
             <th style={{ padding: "8px 0" }}>value</th>
             <th>reason</th>
             <th>added</th>
-            <th></th>
+            <th />
           </tr>
         </thead>
         <tbody>

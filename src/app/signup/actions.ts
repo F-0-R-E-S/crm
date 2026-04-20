@@ -34,7 +34,8 @@ export async function signupAction(
   // Rate limit: 5 signups per hour per IP — blunts automated account farming.
   try {
     const h = await headers();
-    const ip = (h.get("x-forwarded-for") ?? "").split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
+    const ip =
+      (h.get("x-forwarded-for") ?? "").split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
     const ok = await rateLimit({
       key: `signup:${ip}`,
       limit: 5,
@@ -52,16 +53,11 @@ export async function signupAction(
   } catch (e) {
     return { error: e instanceof Error ? e.message : "signup failed" };
   }
-  try {
-    await signIn("credentials", {
-      email: parsed.data.email,
-      password: parsed.data.password,
-      redirect: true,
-      redirectTo: "/onboarding",
-    });
-  } catch (e) {
-    // NextAuth throws a redirect exception on success — rethrow so Next.js handles it
-    throw e;
-  }
+  await signIn("credentials", {
+    email: parsed.data.email,
+    password: parsed.data.password,
+    redirect: true,
+    redirectTo: "/onboarding",
+  });
   return { ok: true };
 }

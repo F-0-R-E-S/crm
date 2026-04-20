@@ -6,8 +6,7 @@ import { resetDb } from "../helpers/db";
 const sent: Array<{ name: string; data: unknown; opts?: unknown }> = [];
 
 vi.mock("@/server/jobs/queue", async () => {
-  const actual =
-    await vi.importActual<typeof import("@/server/jobs/queue")>("@/server/jobs/queue");
+  const actual = await vi.importActual<typeof import("@/server/jobs/queue")>("@/server/jobs/queue");
   const fakeBoss = {
     send: async (name: string, data: unknown, opts?: unknown) => {
       sent.push({ name, data, opts });

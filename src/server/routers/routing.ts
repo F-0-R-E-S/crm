@@ -1,4 +1,3 @@
-import { TRPCError } from "@trpc/server";
 import { writeAuditLog } from "@/server/audit";
 import { listFlowCaps, upsertFlowCaps } from "@/server/routing/flow/caps-repository";
 import { CapDefinitionInputSchema } from "@/server/routing/flow/caps-schema";
@@ -11,6 +10,7 @@ import {
   updateDraftGraph,
 } from "@/server/routing/flow/repository";
 import { adminProcedure, protectedProcedure, router } from "@/server/trpc";
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 export const routingRouter = router({
@@ -88,7 +88,7 @@ export const routingRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      let saved;
+      let saved: Awaited<ReturnType<typeof upsertFlowCaps>>;
       try {
         saved = await upsertFlowCaps(input.flowId, input.caps);
       } catch (e) {

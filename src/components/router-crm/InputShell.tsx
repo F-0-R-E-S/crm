@@ -6,7 +6,7 @@ export function inputStyle(theme: Theme): CSSProperties {
   return {
     background: theme === "dark" ? "var(--bg-4)" : "#fff",
     color: "var(--fg-0)",
-    border: `1px solid var(--bd-2)`,
+    border: "1px solid var(--bd-2)",
     borderRadius: 4,
     padding: "6px 9px",
     fontSize: 12,

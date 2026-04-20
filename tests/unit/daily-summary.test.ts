@@ -45,9 +45,7 @@ describe("sendDailySummaries", () => {
     });
     await sendDailySummaries(now);
     const dailyCalls = emitMock.mock.calls.filter((c) => c[0] === "DAILY_SUMMARY");
-    const perAffCalls = emitMock.mock.calls.filter(
-      (c) => c[0] === "AFFILIATE_DAILY_SUMMARY",
-    );
+    const perAffCalls = emitMock.mock.calls.filter((c) => c[0] === "AFFILIATE_DAILY_SUMMARY");
     expect(dailyCalls.length).toBe(1);
     expect(perAffCalls.length).toBe(2);
   });

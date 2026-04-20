@@ -27,9 +27,7 @@ export async function probeProxy(endpointId: string): Promise<ProbeResult> {
     if (!res.ok) return { status: "degraded", latencyMs, error: `http_${res.status}` };
     const body = (await res.json()) as { ip?: string };
     if (!body.ip) return { status: "degraded", latencyMs, error: "no_ip_in_body" };
-    return latencyMs < 2_000
-      ? { status: "healthy", latencyMs }
-      : { status: "degraded", latencyMs };
+    return latencyMs < 2_000 ? { status: "healthy", latencyMs } : { status: "degraded", latencyMs };
   } catch (err) {
     return {
       status: "down",
@@ -39,10 +37,7 @@ export async function probeProxy(endpointId: string): Promise<ProbeResult> {
   }
 }
 
-export async function recordHealthResult(
-  endpointId: string,
-  result: ProbeResult,
-): Promise<void> {
+export async function recordHealthResult(endpointId: string, result: ProbeResult): Promise<void> {
   const ep = await prisma.proxyEndpoint.findUnique({ where: { id: endpointId } });
   if (!ep) return;
   const nextFails = result.status === "healthy" ? 0 : ep.consecutiveFails + 1;

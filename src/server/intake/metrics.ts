@@ -34,12 +34,11 @@ export async function aggregateMetrics(input: MetricsInput): Promise<MetricsBuck
         ? `"geo"`
         : input.groupBy === "status"
           ? `"state"`
-          : `NULL`;
+          : "NULL";
 
-  const scopeWhere =
-    input.affiliateScope && input.affiliateScope.length
-      ? Prisma.sql`AND "affiliateId" = ANY(${input.affiliateScope})`
-      : Prisma.empty;
+  const scopeWhere = input.affiliateScope?.length
+    ? Prisma.sql`AND "affiliateId" = ANY(${input.affiliateScope})`
+    : Prisma.empty;
 
   const rows = await prisma.$queryRaw<
     Array<{

@@ -10,7 +10,8 @@ export const metadata: Metadata = {
  * Loads the Scalar standalone bundle from jsDelivr (pinned); reads the spec from /api/v1/openapi.
  */
 export default function ApiDocsPage() {
-  const scalarSrc = "https://cdn.jsdelivr.net/npm/@scalar/api-reference@1/dist/browser/standalone.min.js";
+  const scalarSrc =
+    "https://cdn.jsdelivr.net/npm/@scalar/api-reference@1/dist/browser/standalone.min.js";
   return (
     <div style={{ minHeight: "100vh" }}>
       <header
@@ -32,6 +33,7 @@ export default function ApiDocsPage() {
       <script
         id="api-reference"
         type="application/json"
+        // biome-ignore lint/security/noDangerouslySetInnerHtml: Scalar config tag; JSON.stringify is safe
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({ url: "/api/v1/openapi", theme: "default", layout: "modern" }),
         }}

@@ -1,5 +1,5 @@
-import { prisma } from "@/server/db";
 import { seedBrokerTemplates } from "@/server/broker-template/seed";
+import { prisma } from "@/server/db";
 import { beforeEach, describe, expect, it } from "vitest";
 import { resetDb } from "../helpers/db";
 

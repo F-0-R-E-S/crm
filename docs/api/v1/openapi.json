@@ -44,14 +44,7 @@
     "schemas": {
       "LeadCreate": {
         "type": "object",
-        "required": [
-          "external_lead_id",
-          "first_name",
-          "last_name",
-          "email",
-          "phone",
-          "country"
-        ],
+        "required": ["external_lead_id", "first_name", "last_name", "email", "phone", "country"],
         "properties": {
           "external_lead_id": {
             "type": "string",
@@ -128,9 +121,7 @@
   "paths": {
     "/api/v1/leads": {
       "post": {
-        "tags": [
-          "Intake"
-        ],
+        "tags": ["Intake"],
         "summary": "Submit a single lead",
         "security": [
           {
@@ -242,9 +233,7 @@
     },
     "/api/v1/leads/bulk": {
       "post": {
-        "tags": [
-          "Intake"
-        ],
+        "tags": ["Intake"],
         "summary": "Submit a batch of leads (sync ≤50, async >50)",
         "security": [
           {
@@ -291,9 +280,7 @@
     },
     "/api/v1/leads/bulk/{jobId}": {
       "get": {
-        "tags": [
-          "Intake"
-        ],
+        "tags": ["Intake"],
         "summary": "Get bulk job status",
         "security": [
           {
@@ -340,9 +327,7 @@
     },
     "/api/v1/routing/simulate": {
       "post": {
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "summary": "Dry-run the routing engine for a lead or batch",
         "security": [
           {
@@ -393,9 +378,7 @@
     },
     "/api/v1/routing/simulate/{jobId}": {
       "get": {
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "summary": "Get routing simulate job result",
         "parameters": [
           {
@@ -416,9 +399,7 @@
     },
     "/api/v1/schema/leads": {
       "get": {
-        "tags": [
-          "Schema"
-        ],
+        "tags": ["Schema"],
         "summary": "Discover the JSON schema for a schema version",
         "parameters": [
           {
@@ -440,9 +421,7 @@
     },
     "/api/v1/errors": {
       "get": {
-        "tags": [
-          "Schema"
-        ],
+        "tags": ["Schema"],
         "summary": "Error + sandbox-outcome catalog",
         "responses": {
           "200": {
@@ -453,9 +432,7 @@
     },
     "/api/v1/health": {
       "get": {
-        "tags": [
-          "Operations"
-        ],
+        "tags": ["Operations"],
         "summary": "Health check",
         "responses": {
           "200": {
@@ -467,10 +444,7 @@
                   "properties": {
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "ok",
-                        "degraded"
-                      ]
+                      "enum": ["ok", "degraded"]
                     },
                     "db": {
                       "type": "string"
@@ -505,9 +479,7 @@
     },
     "/api/v1/metrics/summary": {
       "get": {
-        "tags": [
-          "Operations"
-        ],
+        "tags": ["Operations"],
         "summary": "60s rolling counters + queue depth (ADMIN session required)",
         "responses": {
           "200": {

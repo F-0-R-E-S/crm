@@ -45,18 +45,24 @@ export default function LeadDetail({ params }: { params: Promise<{ id: string }>
           <h2 className="font-medium mb-2">Actions</h2>
           <div className="space-x-2">
             <button
+              type="button"
               onClick={() => setState.mutate({ id, state: "REJECTED", reason: "manual" })}
               className="border rounded px-3 py-1"
             >
               Reject
             </button>
             <button
+              type="button"
               onClick={() => setState.mutate({ id, state: "FTD" })}
               className="border rounded px-3 py-1"
             >
               Mark FTD
             </button>
-            <button onClick={() => repush.mutate({ id })} className="border rounded px-3 py-1">
+            <button
+              type="button"
+              onClick={() => repush.mutate({ id })}
+              className="border rounded px-3 py-1"
+            >
               Re-push
             </button>
           </div>
@@ -84,7 +90,7 @@ export default function LeadDetail({ params }: { params: Promise<{ id: string }>
               <th>Status</th>
               <th>Delivered</th>
               <th>Attempt</th>
-              <th></th>
+              <th />
             </tr>
           </thead>
           <tbody>
@@ -97,6 +103,7 @@ export default function LeadDetail({ params }: { params: Promise<{ id: string }>
                 <td>{o.attemptN}</td>
                 <td>
                   <button
+                    type="button"
                     onClick={() => resend.mutate({ outboundId: o.id })}
                     className="text-blue-600"
                   >

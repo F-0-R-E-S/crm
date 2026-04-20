@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import { POST as INTAKE } from "@/app/api/v1/leads/route";
 import { prisma } from "@/server/db";
-import { redis } from "@/server/redis";
 import { rateLimit } from "@/server/ratelimit";
+import { redis } from "@/server/redis";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import { resetDb } from "../helpers/db";
 
@@ -36,7 +36,7 @@ describe("security baseline — SQLi", () => {
         headers: { "content-type": "application/json", authorization: `Bearer ${rawKey}` },
         body: JSON.stringify({
           external_lead_id: "sec-1",
-          first_name: "Robert'); DROP TABLE \"Lead\"; --",
+          first_name: 'Robert\'); DROP TABLE "Lead"; --',
           last_name: "Tables",
           email: "bob@x.com",
           phone: "+380671111111",

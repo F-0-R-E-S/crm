@@ -1,34 +1,31 @@
 import "dotenv/config";
+import { evaluateAlerts } from "./src/server/alerts/evaluator";
 import {
   type AnalyticsRollPayload,
   handleAnalyticsRollDaily,
 } from "./src/server/jobs/analytics-roll-daily";
 import { handleAnalyticsRollHourly } from "./src/server/jobs/analytics-roll-hourly";
-import { cleanupExpiredIdempotency } from "./src/server/jobs/cleanup-idempotency";
-import {
-  type NotifyAffiliatePayload,
-  handleNotifyAffiliate,
-} from "./src/server/jobs/notify-affiliate";
-import { type PushLeadPayload, handlePushLead } from "./src/server/jobs/push-lead";
-import { type ProxyHealthPayload, handleProxyHealth } from "./src/server/jobs/proxy-health";
+import { detectAnomalies } from "./src/server/jobs/anomaly-detect";
 import {
   type AutologinAttemptPayload,
   handleAutologinAttempt,
 } from "./src/server/jobs/autologin-attempt";
+import { cleanupExpiredIdempotency } from "./src/server/jobs/cleanup-idempotency";
+import { runCrgCohortSettle } from "./src/server/jobs/crg-cohort-settle";
+import { sendDailySummaries } from "./src/server/jobs/daily-summary";
+import { checkManualQueueDepth } from "./src/server/jobs/manual-queue-depth-check";
+import {
+  type NotifyAffiliatePayload,
+  handleNotifyAffiliate,
+} from "./src/server/jobs/notify-affiliate";
+import { type ProxyHealthPayload, handleProxyHealth } from "./src/server/jobs/proxy-health";
+import { type PushLeadPayload, handlePushLead } from "./src/server/jobs/push-lead";
 import { JOB_NAMES, startBossOnce } from "./src/server/jobs/queue";
 import {
   type ResolvePendingHoldPayload,
   handleResolvePendingHold,
 } from "./src/server/jobs/resolve-pending-hold";
-import { evaluateAlerts } from "./src/server/alerts/evaluator";
-import { detectAnomalies } from "./src/server/jobs/anomaly-detect";
-import { runCrgCohortSettle } from "./src/server/jobs/crg-cohort-settle";
-import { sendDailySummaries } from "./src/server/jobs/daily-summary";
-import { checkManualQueueDepth } from "./src/server/jobs/manual-queue-depth-check";
-import {
-  type TelegramSendPayload,
-  handleTelegramSend,
-} from "./src/server/jobs/telegram-send";
+import { type TelegramSendPayload, handleTelegramSend } from "./src/server/jobs/telegram-send";
 import { type VoipCheckPayload, handleVoipCheck } from "./src/server/jobs/voip-check";
 import { logger, runWithTrace } from "./src/server/observability";
 

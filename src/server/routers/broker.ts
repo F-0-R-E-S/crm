@@ -30,19 +30,13 @@ export const brokerRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {
     const rows = await ctx.prisma.broker.findMany({ orderBy: { createdAt: "desc" } });
     const role = (ctx.role ?? "OPERATOR") as UserRole;
-    return redactMany(
-      rows as unknown as Record<string, unknown>[],
-      role,
-      "Broker",
-    ) as typeof rows;
+    return redactMany(rows as unknown as Record<string, unknown>[], role, "Broker") as typeof rows;
   }),
-  byId: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const row = await ctx.prisma.broker.findUniqueOrThrow({ where: { id: input.id } });
-      const role = (ctx.role ?? "OPERATOR") as UserRole;
-      return redact(row as unknown as Record<string, unknown>, role, "Broker") as typeof row;
-    }),
+  byId: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    const row = await ctx.prisma.broker.findUniqueOrThrow({ where: { id: input.id } });
+    const role = (ctx.role ?? "OPERATOR") as UserRole;
+    return redact(row as unknown as Record<string, unknown>, role, "Broker") as typeof row;
+  }),
   create: adminProcedure.input(BrokerInput).mutation(async ({ ctx, input }) => {
     const row = await ctx.prisma.broker.create({ data: input as never });
     await writeAuditLog({

@@ -156,11 +156,23 @@ export function Step4TestLead({ value, onNext, onBack }: Props) {
       </div>
 
       <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-        <button type="button" onClick={send} disabled={sending || !plaintext} style={primaryBtn(sending || !plaintext)}>
+        <button
+          type="button"
+          onClick={send}
+          disabled={sending || !plaintext}
+          style={primaryBtn(sending || !plaintext)}
+        >
           {sending ? "Sending…" : "Send test lead"}
         </button>
         {traceId && (
-          <span style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--fg-2)", alignSelf: "center" }}>
+          <span
+            style={{
+              fontFamily: "var(--mono)",
+              fontSize: 11,
+              color: "var(--fg-2)",
+              alignSelf: "center",
+            }}
+          >
             trace_id: {traceId}
           </span>
         )}

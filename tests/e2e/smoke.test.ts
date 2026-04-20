@@ -16,7 +16,7 @@ const sha = (s: string) => createHash("sha256").update(s).digest("hex");
 describe("E2E smoke — happy path", () => {
   let mb: MockBroker;
   let tr: MockTracker;
-  const rawKey = "ak_e2e_" + "x".repeat(40);
+  const rawKey = `ak_e2e_${"x".repeat(40)}`;
   let brokerId = "";
   const brokerSecret = "e2e-broker-secret";
 

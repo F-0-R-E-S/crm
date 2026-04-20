@@ -12,7 +12,7 @@ const sha = (s: string) => createHash("sha256").update(s).digest("hex");
 
 describe("intake → worker", () => {
   let mb: MockBroker;
-  const rawKey = "ak_flow_" + "x".repeat(40);
+  const rawKey = `ak_flow_${"x".repeat(40)}`;
 
   beforeEach(async () => {
     await resetDb();

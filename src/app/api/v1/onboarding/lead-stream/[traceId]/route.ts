@@ -6,10 +6,7 @@ const TERMINAL_STATES = new Set(["PUSHED", "FAILED", "REJECTED", "ACCEPTED", "FT
 const MAX_DURATION_MS = 60_000;
 const POLL_INTERVAL_MS = 500;
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ traceId: string }> },
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ traceId: string }> }) {
   const session = await auth();
   if (!session?.user) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });

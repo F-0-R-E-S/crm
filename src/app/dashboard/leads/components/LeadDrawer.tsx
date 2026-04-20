@@ -137,8 +137,8 @@ export function LeadDrawer({ leadId, onClose }: { leadId: string; onClose: () =>
                 fraud
               </dt>
               <dd style={{ margin: 0, fontFamily: "var(--mono)" }}>
-                {(lead.qualitySignals as unknown as { fraudComponent?: number })
-                  ?.fraudComponent ?? "—"}
+                {(lead.qualitySignals as unknown as { fraudComponent?: number })?.fraudComponent ??
+                  "—"}
               </dd>
             </div>
             <div>

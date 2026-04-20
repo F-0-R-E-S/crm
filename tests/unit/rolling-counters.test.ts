@@ -44,7 +44,7 @@ describe("rolling counters", () => {
   });
 
   it("GC'd when all members fall out of the window", async () => {
-    const k = `metrics:rolling:t-gc`;
+    const k = "metrics:rolling:t-gc";
     // Insert with a score far in the past so read's zremrangebyscore wipes it.
     await redis.zadd(k, 100, "old-1");
     await redis.zadd(k, 101, "old-2");

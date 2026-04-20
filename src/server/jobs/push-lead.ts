@@ -200,9 +200,7 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
         "FAILED",
         { leadId: lead.id, brokerId: lastPushFail.id, error: lastPushFail.error },
         { brokerId: lastPushFail.id, affiliateId: lead.affiliateId },
-      ).catch((e) =>
-        logger.warn({ err: (e as Error).message }, "[telegram-emit] FAILED failed"),
-      );
+      ).catch((e) => logger.warn({ err: (e as Error).message }, "[telegram-emit] FAILED failed"));
     }
     if (mrReason === "CAP_REACHED") {
       const capBroker = tried.find((t) => t.reason === "cap_full");

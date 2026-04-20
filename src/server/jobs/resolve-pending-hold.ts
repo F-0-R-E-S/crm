@@ -34,9 +34,6 @@ export async function handleResolvePendingHold(payload: ResolvePendingHoldPayloa
     { leadId: lead.id, newBrokerName: broker?.name ?? null },
     { brokerId: lead.brokerId ?? undefined, affiliateId: lead.affiliateId },
   ).catch((e) =>
-    logger.warn(
-      { err: (e as Error).message },
-      "[telegram-emit] PENDING_HOLD_RELEASED failed",
-    ),
+    logger.warn({ err: (e as Error).message }, "[telegram-emit] PENDING_HOLD_RELEASED failed"),
   );
 }

@@ -177,6 +177,7 @@ function randomIp(): string {
   return `${randomInt(1, 224)}.${randomInt(256)}.${randomInt(256)}.${randomInt(1, 255)}`;
 }
 function ascii(s: string): string {
+  // biome-ignore lint/suspicious/noMisleadingCharacterClass: NFD decomposition strips combining diacritics intentionally
   return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 function pickGeo(): string {
@@ -425,8 +426,8 @@ async function phaseFreshPostback(accepted: Array<{ id: string }>) {
   );
 
   async function batch(items: Array<{ id: string }>, status: "ftd" | "accepted" | "declined") {
-    let ok = 0,
-      fail = 0;
+    let ok = 0;
+    let fail = 0;
     const CONCURRENCY = 8;
     for (let i = 0; i < items.length; i += CONCURRENCY) {
       const chunk = items.slice(i, i + CONCURRENCY);

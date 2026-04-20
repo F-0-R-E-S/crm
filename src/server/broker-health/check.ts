@@ -54,10 +54,7 @@ export async function recordHealthCheck(brokerId: string, r: TestConnectionResul
         { brokerId, brokerName: before.name, downtimeMinutes: downtimeMin },
         { brokerId },
       ).catch((e) =>
-        logger.warn(
-          { err: (e as Error).message },
-          "[telegram-emit] BROKER_RECOVERED failed",
-        ),
+        logger.warn({ err: (e as Error).message }, "[telegram-emit] BROKER_RECOVERED failed"),
       );
     }
   }
