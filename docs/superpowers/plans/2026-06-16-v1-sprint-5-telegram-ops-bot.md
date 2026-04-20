@@ -871,3 +871,43 @@ git commit -m "docs(plan): s5 retrospective"
 - Anomaly cron fires at schedule (verifiable by forcing a 50% drop in staging and observing an `ANOMALY_DETECTED` chat message).
 - No destructive migrations — schema changes are purely additive (three new models, one relation on `User`).
 - `CLAUDE.md` updated; `v1.0-sprint-5-complete` tag created.
+
+---
+
+## Retrospective — what actually shipped
+
+**Tag:** `v1.0-sprint-5-complete` on top of `64eec57 docs(claude-md): record v1.0 sprint 5 deliverables (telegram ops bot)`.
+
+**What shipped vs planned**
+
+- All 13 tasks executed in the planned order and committed as per-task atomic commits.
+- Schema: `TelegramBotConfig`, `TelegramSubscription`, `TelegramEventLog` added; `User.telegramSubscriptions` relation added; `db push` completed without destructive migration.
+- All 23 event-type templates registered; `tests/unit/telegram-templates.test.ts` asserts per-type completeness.
+- Live emit sites in place: intake route (`NEW_LEAD`, `FRAUD_HIT`), push-lead (`PUSHED`, `FAILED`, `CAP_REACHED`, `MANUAL_REVIEW_QUEUED`), resolve-pending-hold (`PENDING_HOLD_RELEASED`), status-poll (`FTD`, `AFFILIATE_FTD`), broker-health edge (`BROKER_DOWN`, `BROKER_RECOVERED`).
+- Template-only (no live emitter in S5): `ACCEPTED`, `DECLINED`, `PENDING_HOLD_START`, `SHAVE_SUSPECTED`, `AUTOLOGIN_DOWN`, `AUTOLOGIN_SLA_BREACHED`, `PROXY_POOL_DEGRADED`, `FRAUD_POLICY_CHANGED`, `BROKER_CONFIG_CHANGED`. These are ready for future owners to wire in.
+- S3 `emitAlert` stub rewired to forward to Telegram (`manual_queue_*` → `MANUAL_REVIEW_QUEUED`, `broker_down` → `BROKER_DOWN`, `fraud_hit` → `FRAUD_HIT`).
+- User page `/dashboard/settings/telegram` and admin page `/dashboard/settings/telegram-admin` both shipped with design-system primitives (`btnStyle`, `inputStyle`, `Pill`, theme ctx).
+- Two crons registered in `worker.ts`: `anomaly-detect` every 15 min, `daily-summary` at 09:00 UTC. Schedules wired but worker boot is still an S8 concern per existing convention.
+
+**Deviations from the plan (intentional)**
+
+- Plan referenced `@/server/jobs/pg-boss`; actual codebase module is `@/server/jobs/queue`. Used the existing path and added three entries to `JOB_NAMES`: `telegramSend`, `anomalyDetect`, `dailySummary`.
+- `adminProcedure` already existed in `src/server/trpc.ts` from an earlier sprint — reused as-is rather than redefining it in `routers/telegram.ts`.
+- No `(dashboard)` route group in this tree — pages live under `src/app/dashboard/settings/telegram(-admin)/page.tsx` and nav entries added to `src/components/shell/NavConfig.ts` (sidebar derives settings section from path matching, so no shortcut chars consumed).
+- `getBoss`/`startBossOnce` already existed as sync-returning helpers — kept using the established idiom across new emitter + worker registrations.
+- Admin `adminConfig`/`setBotToken`/`rotateWebhookSecret`/`testSend`/`recentEvents` added to `routers/telegram.ts` in Task 10's diff (rather than a separate Task 11 file) because the router is a single module — Task 11's commit covered only the UI page.
+
+**Telegram API / grammy quirks encountered**
+
+- `webhookCallback(bot, "std/http")` may synchronously throw if the bot token is invalid (as in tests). Wrapped in `try/catch` to 200-ack the delivery regardless — Telegram otherwise keeps retrying.
+- `ctx.match` is a plain string for `/start <arg>` parsing; `String(ctx.chat?.id)` / `String(ctx.from?.id)` used throughout for group/channel safety.
+- Markdown `parse_mode` used consistently; link tokens base64url-encoded to avoid Markdown-special chars.
+- Fake token used in integration tests (`123456:FAKE`) — real `sendMessage` network calls are mocked via `vi.mock('@/server/jobs/queue', ...)` so tests don't touch the Telegram API.
+
+**Approximate time per task**
+
+- Tasks 1–4 (schema, webhook, `/start`/`/stats`, `/sub`/`/unsub`/`/mutebroker`): ~10 min.
+- Tasks 5–8 (admin commands, emitter + 11 templates, 6+6 templates batches): ~12 min.
+- Task 9 (wiring 5 emit sites + test): ~8 min.
+- Tasks 10–11 (router + user page + admin page): ~10 min.
+- Tasks 12–13 (anomaly + daily-summary + CLAUDE.md + tag + retro): ~8 min.
