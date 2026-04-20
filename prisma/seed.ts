@@ -2,6 +2,9 @@ import { createHash, randomBytes } from "node:crypto";
 import { PrismaClient, UserRole } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { backfillDefaultOrg } from "../src/server/onboarding/backfill";
+import type { FlowGraph } from "../src/server/routing/flow/model";
+import { publishFlow } from "../src/server/routing/flow/publish";
+import { createDraftFlow } from "../src/server/routing/flow/repository";
 
 const prisma = new PrismaClient();
 
@@ -103,7 +106,90 @@ async function main() {
   await backfillDefaultOrg();
   console.log("default org backfilled");
 
+  if (process.env.SEED_PERF === "1") {
+    await seedPerfFlow();
+  }
+
   console.log("seed complete");
+}
+
+/**
+ * Perf-harness fixtures for `perf/routing-stress.js`.
+ * Creates:
+ *   - 5 `perf-broker-0..4` rows
+ *   - `flow-perf-default` flow + published version with a 5-way WRR algorithm + branch filter
+ *   - `perf-affiliate` + `ak_perf_...` API key (printed to stdout once)
+ * Idempotent: returns early if the flow already exists.
+ */
+async function seedPerfFlow(): Promise<void> {
+  const existing = await prisma.flow.findFirst({ where: { name: "flow-perf-default" } });
+  if (existing) {
+    console.log("[perf] flow-perf-default already exists; skipping");
+    return;
+  }
+  const brokers: { id: string; weight: number }[] = [];
+  for (let i = 0; i < 5; i++) {
+    const broker = await prisma.broker.upsert({
+      where: { id: `perf-broker-${i}` },
+      update: {},
+      create: {
+        id: `perf-broker-${i}`,
+        name: `perf-broker-${i}`,
+        endpointUrl: "http://127.0.0.1:9/perf",
+        fieldMapping: { firstName: "first_name", lastName: "last_name", email: "email" },
+        postbackSecret: "perf-secret",
+        postbackLeadIdPath: "lead_id",
+        postbackStatusPath: "status",
+        statusMapping: { accepted: "ACCEPTED", declined: "DECLINED" },
+        responseIdPath: "id",
+      },
+    });
+    brokers.push({ id: broker.id, weight: 10 + i });
+  }
+  const targets = brokers.map((b) => ({
+    id: `t-${b.id}`,
+    kind: "BrokerTarget" as const,
+    brokerId: b.id,
+    weight: b.weight,
+  }));
+  const graph: FlowGraph = {
+    nodes: [
+      { id: "e", kind: "Entry" },
+      { id: "a", kind: "Algorithm", mode: "WEIGHTED_ROUND_ROBIN" },
+      ...targets,
+      { id: "x", kind: "Exit" },
+    ],
+    edges: [
+      { from: "e", to: "a", condition: "default" },
+      ...targets.map((t) => ({ from: "a", to: t.id, condition: "default" as const })),
+      ...targets.map((t) => ({ from: t.id, to: "x", condition: "default" as const })),
+    ],
+  };
+  const flow = await createDraftFlow({ name: "flow-perf-default", timezone: "UTC", graph });
+  await publishFlow(flow.id, "system");
+
+  const perfAff = await prisma.affiliate.upsert({
+    where: { id: "perf-affiliate" },
+    update: {},
+    create: {
+      id: "perf-affiliate",
+      name: "perf-affiliate",
+      contactEmail: "perf@example.com",
+      totalDailyCap: 100000,
+    },
+  });
+  const rawKey = `ak_perf_${randomBytes(16).toString("hex")}`;
+  await prisma.apiKey.upsert({
+    where: { keyHash: sha256(rawKey) },
+    update: {},
+    create: {
+      affiliateId: perfAff.id,
+      keyHash: sha256(rawKey),
+      keyPrefix: rawKey.slice(0, 16),
+      label: "perf-key",
+    },
+  });
+  console.log(`[perf] flow ${flow.id} created; API key (SAVE): ${rawKey}`);
 }
 
 main()

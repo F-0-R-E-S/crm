@@ -15,7 +15,11 @@ INTAKE_API_KEY=ak_... node perf/intake-load.js sustained_500_rps_30m
 - **sustained_500_rps_30m** — p95 < 500ms, err_pct < 0.5% — the launch SLO.
   - Prereq: warm dev server (`pnpm dev`) + a 60s warmup run (`sustained_300_rps_15m` ^C at 60s).
   - Baseline destination: `docs/perf/v1-baseline.md`.
-- **Routing engine stress:** see `perf/routing-stress.js` (10k-batch simulations).
+- **Routing engine stress** (`perf/routing-stress.js`):
+  - Prereq: `SEED_PERF=1 pnpm db:seed` creates `flow-perf-default` + 5 brokers + a `perf-affiliate` + `ak_perf_*` API key (printed once).
+  - Auth: `/api/v1/routing/simulate` requires an admin session cookie. Export `ROUTING_COOKIE='next-auth.session-token=...'` from your browser devtools.
+  - Scenarios: `batch_10k_sustained` (connections=20, 5m) and `batch_10k_concurrent` (connections=100, 5m).
+  - Gate: p95 < 1000ms, err_pct < 0.5%.
 
 ## Targets (STORY-012 AC)
 
