@@ -27,3 +27,29 @@
 - `pnpm typecheck`
 - `pnpm lint`
 - `pnpm test` (if logic changed)
+
+## Routing engine (EPIC-02)
+
+- **Primary:** `Flow` / `FlowVersion` / `FlowBranch` / `FlowAlgorithmConfig` / `FallbackStep` / `CapDefinition` / `CapCounter` + `src/server/routing/engine.ts` (pure-decision) + `src/server/routing/simulator.ts` (dry-run wrapper).
+- **Algorithms:** `src/server/routing/algorithm/wrr.ts` (smooth-WRR Nginx-style via Redis Lua); `src/server/routing/algorithm/slots-chance.ts` (CSPRNG `crypto.randomInt`); `src/server/routing/algorithm/selector.ts` (flow vs branch override).
+- **Constraints:** `src/server/routing/constraints/geo.ts`, `schedule.ts` (DST-aware via `src/lib/timezone.ts`), `caps.ts` (hourly/daily/weekly, atomic Postgres upsert).
+- **Fallback:** `src/server/routing/fallback/orchestrator.ts` — `classifyPushResult` + `buildFallbackPlan` + cycle detection hooked into `publishFlow`.
+- **REST:** `/api/v1/routing/flows/*` (list/create/get/update + publish/archive + algorithm config), `/api/v1/routing/caps/:flowId` (remaining cap status), `/api/v1/routing/simulate` (single/batch + `/[jobId]` status).
+- **DEPRECATED compat:**
+  - `RotationRule` + `src/server/routing/select-broker.ts` → auto-migrated to `auto:<GEO>` Flow via `src/server/routing/flow/auto-migrate.ts::ensureDefaultFlowsFromRotationRules()`; wire into `push-lead.ts` is an Operational Follow-up (see plan).
+  - `src/server/routing/caps.ts` — legacy DailyCap shim; new code uses `src/server/routing/constraints/caps.ts`.
+  - `src/server/routing/filters.ts::isWithinWorkingHours` — legacy; new code uses `src/server/routing/constraints/schedule.ts::evaluateSchedule`.
+- **Tests:** WRR/Slots-Chance statistical tests take 1-3s (10k-20k iterations) — запускать отдельно при timeout issues. Edge-case 100k iteration test for 0.01% chance deliberately skipped from default suite.
+
+## Intake pipeline (EPIC-01)
+
+- **Entry:** `src/app/api/v1/leads/route.ts` — Bearer API-key + X-API-Version + sandbox mode + size/injection hardening + multi-strategy dedup (409 response) + idempotency payload-hash + Zod strict/compat + intake-settings application.
+- **Bulk:** `/api/v1/leads/bulk` (sync 207 ≤50, async 202 >50) + `/api/v1/leads/bulk/[jobId]` status.
+- **Schema registry:** `src/server/schema/registry.ts` with versioned intake schemas (currently `2026-01`); discoverable via `GET /api/v1/schema/leads?version=...`.
+- **Settings:** `IntakeSettings` table + `src/server/intake/settings.ts` (30s LRU cache) + `GET/PUT /api/v1/affiliates/:id/intake-settings`.
+- **Sandbox:** `ApiKey.isSandbox` + `src/server/intake/sandbox.ts` deterministic outcomes by `external_lead_id` prefix; `GET /api/v1/errors` catalog.
+- **Metrics:** `src/server/intake/metrics.ts` (Prisma raw SQL aggregation) + `GET /api/v1/intake/metrics?from&to&interval&group_by`.
+- **Audit:** `src/server/audit/hash-chain.ts` (HMAC-SHA256 hash-chain for LeadEvent + AuditLog); `src/server/audit/pii-mask.ts` (email hash local-part, phone last-4, IPv4 /24, IPv6 /56).
+- **Outcome webhooks:** `AffiliateIntakeWebhook` + `WebhookDelivery` + `src/server/webhooks/intake-outcome.ts` (HMAC-signed) + `src/server/jobs/intake-webhook-delivery.ts` (5-retry schedule `10s,60s,300s,900s,3600s` + auto-pause on HTTP 410).
+- **Perf harness:** `perf/intake-load.js` (autocannon; scenarios `sustained_300_rps_15m` + `burst_1000_rps_60s`).
+- **Env:** centralized Zod validation in `src/lib/env.ts`; `zBool` helper (correctly handles `"false"`); `NEXTAUTH_SECRET` OR `AUTH_SECRET` accepted; `AUDIT_HASH_CHAIN_SECRET` required in `NODE_ENV=production`.

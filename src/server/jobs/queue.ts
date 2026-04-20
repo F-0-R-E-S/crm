@@ -19,6 +19,11 @@ export const JOB_NAMES = {
   bulkIntake: "bulk-intake",
   intakeWebhookDelivery: "intake-webhook-delivery",
   sandboxPurge: "sandbox-purge",
+  batchSimulate: "batch-simulate",
+  flowCapRefresh: "flow-cap-refresh",
+  brokerHealthCheck: "broker-health-check",
+  brokerStatusPoll: "broker-status-poll",
+  brokerErrorAggregator: "broker-error-aggregator",
 } as const;
 
 const globalForBossStarted = globalThis as unknown as { bossStarted?: boolean };
