@@ -138,3 +138,14 @@
 - **UI:** `/dashboard/finance/{pnl,invoices,crg-cohorts}` (nav shortcuts `P`, `N`, `C`) + `/dashboard/brokers/[id]/payout` + `/dashboard/affiliates/[id]/payout` rule editors. PnL page has filter bar (date range, affiliate, broker, geo). Invoices page tabs broker/affiliate with drawer (mark paid + export stub).
 - **Test helpers:** new `tests/helpers/seed.ts` (`seedAffiliate`, `seedBroker`, `seedLead`, `seedAdminSession`) + `tests/helpers/postback-signature.ts` (`signPostback`). `tests/helpers/db.ts::resetDb` now wipes `affiliateInvoice`, `brokerInvoice`, `cRGCohort`, `affiliatePayoutRule`, `brokerPayoutRule`, `conversion`.
 - **v1.0 constraints locked:** USD only, 1:1 broker↔affiliate invoice linkage, no partial payments, no chargebacks, postback-only conversion ingest, full-invoice (no splits).
+
+## Onboarding (EPIC-13)
+
+- **Entry:** `/signup` (public) → `createAccount` in `src/server/onboarding/signup.ts` → seeds `{User, Org, OnboardingProgress}` + 14-day trial clock → redirects to `/onboarding`.
+- **Wizard:** single client component `src/app/onboarding/wizard.tsx` with 5-node state machine. Steps: `src/app/onboarding/steps/step-{1..5}-*.tsx`. Progress persisted to `OnboardingProgress` (server) + `localStorage` (client).
+- **Broker health check:** `src/server/onboarding/broker-health.ts::probeBrokerEndpoint` — 5s timeout; 5xx/network = not ok, anything else = reachable.
+- **Test lead live stream:** `src/app/api/v1/onboarding/lead-stream/[traceId]/route.ts` — SSE, 500ms polling interval, 60s ceiling. Closes on terminal state.
+- **Org model:** new first-class entity. `User.orgId` back-references. Existing users backfilled into "Default Org" via `src/server/onboarding/backfill.ts::backfillDefaultOrg` (idempotent, called from `prisma/seed.ts`).
+- **Pricing:** public `/pricing` page, tier config in `src/app/pricing/tiers.ts` (Starter $399 / Growth $599 / Pro $899). Stripe integration = v2.0 scope.
+- **Broker templates:** 10 named templates in `src/server/broker-template/seeds/<vendor>-style.ts`; seeded via `pnpm tsx src/server/broker-template/seed.ts` (idempotent).
+- **SLA metric:** `src/server/onboarding/metrics.ts::getTimeToFirstLeadLast30Days` → admin-only dashboard widget showing median + p90. Target: median < 30 min.
