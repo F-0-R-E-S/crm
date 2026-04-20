@@ -1,5 +1,10 @@
 import type { TelegramEventType } from "../event-catalog";
 import { render as renderAccepted } from "./accepted";
+import { render as renderAutologinDown } from "./autologin-down";
+import { render as renderAutologinSlaBreached } from "./autologin-sla-breached";
+import { render as renderBrokerDown } from "./broker-down";
+import { render as renderBrokerRecovered } from "./broker-recovered";
+import { render as renderCapReached } from "./cap-reached";
 import { render as renderDeclined } from "./declined";
 import { render as renderFailed } from "./failed";
 import { render as renderFraudHit } from "./fraud-hit";
@@ -8,6 +13,7 @@ import { render as renderManualReviewQueued } from "./manual-review-queued";
 import { render as renderNewLead } from "./new-lead";
 import { render as renderPendingHoldReleased } from "./pending-hold-released";
 import { render as renderPendingHoldStart } from "./pending-hold-start";
+import { render as renderProxyPoolDegraded } from "./proxy-pool-degraded";
 import { render as renderPushed } from "./pushed";
 import { render as renderShaveSuspected } from "./shave-suspected";
 
@@ -25,6 +31,12 @@ export const TEMPLATES: Partial<Record<TelegramEventType, Renderer>> = {
   PENDING_HOLD_START: renderPendingHoldStart,
   PENDING_HOLD_RELEASED: renderPendingHoldReleased,
   SHAVE_SUSPECTED: renderShaveSuspected,
+  BROKER_DOWN: renderBrokerDown,
+  BROKER_RECOVERED: renderBrokerRecovered,
+  CAP_REACHED: renderCapReached,
+  AUTOLOGIN_DOWN: renderAutologinDown,
+  AUTOLOGIN_SLA_BREACHED: renderAutologinSlaBreached,
+  PROXY_POOL_DEGRADED: renderProxyPoolDegraded,
 };
 
 export function fallbackRender(p: Record<string, unknown>): string {
