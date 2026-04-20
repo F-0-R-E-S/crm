@@ -9,12 +9,15 @@ datasource db {
 
 model User {
   id           String     @id @default(cuid())
+  tenantId     String?
   email        String     @unique
   passwordHash String
   role         UserRole   @default(OPERATOR)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   auditLogs    AuditLog[]
+
+  @@index([tenantId])
 }
 
 enum UserRole {
@@ -24,6 +27,7 @@ enum UserRole {
 
 model Affiliate {
   id                String             @id @default(cuid())
+  tenantId          String?
   name              String
   contactEmail      String?
   isActive          Boolean            @default(true)
@@ -40,6 +44,7 @@ model Affiliate {
   intakeWebhooks    AffiliateIntakeWebhook[]
 
   @@index([isActive])
+  @@index([tenantId])
 }
 
 model AffiliateIntakeWebhook {
@@ -93,6 +98,7 @@ model IntakeSettings {
 
 model ApiKey {
   id          String    @id @default(cuid())
+  tenantId    String?
   affiliateId String
   keyHash     String    @unique
   keyPrefix   String
@@ -106,10 +112,12 @@ model ApiKey {
   affiliate   Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
 
   @@index([affiliateId, isRevoked])
+  @@index([tenantId])
 }
 
 model Broker {
   id                 String         @id @default(cuid())
+  tenantId           String?
   name               String
   isActive           Boolean        @default(true)
   dailyCap           Int?
@@ -146,6 +154,7 @@ model Broker {
   @@index([isActive])
   @@index([syncMode, isActive])
   @@index([templateId])
+  @@index([tenantId])
 }
 
 enum HttpMethod {
@@ -175,6 +184,7 @@ model RotationRule {
 
 model Lead {
   id                String             @id @default(cuid())
+  tenantId          String?
   externalLeadId    String?
   affiliateId       String
   brokerId          String?
@@ -220,6 +230,7 @@ model Lead {
   @@index([emailHash])
   @@index([state, createdAt])
   @@index([externalLeadId, affiliateId])
+  @@index([tenantId])
 }
 
 enum LeadState {
@@ -540,6 +551,7 @@ model CapCounter {
 
 model BrokerTemplate {
   id                 String         @id @default(cuid())
+  tenantId           String?
   slug               String         @unique
   name               String
   vendor             String
@@ -572,6 +584,7 @@ model BrokerTemplate {
   @@index([protocol, status])
   @@index([countries])
   @@index([name])
+  @@index([tenantId])
 }
 
 model BrokerHealthCheck {
