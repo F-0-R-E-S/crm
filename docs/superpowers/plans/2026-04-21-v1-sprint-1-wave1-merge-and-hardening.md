@@ -1025,3 +1025,24 @@ git commit -m "docs(plan): s1 retrospective"
 - Manual smoke of `POST /api/v1/leads` returns `201` against a seeded key.
 - Fraud-score enforcement rejects a blacklisted-email lead with `status 422` and `Lead.state = REJECTED`.
 - No data was lost during the wave1 merge (verified by `pre-wave1-merge` tag still pointing at the prior HEAD).
+
+---
+
+## Retrospective (2026-04-20 actual completion)
+
+**Shipped vs planned:**
+- All 9 tasks completed as planned.
+- T4 (allowedIps) and T6 (expiresAt) merged into a single schema change committed as T4 (cheaper single `prisma db push`). T6's commit is a test-only addition.
+- T2 wrote no new test — existing wave1 coverage (`intake-fraud-autoreject.test.ts`, 6 cases) is comprehensive; a duplicate regression would be low-value. Documented in the T2 step notes.
+
+**Surprises during merge:**
+- `prisma db push` reported "already in sync" because an earlier manual push against a shared local DB had already applied the wave1 migrations. Fortunately the migration files are still committed on the branch history.
+- Two intake schema fields (`geo` not `country`, `event_ts` required) caused test iteration churn. Updated the plan's later-sprint briefs-style test payloads accordingly.
+- Phone normalization rejects US `555-` test numbers as invalid (libphonenumber behavior). Switched test fixtures to `+14155550199`.
+
+**Deferred to later sprints:**
+- 40 pre-existing Biome diagnostics (a11y, self-closing JSX, hook deps) kept out of S1 scope — triaged to S8 hardening per the earlier CLAUDE.md note.
+
+**Time:** ~25 minutes end-to-end (inline execution with checkpoints).
+
+**Tag:** `v1.0-sprint-1-complete` at commit `bf1d6d1`.
