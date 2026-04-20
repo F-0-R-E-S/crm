@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.3.0 — 2026-04-20 (Wave 1: Parity gaps)
+
+Closes two parity gaps vs Leadgreed/iREV: per-country cap budgets and
+Status Pipe Pending (anti-shave hold window after broker accept).
+
+### Added
+- `CapDefinition.perCountry` + `CapCountryLimit` model — separate cap
+  budgets per GEO, resolved against `lead.geo` in routing engine.
+- `CapCounter.country` discriminator (`""` = TOTAL for back-compat).
+- `LeadState.PENDING_HOLD` + `Lead.pendingHoldUntil` +
+  `Lead.shaveSuspected` — anti-shave hold window after broker push.
+- `Broker.pendingHoldMinutes` — opt-in per-broker hold duration
+  (null = feature off).
+- pg-boss job `resolve-pending-hold` — transitions PENDING_HOLD leads
+  to ACCEPTED at hold expiry.
+- `LeadEventKind` values: `PENDING_HOLD_STARTED`,
+  `PENDING_HOLD_RELEASED`, `SHAVE_SUSPECTED`.
+- UI: per-country cap toggle + country→limit grid in Flow editor;
+  PENDING_HOLD state pill + `hold until HH:MM` countdown +
+  `shave suspected` badge in Lead detail drawer.
+
+### Migrations
+- `20260420105207_wave1_cap_per_country`
+- `20260420140530_wave1_pending_hold`
+
+### Back-compat
+- `CapCounter.country=""` default — existing counters keep TOTAL
+  semantics.
+- `Broker.pendingHoldMinutes=null` default — existing brokers unchanged.
+- Postback handler on non-PENDING_HOLD leads: unchanged behaviour.
+
 ## 0.2.0 — 2026-04-20 (Design Port)
 
 Ports the ROUTER CRM design prototype (`crm-design/project/ROUTER CRM.html`) into

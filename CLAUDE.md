@@ -32,7 +32,7 @@
 
 - **Primary:** `Flow` / `FlowVersion` / `FlowBranch` / `FlowAlgorithmConfig` / `FallbackStep` / `CapDefinition` / `CapCounter` + `src/server/routing/engine.ts` (pure-decision) + `src/server/routing/simulator.ts` (dry-run wrapper).
 - **Algorithms:** `src/server/routing/algorithm/wrr.ts` (smooth-WRR Nginx-style via Redis Lua); `src/server/routing/algorithm/slots-chance.ts` (CSPRNG `crypto.randomInt`); `src/server/routing/algorithm/selector.ts` (flow vs branch override).
-- **Constraints:** `src/server/routing/constraints/geo.ts`, `schedule.ts` (DST-aware via `src/lib/timezone.ts`), `caps.ts` (hourly/daily/weekly, atomic Postgres upsert).
+- **Constraints:** `src/server/routing/constraints/geo.ts`, `schedule.ts` (DST-aware via `src/lib/timezone.ts`), `caps.ts` (hourly/daily/weekly, atomic Postgres upsert; поддерживает `country` дискриминатор — `CapDefinition.perCountry=true` + `CapCountryLimit[]` задают раздельный лимит по `lead.geo`; fail-closed при отсутствии country или лимита для страны).
 - **Fallback:** `src/server/routing/fallback/orchestrator.ts` — `classifyPushResult` + `buildFallbackPlan` + cycle detection hooked into `publishFlow`.
 - **REST:** `/api/v1/routing/flows/*` (list/create/get/update + publish/archive + algorithm config), `/api/v1/routing/caps/:flowId` (remaining cap status), `/api/v1/routing/simulate` (single/batch + `/[jobId]` status).
 - **DEPRECATED compat:**
@@ -53,3 +53,10 @@
 - **Outcome webhooks:** `AffiliateIntakeWebhook` + `WebhookDelivery` + `src/server/webhooks/intake-outcome.ts` (HMAC-signed) + `src/server/jobs/intake-webhook-delivery.ts` (5-retry schedule `10s,60s,300s,900s,3600s` + auto-pause on HTTP 410).
 - **Perf harness:** `perf/intake-load.js` (autocannon; scenarios `sustained_300_rps_15m` + `burst_1000_rps_60s`).
 - **Env:** centralized Zod validation in `src/lib/env.ts`; `zBool` helper (correctly handles `"false"`); `NEXTAUTH_SECRET` OR `AUTH_SECRET` accepted; `AUDIT_HASH_CHAIN_SECRET` required in `NODE_ENV=production`.
+
+## Status Pipe Pending (W1.2 anti-shave)
+
+- `Broker.pendingHoldMinutes: Int?` — opt-in per-broker (null = feature off).
+- После успешного push в `src/server/jobs/push-lead.ts`: если `holdMin > 0` → `LeadState.PENDING_HOLD` + `Lead.pendingHoldUntil` + LeadEvent `PENDING_HOLD_STARTED` + pg-boss job `resolve-pending-hold` scheduled на момент истечения hold-окна.
+- Postback handler (`src/app/api/v1/postbacks/[brokerId]/route.ts`): если прежнее состояние PENDING_HOLD и mapped=DECLINED → `Lead.shaveSuspected=true` + LeadEvent `SHAVE_SUSPECTED`. При ACCEPTED/FTD/DECLINED clearing `pendingHoldUntil` и emit `PENDING_HOLD_RELEASED` (если не shave).
+- Job `resolve-pending-hold` (`src/server/jobs/resolve-pending-hold.ts`): при срабатывании, если лид всё ещё в PENDING_HOLD — переводит в ACCEPTED + emit `PENDING_HOLD_RELEASED`.
