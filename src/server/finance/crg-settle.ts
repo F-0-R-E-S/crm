@@ -44,7 +44,9 @@ export async function settleCohortsBefore(cutoffEnd: Date) {
 				: new Prisma.Decimal(0);
 
 		const guaranteed = cohort.guaranteedRate ?? new Prisma.Decimal(0);
-		const status: "MET" | "SHORTFALL" = ftdRate.gte(guaranteed) ? "MET" : "SHORTFALL";
+		// Empty cohorts (no accepted leads that week) — nothing to guarantee; mark MET.
+		const status: "MET" | "SHORTFALL" =
+			cohort.cohortSize === 0 || ftdRate.gte(guaranteed) ? "MET" : "SHORTFALL";
 
 		let shortfallAmount: Prisma.Decimal = new Prisma.Decimal(0);
 		if (status === "SHORTFALL") {
