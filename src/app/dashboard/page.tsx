@@ -1,18 +1,29 @@
 "use client";
 import { Card, CounterTile, LeadFunnelSankey, MiniBars } from "@/components/router-crm";
 import { trpc } from "@/lib/trpc";
+import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+
+function formatDuration(seconds: number): string {
+  if (seconds <= 0) return "—";
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
 
 export default function DashboardHome() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const onboarded = searchParams.get("onboarded") === "1";
   const [bannerDismissed, setBannerDismissed] = useState(false);
+  const session = useSession();
+  const isAdmin = session.data?.user?.role === "ADMIN";
   const counters = trpc.lead.counters.useQuery();
   const funnel = trpc.lead.funnelCounts.useQuery();
   const brokers = trpc.lead.brokerPerformance.useQuery();
   const geos = trpc.lead.topGeos.useQuery();
+  const ttfl = trpc.onboarding.adminMetrics.useQuery(undefined, { enabled: isAdmin });
 
   if (!counters.data || !funnel.data) return <div style={{ padding: 28 }}>Loading…</div>;
 
@@ -86,6 +97,45 @@ export default function DashboardHome() {
           onClick={() => goto("/dashboard/leads?state=REJECTED")}
         />
       </div>
+      {isAdmin && ttfl.data && (
+        <div
+          style={{
+            border: "1px solid var(--bd-1)",
+            borderRadius: 6,
+            background: "var(--bg-1)",
+            padding: "12px 16px",
+            display: "flex",
+            gap: 24,
+            fontSize: 12,
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              fontSize: 11,
+              fontFamily: "var(--mono)",
+              color: "var(--fg-2)",
+              textTransform: "uppercase",
+              letterSpacing: "0.08em",
+            }}
+          >
+            Time-to-first-lead (30d)
+          </div>
+          <div>
+            <span style={{ color: "var(--fg-2)" }}>median</span>{" "}
+            <span style={{ fontFamily: "var(--mono)", fontWeight: 500 }}>
+              {formatDuration(ttfl.data.medianSeconds)}
+            </span>
+          </div>
+          <div>
+            <span style={{ color: "var(--fg-2)" }}>p90</span>{" "}
+            <span style={{ fontFamily: "var(--mono)", fontWeight: 500 }}>
+              {formatDuration(ttfl.data.p90Seconds)}
+            </span>
+          </div>
+          <div style={{ color: "var(--fg-2)" }}>n={ttfl.data.count}</div>
+        </div>
+      )}
       <Card title="Lead funnel" subtitle="Intake → Validation → Routing → Outcome (last 24h)">
         <LeadFunnelSankey counts={funnel.data} width={900} />
       </Card>

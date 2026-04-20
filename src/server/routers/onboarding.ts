@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import { prisma } from "@/server/db";
 import { probeBrokerEndpoint } from "@/server/onboarding/broker-health";
+import { getTimeToFirstLeadLast30Days } from "@/server/onboarding/metrics";
 import { protectedProcedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
 import type { Prisma } from "@prisma/client";
@@ -173,6 +174,13 @@ export const onboardingRouter = router({
         currentStep: 5,
       },
     });
+  }),
+
+  adminMetrics: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.role !== "ADMIN") {
+      throw new TRPCError({ code: "FORBIDDEN", message: "admin only" });
+    }
+    return getTimeToFirstLeadLast30Days();
   }),
 
   complete: protectedProcedure.mutation(async ({ ctx }) => {
