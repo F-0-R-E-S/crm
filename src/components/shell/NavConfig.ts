@@ -13,6 +13,7 @@ export const NAV_ITEMS: NavItem[] = [
   { path: "/dashboard/brokers/templates", label: "broker templates", kbd: "T", indent: true },
   { path: "/dashboard/routing", label: "routing (legacy)", kbd: "R" },
   { path: "/dashboard/routing/flows", label: "routing flows", kbd: "F", indent: true },
+  { path: "/dashboard/autologin", label: "autologin", kbd: "X" },
   { path: "/dashboard/settings/intake-metrics", label: "intake metrics", kbd: "I", indent: true },
   { path: "/dashboard/settings/schema", label: "intake schema", kbd: "S", indent: true },
   { path: "/dashboard/settings/errors", label: "error catalog", kbd: "E", indent: true },
