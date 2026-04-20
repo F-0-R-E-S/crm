@@ -4,6 +4,7 @@ import { useThemeCtx } from "@/components/shell/ThemeProvider";
 import { fmtTime, maskPhone } from "@/lib/format";
 import type { RouterOutputs } from "@/lib/trpc";
 import { NewRowBadge } from "./NewRowBadge";
+import { QualityBadge } from "./QualityBadge";
 
 type Lead = RouterOutputs["lead"]["list"]["items"][number];
 
@@ -39,6 +40,7 @@ export function LeadsGrid({ leads, selectedId, onSelect, newIds }: Props) {
           <col style={{ width: 110 }} />
           <col style={{ width: 90 }} />
           <col style={{ width: 120 }} />
+          <col style={{ width: 60 }} />
           <col />
         </colgroup>
         <thead>
@@ -61,6 +63,7 @@ export function LeadsGrid({ leads, selectedId, onSelect, newIds }: Props) {
             <th>state</th>
             <th style={{ textAlign: "right" }}>push</th>
             <th>broker</th>
+            <th>Q</th>
             <th>reason / status</th>
           </tr>
         </thead>
@@ -123,6 +126,9 @@ export function LeadsGrid({ leads, selectedId, onSelect, newIds }: Props) {
                   {l.lastPushAt ? "—" : "—"}
                 </td>
                 <td>{l.broker?.name ?? "—"}</td>
+                <td>
+                  <QualityBadge score={l.qualityScore} />
+                </td>
                 <td style={{ color: "var(--fg-2)", fontSize: 11 }}>
                   {l.rejectReason ?? l.lastBrokerStatus ?? ""}
                 </td>

@@ -4,6 +4,7 @@ import { useThemeCtx } from "@/components/shell/ThemeProvider";
 import { fmtRel } from "@/lib/format";
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
+import { QualityBadge } from "./QualityBadge";
 
 type Tab = "timeline" | "payload" | "broker" | "postbacks";
 
@@ -88,6 +89,93 @@ export function LeadDrawer({ leadId, onClose }: { leadId: string; onClose: () =>
           {lead.traceId}
         </div>
       </header>
+      {lead.qualityScore != null && (
+        <section
+          style={{
+            padding: "10px 18px",
+            borderBottom: "1px solid var(--bd-1)",
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+          }}
+        >
+          <header
+            style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between" }}
+          >
+            <h3
+              style={{
+                margin: 0,
+                fontSize: 11,
+                fontFamily: "var(--mono)",
+                textTransform: "uppercase",
+                color: "var(--fg-2)",
+                letterSpacing: "0.06em",
+              }}
+            >
+              Q-Leads
+            </h3>
+            <QualityBadge score={lead.qualityScore} />
+          </header>
+          <dl
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: 8,
+              margin: 0,
+              fontSize: 11,
+            }}
+          >
+            <div>
+              <dt
+                style={{
+                  fontSize: 9,
+                  fontFamily: "var(--mono)",
+                  textTransform: "uppercase",
+                  color: "var(--fg-2)",
+                }}
+              >
+                fraud
+              </dt>
+              <dd style={{ margin: 0, fontFamily: "var(--mono)" }}>
+                {(lead.qualitySignals as unknown as { fraudComponent?: number })
+                  ?.fraudComponent ?? "—"}
+              </dd>
+            </div>
+            <div>
+              <dt
+                style={{
+                  fontSize: 9,
+                  fontFamily: "var(--mono)",
+                  textTransform: "uppercase",
+                  color: "var(--fg-2)",
+                }}
+              >
+                affiliate
+              </dt>
+              <dd style={{ margin: 0, fontFamily: "var(--mono)" }}>
+                {(lead.qualitySignals as unknown as { affiliateComponent?: number })
+                  ?.affiliateComponent ?? "—"}
+              </dd>
+            </div>
+            <div>
+              <dt
+                style={{
+                  fontSize: 9,
+                  fontFamily: "var(--mono)",
+                  textTransform: "uppercase",
+                  color: "var(--fg-2)",
+                }}
+              >
+                broker×geo
+              </dt>
+              <dd style={{ margin: 0, fontFamily: "var(--mono)" }}>
+                {(lead.qualitySignals as unknown as { brokerGeoComponent?: number })
+                  ?.brokerGeoComponent ?? "—"}
+              </dd>
+            </div>
+          </dl>
+        </section>
+      )}
       <div
         style={{
           padding: "10px 18px",
