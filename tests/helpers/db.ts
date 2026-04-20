@@ -18,6 +18,8 @@ export async function resetDb() {
     prisma.leadEvent.deleteMany(),
     prisma.outboundPostback.deleteMany(),
     prisma.postbackReceipt.deleteMany(),
+    prisma.autologinAttempt.deleteMany(),
+    prisma.proxyEndpoint.deleteMany(),
     prisma.lead.deleteMany(),
     prisma.idempotencyKey.deleteMany(),
     prisma.dailyCap.deleteMany(),

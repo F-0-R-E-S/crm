@@ -5,6 +5,7 @@ import {
   handleNotifyAffiliate,
 } from "./src/server/jobs/notify-affiliate";
 import { type PushLeadPayload, handlePushLead } from "./src/server/jobs/push-lead";
+import { type ProxyHealthPayload, handleProxyHealth } from "./src/server/jobs/proxy-health";
 import { JOB_NAMES, startBossOnce } from "./src/server/jobs/queue";
 import {
   type ResolvePendingHoldPayload,
@@ -41,6 +42,10 @@ async function main() {
 
   await boss.work<ResolvePendingHoldPayload>(JOB_NAMES.resolvePendingHold, async ([job]) => {
     await handleResolvePendingHold(job.data);
+  });
+
+  await boss.work<ProxyHealthPayload>(JOB_NAMES.proxyHealth, async ([job]) => {
+    await handleProxyHealth(job.data);
   });
 
   // Every hour, sweep expired idempotency rows

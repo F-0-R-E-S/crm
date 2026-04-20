@@ -25,6 +25,8 @@ export const JOB_NAMES = {
   brokerStatusPoll: "broker-status-poll",
   brokerErrorAggregator: "broker-error-aggregator",
   resolvePendingHold: "resolve-pending-hold",
+  autologinAttempt: "autologin-attempt",
+  proxyHealth: "proxy-health",
 } as const;
 
 const globalForBossStarted = globalThis as unknown as { bossStarted?: boolean };
