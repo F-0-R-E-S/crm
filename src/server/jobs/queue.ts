@@ -33,6 +33,7 @@ export const JOB_NAMES = {
   telegramSend: "telegram-send",
   anomalyDetect: "anomaly-detect",
   dailySummary: "daily-summary",
+  crgCohortSettle: "crg-cohort-settle",
 } as const;
 
 const globalForBossStarted = globalThis as unknown as { bossStarted?: boolean };
