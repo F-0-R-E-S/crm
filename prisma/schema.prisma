@@ -128,6 +128,7 @@ model Broker {
   template           BrokerTemplate? @relation(fields: [templateId], references: [id])
   syncMode           String         @default("webhook")
   pollIntervalMin    Int?
+  pendingHoldMinutes Int?
   statusPollPath     String?
   statusPollIdsParam String?
   lastHealthStatus   String         @default("unknown")
@@ -196,6 +197,11 @@ model Lead {
   lastPushAt        DateTime?
   acceptedAt        DateTime?
   ftdAt             DateTime?
+  pendingHoldUntil  DateTime?
+  shaveSuspected    Boolean            @default(false)
+  fraudScore        Int?
+  fraudSignals      Json               @default("[]")
+  needsReview       Boolean            @default(false)
   traceId           String             @unique
   receivedAt        DateTime           @default(now())
   createdAt         DateTime           @default(now())
@@ -218,8 +224,10 @@ enum LeadState {
   NEW
   VALIDATING
   REJECTED
+  REJECTED_FRAUD
   PUSHING
   PUSHED
+  PENDING_HOLD
   ACCEPTED
   DECLINED
   FTD
@@ -257,6 +265,10 @@ enum LeadEventKind {
   FLOW_FILTER_REJECT
   FALLBACK_HOP
   SIMULATE_DECISION
+  PENDING_HOLD_STARTED
+  PENDING_HOLD_RELEASED
+  SHAVE_SUSPECTED
+  FRAUD_SCORED
 }
 
 model IdempotencyKey {
@@ -290,6 +302,21 @@ enum CapScope {
   FLOW
   BRANCH
   TARGET
+}
+
+model FraudPolicy {
+  id                    String   @id @default(cuid())
+  name                  String   @unique @default("global")
+  weightBlacklist       Int      @default(40)
+  weightGeoMismatch     Int      @default(15)
+  weightVoip            Int      @default(20)
+  weightDedupHit        Int      @default(10)
+  weightPatternHit      Int      @default(15)
+  autoRejectThreshold   Int      @default(80)
+  borderlineMin         Int      @default(60)
+  version               Int      @default(1)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }
 
 model Blacklist {
@@ -468,10 +495,23 @@ model CapDefinition {
   window        CapWindow
   limit         Int
   timezone      String      @default("UTC")
+  perCountry    Boolean     @default(false)
   flowVersion   FlowVersion @relation(fields: [flowVersionId], references: [id], onDelete: Cascade)
+  countryLimits CapCountryLimit[]
 
   @@unique([flowVersionId, scope, scopeRefId, window])
   @@index([flowVersionId, scope])
+}
+
+model CapCountryLimit {
+  id           String        @id @default(cuid())
+  capDefId     String
+  country      String
+  limit        Int
+  capDefinition CapDefinition @relation(fields: [capDefId], references: [id], onDelete: Cascade)
+
+  @@unique([capDefId, country])
+  @@index([capDefId])
 }
 
 enum CapWindow {
@@ -486,10 +526,11 @@ model CapCounter {
   scopeId   String
   window    CapWindow
   bucketKey String
+  country   String    @default("")
   count     Int       @default(0)
   resetsAt  DateTime
 
-  @@unique([scope, scopeId, window, bucketKey])
+  @@unique([scope, scopeId, window, bucketKey, country])
   @@index([resetsAt])
 }
 

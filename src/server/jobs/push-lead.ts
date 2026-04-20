@@ -142,13 +142,17 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
     return;
   }
 
+  const holdMin = winner.pendingHoldMinutes ?? null;
+  const holdUntil = holdMin && holdMin > 0 ? new Date(Date.now() + holdMin * 60_000) : null;
+
   await prisma.lead.update({
     where: { id: lead.id },
     data: {
       brokerId: winner.id,
-      state: "PUSHED",
+      state: holdUntil ? "PENDING_HOLD" : "PUSHED",
       lastPushAt: new Date(),
       brokerExternalId: winnerResult.externalId ?? null,
+      pendingHoldUntil: holdUntil,
     },
   });
   await writeLeadEvent(lead.id, "ROUTING_DECIDED", {
@@ -166,5 +170,13 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
   });
   await startBossOnce();
   const boss = getBoss();
+  if (holdUntil && holdMin) {
+    await writeLeadEvent(lead.id, "PENDING_HOLD_STARTED", {
+      brokerId: winner.id,
+      holdMinutes: holdMin,
+      until: holdUntil.toISOString(),
+    });
+    await boss.send(JOB_NAMES.resolvePendingHold, { leadId: lead.id }, { startAfter: holdUntil });
+  }
   await boss.send(JOB_NAMES.notifyAffiliate, { leadId: lead.id, event: "lead_pushed" });
 }

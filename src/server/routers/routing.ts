@@ -1,4 +1,7 @@
+import { TRPCError } from "@trpc/server";
 import { writeAuditLog } from "@/server/audit";
+import { listFlowCaps, upsertFlowCaps } from "@/server/routing/flow/caps-repository";
+import { CapDefinitionInputSchema } from "@/server/routing/flow/caps-schema";
 import { FlowGraphSchema } from "@/server/routing/flow/model";
 import { archiveFlow, publishFlow } from "@/server/routing/flow/publish";
 import {
@@ -72,4 +75,41 @@ export const routingRouter = router({
     });
     return f;
   }),
+
+  listCaps: protectedProcedure
+    .input(z.object({ flowId: z.string() }))
+    .query(({ input }) => listFlowCaps(input.flowId)),
+
+  updateCaps: adminProcedure
+    .input(
+      z.object({
+        flowId: z.string(),
+        caps: z.array(CapDefinitionInputSchema),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      let saved;
+      try {
+        saved = await upsertFlowCaps(input.flowId, input.caps);
+      } catch (e) {
+        const msg = (e as Error).message;
+        if (msg === "flow_not_found")
+          throw new TRPCError({ code: "NOT_FOUND", message: "Flow not found" });
+        if (msg === "flow_published")
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "Cannot mutate caps on a PUBLISHED flow — create a new draft version first",
+          });
+        if (msg === "flow_archived")
+          throw new TRPCError({ code: "CONFLICT", message: "Flow is archived" });
+        throw e;
+      }
+      await writeAuditLog({
+        userId: ctx.userId,
+        action: "flow.updateCaps",
+        entity: "Flow",
+        entityId: input.flowId,
+      });
+      return saved;
+    }),
 });

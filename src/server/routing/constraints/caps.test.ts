@@ -74,4 +74,63 @@ describe("caps v2", () => {
     expect(r.used).toBe(20);
     expect(r.remaining).toBe(980);
   });
+
+  it("per-country — DE и UK не делят bucket при одном scopeId", async () => {
+    const base = {
+      scope: "BROKER" as const,
+      scopeId: "bPC",
+      window: "DAILY" as const,
+      tz: "UTC",
+      limit: 2,
+    };
+    const at = new Date("2026-04-20T10:00:00Z");
+
+    const de1 = await consumeCap({ ...base, country: "DE", now: at });
+    const de2 = await consumeCap({ ...base, country: "DE", now: at });
+    const deOver = await consumeCap({ ...base, country: "DE", now: at });
+    expect(de1.ok && de2.ok).toBe(true);
+    expect(deOver.ok).toBe(false);
+
+    const uk1 = await consumeCap({ ...base, country: "UK", now: at });
+    expect(uk1.ok).toBe(true);
+    if (uk1.ok) expect(uk1.remaining).toBe(1);
+  });
+
+  it("per-country — release возвращает слот только в своей стране", async () => {
+    const base = {
+      scope: "BROKER" as const,
+      scopeId: "bRel",
+      window: "DAILY" as const,
+      tz: "UTC",
+      limit: 1,
+    };
+    const at = new Date("2026-04-20T10:00:00Z");
+    await consumeCap({ ...base, country: "DE", now: at });
+    const over = await consumeCap({ ...base, country: "DE", now: at });
+    expect(over.ok).toBe(false);
+
+    await releaseCap({ ...base, country: "UK", now: at });
+    const stillFull = await consumeCap({ ...base, country: "DE", now: at });
+    expect(stillFull.ok).toBe(false);
+
+    await releaseCap({ ...base, country: "DE", now: at });
+    const afterRelease = await consumeCap({ ...base, country: "DE", now: at });
+    expect(afterRelease.ok).toBe(true);
+  });
+
+  it("default country='' сохраняет back-compat с TOTAL-режимом", async () => {
+    const base = {
+      scope: "BROKER" as const,
+      scopeId: "bBC",
+      window: "DAILY" as const,
+      tz: "UTC",
+      limit: 2,
+    };
+    const at = new Date("2026-04-20T10:00:00Z");
+    const a = await consumeCap({ ...base, now: at });
+    const b = await consumeCap({ ...base, now: at });
+    const c = await consumeCap({ ...base, now: at });
+    expect(a.ok && b.ok).toBe(true);
+    expect(c.ok).toBe(false);
+  });
 });

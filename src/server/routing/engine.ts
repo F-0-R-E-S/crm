@@ -84,7 +84,13 @@ export async function executeFlow(input: ExecuteInput): Promise<EngineDecision> 
   const flow = await prisma.flow.findUnique({
     where: { id: input.flowId },
     include: {
-      activeVersion: { include: { capDefs: true, branches: true, algoConfigs: true } },
+      activeVersion: {
+        include: {
+          capDefs: { include: { countryLimits: true } },
+          branches: true,
+          algoConfigs: true,
+        },
+      },
     },
   });
   if (!flow || !flow.activeVersion) {
@@ -161,20 +167,55 @@ export async function executeFlow(input: ExecuteInput): Promise<EngineDecision> 
     const brokerCapDef = fv.capDefs.find(
       (d) => d.scope === "BROKER" && d.scopeRefId === t.brokerId,
     );
+
     if (brokerCapDef && input.mode === "execute") {
+      // Resolve effective limit + bucket-country
+      let effectiveLimit = brokerCapDef.limit;
+      let bucketCountry = "";
+      if (brokerCapDef.perCountry) {
+        const leadCountry = input.lead.geo;
+        if (!leadCountry) {
+          steps.push({
+            step: "cap_check",
+            nodeId: t.id,
+            ok: false,
+            detail: { reason: "missing_country_for_per_country_cap" },
+          });
+          continue;
+        }
+        const entry = brokerCapDef.countryLimits.find((c) => c.country === leadCountry);
+        if (!entry) {
+          steps.push({
+            step: "cap_check",
+            nodeId: t.id,
+            ok: false,
+            detail: { reason: "no_limit_for_country", country: leadCountry },
+          });
+          continue;
+        }
+        effectiveLimit = entry.limit;
+        bucketCountry = leadCountry;
+      }
+
       const r = await consumeCap({
         scope: "BROKER",
         scopeId: t.brokerId,
         window: brokerCapDef.window,
         tz: brokerCapDef.timezone,
-        limit: brokerCapDef.limit,
+        limit: effectiveLimit,
+        country: bucketCountry,
         now,
       });
       if (!r.ok) {
         steps.push({ step: "cap_check", nodeId: t.id, ok: false, detail: { reason: r.reason } });
         continue;
       }
-      steps.push({ step: "cap_check", nodeId: t.id, ok: true, detail: { remaining: r.remaining } });
+      steps.push({
+        step: "cap_check",
+        nodeId: t.id,
+        ok: true,
+        detail: { remaining: r.remaining, country: bucketCountry || "TOTAL" },
+      });
     }
     available.push(t);
   }

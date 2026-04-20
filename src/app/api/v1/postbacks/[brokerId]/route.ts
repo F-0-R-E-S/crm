@@ -93,6 +93,34 @@ export async function POST(req: Request, { params }: { params: Promise<{ brokerI
     const target: LeadState | undefined = mapping[String(rawStatus)];
     const resolved: LeadState = target ?? "DECLINED";
 
+    const wasInHold = lead.state === "PENDING_HOLD";
+    const shaveDetected = wasInHold && resolved === "DECLINED";
+    const holdReleased =
+      wasInHold && (resolved === "ACCEPTED" || resolved === "FTD" || resolved === "DECLINED");
+
+    const leadDataExtras: Prisma.LeadUpdateInput = {};
+    if (holdReleased) leadDataExtras.pendingHoldUntil = null;
+    if (shaveDetected) leadDataExtras.shaveSuspected = true;
+
+    const extraEvents: Prisma.LeadEventCreateManyInput[] = [];
+    if (shaveDetected) {
+      extraEvents.push({
+        leadId: lead.id,
+        kind: "SHAVE_SUSPECTED",
+        meta: {
+          brokerId: broker.id,
+          holdStarted: lead.lastPushAt?.toISOString() ?? null,
+          declinedAt: new Date().toISOString(),
+        },
+      });
+    } else if (holdReleased) {
+      extraEvents.push({
+        leadId: lead.id,
+        kind: "PENDING_HOLD_RELEASED",
+        meta: { reason: "postback_accept" },
+      });
+    }
+
     await prisma.$transaction([
       prisma.lead.update({
         where: { id: lead.id },
@@ -101,6 +129,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ brokerI
           lastBrokerStatus: String(rawStatus ?? ""),
           ...(resolved === "FTD" ? { ftdAt: new Date() } : {}),
           ...(resolved === "ACCEPTED" ? { acceptedAt: new Date() } : {}),
+          ...leadDataExtras,
         },
       }),
       prisma.leadEvent.create({
@@ -121,6 +150,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ brokerI
           meta: { from: lead.state, to: resolved },
         },
       }),
+      ...(extraEvents.length > 0 ? [prisma.leadEvent.createMany({ data: extraEvents })] : []),
       prisma.postbackReceipt.create({
         data: {
           brokerId,

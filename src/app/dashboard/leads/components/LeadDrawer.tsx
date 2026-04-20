@@ -43,8 +43,24 @@ export function LeadDrawer({ leadId, onClose }: { leadId: string; onClose: () =>
       }}
     >
       <header style={{ padding: "14px 18px", borderBottom: "1px solid var(--bd-1)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
           <StatePill state={lead.state as never} />
+          {lead.state === "PENDING_HOLD" && lead.pendingHoldUntil && (
+            <span
+              style={{
+                fontSize: 11,
+                fontFamily: "var(--mono)",
+                color: "oklch(70% 0.15 85)",
+              }}
+            >
+              hold until {new Date(lead.pendingHoldUntil).toLocaleTimeString()}
+            </span>
+          )}
+          {lead.shaveSuspected && (
+            <Pill tone="danger" size="xs">
+              shave suspected
+            </Pill>
+          )}
           <span style={{ fontSize: 11, fontFamily: "var(--mono)", color: "var(--fg-2)" }}>
             {fmtRel(new Date(lead.createdAt))}
           </span>

@@ -3,6 +3,38 @@ import type { FlowGraph } from "./model";
 export type ValidationError = { code: string; node_id?: string; message: string };
 export type ValidationResult = { ok: boolean; errors: ValidationError[] };
 
+export interface CapDefinitionForValidation {
+  id: string;
+  scope: string;
+  scopeRefId: string;
+  window: string;
+  perCountry: boolean;
+  countryLimits: Array<{ country: string; limit: number }>;
+}
+
+/**
+ * Validates CapDefinition rows attached to a flow version before publish.
+ *
+ * Rule PER_COUNTRY_CAP_HAS_NO_LIMITS:
+ *   if a cap has perCountry=true and no CapCountryLimit rows, publishing must fail.
+ *   Without limits, every country falls through the engine's "no_limit_for_country"
+ *   branch and the cap silently blocks all leads — this catches misconfig at publish
+ *   time with an actionable error.
+ */
+export function validateCapDefinitions(caps: CapDefinitionForValidation[]): ValidationResult {
+  const errors: ValidationError[] = [];
+  for (const cap of caps) {
+    if (cap.perCountry && cap.countryLimits.length === 0) {
+      errors.push({
+        code: "PER_COUNTRY_CAP_HAS_NO_LIMITS",
+        node_id: cap.scopeRefId,
+        message: `cap (${cap.scope}/${cap.scopeRefId}/${cap.window}) has perCountry=true but no countryLimits; add at least one country limit or disable perCountry`,
+      });
+    }
+  }
+  return { ok: errors.length === 0, errors };
+}
+
 export function validateFlowGraph(g: FlowGraph): ValidationResult {
   const errors: ValidationError[] = [];
   const nodeIds = new Set(g.nodes.map((n) => n.id));

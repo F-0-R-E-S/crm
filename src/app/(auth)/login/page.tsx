@@ -3,8 +3,12 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState(
+    process.env.NODE_ENV === "production" ? "" : "admin@gambchamp.local",
+  );
+  const [password, setPassword] = useState(
+    process.env.NODE_ENV === "production" ? "" : "changeme",
+  );
   const [err, setErr] = useState("");
 
   async function submit(e: React.FormEvent) {

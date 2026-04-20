@@ -1,5 +1,76 @@
 # Changelog
 
+## Unreleased (Wave 2 in progress)
+
+### Added — W2.2 Fraud auto-reject (enforcement)
+- New `LeadState.REJECTED_FRAUD` (separate from REJECTED) — set when
+  computed fraud score reaches `FraudPolicy.autoRejectThreshold`.
+- `Lead.needsReview: Boolean` — set when score is in the borderline
+  band (`borderlineMin <= score < threshold`). Lead continues normal
+  routing; surfaces in the future review queue (W2.4).
+- Intake response surfaces `status: "rejected_fraud"` with
+  `reason_codes: [<signal.kind>, …]` when auto-rejected. Weights are
+  NOT exposed to the affiliate.
+- Blacklist hard-reject semantics preserved: blacklist hit → state
+  REJECTED (hard), score is still computed, but hard-reject takes
+  precedence over threshold-based REJECTED_FRAUD.
+- Migration `wave2_fraud_autoreject` (additive).
+- UI tokens (`src/lib/tokens.ts`) include REJECTED_FRAUD
+  (tone=danger, deep-red).
+
+### Added — W2.1 Fraud score calculation
+- `FraudPolicy` model (single global row) with 5 signal weights + auto-reject
+  threshold + borderline min + version. Seed creates `name="global"` with
+  defaults (blacklist=40, geo_mismatch=15, voip=20, dedup_hit=10,
+  pattern_hit=15).
+- `Lead.fraudScore: Int?` and `Lead.fraudSignals: Json` — persisted
+  alongside intake writes.
+- `LeadEventKind.FRAUD_SCORED` — emitted for every accepted lead with
+  `{score, signals, policyVersion}`.
+- Pure `computeFraudScore(signals, policy)` in
+  `src/server/intake/fraud-score.ts`; signal extractor
+  `buildSignals(input)` in `src/server/intake/fraud-signals.ts`.
+- 30s LRU cache for policy in
+  `src/server/intake/fraud-policy-cache.ts`.
+- Migration `wave2_fraud_score` (additive).
+
+### Fixed
+- `broker.update` tRPC now accepts `pendingHoldMinutes` (Wave 1 field
+  was in Prisma schema but missing from Zod input).
+- Middleware treats `/api/v1/errors` and `/api/v1/schema/*` as public
+  (affiliate-facing discovery endpoints per CLAUDE.md).
+
+## 0.3.0 — 2026-04-20 (Wave 1: Parity gaps)
+
+Closes two parity gaps vs Leadgreed/iREV: per-country cap budgets and
+Status Pipe Pending (anti-shave hold window after broker accept).
+
+### Added
+- `CapDefinition.perCountry` + `CapCountryLimit` model — separate cap
+  budgets per GEO, resolved against `lead.geo` in routing engine.
+- `CapCounter.country` discriminator (`""` = TOTAL for back-compat).
+- `LeadState.PENDING_HOLD` + `Lead.pendingHoldUntil` +
+  `Lead.shaveSuspected` — anti-shave hold window after broker push.
+- `Broker.pendingHoldMinutes` — opt-in per-broker hold duration
+  (null = feature off).
+- pg-boss job `resolve-pending-hold` — transitions PENDING_HOLD leads
+  to ACCEPTED at hold expiry.
+- `LeadEventKind` values: `PENDING_HOLD_STARTED`,
+  `PENDING_HOLD_RELEASED`, `SHAVE_SUSPECTED`.
+- UI: per-country cap toggle + country→limit grid in Flow editor;
+  PENDING_HOLD state pill + `hold until HH:MM` countdown +
+  `shave suspected` badge in Lead detail drawer.
+
+### Migrations
+- `20260420105207_wave1_cap_per_country`
+- `20260420140530_wave1_pending_hold`
+
+### Back-compat
+- `CapCounter.country=""` default — existing counters keep TOTAL
+  semantics.
+- `Broker.pendingHoldMinutes=null` default — existing brokers unchanged.
+- Postback handler on non-PENDING_HOLD leads: unchanged behaviour.
+
 ## 0.2.0 — 2026-04-20 (Design Port)
 
 Ports the ROUTER CRM design prototype (`crm-design/project/ROUTER CRM.html`) into

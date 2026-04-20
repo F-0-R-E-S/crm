@@ -5,6 +5,9 @@ import { detectDuplicate } from "@/server/antifraud/dedup";
 import { normalizeIntake } from "@/server/antifraud/normalization";
 import { verifyApiKey } from "@/server/auth-api-key";
 import { prisma } from "@/server/db";
+import { getFraudPolicy } from "@/server/intake/fraud-policy-cache";
+import { computeFraudScore } from "@/server/intake/fraud-score";
+import { buildSignals } from "@/server/intake/fraud-signals";
 import { determineMockOutcome, mockOutcomeToResponse } from "@/server/intake/sandbox";
 import { getIntakeSettings } from "@/server/intake/settings";
 import { JOB_NAMES, startBossOnce } from "@/server/jobs/queue";
@@ -18,6 +21,7 @@ import {
   parseWithMode,
 } from "@/server/schema/registry";
 import { buildIntakeEvent, dispatchIntakeEvent } from "@/server/webhooks/intake-outcome";
+import type { Prisma } from "@prisma/client";
 import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
 
@@ -230,6 +234,36 @@ export async function POST(req: Request) {
       }
     }
 
+    // Fraud score (W2.1 + W2.2 enforcement)
+    const fraudPolicy = await getFraudPolicy();
+    const fraudSignals = buildSignals({
+      blacklistHit: bl,
+      phoneE164,
+      geo,
+      dedupHit: false,
+      voipHit: false,
+    });
+    const fraud = computeFraudScore(fraudSignals, fraudPolicy);
+    // JSON-serializable form of signals for Prisma Json columns.
+    const firedJson: Prisma.InputJsonValue = fraud.fired.map((f) => ({
+      kind: f.kind,
+      weight: f.weight,
+      ...(f.detail !== undefined ? { detail: f.detail as Prisma.InputJsonValue } : {}),
+    }));
+    // W2.2: enforce auto-reject for scores at/above the threshold.
+    let autoFraudReject = false;
+    let needsReview = false;
+    if (!rejectReason && fraud.score >= fraudPolicy.autoRejectThreshold) {
+      autoFraudReject = true;
+      rejectReason = "fraud_auto";
+    } else if (
+      !rejectReason &&
+      fraud.score >= fraudPolicy.borderlineMin &&
+      fraud.score < fraudPolicy.autoRejectThreshold
+    ) {
+      needsReview = true;
+    }
+
     if (!rejectReason) {
       const aff = await prisma.affiliate.findUnique({
         where: { id: ctx.affiliateId },
@@ -240,6 +274,14 @@ export async function POST(req: Request) {
         if (count > aff.totalDailyCap) rejectReason = "affiliate_cap_full";
       }
     }
+
+    // Pick final state: REJECTED_FRAUD for auto-fraud, REJECTED for other reject reasons,
+    // NEW otherwise.
+    const finalState: "NEW" | "REJECTED" | "REJECTED_FRAUD" = autoFraudReject
+      ? "REJECTED_FRAUD"
+      : rejectReason
+        ? "REJECTED"
+        : "NEW";
 
     const lead = await prisma.lead.create({
       data: {
@@ -260,11 +302,24 @@ export async function POST(req: Request) {
         rawPayload: { phone: n.raw.phone, email: n.raw.email, geo: n.raw.geo },
         eventTs: new Date(p.event_ts),
         traceId: trace_id,
-        state: rejectReason ? "REJECTED" : "NEW",
+        state: finalState,
         rejectReason,
+        fraudScore: fraud.score,
+        fraudSignals: firedJson,
+        needsReview,
         events: {
           create: [
             { kind: "RECEIVED", meta: { ip: p.ip, geo } },
+            {
+              kind: "FRAUD_SCORED" as const,
+              meta: {
+                score: fraud.score,
+                signals: firedJson,
+                policyVersion: fraudPolicy.version,
+                autoFraudReject,
+                needsReview,
+              },
+            },
             ...(rejectReason
               ? [{ kind: "REJECTED_ANTIFRAUD" as const, meta: { reason: rejectReason } }]
               : []),
@@ -273,14 +328,24 @@ export async function POST(req: Request) {
       },
     });
 
-    const body = {
+    const responseStatus: "received" | "rejected" | "rejected_fraud" = autoFraudReject
+      ? "rejected_fraud"
+      : rejectReason
+        ? "rejected"
+        : "received";
+    const body: Record<string, unknown> = {
       lead_id: lead.id,
-      status: rejectReason ? "rejected" : "received",
+      status: responseStatus,
       reject_reason: rejectReason,
       normalization_warnings: n.warnings,
       trace_id,
       received_at: lead.receivedAt.toISOString(),
     };
+    if (autoFraudReject) {
+      // Expose signal kinds only — do NOT leak weights (per spec).
+      body.reason_codes = fraud.fired.map((f) => f.kind);
+    }
+    if (needsReview) body.needs_review = true;
     const status = 202;
 
     if (idemKey) {
@@ -293,7 +358,7 @@ export async function POST(req: Request) {
           leadId: lead.id,
           payloadHash,
           responseCode: status,
-          responseBody: body,
+          responseBody: body as Prisma.InputJsonValue,
           expiresAt: ttl,
         },
         update: {},

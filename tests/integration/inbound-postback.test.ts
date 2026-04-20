@@ -92,4 +92,58 @@ describe("POST /api/v1/postbacks/[brokerId]", () => {
     const r = await call(brokerId, body, sig);
     expect(r.status).toBe(404);
   });
+
+  it("PENDING_HOLD → DECLINED postback sets shaveSuspected + SHAVE_SUSPECTED event", async () => {
+    await prisma.broker.update({
+      where: { id: brokerId },
+      data: { statusMapping: { declined: "DECLINED" } },
+    });
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: { state: "PENDING_HOLD", pendingHoldUntil: new Date(Date.now() + 60_000) },
+    });
+    const body = { lead_id: "ext-42", status: "declined" };
+    const sig = signHmac(secret, JSON.stringify(body));
+    const r = await call(brokerId, body, sig);
+    expect(r.status).toBe(200);
+    const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+    expect(lead?.state).toBe("DECLINED");
+    expect(lead?.shaveSuspected).toBe(true);
+    expect(lead?.pendingHoldUntil).toBeNull();
+    const events = await prisma.leadEvent.findMany({ where: { leadId, kind: "SHAVE_SUSPECTED" } });
+    expect(events).toHaveLength(1);
+  });
+
+  it("PENDING_HOLD → ACCEPTED postback clears hold + PENDING_HOLD_RELEASED event", async () => {
+    await prisma.lead.update({
+      where: { id: leadId },
+      data: { state: "PENDING_HOLD", pendingHoldUntil: new Date(Date.now() + 60_000) },
+    });
+    const body = { lead_id: "ext-42", status: "accepted" };
+    const sig = signHmac(secret, JSON.stringify(body));
+    const r = await call(brokerId, body, sig);
+    expect(r.status).toBe(200);
+    const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+    expect(lead?.state).toBe("ACCEPTED");
+    expect(lead?.shaveSuspected).toBe(false);
+    expect(lead?.pendingHoldUntil).toBeNull();
+    const released = await prisma.leadEvent.findMany({
+      where: { leadId, kind: "PENDING_HOLD_RELEASED" },
+    });
+    expect(released).toHaveLength(1);
+  });
+
+  it("PUSHED → DECLINED postback — shaveSuspected stays false (back-compat)", async () => {
+    await prisma.broker.update({
+      where: { id: brokerId },
+      data: { statusMapping: { declined: "DECLINED" } },
+    });
+    const body = { lead_id: "ext-42", status: "declined" };
+    const sig = signHmac(secret, JSON.stringify(body));
+    const r = await call(brokerId, body, sig);
+    expect(r.status).toBe(200);
+    const lead = await prisma.lead.findUnique({ where: { id: leadId } });
+    expect(lead?.state).toBe("DECLINED");
+    expect(lead?.shaveSuspected).toBe(false);
+  });
 });

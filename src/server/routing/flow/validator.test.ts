@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import type { FlowGraph } from "./model";
-import { validateFlowGraph } from "./validator";
+import {
+  type CapDefinitionForValidation,
+  validateCapDefinitions,
+  validateFlowGraph,
+} from "./validator";
 
 const ok: FlowGraph = {
   nodes: [
@@ -67,5 +71,54 @@ describe("validateFlowGraph", () => {
     expect(r.errors.some((e) => e.code === "unreachable_node" && e.node_id === "orphan")).toBe(
       true,
     );
+  });
+});
+
+describe("validateCapDefinitions", () => {
+  const baseCap = (overrides: Partial<CapDefinitionForValidation>): CapDefinitionForValidation => ({
+    id: "c1",
+    scope: "BROKER",
+    scopeRefId: "b1",
+    window: "DAILY",
+    perCountry: false,
+    countryLimits: [],
+    ...overrides,
+  });
+
+  it("empty list → ok", () => {
+    const r = validateCapDefinitions([]);
+    expect(r.ok).toBe(true);
+    expect(r.errors).toEqual([]);
+  });
+
+  it("perCountry=false без countryLimits → ok (TOTAL cap)", () => {
+    const r = validateCapDefinitions([baseCap({ perCountry: false, countryLimits: [] })]);
+    expect(r.ok).toBe(true);
+  });
+
+  it("perCountry=true + пустой countryLimits → PER_COUNTRY_CAP_HAS_NO_LIMITS", () => {
+    const r = validateCapDefinitions([baseCap({ perCountry: true, countryLimits: [] })]);
+    expect(r.ok).toBe(false);
+    expect(r.errors).toHaveLength(1);
+    expect(r.errors[0].code).toBe("PER_COUNTRY_CAP_HAS_NO_LIMITS");
+    expect(r.errors[0].node_id).toBe("b1");
+    expect(r.errors[0].message).toContain("perCountry=true");
+  });
+
+  it("perCountry=true с хотя бы одной страной → ok", () => {
+    const r = validateCapDefinitions([
+      baseCap({ perCountry: true, countryLimits: [{ country: "DE", limit: 5 }] }),
+    ]);
+    expect(r.ok).toBe(true);
+  });
+
+  it("несколько перCountry без лимитов → несколько ошибок", () => {
+    const r = validateCapDefinitions([
+      baseCap({ id: "c1", scopeRefId: "b1", perCountry: true, countryLimits: [] }),
+      baseCap({ id: "c2", scopeRefId: "b2", perCountry: true, countryLimits: [] }),
+    ]);
+    expect(r.ok).toBe(false);
+    expect(r.errors).toHaveLength(2);
+    expect(r.errors.map((e) => e.node_id).sort()).toEqual(["b1", "b2"]);
   });
 });

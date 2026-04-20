@@ -75,6 +75,14 @@ async function main() {
     create: { geo: "XX", brokerId: broker.id, priority: 1 },
   });
 
+  // --- Default global FraudPolicy ---
+  await prisma.fraudPolicy.upsert({
+    where: { name: "global" },
+    update: {},
+    create: { name: "global" },
+  });
+  console.log("fraud policy: global (defaults)");
+
   console.log("seed complete");
 }
 
