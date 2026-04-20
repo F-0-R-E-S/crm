@@ -18,6 +18,7 @@ model User {
   auditLogs      AuditLog[]
   manualClaims   ManualReviewQueue[] @relation("ManualReviewClaimer")
   manualResolves ManualReviewQueue[] @relation("ManualReviewResolver")
+  telegramSubscriptions TelegramSubscription[]
 
   @@index([tenantId])
 }
@@ -806,4 +807,56 @@ model AnalyticsPreset {
 
   @@unique([userId, name])
   @@index([userId, createdAt])
+}
+
+// --- EPIC-11 Telegram Ops Bot ---
+
+model TelegramBotConfig {
+  id            String   @id @default(cuid())
+  botToken      String // secret — plaintext in v1.0 (envelope encryption = v2.0). DB-level RLS recommended.
+  botUsername   String?
+  webhookSecret String   @unique
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+model TelegramSubscription {
+  id               String    @id @default(cuid())
+  userId           String
+  chatId           String // negative ids allowed (groups/channels); store as string
+  telegramUserId   String?
+  eventTypes       String[]  @default([]) // empty = all
+  brokerFilter     String[]  @default([]) // empty = all
+  affiliateFilter  String[]  @default([]) // empty = all
+  mutedBrokerIds   String[]  @default([])
+  isActive         Boolean   @default(true)
+  linkTokenHash    String? // sha256 of active link token (null post-link)
+  linkTokenExpires DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, chatId])
+  @@index([chatId, isActive])
+  @@index([linkTokenHash])
+}
+
+model TelegramEventLog {
+  id            String    @id @default(cuid())
+  chatId        String
+  eventType     String
+  payload       Json
+  messageText   String? // rendered markdown (truncated to 4096)
+  sentAt        DateTime?
+  successful    Boolean   @default(false)
+  errorMessage  String?
+  telegramMsgId Int?
+  createdAt     DateTime  @default(now())
+
+  @@index([chatId, createdAt])
+  @@index([eventType, createdAt])
+  @@index([successful, createdAt])
 }

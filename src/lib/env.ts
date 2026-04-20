@@ -32,6 +32,8 @@ const BaseSchema = z.object({
   SANDBOX_TTL_DAYS: z.coerce.number().int().positive().default(7),
   WEBHOOK_RETRY_SCHEDULE_SEC: z.string().default("10,60,300,900,3600"),
   AUDIT_HASH_CHAIN_SECRET: z.string().min(16),
+  TELEGRAM_WEBHOOK_BASE_URL: z.string().url().optional(),
+  TELEGRAM_LINK_TOKEN_TTL_MIN: z.coerce.number().int().positive().default(15),
 });
 
 export type Env = z.infer<typeof BaseSchema> & { authSecret: string };
