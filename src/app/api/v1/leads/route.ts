@@ -5,6 +5,9 @@ import { detectDuplicate } from "@/server/antifraud/dedup";
 import { normalizeIntake } from "@/server/antifraud/normalization";
 import { verifyApiKey } from "@/server/auth-api-key";
 import { prisma } from "@/server/db";
+import { getFraudPolicy } from "@/server/intake/fraud-policy-cache";
+import { computeFraudScore } from "@/server/intake/fraud-score";
+import { buildSignals } from "@/server/intake/fraud-signals";
 import { determineMockOutcome, mockOutcomeToResponse } from "@/server/intake/sandbox";
 import { getIntakeSettings } from "@/server/intake/settings";
 import { JOB_NAMES, startBossOnce } from "@/server/jobs/queue";
@@ -18,6 +21,7 @@ import {
   parseWithMode,
 } from "@/server/schema/registry";
 import { buildIntakeEvent, dispatchIntakeEvent } from "@/server/webhooks/intake-outcome";
+import type { Prisma } from "@prisma/client";
 import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
 
@@ -230,6 +234,23 @@ export async function POST(req: Request) {
       }
     }
 
+    // Fraud score (W2.1). No enforcement yet — just persist + emit event.
+    const fraudPolicy = await getFraudPolicy();
+    const fraudSignals = buildSignals({
+      blacklistHit: bl,
+      phoneE164,
+      geo,
+      dedupHit: false,
+      voipHit: false,
+    });
+    const fraud = computeFraudScore(fraudSignals, fraudPolicy);
+    // JSON-serializable form of signals for Prisma Json columns.
+    const firedJson: Prisma.InputJsonValue = fraud.fired.map((f) => ({
+      kind: f.kind,
+      weight: f.weight,
+      ...(f.detail !== undefined ? { detail: f.detail as Prisma.InputJsonValue } : {}),
+    }));
+
     if (!rejectReason) {
       const aff = await prisma.affiliate.findUnique({
         where: { id: ctx.affiliateId },
@@ -262,9 +283,19 @@ export async function POST(req: Request) {
         traceId: trace_id,
         state: rejectReason ? "REJECTED" : "NEW",
         rejectReason,
+        fraudScore: fraud.score,
+        fraudSignals: firedJson,
         events: {
           create: [
             { kind: "RECEIVED", meta: { ip: p.ip, geo } },
+            {
+              kind: "FRAUD_SCORED" as const,
+              meta: {
+                score: fraud.score,
+                signals: firedJson,
+                policyVersion: fraudPolicy.version,
+              },
+            },
             ...(rejectReason
               ? [{ kind: "REJECTED_ANTIFRAUD" as const, meta: { reason: rejectReason } }]
               : []),

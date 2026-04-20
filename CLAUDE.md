@@ -54,6 +54,14 @@
 - **Perf harness:** `perf/intake-load.js` (autocannon; scenarios `sustained_300_rps_15m` + `burst_1000_rps_60s`).
 - **Env:** centralized Zod validation in `src/lib/env.ts`; `zBool` helper (correctly handles `"false"`); `NEXTAUTH_SECRET` OR `AUTH_SECRET` accepted; `AUDIT_HASH_CHAIN_SECRET` required in `NODE_ENV=production`.
 
+## Fraud score (W2.1)
+
+- Model `FraudPolicy` (single global row, upserted in seed) — 5 weight fields + `autoRejectThreshold` (80) + `borderlineMin` (60) + `version`. Cache: 30s LRU in `src/server/intake/fraud-policy-cache.ts`.
+- Pure fn `computeFraudScore(signals, policy)` in `src/server/intake/fraud-score.ts` — sums weights, clamps to 0..100, returns `{score, fired}`.
+- Signal builder `buildSignals(input)` in `src/server/intake/fraud-signals.ts` — assembles `FraudSignal[]` from blacklist/dedup/voip/phone-country-vs-geo check.
+- Intake pipeline writes `Lead.fraudScore` + `Lead.fraudSignals` (Json) and emits `LeadEvent.FRAUD_SCORED { score, signals, policyVersion }`. **No enforcement yet** — W2.2 adds auto-reject above threshold.
+- Tests: unit coverage for score math + signal builder; integration `intake-fraud-score.test.ts` (clean / blacklist / geo_mismatch / combo / custom weights).
+
 ## Status Pipe Pending (W1.2 anti-shave)
 
 - `Broker.pendingHoldMinutes: Int?` — opt-in per-broker (null = feature off).

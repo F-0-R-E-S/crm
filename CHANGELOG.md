@@ -1,5 +1,29 @@
 # Changelog
 
+## Unreleased (Wave 2 in progress)
+
+### Added — W2.1 Fraud score calculation
+- `FraudPolicy` model (single global row) with 5 signal weights + auto-reject
+  threshold + borderline min + version. Seed creates `name="global"` with
+  defaults (blacklist=40, geo_mismatch=15, voip=20, dedup_hit=10,
+  pattern_hit=15).
+- `Lead.fraudScore: Int?` and `Lead.fraudSignals: Json` — persisted
+  alongside intake writes.
+- `LeadEventKind.FRAUD_SCORED` — emitted for every accepted lead with
+  `{score, signals, policyVersion}`.
+- Pure `computeFraudScore(signals, policy)` in
+  `src/server/intake/fraud-score.ts`; signal extractor
+  `buildSignals(input)` in `src/server/intake/fraud-signals.ts`.
+- 30s LRU cache for policy in
+  `src/server/intake/fraud-policy-cache.ts`.
+- Migration `wave2_fraud_score` (additive).
+
+### Fixed
+- `broker.update` tRPC now accepts `pendingHoldMinutes` (Wave 1 field
+  was in Prisma schema but missing from Zod input).
+- Middleware treats `/api/v1/errors` and `/api/v1/schema/*` as public
+  (affiliate-facing discovery endpoints per CLAUDE.md).
+
 ## 0.3.0 — 2026-04-20 (Wave 1: Parity gaps)
 
 Closes two parity gaps vs Leadgreed/iREV: per-country cap budgets and

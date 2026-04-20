@@ -199,6 +199,8 @@ model Lead {
   ftdAt             DateTime?
   pendingHoldUntil  DateTime?
   shaveSuspected    Boolean            @default(false)
+  fraudScore        Int?
+  fraudSignals      Json               @default("[]")
   traceId           String             @unique
   receivedAt        DateTime           @default(now())
   createdAt         DateTime           @default(now())
@@ -264,6 +266,7 @@ enum LeadEventKind {
   PENDING_HOLD_STARTED
   PENDING_HOLD_RELEASED
   SHAVE_SUSPECTED
+  FRAUD_SCORED
 }
 
 model IdempotencyKey {
@@ -297,6 +300,21 @@ enum CapScope {
   FLOW
   BRANCH
   TARGET
+}
+
+model FraudPolicy {
+  id                    String   @id @default(cuid())
+  name                  String   @unique @default("global")
+  weightBlacklist       Int      @default(40)
+  weightGeoMismatch     Int      @default(15)
+  weightVoip            Int      @default(20)
+  weightDedupHit        Int      @default(10)
+  weightPatternHit      Int      @default(15)
+  autoRejectThreshold   Int      @default(80)
+  borderlineMin         Int      @default(60)
+  version               Int      @default(1)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }
 
 model Blacklist {
