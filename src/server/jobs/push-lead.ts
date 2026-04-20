@@ -6,6 +6,7 @@ import { writeLeadEvent } from "@/server/lead-event";
 import { logger } from "@/server/observability";
 import { decrementCap, incrementCap, todayUtc } from "@/server/routing/caps";
 import { type WorkingHours, isWithinWorkingHours } from "@/server/routing/filters";
+import { nthRetryDelay, parseRetrySchedule } from "@/server/routing/retry-schedule";
 import { selectBrokerPool } from "@/server/routing/select-broker";
 import type { Broker, Lead } from "@prisma/client";
 import type { AutologinAttemptPayload } from "./autologin-attempt";
@@ -14,6 +15,7 @@ import { JOB_NAMES, getBoss, startBossOnce } from "./queue";
 export interface PushLeadPayload {
   leadId: string;
   traceId: string;
+  attemptN?: number;
 }
 
 // Per-broker push budget. Total worst case per pool ≈ brokers × (timeoutMs × maxAttempts + backoff).
@@ -116,6 +118,32 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
 
   // --- outcome --------------------------------------------------------------
   if (!winner || !winnerResult) {
+    // Consult the last-failed broker's retry schedule; if a slot remains, re-enqueue.
+    const lastPushFailed = [...tried].reverse().find((t) => t.reason === "push_failed");
+    if (lastPushFailed) {
+      const brokerForRetry = pool.find((b) => b.id === lastPushFailed.id);
+      if (brokerForRetry) {
+        const schedule = parseRetrySchedule(brokerForRetry.retrySchedule);
+        const attemptIndex = payload.attemptN ?? 0;
+        const delaySec = nthRetryDelay(schedule, attemptIndex);
+        if (delaySec != null) {
+          await prisma.lead.update({ where: { id: lead.id }, data: { state: "NEW" } });
+          await startBossOnce();
+          const bossRetry = getBoss();
+          await bossRetry.send(
+            JOB_NAMES.pushLead,
+            {
+              leadId: lead.id,
+              traceId: lead.traceId,
+              attemptN: attemptIndex + 1,
+            } satisfies PushLeadPayload,
+            { startAfter: delaySec },
+          );
+          return;
+        }
+      }
+    }
+
     await prisma.lead.update({
       where: { id: lead.id },
       data: {
