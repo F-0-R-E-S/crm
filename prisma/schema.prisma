@@ -100,6 +100,8 @@ model ApiKey {
   lastUsedAt  DateTime?
   isRevoked   Boolean   @default(false)
   isSandbox   Boolean   @default(false)
+  allowedIps  String[]  @default([])
+  expiresAt   DateTime?
   createdAt   DateTime  @default(now())
   affiliate   Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
 
