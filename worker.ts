@@ -39,12 +39,9 @@ async function main() {
     await handleVoipCheck(job.data);
   });
 
-  await boss.work<ResolvePendingHoldPayload>(
-    JOB_NAMES.resolvePendingHold,
-    async ([job]) => {
-      await handleResolvePendingHold(job.data);
-    },
-  );
+  await boss.work<ResolvePendingHoldPayload>(JOB_NAMES.resolvePendingHold, async ([job]) => {
+    await handleResolvePendingHold(job.data);
+  });
 
   // Every hour, sweep expired idempotency rows
   setInterval(async () => {

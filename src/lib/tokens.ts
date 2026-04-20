@@ -6,6 +6,7 @@ export type LeadStateKey =
   | "REJECTED"
   | "PUSHING"
   | "PUSHED"
+  | "PENDING_HOLD"
   | "ACCEPTED"
   | "DECLINED"
   | "FTD"
@@ -19,6 +20,7 @@ const STATE_COLORS: Record<Theme, Record<LeadStateKey, string>> = {
     VALIDATING: "oklch(78% 0.11 75)",
     PUSHING: "oklch(76% 0.12 220)",
     PUSHED: "oklch(78% 0.14 200)",
+    PENDING_HOLD: "oklch(80% 0.15 85)",
     ACCEPTED: "oklch(78% 0.13 155)",
     FTD: "oklch(82% 0.17 135)",
     DECLINED: "oklch(72% 0.14 25)",
@@ -30,6 +32,7 @@ const STATE_COLORS: Record<Theme, Record<LeadStateKey, string>> = {
     VALIDATING: "oklch(58% 0.14 75)",
     PUSHING: "oklch(52% 0.15 220)",
     PUSHED: "oklch(50% 0.15 200)",
+    PENDING_HOLD: "oklch(55% 0.17 85)",
     ACCEPTED: "oklch(48% 0.14 155)",
     FTD: "oklch(45% 0.17 135)",
     DECLINED: "oklch(52% 0.18 25)",
@@ -43,6 +46,7 @@ const STATE_TONES: Record<LeadStateKey, Tone> = {
   VALIDATING: "warn",
   PUSHING: "info",
   PUSHED: "info",
+  PENDING_HOLD: "warn",
   ACCEPTED: "success",
   FTD: "success",
   DECLINED: "danger",

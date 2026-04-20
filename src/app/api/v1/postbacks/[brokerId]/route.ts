@@ -150,9 +150,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ brokerI
           meta: { from: lead.state, to: resolved },
         },
       }),
-      ...(extraEvents.length > 0
-        ? [prisma.leadEvent.createMany({ data: extraEvents })]
-        : []),
+      ...(extraEvents.length > 0 ? [prisma.leadEvent.createMany({ data: extraEvents })] : []),
       prisma.postbackReceipt.create({
         data: {
           brokerId,

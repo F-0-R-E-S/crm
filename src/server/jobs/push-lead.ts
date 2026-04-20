@@ -176,11 +176,7 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
       holdMinutes: holdMin,
       until: holdUntil.toISOString(),
     });
-    await boss.send(
-      JOB_NAMES.resolvePendingHold,
-      { leadId: lead.id },
-      { startAfter: holdUntil },
-    );
+    await boss.send(JOB_NAMES.resolvePendingHold, { leadId: lead.id }, { startAfter: holdUntil });
   }
   await boss.send(JOB_NAMES.notifyAffiliate, { leadId: lead.id, event: "lead_pushed" });
 }
