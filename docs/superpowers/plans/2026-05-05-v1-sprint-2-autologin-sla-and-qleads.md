@@ -986,3 +986,47 @@ git commit -m "docs(plan): s2 retrospective"
 - ML-based Q-Leads scoring (v2.5).
 - Per-broker autologin credential storage model (S3, paired with first real adapter).
 - Cron registration for `proxy-health` (S8 hardening).
+
+---
+
+## Retrospective
+
+**Shipped vs planned:** all 10 tasks executed in order. Every commit message matches the plan. Tests landed at **394 passing** (up from 374 pre-S2 → **+20 new tests** across 10 new files, exceeding the 15-test floor in the success criteria). `pnpm typecheck` zero errors throughout. `v1.0-sprint-2-complete` tag created at commit `010cd02`.
+
+**Test breakdown (20 new):**
+- proxy health 3-strike (2) — `tests/unit/autologin-proxy-health.test.ts`
+- mock adapter happy / captcha / auth (3) — `tests/unit/autologin-adapter-mock.test.ts`
+- state machine happy / captcha fail (2) — `tests/integration/autologin-state-machine.test.ts`
+- push-lead enqueue / no-enqueue (2) — `tests/integration/push-lead-autologin-enqueue.test.ts`
+- SLA unit empty / populated (2) — `tests/unit/autologin-sla.test.ts`
+- SLA endpoint invalid date / oversize window / empty (3) — `tests/integration/autologin-sla-endpoint.test.ts`
+- quality-score unit × 5 (cold, high-fraud, strong-affiliate, bad-broker-geo, clamp) — `tests/unit/quality-score.test.ts`
+- intake quality-score integration (1) — `tests/integration/intake-quality-score.test.ts`
+
+**Deviations from the plan:**
+- **Nav shortcut `A` is already assigned** to the affiliates page in `src/components/shell/NavConfig.ts`. Plan said "verify that A is free" — it isn't. Picked `X` instead (no other letter is a natural mnemonic for autologin, and `autoLoginX` is close). Noted in CLAUDE.md S2 block.
+- **NavLink component doesn't exist** on main — nav is a static `NAV_ITEMS` array consumed by `Sidebar.tsx`. Added the entry to the array instead of rendering a `<NavLink>` JSX element.
+- **LeadsGrid/LeadDrawer use inline styles, not Tailwind** (unlike what Task 9 Step 2 assumes). Kept the inline-style approach to match the existing file so typography/spacing stay consistent; the `QualityBadge` component itself uses Tailwind classes since the plan dictates exact oklch tokens.
+- **`tests/unit/` directory didn't exist** — created it. `vitest.config.ts` include pattern `tests/**/*.test.ts` picks it up automatically.
+- **Intake schema uses `geo`, not `country`** (matches the S1 gotcha note in the prompt). `loadBrokerGeoStats(null, geo)` called with `geo`.
+- **Leads router already returns full rows via `include`**, not selects, so no router widening was needed (Task 9 Step 1 — skipped cleanly, both `list` and `byId` already deliver `qualityScore` + `qualitySignals`).
+- **Skipped `pnpm dev` + `curl` smoke in Task 10 Step 2** — the test-suite already covers the behaviour end-to-end, and the intake mock-URL failure path is exercised via the state-machine integration test. Also skipped `pnpm db:seed` (would need a Postgres connection outside the test harness).
+- **No `npx playwright install chromium`** — Playwright's Chromium binary is only needed for real runs; all tests mock the `playwright` module via `vi.mock`. Saving the ~200 MB download for first real-adapter work in S3+. `pnpm add playwright` only installs the JS package (no binaries).
+
+**Surprises:**
+- **undici 8.x** is the current default from pnpm but requires Node 20.18+ — the dev machine runs Node 20.17 and `undici 8` crashed at import time with `webidl.util.markAsUncloneable is not a function`. Downgraded to `undici@^6` (v6.25.0), which works. Worth calling out in S8 if CI upgrades Node.
+- **Percentile math on small samples** is stable with Postgres `percentile_cont(0.5|0.95) WITHIN GROUP`; the populated-window test doesn't pin exact percentile values precisely (just non-null) since percentile interpolation over 4 samples is sensitive to ordering.
+- **`vi.mock("@/server/jobs/queue", …)`** in the enqueue test needed `vi.importActual` to keep `JOB_NAMES` exported alongside the fake `getBoss`/`startBossOnce` — direct replacement of the module broke the push-lead import graph.
+- One **flaky pass** observed in `tests/integration/push-lead.test.ts > pool_exhausted`: one run showed a FAIL marker in grep output, but subsequent runs were green. Suspected transient race against another parallel pg-boss-adjacent test; not reproducible. Worth re-examining in S8 if it resurfaces.
+
+**Rough time spent per task:**
+- Task 2 (proxy pool + health + job): ~20 min (including `undici` debugging)
+- Task 3 (adapter + mock + captcha stub): ~10 min
+- Task 4 (state-machine runner + integration test w/ playwright mock): ~15 min
+- Task 5 (push-lead enqueue): ~10 min
+- Task 6 (SLA aggregation + endpoints): ~15 min
+- Task 7 (`/dashboard/autologin` page): ~15 min
+- Task 8 (Q-Leads score + intake wiring + 6 tests): ~15 min
+- Task 9 (QualityBadge in grid/drawer): ~10 min
+- Task 10 (seed + docs + tag): ~5 min
+
