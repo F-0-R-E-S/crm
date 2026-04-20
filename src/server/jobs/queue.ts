@@ -27,6 +27,7 @@ export const JOB_NAMES = {
   resolvePendingHold: "resolve-pending-hold",
   autologinAttempt: "autologin-attempt",
   proxyHealth: "proxy-health",
+  manualQueueDepthCheck: "manual-queue-depth-check",
 } as const;
 
 const globalForBossStarted = globalThis as unknown as { bossStarted?: boolean };
