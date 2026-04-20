@@ -216,6 +216,42 @@ describe("REST /api/v1/routing/caps/:flowId", () => {
     expect(found).toBeTruthy();
   });
 
+  it("PUT на PUBLISHED flow → 409 flow_published", async () => {
+    const flow = await createFlow();
+
+    // Publish the flow first.
+    const pub = await postPublish(
+      new Request(`http://x/api/v1/routing/flows/${flow.id}/publish`, { method: "POST" }),
+      { params: Promise.resolve({ flowId: flow.id }) },
+    );
+    expect(pub.status).toBe(200);
+
+    // Now try to PUT caps on the published flow — must be rejected.
+    const res = await putCaps(
+      new Request(`http://x/api/v1/routing/caps/${flow.id}`, {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          caps: [
+            {
+              scope: "BROKER",
+              scopeRefId: "bX",
+              window: "DAILY",
+              limit: 50,
+              timezone: "UTC",
+              perCountry: false,
+              countryLimits: [],
+            },
+          ],
+        }),
+      }),
+      { params: Promise.resolve({ flowId: flow.id }) },
+    );
+    expect(res.status).toBe(409);
+    const body = await res.json();
+    expect(body.error.code).toBe("flow_published");
+  });
+
   it("PUT с невалидным телом → 422", async () => {
     const flow = await createFlow();
     const bad = await putCaps(

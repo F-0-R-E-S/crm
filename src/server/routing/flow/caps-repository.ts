@@ -2,7 +2,8 @@ import { prisma } from "@/server/db";
 import type { CapDefinitionInput } from "./caps-schema";
 
 /**
- * Replaces all cap definitions for the latest (DRAFT) version of a flow.
+ * Upsert cap definitions on the latest DRAFT version. Throws if flow is PUBLISHED or ARCHIVED —
+ * callers must create a new draft version to edit published caps.
  *
  * Runs in a single transaction:
  *  1. Clear existing CapDefinition rows (CapCountryLimit cascades via FK).
@@ -18,6 +19,7 @@ export async function upsertFlowCaps(flowId: string, caps: CapDefinitionInput[])
   });
   if (!flow) throw new Error("flow_not_found");
   if (flow.status === "ARCHIVED") throw new Error("flow_archived");
+  if (flow.status === "PUBLISHED") throw new Error("flow_published");
   const latest = flow.versions[0];
   if (!latest) throw new Error("no_draft_version");
 

@@ -82,6 +82,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ flowId: 
     const msg = (e as Error).message;
     if (msg === "flow_not_found")
       return NextResponse.json({ error: { code: "flow_not_found" } }, { status: 404 });
+    if (msg === "flow_published")
+      return NextResponse.json({ error: { code: "flow_published" } }, { status: 409 });
     if (msg === "flow_archived" || msg === "no_draft_version")
       return NextResponse.json({ error: { code: msg } }, { status: 409 });
     return NextResponse.json({ error: { code: "internal_error" } }, { status: 500 });
