@@ -26,6 +26,7 @@ import {
   getVersionEntry,
   parseWithMode,
 } from "@/server/schema/registry";
+import { emitTelegramEvent } from "@/server/telegram/emit";
 import { buildIntakeEvent, dispatchIntakeEvent } from "@/server/webhooks/intake-outcome";
 import type { Prisma } from "@prisma/client";
 import { nanoid } from "nanoid";
@@ -402,6 +403,24 @@ export async function POST(req: Request) {
       },
       "lead received",
     );
+
+    // Telegram: emit NEW_LEAD for accepted leads and FRAUD_HIT for auto-reject.
+    if (lead.state === "NEW") {
+      void emitTelegramEvent(
+        "NEW_LEAD",
+        { leadId: lead.id, affiliateId: lead.affiliateId, geo: lead.geo },
+        { affiliateId: lead.affiliateId },
+      ).catch((e) => logger.warn({ err: (e as Error).message }, "[telegram-emit] NEW_LEAD failed"));
+    }
+    if (autoFraudReject) {
+      void emitTelegramEvent(
+        "FRAUD_HIT",
+        { leadId: lead.id, fraudScore: lead.fraudScore, signals: firedJson },
+        { affiliateId: lead.affiliateId },
+      ).catch((e) =>
+        logger.warn({ err: (e as Error).message }, "[telegram-emit] FRAUD_HIT failed"),
+      );
+    }
 
     if (lead.state === "NEW") {
       const boss = await startBossOnce();

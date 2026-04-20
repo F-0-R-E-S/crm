@@ -1,5 +1,7 @@
 import { applyBrokerAuth } from "@/server/broker-adapter/auth";
 import { prisma } from "@/server/db";
+import { logger } from "@/server/observability";
+import { emitTelegramEvent } from "@/server/telegram/emit";
 import type { LeadState } from "@prisma/client";
 
 export function normalizeBrokerStatus(
@@ -105,6 +107,7 @@ export async function pollBrokerStatuses(brokerId: string): Promise<PollResult> 
 
       if (lead.state === resolved) continue;
 
+      const oldState = lead.state;
       await prisma.$transaction([
         prisma.lead.update({
           where: { id: lead.id },
@@ -131,6 +134,25 @@ export async function pollBrokerStatuses(brokerId: string): Promise<PollResult> 
         }),
       ]);
       updated++;
+      if (resolved === "FTD" && oldState !== "FTD") {
+        void emitTelegramEvent(
+          "FTD",
+          { leadId: lead.id, brokerId, brokerName: broker.name },
+          { brokerId, affiliateId: lead.affiliateId },
+        ).catch((e) =>
+          logger.warn({ err: (e as Error).message }, "[telegram-emit] FTD failed"),
+        );
+        void emitTelegramEvent(
+          "AFFILIATE_FTD",
+          { leadId: lead.id, brokerName: broker.name, at: new Date().toISOString() },
+          { affiliateId: lead.affiliateId },
+        ).catch((e) =>
+          logger.warn(
+            { err: (e as Error).message },
+            "[telegram-emit] AFFILIATE_FTD failed",
+          ),
+        );
+      }
     }
 
     await prisma.broker.update({

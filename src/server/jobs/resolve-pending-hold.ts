@@ -1,5 +1,7 @@
 import { prisma } from "@/server/db";
 import { writeLeadEvent } from "@/server/lead-event";
+import { logger } from "@/server/observability";
+import { emitTelegramEvent } from "@/server/telegram/emit";
 
 export interface ResolvePendingHoldPayload {
   leadId: string;
@@ -21,4 +23,20 @@ export async function handleResolvePendingHold(payload: ResolvePendingHoldPayloa
   await writeLeadEvent(lead.id, "PENDING_HOLD_RELEASED", {
     reason: "hold_window_expired",
   });
+  const broker = lead.brokerId
+    ? await prisma.broker.findUnique({
+        where: { id: lead.brokerId },
+        select: { name: true },
+      })
+    : null;
+  void emitTelegramEvent(
+    "PENDING_HOLD_RELEASED",
+    { leadId: lead.id, newBrokerName: broker?.name ?? null },
+    { brokerId: lead.brokerId ?? undefined, affiliateId: lead.affiliateId },
+  ).catch((e) =>
+    logger.warn(
+      { err: (e as Error).message },
+      "[telegram-emit] PENDING_HOLD_RELEASED failed",
+    ),
+  );
 }

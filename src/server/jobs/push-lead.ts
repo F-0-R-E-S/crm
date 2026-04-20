@@ -9,6 +9,7 @@ import { type WorkingHours, isWithinWorkingHours } from "@/server/routing/filter
 import { enqueueManualReview } from "@/server/routing/manual-queue";
 import { nthRetryDelay, parseRetrySchedule } from "@/server/routing/retry-schedule";
 import { selectBrokerPool } from "@/server/routing/select-broker";
+import { emitTelegramEvent } from "@/server/telegram/emit";
 import type { Broker, Lead } from "@prisma/client";
 import type { AutologinAttemptPayload } from "./autologin-attempt";
 import { JOB_NAMES, getBoss, startBossOnce } from "./queue";
@@ -179,6 +180,39 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
       },
       "no broker available",
     );
+    // Telegram: emit FAILED (with last error) or CAP_REACHED.
+    if (lastPushFail) {
+      void emitTelegramEvent(
+        "FAILED",
+        { leadId: lead.id, brokerId: lastPushFail.id, error: lastPushFail.error },
+        { brokerId: lastPushFail.id, affiliateId: lead.affiliateId },
+      ).catch((e) =>
+        logger.warn({ err: (e as Error).message }, "[telegram-emit] FAILED failed"),
+      );
+    }
+    if (mrReason === "CAP_REACHED") {
+      const capBroker = tried.find((t) => t.reason === "cap_full");
+      void emitTelegramEvent(
+        "CAP_REACHED",
+        {
+          scope: "BROKER",
+          scopeId: capBroker?.id ?? "?",
+          scopeName: capBroker?.id ?? "?",
+          window: "DAILY",
+          leadId: lead.id,
+        },
+        { brokerId: capBroker?.id, affiliateId: lead.affiliateId },
+      ).catch((e) =>
+        logger.warn({ err: (e as Error).message }, "[telegram-emit] CAP_REACHED failed"),
+      );
+    }
+    void emitTelegramEvent(
+      "MANUAL_REVIEW_QUEUED",
+      { leadId: lead.id, reason: mrReason },
+      { affiliateId: lead.affiliateId },
+    ).catch((e) =>
+      logger.warn({ err: (e as Error).message }, "[telegram-emit] MANUAL_REVIEW_QUEUED failed"),
+    );
     await enqueueManualReview({
       leadId: lead.id,
       reason: mrReason,
@@ -217,6 +251,16 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
     externalId: winnerResult.externalId,
     fallbackIndex: tried.length,
   });
+  void emitTelegramEvent(
+    "PUSHED",
+    {
+      leadId: lead.id,
+      brokerId: winner.id,
+      brokerName: winner.name,
+      latencyMs: winnerResult.durationMs,
+    },
+    { brokerId: winner.id, affiliateId: lead.affiliateId },
+  ).catch((e) => logger.warn({ err: (e as Error).message }, "[telegram-emit] PUSHED failed"));
   await startBossOnce();
   const boss = getBoss();
   if (winner.autologinEnabled && winner.autologinLoginUrl) {
