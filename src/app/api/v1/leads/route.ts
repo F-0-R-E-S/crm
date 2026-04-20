@@ -17,6 +17,7 @@ import {
 import { determineMockOutcome, mockOutcomeToResponse } from "@/server/intake/sandbox";
 import { getIntakeSettings } from "@/server/intake/settings";
 import { JOB_NAMES, startBossOnce } from "@/server/jobs/queue";
+import { COUNTER_NAMES, incrCounter } from "@/server/metrics/rolling-counters";
 import { logger, runWithTrace } from "@/server/observability";
 import { checkRateLimit } from "@/server/ratelimit";
 import { incrementCap, todayUtc } from "@/server/routing/caps";
@@ -437,6 +438,10 @@ export async function POST(req: Request) {
       outcome: "accepted",
       lead_id: lead.id,
     });
+    void incrCounter(COUNTER_NAMES.LEADS_RECEIVED).catch(() => {});
+    if (autoFraudReject) {
+      void incrCounter(COUNTER_NAMES.FRAUD_HIT).catch(() => {});
+    }
 
     // Telegram: emit NEW_LEAD for accepted leads and FRAUD_HIT for auto-reject.
     if (lead.state === "NEW") {

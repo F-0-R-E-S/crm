@@ -3,6 +3,7 @@ import { type PushResult, pushToBroker } from "@/server/broker-adapter/push";
 import { buildPayload } from "@/server/broker-adapter/template";
 import { prisma } from "@/server/db";
 import { writeLeadEvent } from "@/server/lead-event";
+import { COUNTER_NAMES, incrCounter } from "@/server/metrics/rolling-counters";
 import { logger } from "@/server/observability";
 import { decrementCap, incrementCap, todayUtc } from "@/server/routing/caps";
 import { type WorkingHours, isWithinWorkingHours } from "@/server/routing/filters";
@@ -105,6 +106,9 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
       attempt: tried.length + 1,
       http_status: result.httpStatus ?? null,
     });
+    if (result.success) {
+      void incrCounter(COUNTER_NAMES.LEADS_PUSHED).catch(() => {});
+    }
 
     if (result.success) {
       winner = broker;
