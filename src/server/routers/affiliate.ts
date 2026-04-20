@@ -1,23 +1,33 @@
 import { createHash, randomBytes } from "node:crypto";
 import { writeAuditLog } from "@/server/audit";
+import { redact, redactMany } from "@/server/rbac/redact";
 import { adminProcedure, protectedProcedure, router } from "@/server/trpc";
+import type { UserRole } from "@prisma/client";
 import { z } from "zod";
 
 const sha = (s: string) => createHash("sha256").update(s).digest("hex");
 
 export const affiliateRouter = router({
   list: protectedProcedure.query(async ({ ctx }) => {
-    return ctx.prisma.affiliate.findMany({ orderBy: { createdAt: "desc" } });
+    const rows = await ctx.prisma.affiliate.findMany({ orderBy: { createdAt: "desc" } });
+    const role = (ctx.role ?? "OPERATOR") as UserRole;
+    return redactMany(
+      rows as unknown as Record<string, unknown>[],
+      role,
+      "Affiliate",
+    ) as typeof rows;
   }),
 
   byId: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
-    return ctx.prisma.affiliate.findUniqueOrThrow({
+    const row = await ctx.prisma.affiliate.findUniqueOrThrow({
       where: { id: input.id },
       include: {
         apiKeys: { orderBy: { createdAt: "desc" } },
         outboundPostbacks: { orderBy: { createdAt: "desc" }, take: 100 },
       },
     });
+    const role = (ctx.role ?? "OPERATOR") as UserRole;
+    return redact(row as unknown as Record<string, unknown>, role, "Affiliate") as typeof row;
   }),
 
   stats: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {

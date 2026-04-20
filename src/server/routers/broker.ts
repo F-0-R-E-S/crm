@@ -2,7 +2,9 @@ import { writeAuditLog } from "@/server/audit";
 import { applyBrokerAuth } from "@/server/broker-adapter/auth";
 import { pushToBroker } from "@/server/broker-adapter/push";
 import { buildPayload } from "@/server/broker-adapter/template";
+import { redact, redactMany } from "@/server/rbac/redact";
 import { adminProcedure, protectedProcedure, router } from "@/server/trpc";
+import type { UserRole } from "@prisma/client";
 import { z } from "zod";
 
 const BrokerInput = z.object({
@@ -25,12 +27,22 @@ const BrokerInput = z.object({
 });
 
 export const brokerRouter = router({
-  list: protectedProcedure.query(async ({ ctx }) =>
-    ctx.prisma.broker.findMany({ orderBy: { createdAt: "desc" } }),
-  ),
+  list: protectedProcedure.query(async ({ ctx }) => {
+    const rows = await ctx.prisma.broker.findMany({ orderBy: { createdAt: "desc" } });
+    const role = (ctx.role ?? "OPERATOR") as UserRole;
+    return redactMany(
+      rows as unknown as Record<string, unknown>[],
+      role,
+      "Broker",
+    ) as typeof rows;
+  }),
   byId: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .query(({ ctx, input }) => ctx.prisma.broker.findUniqueOrThrow({ where: { id: input.id } })),
+    .query(async ({ ctx, input }) => {
+      const row = await ctx.prisma.broker.findUniqueOrThrow({ where: { id: input.id } });
+      const role = (ctx.role ?? "OPERATOR") as UserRole;
+      return redact(row as unknown as Record<string, unknown>, role, "Broker") as typeof row;
+    }),
   create: adminProcedure.input(BrokerInput).mutation(async ({ ctx, input }) => {
     const row = await ctx.prisma.broker.create({ data: input as never });
     await writeAuditLog({

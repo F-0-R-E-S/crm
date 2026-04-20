@@ -1,7 +1,9 @@
 import { funnelCounts } from "@/lib/funnel-counts";
 import { writeAuditLog } from "@/server/audit";
 import { JOB_NAMES, getBoss, startBossOnce } from "@/server/jobs/queue";
+import { redact, redactMany } from "@/server/rbac/redact";
 import { protectedProcedure, router } from "@/server/trpc";
+import type { UserRole } from "@prisma/client";
 import { z } from "zod";
 
 const ListInput = z.object({
@@ -46,11 +48,19 @@ export const leadRouter = router({
       }),
       ctx.prisma.lead.count({ where }),
     ]);
-    return { items, total };
+    const role = (ctx.role ?? "OPERATOR") as UserRole;
+    return {
+      items: redactMany(
+        items as unknown as (typeof items)[number] & Record<string, unknown>[],
+        role,
+        "Lead",
+      ) as typeof items,
+      total,
+    };
   }),
 
   byId: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
-    return ctx.prisma.lead.findUniqueOrThrow({
+    const row = await ctx.prisma.lead.findUniqueOrThrow({
       where: { id: input.id },
       include: {
         affiliate: true,
@@ -59,6 +69,8 @@ export const leadRouter = router({
         outboundPostbacks: { orderBy: { createdAt: "desc" } },
       },
     });
+    const role = (ctx.role ?? "OPERATOR") as UserRole;
+    return redact(row as unknown as Record<string, unknown>, role, "Lead") as typeof row;
   }),
 
   counters: protectedProcedure.query(async ({ ctx }) => {
