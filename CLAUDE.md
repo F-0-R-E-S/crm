@@ -149,3 +149,17 @@
 - **Pricing:** public `/pricing` page, tier config in `src/app/pricing/tiers.ts` (Starter $399 / Growth $599 / Pro $899). Stripe integration = v2.0 scope.
 - **Broker templates:** 10 named templates in `src/server/broker-template/seeds/<vendor>-style.ts`; seeded via `pnpm tsx src/server/broker-template/seed.ts` (idempotent).
 - **SLA metric:** `src/server/onboarding/metrics.ts::getTimeToFirstLeadLast30Days` → admin-only dashboard widget showing median + p90. Target: median < 30 min.
+
+## v1.0 Sprint 8 hardening + launch (GA)
+
+- **Perf harness:** 3 scenarios in `perf/intake-load.js` (`sustained_300_rps_15m`, `burst_1000_rps_60s`, `sustained_500_rps_30m`) + `perf/routing-stress.js` (10k batches, two concurrency levels). Baseline numbers: `docs/perf/v1-baseline.md`. Prereq: `SEED_PERF=1 pnpm db:seed` creates `flow-perf-default` + `perf-affiliate` + `ak_perf_*` key.
+- **E2E smoke:** `tests/e2e/v1-full-flow.test.ts` + reusable helper `tests/helpers/e2e-flow.ts` (returns `{leadId, brokerId, affiliateId, apiKey, mockBroker}`).
+- **Observability:** shared pino `logger` in `src/server/observability.ts` with redact paths (`authorization`, `cookie`, `body.email`, `body.phone`, `body.password`, `*.apiKey`). Structured events: `intake.request`, `intake.response`, `routing.decision`, `broker.push`, `fraud.score`, `telegram.emit`. Contract enforced by `tests/integration/observability-events.test.ts`.
+- **Health + metrics:** `/api/v1/health` returns `{status, db, redis, queue, version}`; `/api/v1/metrics/summary` admin-auth with 60s rolling counters from `src/server/metrics/rolling-counters.ts` (Redis zset per counter). Wire-up in intake (`LEADS_RECEIVED`, `FRAUD_HIT`) and push-lead (`LEADS_PUSHED`).
+- **Alerts engine:** `src/server/alerts/rules.ts` (6 rules) + `src/server/alerts/evaluator.ts` (dedupe inside window + auto-resolve when measurement returns null). Runs every minute via `src/server/jobs/alerts-evaluator.ts`. Emits Telegram `ALERT_TRIGGERED`. `AlertLog` table — on-call resolves manually via SQL (admin UI deferred to v1.5).
+- **pg-boss worker runner finalized:** `worker.ts` now boots all previously deferred crons: `alerts-evaluator` (1m), `manual-queue-depth-check` (5m), `crg-cohort-settle` (hourly), `proxy-health` (10m) on top of the S4/S5 analytics + summary + anomaly-detect registrations.
+- **Runbooks:** `docs/runbooks/v1-launch.md` (intake degradation / broker-down / queue backup / autologin failure / fraud spike) + `docs/runbooks/oncall-checklist.md` (morning/afternoon/EOD) + `docs/runbooks/broker-contacts.md` (stub for vendor contacts).
+- **Public API docs:** hand-authored OpenAPI 3.0 spec at `docs/api/v1/openapi.yaml`; JSON twin regenerated via `pnpm gen:openapi` (script: `scripts/gen-openapi.ts` + `yaml` dep). Served at `/api/v1/openapi` and rendered by Scalar at `/docs/api` (CDN-loaded standalone bundle — self-host in v1.0.1).
+- **Security:** CSP + HSTS + X-Frame-Options in `next.config.ts` (non-API routes). Signup rate-limit 5/h/IP via `rateLimit()` helper in `src/server/ratelimit.ts`. Regression suite: `tests/integration/security-baseline.test.ts` (SQLi, XSS, IDOR, rate-limit). Manual pentest-lite: `docs/security/v1-pentest-checklist.md`.
+- **Release:** version `1.0.0` in `package.json`; `CHANGELOG.md` populated; tag `v1.0.0` on `main`.
+- **Known v1.0.1 follow-ups:** extend structured logging to onboarding wizard, health endpoint broker-health polling, self-host Scalar viewer, admin UI for AlertLog ack, batch AuditLog hash-chain lookups.
