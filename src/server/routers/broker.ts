@@ -21,6 +21,7 @@ const BrokerInput = z.object({
   postbackLeadIdPath: z.string().min(1),
   postbackStatusPath: z.string().min(1),
   statusMapping: z.record(z.string(), z.enum(["ACCEPTED", "DECLINED", "FTD"])).optional(),
+  pendingHoldMinutes: z.number().int().min(0).max(1440).nullable().optional(),
 });
 
 export const brokerRouter = router({
