@@ -1,9 +1,14 @@
+import { createHash, randomBytes } from "node:crypto";
 import { prisma } from "@/server/db";
 import { probeBrokerEndpoint } from "@/server/onboarding/broker-health";
 import { protectedProcedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
 import type { Prisma } from "@prisma/client";
 import { z } from "zod";
+
+function sha256(s: string): string {
+  return createHash("sha256").update(s).digest("hex");
+}
 
 async function getOrgIdOrThrow(userId: string): Promise<string> {
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { orgId: true } });
@@ -106,6 +111,35 @@ export const onboardingRouter = router({
     .mutation(async ({ input }) => {
       const { createBrokerFromTemplate } = await import("@/server/broker-template/from-template");
       return createBrokerFromTemplate(input);
+    }),
+
+  createAffiliateWithKey: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().min(2).max(80),
+        contactEmail: z.string().email(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const plaintext = `ak_test_${randomBytes(20).toString("hex")}`;
+      const keyHash = sha256(plaintext);
+      const affiliate = await prisma.affiliate.create({
+        data: {
+          name: input.name,
+          contactEmail: input.contactEmail,
+          totalDailyCap: 1000,
+        },
+      });
+      await prisma.apiKey.create({
+        data: {
+          affiliateId: affiliate.id,
+          keyHash,
+          keyPrefix: plaintext.slice(0, 12),
+          label: "onboarding-wizard",
+          isSandbox: true,
+        },
+      });
+      return { affiliateId: affiliate.id, plaintextKey: plaintext };
     }),
 
   complete: protectedProcedure.mutation(async ({ ctx }) => {
