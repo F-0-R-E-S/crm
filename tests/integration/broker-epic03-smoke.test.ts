@@ -18,7 +18,7 @@ describe("EPIC-03 smoke", () => {
 
   it("end-to-end: template → broker → health → poll → errors", async () => {
     const n = await seedBrokerTemplates();
-    expect(n).toBe(20);
+    expect(n).toBe(30);
     const tpl = await prisma.brokerTemplate.findFirstOrThrow({
       where: { vertical: "forex" },
     });

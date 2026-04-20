@@ -9,6 +9,7 @@ import { brokerTemplateRouter } from "./brokerTemplate";
 import { financeRouter } from "./finance";
 import { leadRouter } from "./lead";
 import { manualReviewRouter } from "./manualReview";
+import { onboardingRouter } from "./onboarding";
 import { rotationRouter } from "./rotation";
 import { routingRouter } from "./routing";
 import { telegramRouter } from "./telegram";
@@ -29,5 +30,6 @@ export const appRouter = router({
   analytics: analyticsRouter,
   telegram: telegramRouter,
   finance: financeRouter,
+  onboarding: onboardingRouter,
 });
 export type AppRouter = typeof appRouter;
