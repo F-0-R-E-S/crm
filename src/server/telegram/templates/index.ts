@@ -1,0 +1,32 @@
+import type { TelegramEventType } from "../event-catalog";
+import { render as renderAccepted } from "./accepted";
+import { render as renderDeclined } from "./declined";
+import { render as renderFailed } from "./failed";
+import { render as renderFraudHit } from "./fraud-hit";
+import { render as renderFtd } from "./ftd";
+import { render as renderManualReviewQueued } from "./manual-review-queued";
+import { render as renderNewLead } from "./new-lead";
+import { render as renderPendingHoldReleased } from "./pending-hold-released";
+import { render as renderPendingHoldStart } from "./pending-hold-start";
+import { render as renderPushed } from "./pushed";
+import { render as renderShaveSuspected } from "./shave-suspected";
+
+export type Renderer = (p: Record<string, unknown>) => string;
+
+export const TEMPLATES: Partial<Record<TelegramEventType, Renderer>> = {
+  NEW_LEAD: renderNewLead,
+  PUSHED: renderPushed,
+  ACCEPTED: renderAccepted,
+  DECLINED: renderDeclined,
+  FTD: renderFtd,
+  FAILED: renderFailed,
+  FRAUD_HIT: renderFraudHit,
+  MANUAL_REVIEW_QUEUED: renderManualReviewQueued,
+  PENDING_HOLD_START: renderPendingHoldStart,
+  PENDING_HOLD_RELEASED: renderPendingHoldReleased,
+  SHAVE_SUSPECTED: renderShaveSuspected,
+};
+
+export function fallbackRender(p: Record<string, unknown>): string {
+  return `*Event*\n\`\`\`\n${JSON.stringify(p).slice(0, 3900)}\n\`\`\``;
+}

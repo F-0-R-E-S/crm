@@ -20,6 +20,10 @@ import {
   type ResolvePendingHoldPayload,
   handleResolvePendingHold,
 } from "./src/server/jobs/resolve-pending-hold";
+import {
+  type TelegramSendPayload,
+  handleTelegramSend,
+} from "./src/server/jobs/telegram-send";
 import { type VoipCheckPayload, handleVoipCheck } from "./src/server/jobs/voip-check";
 import { logger, runWithTrace } from "./src/server/observability";
 
@@ -67,6 +71,10 @@ async function main() {
 
   await boss.work<AnalyticsRollPayload>(JOB_NAMES.analyticsRollHourly, async ([job]) => {
     await handleAnalyticsRollHourly(job.data);
+  });
+
+  await boss.work<TelegramSendPayload>(JOB_NAMES.telegramSend, async ([job]) => {
+    await handleTelegramSend(job.data);
   });
 
   // Schedules — pg-boss uses cron syntax

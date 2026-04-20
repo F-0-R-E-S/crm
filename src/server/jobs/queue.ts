@@ -30,6 +30,9 @@ export const JOB_NAMES = {
   manualQueueDepthCheck: "manual-queue-depth-check",
   analyticsRollDaily: "analytics-roll-daily",
   analyticsRollHourly: "analytics-roll-hourly",
+  telegramSend: "telegram-send",
+  anomalyDetect: "anomaly-detect",
+  dailySummary: "daily-summary",
 } as const;
 
 const globalForBossStarted = globalThis as unknown as { bossStarted?: boolean };
