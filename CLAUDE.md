@@ -54,13 +54,18 @@
 - **Perf harness:** `perf/intake-load.js` (autocannon; scenarios `sustained_300_rps_15m` + `burst_1000_rps_60s`).
 - **Env:** centralized Zod validation in `src/lib/env.ts`; `zBool` helper (correctly handles `"false"`); `NEXTAUTH_SECRET` OR `AUTH_SECRET` accepted; `AUDIT_HASH_CHAIN_SECRET` required in `NODE_ENV=production`.
 
-## Fraud score (W2.1)
+## Fraud score (W2.1 + W2.2)
 
-- Model `FraudPolicy` (single global row, upserted in seed) — 5 weight fields + `autoRejectThreshold` (80) + `borderlineMin` (60) + `version`. Cache: 30s LRU in `src/server/intake/fraud-policy-cache.ts`.
+- Model `FraudPolicy` (single global row, upserted in seed) — 5 weight fields + `autoRejectThreshold` (80) + `borderlineMin` (60) + `version`. Cache: 30s LRU in `src/server/intake/fraud-policy-cache.ts` with `invalidateFraudPolicyCache()` for tests.
 - Pure fn `computeFraudScore(signals, policy)` in `src/server/intake/fraud-score.ts` — sums weights, clamps to 0..100, returns `{score, fired}`.
 - Signal builder `buildSignals(input)` in `src/server/intake/fraud-signals.ts` — assembles `FraudSignal[]` from blacklist/dedup/voip/phone-country-vs-geo check.
-- Intake pipeline writes `Lead.fraudScore` + `Lead.fraudSignals` (Json) and emits `LeadEvent.FRAUD_SCORED { score, signals, policyVersion }`. **No enforcement yet** — W2.2 adds auto-reject above threshold.
-- Tests: unit coverage for score math + signal builder; integration `intake-fraud-score.test.ts` (clean / blacklist / geo_mismatch / combo / custom weights).
+- Intake pipeline writes `Lead.fraudScore` + `Lead.fraudSignals` (Json) and emits `LeadEvent.FRAUD_SCORED { score, signals, policyVersion, autoFraudReject, needsReview }`.
+- **Enforcement (W2.2):**
+  - `score >= autoRejectThreshold` AND no prior rejectReason → `state=REJECTED_FRAUD`, `rejectReason='fraud_auto'`. Response `status: "rejected_fraud"` + `reason_codes: [<signal.kind>, ...]`. **Weights are never exposed in API response** (per spec — only signal kinds).
+  - `borderlineMin <= score < autoRejectThreshold` → `state=NEW`, `needsReview=true`. Response body adds `needs_review: true`. Lead still routes normally.
+  - Blacklist hard-reject semantics preserved: blacklist hit → `state=REJECTED` (not REJECTED_FRAUD). Fraud score is still computed and persisted, but hard-reject wins.
+- UI: `LeadStateKey` + `STATE_TONES` include `REJECTED_FRAUD` (danger / deep-red).
+- Tests: unit (fraud-score + fraud-signals); integration `intake-fraud-score.test.ts` (5 cases) + `intake-fraud-autoreject.test.ts` (6 cases — threshold / borderline / clean / skip-routing / blacklist-precedence).
 
 ## Status Pipe Pending (W1.2 anti-shave)
 

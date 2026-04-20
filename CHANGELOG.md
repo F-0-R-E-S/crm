@@ -2,6 +2,22 @@
 
 ## Unreleased (Wave 2 in progress)
 
+### Added — W2.2 Fraud auto-reject (enforcement)
+- New `LeadState.REJECTED_FRAUD` (separate from REJECTED) — set when
+  computed fraud score reaches `FraudPolicy.autoRejectThreshold`.
+- `Lead.needsReview: Boolean` — set when score is in the borderline
+  band (`borderlineMin <= score < threshold`). Lead continues normal
+  routing; surfaces in the future review queue (W2.4).
+- Intake response surfaces `status: "rejected_fraud"` with
+  `reason_codes: [<signal.kind>, …]` when auto-rejected. Weights are
+  NOT exposed to the affiliate.
+- Blacklist hard-reject semantics preserved: blacklist hit → state
+  REJECTED (hard), score is still computed, but hard-reject takes
+  precedence over threshold-based REJECTED_FRAUD.
+- Migration `wave2_fraud_autoreject` (additive).
+- UI tokens (`src/lib/tokens.ts`) include REJECTED_FRAUD
+  (tone=danger, deep-red).
+
 ### Added — W2.1 Fraud score calculation
 - `FraudPolicy` model (single global row) with 5 signal weights + auto-reject
   threshold + borderline min + version. Seed creates `name="global"` with
