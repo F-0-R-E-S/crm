@@ -56,7 +56,8 @@ export async function seedLead(overrides: SeedLeadOverrides = {}): Promise<Lead>
 	return prisma.lead.create({ data });
 }
 
-export async function seedAdminSession(role: UserRole = "ADMIN") {
+// biome-ignore lint/suspicious/noExplicitAny: ctx shape matches protectedProcedure's expectation at runtime but NextAuth's Session type is stricter
+export async function seedAdminSession(role: UserRole = "ADMIN"): Promise<any> {
 	const user = await prisma.user.create({
 		data: { email: `u-${nextId()}@t.io`, passwordHash: "x", role },
 	});
@@ -65,10 +66,5 @@ export async function seedAdminSession(role: UserRole = "ADMIN") {
 		prisma,
 		userId: user.id,
 		role,
-	} as unknown as {
-		session: { user: { id: string; role: UserRole } };
-		prisma: typeof prisma;
-		userId: string;
-		role: UserRole;
 	};
 }

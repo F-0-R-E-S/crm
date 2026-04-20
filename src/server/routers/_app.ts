@@ -6,6 +6,7 @@ import { auditRouter } from "./audit";
 import { blacklistRouter } from "./blacklist";
 import { brokerRouter } from "./broker";
 import { brokerTemplateRouter } from "./brokerTemplate";
+import { financeRouter } from "./finance";
 import { leadRouter } from "./lead";
 import { manualReviewRouter } from "./manualReview";
 import { rotationRouter } from "./rotation";
@@ -27,5 +28,6 @@ export const appRouter = router({
   rbacPreview: rbacPreviewRouter,
   analytics: analyticsRouter,
   telegram: telegramRouter,
+  finance: financeRouter,
 });
 export type AppRouter = typeof appRouter;
