@@ -44,9 +44,24 @@ function err(code: string, message: string, status: number, trace_id: string, fi
 
 export async function POST(req: Request) {
   const trace_id = nanoid();
+  const _intakeStart = Date.now();
   return runWithTrace(trace_id, async () => {
+    logger.info({
+      event: "intake.request",
+      route: "/api/v1/leads",
+      api_version: req.headers.get("x-api-version") ?? null,
+      content_length: Number(req.headers.get("content-length") ?? 0),
+    });
     const ctx = await verifyApiKey(req.headers.get("authorization"));
-    if (!ctx) return err("unauthorized", "invalid api key", 401, trace_id);
+    if (!ctx) {
+      logger.info({
+        event: "intake.response",
+        status: 401,
+        duration_ms: Date.now() - _intakeStart,
+        outcome: "rejected",
+      });
+      return err("unauthorized", "invalid api key", 401, trace_id);
+    }
 
     if (ctx.allowedIps.length > 0) {
       const ip = extractClientIp(req);
@@ -264,6 +279,18 @@ export async function POST(req: Request) {
       weight: f.weight,
       ...(f.detail !== undefined ? { detail: f.detail as Prisma.InputJsonValue } : {}),
     }));
+    logger.info({
+      event: "fraud.score",
+      affiliate_id: ctx.affiliateId,
+      score: fraud.score,
+      signals: fraud.fired.map((f) => ({ kind: f.kind, weight: f.weight })),
+      decision:
+        fraud.score >= fraudPolicy.autoRejectThreshold
+          ? "auto_reject"
+          : fraud.score >= fraudPolicy.borderlineMin
+            ? "needs_review"
+            : "accept",
+    });
     // W2.2: enforce auto-reject for scores at/above the threshold.
     let autoFraudReject = false;
     let needsReview = false;
@@ -403,6 +430,13 @@ export async function POST(req: Request) {
       },
       "lead received",
     );
+    logger.info({
+      event: "intake.response",
+      status: 202,
+      duration_ms: Date.now() - _intakeStart,
+      outcome: "accepted",
+      lead_id: lead.id,
+    });
 
     // Telegram: emit NEW_LEAD for accepted leads and FRAUD_HIT for auto-reject.
     if (lead.state === "NEW") {

@@ -248,6 +248,17 @@ export async function executeFlow(input: ExecuteInput): Promise<EngineDecision> 
         ok: true,
         detail: { mode: "wrr", traceToken: pick.traceToken },
       });
+      const decidedInMs = performance.now() - startedAt;
+      logger.info({
+        event: "routing.decision",
+        flow_id: input.flowId,
+        flow_version_id: fv.id,
+        branch_id: chosen.id,
+        algorithm: "weighted_round_robin",
+        algorithm_source: resolved.source,
+        broker_id: chosen.brokerId,
+        decided_in_ms: decidedInMs,
+      });
       return {
         outcome: "selected",
         selectedBrokerId: chosen.brokerId,
@@ -255,7 +266,7 @@ export async function executeFlow(input: ExecuteInput): Promise<EngineDecision> 
         algorithmUsed: "weighted_round_robin",
         algorithmSource: resolved.source,
         trace: { flowVersionId: fv.id, stepsApplied: steps, traceToken: pick.traceToken },
-        decisionTimeMs: performance.now() - startedAt,
+        decisionTimeMs: decidedInMs,
       };
     }
     type ProbT = { id: string; brokerId: string } & ({ chance: number } | { slots: number });
@@ -277,6 +288,17 @@ export async function executeFlow(input: ExecuteInput): Promise<EngineDecision> 
       ok: true,
       detail: { mode: "slots_chance", traceToken: pick.traceToken },
     });
+    const decidedInMsSlots = performance.now() - startedAt;
+    logger.info({
+      event: "routing.decision",
+      flow_id: input.flowId,
+      flow_version_id: fv.id,
+      branch_id: chosen.id,
+      algorithm: "slots_chance",
+      algorithm_source: resolved.source,
+      broker_id: chosen.brokerId,
+      decided_in_ms: decidedInMsSlots,
+    });
     return {
       outcome: "selected",
       selectedBrokerId: chosen.brokerId,
@@ -284,7 +306,7 @@ export async function executeFlow(input: ExecuteInput): Promise<EngineDecision> 
       algorithmUsed: "slots_chance",
       algorithmSource: resolved.source,
       trace: { flowVersionId: fv.id, stepsApplied: steps, traceToken: pick.traceToken },
-      decisionTimeMs: performance.now() - startedAt,
+      decisionTimeMs: decidedInMsSlots,
     };
   } catch (e) {
     logger.error({ err: e, flow_id: input.flowId }, "engine algorithm error");

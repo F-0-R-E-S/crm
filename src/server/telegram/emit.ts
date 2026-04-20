@@ -1,5 +1,6 @@
 import { prisma } from "@/server/db";
 import { JOB_NAMES, getBoss, startBossOnce } from "@/server/jobs/queue";
+import { logger } from "@/server/observability";
 import type { TelegramEventType } from "./event-catalog";
 
 export type EmitFilters = { brokerId?: string; affiliateId?: string };
@@ -28,6 +29,12 @@ export async function emitTelegramEvent(
       return false;
     if (filters.brokerId && s.mutedBrokerIds.includes(filters.brokerId)) return false;
     return true;
+  });
+  logger.info({
+    event: "telegram.emit",
+    event_type: type,
+    recipients: matching.length,
+    subscription_ids: matching.map((s) => s.id),
   });
   if (matching.length === 0) return 0;
   await startBossOnce();

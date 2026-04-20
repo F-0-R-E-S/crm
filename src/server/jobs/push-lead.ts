@@ -85,6 +85,7 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
       fallbackIndex: tried.length,
     });
 
+    const _pushStart = Date.now();
     const result = await pushToBroker({
       url: authed.url,
       method: broker.httpMethod,
@@ -94,6 +95,15 @@ export async function handlePushLead(payload: PushLeadPayload): Promise<void> {
       timeoutMs: PUSH_TIMEOUT_MS,
       maxAttempts: PUSH_MAX_ATTEMPTS,
       backoffMs: PUSH_BACKOFF_MS,
+    });
+    logger.info({
+      event: "broker.push",
+      broker_id: broker.id,
+      lead_id: lead.id,
+      outcome: result.success ? "success" : "failure",
+      latency_ms: Date.now() - _pushStart,
+      attempt: tried.length + 1,
+      http_status: result.httpStatus ?? null,
     });
 
     if (result.success) {

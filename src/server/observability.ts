@@ -5,6 +5,22 @@ const als = new AsyncLocalStorage<{ traceId: string }>();
 
 export const logger = pino({
   level: process.env.LOG_LEVEL ?? "info",
+  base: { app: "crm-node", env: process.env.NODE_ENV ?? "development" },
+  redact: {
+    paths: [
+      "authorization",
+      "cookie",
+      "headers.authorization",
+      "headers.cookie",
+      "body.email",
+      "body.phone",
+      "body.password",
+      "*.apiKey",
+      "*.api_key",
+      "*.password",
+    ],
+    censor: "[REDACTED]",
+  },
   transport: process.env.NODE_ENV === "production" ? undefined : { target: "pino-pretty" },
   mixin() {
     const store = als.getStore();
