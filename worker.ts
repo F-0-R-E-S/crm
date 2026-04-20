@@ -13,13 +13,23 @@ async function main() {
   const boss = await startBossOnce();
   logger.info("worker starting");
 
-  await boss.work<PushLeadPayload>(JOB_NAMES.pushLead, async ([job]) => {
-    await runWithTrace(job.data.traceId, () => handlePushLead(job.data));
-  });
+  await boss.work<PushLeadPayload>(
+    JOB_NAMES.pushLead,
+    { batchSize: 20, pollingIntervalSeconds: 1 },
+    async (jobs) => {
+      await Promise.all(
+        jobs.map((job) => runWithTrace(job.data.traceId, () => handlePushLead(job.data))),
+      );
+    },
+  );
 
-  await boss.work<NotifyAffiliatePayload>(JOB_NAMES.notifyAffiliate, async ([job]) => {
-    await handleNotifyAffiliate(job.data);
-  });
+  await boss.work<NotifyAffiliatePayload>(
+    JOB_NAMES.notifyAffiliate,
+    { batchSize: 20, pollingIntervalSeconds: 1 },
+    async (jobs) => {
+      await Promise.all(jobs.map((job) => handleNotifyAffiliate(job.data)));
+    },
+  );
 
   await boss.work<VoipCheckPayload>(JOB_NAMES.voipCheck, async ([job]) => {
     await handleVoipCheck(job.data);

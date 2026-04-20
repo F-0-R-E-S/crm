@@ -87,14 +87,15 @@ describe("POST /api/v1/leads — full pipeline", () => {
     expect(b.lead_id).toBeTruthy();
   });
 
-  it("rejects duplicate as status=rejected reason=duplicate", async () => {
+  it("duplicate → 409 duplicate_lead (new contract per EPIC-01 STORY-003)", async () => {
     const p = { ...payload(), email: "dup@ok.com" };
     const first = await req(p, { authorization: `Bearer ${rawKey}` });
     expect(first.status).toBe(202);
     const second = await req(p, { authorization: `Bearer ${rawKey}` });
+    expect(second.status).toBe(409);
     const b = await second.json();
-    expect(b.status).toBe("rejected");
-    expect(b.reject_reason).toBe("duplicate");
+    expect(b.error.code).toBe("duplicate_lead");
+    expect(b.error.matched_by).toBeTruthy();
   });
 
   it("rejects when IP blacklisted", async () => {
@@ -115,15 +116,15 @@ describe("POST /api/v1/leads — full pipeline", () => {
     expect(b.reject_reason).toBe("affiliate_cap_full");
   });
 
-  it("returns cached body on repeat idempotency key", async () => {
+  it("returns cached body on repeat idempotency key with same payload (STORY-005)", async () => {
     const key = "idem-123";
     const p = { ...payload(), email: "idem@ok.com" };
     const first = await req(p, { authorization: `Bearer ${rawKey}`, "x-idempotency-key": key });
     const firstBody = await first.json();
-    const second = await req(
-      { ...p, email: "different@ok.com" },
-      { authorization: `Bearer ${rawKey}`, "x-idempotency-key": key },
-    );
+    const second = await req(p, {
+      authorization: `Bearer ${rawKey}`,
+      "x-idempotency-key": key,
+    });
     const secondBody = await second.json();
     expect(secondBody.lead_id).toBe(firstBody.lead_id);
   });

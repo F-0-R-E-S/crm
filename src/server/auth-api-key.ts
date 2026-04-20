@@ -4,6 +4,7 @@ import { prisma } from "./db";
 export interface ApiKeyCtx {
   affiliateId: string;
   keyId: string;
+  isSandbox: boolean;
 }
 
 function sha256(s: string) {
@@ -20,5 +21,5 @@ export async function verifyApiKey(
   const row = await prisma.apiKey.findUnique({ where: { keyHash } });
   if (!row || row.isRevoked) return null;
   await prisma.apiKey.update({ where: { id: row.id }, data: { lastUsedAt: new Date() } });
-  return { affiliateId: row.affiliateId, keyId: row.id };
+  return { affiliateId: row.affiliateId, keyId: row.id, isSandbox: row.isSandbox };
 }

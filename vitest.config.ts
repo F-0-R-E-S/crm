@@ -11,7 +11,7 @@ export default defineConfig({
       ["tests/components/**", "jsdom"],
       ["src/components/**", "jsdom"],
     ],
-    setupFiles: ["tests/components/setup.ts"],
+    setupFiles: ["tests/setup.env.ts", "tests/components/setup.ts"],
   },
   resolve: { alias: { "@": path.resolve(__dirname, "src") } },
 });

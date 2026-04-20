@@ -55,7 +55,7 @@ describe("intake → worker", () => {
         body: JSON.stringify({
           geo: "UA",
           ip: "1.1.1.1",
-          firstName: "E2E",
+          first_name: "E2E",
           email: "e2e@x.com",
           event_ts: new Date().toISOString(),
         }),

@@ -16,6 +16,9 @@ export const JOB_NAMES = {
   notifyAffiliate: "notify-affiliate",
   voipCheck: "voip-check",
   cleanupIdempotency: "cleanup-idempotency",
+  bulkIntake: "bulk-intake",
+  intakeWebhookDelivery: "intake-webhook-delivery",
+  sandboxPurge: "sandbox-purge",
 } as const;
 
 const globalForBossStarted = globalThis as unknown as { bossStarted?: boolean };

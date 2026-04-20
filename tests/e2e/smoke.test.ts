@@ -76,7 +76,7 @@ describe("E2E smoke — happy path", () => {
         body: JSON.stringify({
           geo: "UA",
           ip: "1.1.1.1",
-          firstName: "E2E",
+          first_name: "E2E",
           email: "e2e@x.com",
           phone: "0671234567",
           sub_id: "sub-e2e",

@@ -8,6 +8,7 @@ export default defineConfig({
     hookTimeout: 30_000,
     pool: "forks",
     fileParallelism: false,
+    setupFiles: ["tests/setup.env.ts"],
   },
   resolve: { alias: { "@": path.resolve(__dirname, "src") } },
 });

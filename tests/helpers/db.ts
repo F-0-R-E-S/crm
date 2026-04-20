@@ -1,7 +1,20 @@
 import { prisma } from "@/server/db";
 
 export async function resetDb() {
+  // Order matters: FKs first, then parents.
+  // Flow.activeVersionId → FlowVersion: null it out before deleting FlowVersion.
+  await prisma.flow.updateMany({ data: { activeVersionId: null } });
   await prisma.$transaction([
+    prisma.capCounter.deleteMany(),
+    prisma.capDefinition.deleteMany(),
+    prisma.fallbackStep.deleteMany(),
+    prisma.flowAlgorithmConfig.deleteMany(),
+    prisma.flowBranch.deleteMany(),
+    prisma.flowVersion.deleteMany(),
+    prisma.flow.deleteMany(),
+    prisma.webhookDelivery.deleteMany(),
+    prisma.affiliateIntakeWebhook.deleteMany(),
+    prisma.intakeSettings.deleteMany(),
     prisma.leadEvent.deleteMany(),
     prisma.outboundPostback.deleteMany(),
     prisma.postbackReceipt.deleteMany(),

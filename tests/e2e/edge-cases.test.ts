@@ -52,29 +52,28 @@ describe("E2E edge cases", () => {
     await mb.stop();
   });
 
-  it("duplicate lead is rejected", async () => {
+  it("duplicate lead → 409 duplicate_lead (EPIC-01 STORY-003)", async () => {
     mb.respondWith(200, { id: "x1", status: "accepted" });
-    const first = await (
-      await intake(rawKey, {
-        geo: "UA",
-        ip: "1.1.1.1",
-        email: "dup@x.com",
-        phone: "0671234567",
-        event_ts: new Date().toISOString(),
-      })
-    ).json();
+    const firstRes = await intake(rawKey, {
+      geo: "UA",
+      ip: "1.1.1.1",
+      email: "dup@x.com",
+      phone: "0671234567",
+      event_ts: new Date().toISOString(),
+    });
+    const first = await firstRes.json();
     expect(first.status).toBe("received");
-    const second = await (
-      await intake(rawKey, {
-        geo: "UA",
-        ip: "1.1.1.1",
-        email: "dup@x.com",
-        phone: "0671234567",
-        event_ts: new Date().toISOString(),
-      })
-    ).json();
-    expect(second.status).toBe("rejected");
-    expect(second.reject_reason).toBe("duplicate");
+    const secondRes = await intake(rawKey, {
+      geo: "UA",
+      ip: "1.1.1.1",
+      email: "dup@x.com",
+      phone: "0671234567",
+      event_ts: new Date().toISOString(),
+    });
+    expect(secondRes.status).toBe(409);
+    const second = await secondRes.json();
+    expect(second.error.code).toBe("duplicate_lead");
+    expect(second.error.matched_by).toBeTruthy();
   });
 
   it("no broker available when all inactive", async () => {

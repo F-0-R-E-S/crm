@@ -36,8 +36,59 @@ model Affiliate {
   apiKeys           ApiKey[]
   leads             Lead[]
   outboundPostbacks OutboundPostback[]
+  intakeSettings    IntakeSettings?
+  intakeWebhooks    AffiliateIntakeWebhook[]
 
   @@index([isActive])
+}
+
+model AffiliateIntakeWebhook {
+  id           String            @id @default(cuid())
+  affiliateId  String
+  url          String
+  secret       String
+  events       String[]          @default([])
+  isActive     Boolean           @default(true)
+  pausedAt     DateTime?
+  pausedReason String?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  affiliate    Affiliate         @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+  deliveries   WebhookDelivery[]
+
+  @@index([affiliateId, isActive])
+}
+
+model WebhookDelivery {
+  id            String                 @id @default(cuid())
+  webhookId     String
+  eventType     String
+  payload       Json
+  signature     String
+  attempt       Int                    @default(0)
+  lastStatus    Int?
+  lastError     String?
+  nextAttemptAt DateTime?
+  deliveredAt   DateTime?
+  createdAt     DateTime               @default(now())
+  webhook       AffiliateIntakeWebhook @relation(fields: [webhookId], references: [id], onDelete: Cascade)
+
+  @@index([webhookId, createdAt])
+  @@index([nextAttemptAt])
+}
+
+model IntakeSettings {
+  affiliateId      String    @id
+  requiredFields   String[]  @default([])
+  allowedGeo       String[]  @default([])
+  dedupeWindowDays Int       @default(30)
+  maxRpm           Int       @default(120)
+  acceptSchedule   Json      @default("{}")
+  version          Int       @default(1)
+  updatedBy        String?
+  updatedAt        DateTime  @updatedAt
+  createdAt        DateTime  @default(now())
+  affiliate        Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
 }
 
 model ApiKey {
@@ -48,6 +99,7 @@ model ApiKey {
   label       String
   lastUsedAt  DateTime?
   isRevoked   Boolean   @default(false)
+  isSandbox   Boolean   @default(false)
   createdAt   DateTime  @default(now())
   affiliate   Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
 
@@ -123,6 +175,8 @@ model Lead {
   landingUrl        String?
   subId             String?
   utm               Json               @default("{}")
+  normalizationWarnings Json           @default("[]")
+  rawPayload        Json               @default("{}")
   eventTs           DateTime
   brokerExternalId  String?
   lastBrokerStatus  String?
@@ -164,6 +218,8 @@ model LeadEvent {
   leadId    String
   kind      LeadEventKind
   meta      Json          @default("{}")
+  prevHash  String?
+  rowHash   String?
   createdAt DateTime      @default(now())
   lead      Lead          @relation(fields: [leadId], references: [id], onDelete: Cascade)
 
@@ -185,12 +241,16 @@ enum LeadEventKind {
   MANUAL_OVERRIDE
   OUTBOUND_POSTBACK_SENT
   OUTBOUND_POSTBACK_FAILED
+  FLOW_FILTER_REJECT
+  FALLBACK_HOP
+  SIMULATE_DECISION
 }
 
 model IdempotencyKey {
   key          String   @id
   affiliateId  String
   leadId       String?
+  payloadHash  String   @default("")
   responseCode Int
   responseBody Json
   createdAt    DateTime @default(now())
@@ -214,6 +274,9 @@ model DailyCap {
 enum CapScope {
   AFFILIATE
   BROKER
+  FLOW
+  BRANCH
+  TARGET
 }
 
 model Blacklist {
@@ -280,9 +343,139 @@ model AuditLog {
   entityId  String?
   diff      Json     @default("{}")
   traceId   String?
+  prevHash  String?
+  rowHash   String?
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId, createdAt])
   @@index([entity, entityId])
+}
+
+// --- EPIC-02 Routing Engine ---
+
+model Flow {
+  id              String        @id @default(cuid())
+  name            String
+  timezone        String        @default("UTC")
+  status          FlowStatus    @default(DRAFT)
+  activeVersionId String?       @unique
+  archivedAt      DateTime?
+  createdBy       String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  versions        FlowVersion[] @relation("FlowVersions")
+  activeVersion   FlowVersion?  @relation("FlowActiveVersion", fields: [activeVersionId], references: [id])
+
+  @@index([status, updatedAt])
+}
+
+enum FlowStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model FlowVersion {
+  id             String                @id @default(cuid())
+  flowId         String
+  versionNumber  Int
+  graph          Json
+  algorithm      Json
+  entryFilters   Json                  @default("{}")
+  fallbackPolicy Json                  @default("{}")
+  publishedAt    DateTime?
+  publishedBy    String?
+  createdAt      DateTime              @default(now())
+  flow           Flow                  @relation("FlowVersions", fields: [flowId], references: [id], onDelete: Cascade)
+  activeFor      Flow?                 @relation("FlowActiveVersion")
+  branches       FlowBranch[]
+  fallbackSteps  FallbackStep[]
+  capDefs        CapDefinition[]
+  algoConfigs    FlowAlgorithmConfig[]
+
+  @@unique([flowId, versionNumber])
+  @@index([flowId, createdAt])
+}
+
+model FlowBranch {
+  id                String      @id @default(cuid())
+  flowVersionId     String
+  nodeId            String
+  name              String
+  filters           Json        @default("{}")
+  algorithmOverride Json?
+  order             Int         @default(0)
+  flowVersion       FlowVersion @relation(fields: [flowVersionId], references: [id], onDelete: Cascade)
+
+  @@unique([flowVersionId, nodeId])
+  @@index([flowVersionId, order])
+}
+
+model FlowAlgorithmConfig {
+  id            String         @id @default(cuid())
+  flowVersionId String
+  scope         AlgorithmScope
+  scopeRefId    String?
+  mode          AlgorithmMode
+  params        Json           @default("{}")
+  flowVersion   FlowVersion    @relation(fields: [flowVersionId], references: [id], onDelete: Cascade)
+
+  @@unique([flowVersionId, scope, scopeRefId])
+}
+
+enum AlgorithmScope {
+  FLOW
+  BRANCH
+}
+
+enum AlgorithmMode {
+  WEIGHTED_ROUND_ROBIN
+  SLOTS_CHANCE
+}
+
+model FallbackStep {
+  id            String      @id @default(cuid())
+  flowVersionId String
+  fromNodeId    String
+  toNodeId      String
+  hopOrder      Int
+  triggers      Json        @default("{}")
+  flowVersion   FlowVersion @relation(fields: [flowVersionId], references: [id], onDelete: Cascade)
+
+  @@unique([flowVersionId, fromNodeId, hopOrder])
+  @@index([flowVersionId, fromNodeId])
+}
+
+model CapDefinition {
+  id            String      @id @default(cuid())
+  flowVersionId String
+  scope         CapScope
+  scopeRefId    String
+  window        CapWindow
+  limit         Int
+  timezone      String      @default("UTC")
+  flowVersion   FlowVersion @relation(fields: [flowVersionId], references: [id], onDelete: Cascade)
+
+  @@unique([flowVersionId, scope, scopeRefId, window])
+  @@index([flowVersionId, scope])
+}
+
+enum CapWindow {
+  HOURLY
+  DAILY
+  WEEKLY
+}
+
+model CapCounter {
+  id        String    @id @default(cuid())
+  scope     CapScope
+  scopeId   String
+  window    CapWindow
+  bucketKey String
+  count     Int       @default(0)
+  resetsAt  DateTime
+
+  @@unique([scope, scopeId, window, bucketKey])
+  @@index([resetsAt])
 }
