@@ -83,6 +83,22 @@ async function main() {
   });
   console.log("fraud policy: global (defaults)");
 
+  // --- EPIC-08 Autologin: seed one proxy endpoint ---
+  if ((await prisma.proxyEndpoint.count()) === 0) {
+    await prisma.proxyEndpoint.create({
+      data: {
+        label: "bd-us-residential-1",
+        provider: "brightdata",
+        host: "brd.superproxy.io",
+        port: 22225,
+        username: process.env.SEED_PROXY_USER ?? "demo-user",
+        password: process.env.SEED_PROXY_PASS ?? "demo-pass",
+        country: "US",
+      },
+    });
+    console.log("proxy endpoint: bd-us-residential-1");
+  }
+
   console.log("seed complete");
 }
 

@@ -81,3 +81,14 @@
 - **API-key IP whitelist:** `ApiKey.allowedIps String[]` (exact match or CIDR, e.g. `10.0.0.0/8`) enforced in `src/server/intake/check-ip.ts`; empty array = no restriction. Client IP extracted from `x-forwarded-for` or `x-real-ip`.
 - **API-key expiry:** `ApiKey.expiresAt DateTime?`; expired keys rejected at `verifyApiKey` with 401.
 - **Forward-compat:** nullable `tenantId` column added to `Affiliate`, `Broker`, `ApiKey`, `Lead`, `User`, `BrokerTemplate` with per-table `@@index([tenantId])`. Unused until v2.0 white-label.
+
+## v1.0 Sprint 2 — Autologin + SLA + Q-Leads (May 2026)
+
+- **Schema:** `ProxyEndpoint`, `AutologinAttempt` (+ `AutologinStage` / `AutologinStatus` enums), `Broker.autologinEnabled`, `Broker.autologinLoginUrl`, `Lead.qualityScore`, `Lead.qualitySignals`.
+- **Proxy:** `src/server/autologin/proxy/pool.ts` (round-robin pick) + `health.ts` (probe `https://api.ipify.org` via undici `ProxyAgent`, 3-strike down). Job: `src/server/jobs/proxy-health.ts` + `scheduleAllProxyHealthProbes()` (cron wiring in S8).
+- **Adapters:** `src/server/autologin/adapters/base.ts` + `mock.ts` + `registry.ts`. Real adapters ship opportunistically S3+.
+- **Captcha:** `src/server/autologin/captcha-solver.ts` stub returns `"test-captcha-token"`; 2captcha deferred to v1.5.
+- **State machine:** `src/server/autologin/run-attempt.ts` drives `INITIATING → CAPTCHA → AUTHENTICATING → SESSION_READY`; Playwright `chromium` headless; proxy via `browser.launch({ proxy })`. pg-boss wrapper `src/server/jobs/autologin-attempt.ts` enqueued from `push-lead.ts` when `Broker.autologinEnabled = true`.
+- **SLA:** `src/server/autologin/sla.ts` + `GET /api/v1/autologin/sla?from&to` → `{total, successful, failed, uptime_pct, p50_duration_ms, p95_duration_ms, by_stage_failed}`; default 7 days, max 31. `GET /api/v1/autologin/attempts` for the grid.
+- **UI:** `/dashboard/autologin` (SlaTile + AttemptsGrid), nav shortcut `X` (shortcut `A` was already occupied by the affiliates page on main; noted in the S2 retrospective).
+- **Q-Leads:** `src/server/intake/quality-score.ts` pure `computeQualityScore({fraudScore, signalKinds, affiliate, brokerGeo})` 0..100 with component breakdown; `loadAffiliateHistory` + `loadBrokerGeoStats` 30-day aggregations. Wired into `src/app/api/v1/leads/route.ts` after fraud score. UI: `QualityBadge` (≤40 red / ≤70 amber / >70 green) in `LeadsGrid` column `Q` and `LeadDrawer` component breakdown.
