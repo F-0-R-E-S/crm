@@ -34,6 +34,7 @@ export const JOB_NAMES = {
   anomalyDetect: "anomaly-detect",
   dailySummary: "daily-summary",
   crgCohortSettle: "crg-cohort-settle",
+  alertsEvaluator: "alerts-evaluator",
 } as const;
 
 const globalForBossStarted = globalThis as unknown as { bossStarted?: boolean };

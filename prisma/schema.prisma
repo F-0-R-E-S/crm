@@ -1057,3 +1057,19 @@ model AffiliateInvoice {
   @@index([status, periodEnd])
   @@index([affiliateId, periodEnd])
 }
+
+// --- EPIC S8: Alert rules engine ---
+model AlertLog {
+  id           String    @id @default(cuid())
+  ruleKey      String
+  severity     String // 'warning' | 'critical'
+  triggeredAt  DateTime  @default(now())
+  windowStart  DateTime?
+  windowEnd    DateTime?
+  measurement  Json      @default("{}")
+  message      String
+  resolvedAt   DateTime?
+
+  @@index([ruleKey, triggeredAt])
+  @@index([resolvedAt])
+}

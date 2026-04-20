@@ -22,6 +22,7 @@ export const TELEGRAM_EVENT_TYPES = [
   "BROKER_CONFIG_CHANGED",
   "AFFILIATE_DAILY_SUMMARY",
   "AFFILIATE_FTD",
+  "ALERT_TRIGGERED",
 ] as const;
 
 export type TelegramEventType = (typeof TELEGRAM_EVENT_TYPES)[number];
