@@ -1,5 +1,6 @@
 "use client";
 import { FilterBar, type FilterState } from "@/components/analytics/FilterBar";
+import { LineChartCard } from "@/components/analytics/LineChartCard";
 import { MetricTile } from "@/components/analytics/MetricTile";
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
@@ -65,8 +66,11 @@ export default function AnalyticsPage() {
 					format="percent"
 				/>
 			</div>
-			{/* Line chart placeholder — replaced in Task 10 */}
-			<div id="analytics-line" />
+			<LineChartCard
+				title="Leads over time"
+				current={leads.data?.series ?? []}
+				compare={leads.data?.compare?.series ?? null}
+			/>
 			{/* Breakdowns placeholder — replaced in Task 11 */}
 			<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }} id="analytics-breakdowns" />
 		</div>
