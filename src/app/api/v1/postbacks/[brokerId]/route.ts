@@ -1,8 +1,9 @@
 import { prisma } from "@/server/db";
+import { emitConversion } from "@/server/finance/emit-conversion";
 import { JOB_NAMES, getBoss, startBossOnce } from "@/server/jobs/queue";
 import { logger, runWithTrace } from "@/server/observability";
 import { verifyHmac } from "@/server/postback/hmac";
-import type { LeadState, Prisma } from "@prisma/client";
+import type { ConversionKind, LeadState, Prisma } from "@prisma/client";
 import { JSONPath } from "jsonpath-plus";
 import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
@@ -89,8 +90,26 @@ export async function POST(req: Request, { params }: { params: Promise<{ brokerI
       return err("lead_not_found", 404, trace_id);
     }
 
-    const mapping = (broker.statusMapping ?? {}) as Record<string, LeadState>;
-    const target: LeadState | undefined = mapping[String(rawStatus)];
+    const mapping = (broker.statusMapping ?? {}) as Record<string, string>;
+    const rawMapped = mapping[String(rawStatus)];
+    // Map a mapping value that names a ConversionKind (not a LeadState) into
+    // an equivalent LeadState so the existing state-machine stays in sync,
+    // and remember the conversion kind to emit.
+    let target: LeadState | undefined;
+    let conversionKind: ConversionKind | null = null;
+    if (rawMapped === "REGISTRATION") {
+      target = "ACCEPTED";
+      conversionKind = "REGISTRATION";
+    } else if (rawMapped === "REDEPOSIT") {
+      target = "FTD";
+      conversionKind = "REDEPOSIT";
+    } else if (rawMapped === "FTD") {
+      target = "FTD";
+      conversionKind = "FTD";
+    } else if (rawMapped) {
+      target = rawMapped as LeadState;
+      if (rawMapped === "ACCEPTED") conversionKind = "REGISTRATION";
+    }
     const resolved: LeadState = target ?? "DECLINED";
 
     const wasInHold = lead.state === "PENDING_HOLD";
@@ -162,6 +181,35 @@ export async function POST(req: Request, { params }: { params: Promise<{ brokerI
         },
       }),
     ]);
+
+    if (conversionKind) {
+      const brokerReportedAt = new Date();
+      const amount =
+        (payload as Record<string, unknown>).amount ??
+        (payload as Record<string, unknown>).deposit_amount ??
+        (payload as Record<string, unknown>).ftd_amount ??
+        0;
+      const occurredAt =
+        conversionKind === "FTD"
+          ? (lead.ftdAt ?? brokerReportedAt)
+          : conversionKind === "REGISTRATION"
+            ? (lead.acceptedAt ?? brokerReportedAt)
+            : brokerReportedAt;
+      try {
+        await emitConversion({
+          leadId: lead.id,
+          kind: conversionKind,
+          amount: amount as string | number,
+          occurredAt,
+          brokerReportedAt,
+        });
+      } catch (err) {
+        logger.warn(
+          { event: "emit_conversion_failed", lead_id: lead.id, err: String(err) },
+          "postback",
+        );
+      }
+    }
 
     if (resolved === "ACCEPTED" || resolved === "DECLINED" || resolved === "FTD") {
       await startBossOnce();
