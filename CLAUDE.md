@@ -73,3 +73,11 @@
 - После успешного push в `src/server/jobs/push-lead.ts`: если `holdMin > 0` → `LeadState.PENDING_HOLD` + `Lead.pendingHoldUntil` + LeadEvent `PENDING_HOLD_STARTED` + pg-boss job `resolve-pending-hold` scheduled на момент истечения hold-окна.
 - Postback handler (`src/app/api/v1/postbacks/[brokerId]/route.ts`): если прежнее состояние PENDING_HOLD и mapped=DECLINED → `Lead.shaveSuspected=true` + LeadEvent `SHAVE_SUSPECTED`. При ACCEPTED/FTD/DECLINED clearing `pendingHoldUntil` и emit `PENDING_HOLD_RELEASED` (если не shave).
 - Job `resolve-pending-hold` (`src/server/jobs/resolve-pending-hold.ts`): при срабатывании, если лид всё ещё в PENDING_HOLD — переводит в ACCEPTED + emit `PENDING_HOLD_RELEASED`.
+
+## v1.0 Sprint 1 hardening (April 2026)
+
+- **Wave1 merged:** per-country caps (`CapDefinition.perCountry`, `CapCountryLimit`), `PENDING_HOLD` / anti-shave (`Lead.pendingHoldUntil`, `Broker.pendingHoldMinutes`, `resolve-pending-hold` job), fraud score (`FraudPolicy`, `Lead.fraudScore`, `Lead.fraudSignals`) with auto-reject at threshold and borderline review flag.
+- **Bulk idempotency:** `/api/v1/leads/bulk` honors `x-idempotency-key` via the existing `IdempotencyKey` table — same key + same payload → cached response, same key + different payload → 409, default 24h TTL.
+- **API-key IP whitelist:** `ApiKey.allowedIps String[]` (exact match or CIDR, e.g. `10.0.0.0/8`) enforced in `src/server/intake/check-ip.ts`; empty array = no restriction. Client IP extracted from `x-forwarded-for` or `x-real-ip`.
+- **API-key expiry:** `ApiKey.expiresAt DateTime?`; expired keys rejected at `verifyApiKey` with 401.
+- **Forward-compat:** nullable `tenantId` column added to `Affiliate`, `Broker`, `ApiKey`, `Lead`, `User`, `BrokerTemplate` with per-table `@@index([tenantId])`. Unused until v2.0 white-label.
