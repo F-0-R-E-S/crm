@@ -1,3 +1,4 @@
+import { rbacPreviewRouter } from "../rbac/preview";
 import { router } from "../trpc";
 import { affiliateRouter } from "./affiliate";
 import { auditRouter } from "./audit";
@@ -21,5 +22,6 @@ export const appRouter = router({
   user: userRouter,
   audit: auditRouter,
   manualReview: manualReviewRouter,
+  rbacPreview: rbacPreviewRouter,
 });
 export type AppRouter = typeof appRouter;
