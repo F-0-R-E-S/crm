@@ -6,6 +6,10 @@ import {
 } from "./src/server/jobs/notify-affiliate";
 import { type PushLeadPayload, handlePushLead } from "./src/server/jobs/push-lead";
 import { JOB_NAMES, startBossOnce } from "./src/server/jobs/queue";
+import {
+  type ResolvePendingHoldPayload,
+  handleResolvePendingHold,
+} from "./src/server/jobs/resolve-pending-hold";
 import { type VoipCheckPayload, handleVoipCheck } from "./src/server/jobs/voip-check";
 import { logger, runWithTrace } from "./src/server/observability";
 
@@ -34,6 +38,13 @@ async function main() {
   await boss.work<VoipCheckPayload>(JOB_NAMES.voipCheck, async ([job]) => {
     await handleVoipCheck(job.data);
   });
+
+  await boss.work<ResolvePendingHoldPayload>(
+    JOB_NAMES.resolvePendingHold,
+    async ([job]) => {
+      await handleResolvePendingHold(job.data);
+    },
+  );
 
   // Every hour, sweep expired idempotency rows
   setInterval(async () => {
