@@ -14,6 +14,7 @@ export interface CapInput {
   window: CapWindow;
   tz: string;
   limit: number;
+  country?: string;
   now?: Date;
 }
 
@@ -36,11 +37,12 @@ function bucketKey(window: CapWindow, at: Date, tz: string): { key: string; rese
 
 export async function consumeCap(input: CapInput): Promise<CapResult> {
   const at = input.now ?? new Date();
+  const country = input.country ?? "";
   const { key, resetsAt } = bucketKey(input.window, at, input.tz);
   const row = await prisma.$queryRaw<{ count: number }[]>`
-    INSERT INTO "CapCounter" (id, scope, "scopeId", "window", "bucketKey", count, "resetsAt")
-    VALUES (gen_random_uuid()::text, ${input.scope}::"CapScope", ${input.scopeId}, ${input.window}::"CapWindow", ${key}, 1, ${resetsAt})
-    ON CONFLICT (scope, "scopeId", "window", "bucketKey") DO UPDATE
+    INSERT INTO "CapCounter" (id, scope, "scopeId", "window", "bucketKey", country, count, "resetsAt")
+    VALUES (gen_random_uuid()::text, ${input.scope}::"CapScope", ${input.scopeId}, ${input.window}::"CapWindow", ${key}, ${country}, 1, ${resetsAt})
+    ON CONFLICT (scope, "scopeId", "window", "bucketKey", country) DO UPDATE
       SET count = "CapCounter".count + 1
     RETURNING count
   `;
@@ -50,6 +52,7 @@ export async function consumeCap(input: CapInput): Promise<CapResult> {
       UPDATE "CapCounter" SET count = GREATEST(count - 1, 0)
       WHERE scope = ${input.scope}::"CapScope" AND "scopeId" = ${input.scopeId}
         AND "window" = ${input.window}::"CapWindow" AND "bucketKey" = ${key}
+        AND country = ${country}
     `;
     return { ok: false, reason: "cap_exhausted", remaining: 0, resetsAt };
   }
@@ -58,11 +61,13 @@ export async function consumeCap(input: CapInput): Promise<CapResult> {
 
 export async function releaseCap(input: CapInput): Promise<void> {
   const at = input.now ?? new Date();
+  const country = input.country ?? "";
   const { key } = bucketKey(input.window, at, input.tz);
   await prisma.$queryRaw`
     UPDATE "CapCounter" SET count = GREATEST(count - 1, 0)
     WHERE scope = ${input.scope}::"CapScope" AND "scopeId" = ${input.scopeId}
       AND "window" = ${input.window}::"CapWindow" AND "bucketKey" = ${key}
+      AND country = ${country}
   `;
 }
 
@@ -70,6 +75,7 @@ export async function remainingCap(
   input: CapInput,
 ): Promise<{ used: number; remaining: number; resetsAt: Date }> {
   const at = input.now ?? new Date();
+  const country = input.country ?? "";
   const { key, resetsAt } = bucketKey(input.window, at, input.tz);
   const row = await prisma.capCounter.findFirst({
     where: {
@@ -77,6 +83,7 @@ export async function remainingCap(
       scopeId: input.scopeId,
       window: input.window,
       bucketKey: key,
+      country,
     },
   });
   const used = row?.count ?? 0;
