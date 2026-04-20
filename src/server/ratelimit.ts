@@ -41,3 +41,24 @@ export async function checkRateLimit(
   ];
   return { allowed: res[0] === 1, retryAfterSec: res[1] };
 }
+
+/**
+ * Simple fixed-window counter (increment + expire).
+ * Used for low-frequency endpoints (signup, password reset).
+ * Returns true if the call is within the limit.
+ */
+export async function rateLimit({
+  key,
+  limit,
+  windowSeconds,
+}: {
+  key: string;
+  limit: number;
+  windowSeconds: number;
+}): Promise<boolean> {
+  const count = await redis.incr(key);
+  if (count === 1) {
+    await redis.expire(key, windowSeconds);
+  }
+  return count <= limit;
+}
