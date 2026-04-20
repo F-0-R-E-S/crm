@@ -20,6 +20,7 @@ import {
   type ResolvePendingHoldPayload,
   handleResolvePendingHold,
 } from "./src/server/jobs/resolve-pending-hold";
+import { detectAnomalies } from "./src/server/jobs/anomaly-detect";
 import {
   type TelegramSendPayload,
   handleTelegramSend,
@@ -77,9 +78,14 @@ async function main() {
     await handleTelegramSend(job.data);
   });
 
+  await boss.work(JOB_NAMES.anomalyDetect, async () => {
+    await detectAnomalies();
+  });
+
   // Schedules — pg-boss uses cron syntax
   await boss.schedule(JOB_NAMES.analyticsRollDaily, "*/15 * * * *", {});
   await boss.schedule(JOB_NAMES.analyticsRollHourly, "*/5 * * * *", {});
+  await boss.schedule(JOB_NAMES.anomalyDetect, "*/15 * * * *", {});
 
   // Every hour, sweep expired idempotency rows
   setInterval(async () => {
