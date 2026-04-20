@@ -1,7 +1,7 @@
 import { prisma } from "@/server/db";
 import type { Prisma } from "@prisma/client";
 import { type FlowGraph, FlowGraphSchema } from "./model";
-import { validateFlowGraph } from "./validator";
+import { validateCapDefinitions, validateFlowGraph } from "./validator";
 
 export interface CreateDraftInput {
   name: string;
@@ -76,7 +76,13 @@ export async function loadFlowById(id: string) {
     where: { id },
     include: {
       versions: { orderBy: { versionNumber: "asc" } },
-      activeVersion: { include: { branches: true, fallbackSteps: true, capDefs: { include: { countryLimits: true } } } },
+      activeVersion: {
+        include: {
+          branches: true,
+          fallbackSteps: true,
+          capDefs: { include: { countryLimits: true } },
+        },
+      },
     },
   });
   if (!flow) throw new Error("flow_not_found");
@@ -86,10 +92,27 @@ export async function loadFlowById(id: string) {
 export async function validateDraftOrThrow(flowId: string) {
   const flow = await loadFlowById(flowId);
   const latest = flow.versions[flow.versions.length - 1];
-  const res = validateFlowGraph(latest.graph as unknown as FlowGraph);
-  if (!res.ok) {
+  const graphRes = validateFlowGraph(latest.graph as unknown as FlowGraph);
+
+  const caps = await prisma.capDefinition.findMany({
+    where: { flowVersionId: latest.id },
+    include: { countryLimits: true },
+  });
+  const capRes = validateCapDefinitions(
+    caps.map((c) => ({
+      id: c.id,
+      scope: c.scope,
+      scopeRefId: c.scopeRefId,
+      window: c.window,
+      perCountry: c.perCountry,
+      countryLimits: c.countryLimits.map((cl) => ({ country: cl.country, limit: cl.limit })),
+    })),
+  );
+
+  const combined = [...graphRes.errors, ...capRes.errors];
+  if (combined.length > 0) {
     const err = new Error("flow_validation_error");
-    (err as Error & { details?: unknown }).details = res.errors;
+    (err as Error & { details?: unknown }).details = combined;
     throw err;
   }
   return { flow, latest };

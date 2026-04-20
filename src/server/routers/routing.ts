@@ -1,4 +1,6 @@
 import { writeAuditLog } from "@/server/audit";
+import { listFlowCaps, upsertFlowCaps } from "@/server/routing/flow/caps-repository";
+import { CapDefinitionInputSchema } from "@/server/routing/flow/caps-schema";
 import { FlowGraphSchema } from "@/server/routing/flow/model";
 import { archiveFlow, publishFlow } from "@/server/routing/flow/publish";
 import {
@@ -72,4 +74,26 @@ export const routingRouter = router({
     });
     return f;
   }),
+
+  listCaps: protectedProcedure
+    .input(z.object({ flowId: z.string() }))
+    .query(({ input }) => listFlowCaps(input.flowId)),
+
+  updateCaps: adminProcedure
+    .input(
+      z.object({
+        flowId: z.string(),
+        caps: z.array(CapDefinitionInputSchema),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const saved = await upsertFlowCaps(input.flowId, input.caps);
+      await writeAuditLog({
+        userId: ctx.userId,
+        action: "flow.updateCaps",
+        entity: "Flow",
+        entityId: input.flowId,
+      });
+      return saved;
+    }),
 });
