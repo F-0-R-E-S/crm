@@ -20,8 +20,11 @@ import {
   type ResolvePendingHoldPayload,
   handleResolvePendingHold,
 } from "./src/server/jobs/resolve-pending-hold";
+import { evaluateAlerts } from "./src/server/alerts/evaluator";
 import { detectAnomalies } from "./src/server/jobs/anomaly-detect";
+import { runCrgCohortSettle } from "./src/server/jobs/crg-cohort-settle";
 import { sendDailySummaries } from "./src/server/jobs/daily-summary";
+import { checkManualQueueDepth } from "./src/server/jobs/manual-queue-depth-check";
 import {
   type TelegramSendPayload,
   handleTelegramSend,
@@ -87,11 +90,27 @@ async function main() {
     await sendDailySummaries();
   });
 
+  await boss.work(JOB_NAMES.manualQueueDepthCheck, async () => {
+    await checkManualQueueDepth();
+  });
+
+  await boss.work(JOB_NAMES.crgCohortSettle, async () => {
+    await runCrgCohortSettle();
+  });
+
+  await boss.work(JOB_NAMES.alertsEvaluator, async () => {
+    await evaluateAlerts();
+  });
+
   // Schedules — pg-boss uses cron syntax
   await boss.schedule(JOB_NAMES.analyticsRollDaily, "*/15 * * * *", {});
   await boss.schedule(JOB_NAMES.analyticsRollHourly, "*/5 * * * *", {});
   await boss.schedule(JOB_NAMES.anomalyDetect, "*/15 * * * *", {});
   await boss.schedule(JOB_NAMES.dailySummary, "0 9 * * *", {});
+  await boss.schedule(JOB_NAMES.manualQueueDepthCheck, "*/5 * * * *", {});
+  await boss.schedule(JOB_NAMES.crgCohortSettle, "0 * * * *", {});
+  await boss.schedule(JOB_NAMES.alertsEvaluator, "*/1 * * * *", {});
+  await boss.schedule(JOB_NAMES.proxyHealth, "*/10 * * * *", {});
 
   // Every hour, sweep expired idempotency rows
   setInterval(async () => {
