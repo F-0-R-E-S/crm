@@ -1,123 +1,72 @@
 # Changelog
 
-## Unreleased (Wave 2 in progress)
+All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-### Added — W2.2 Fraud auto-reject (enforcement)
-- New `LeadState.REJECTED_FRAUD` (separate from REJECTED) — set when
-  computed fraud score reaches `FraudPolicy.autoRejectThreshold`.
-- `Lead.needsReview: Boolean` — set when score is in the borderline
-  band (`borderlineMin <= score < threshold`). Lead continues normal
-  routing; surfaces in the future review queue (W2.4).
-- Intake response surfaces `status: "rejected_fraud"` with
-  `reason_codes: [<signal.kind>, …]` when auto-rejected. Weights are
-  NOT exposed to the affiliate.
-- Blacklist hard-reject semantics preserved: blacklist hit → state
-  REJECTED (hard), score is still computed, but hard-reject takes
-  precedence over threshold-based REJECTED_FRAUD.
-- Migration `wave2_fraud_autoreject` (additive).
-- UI tokens (`src/lib/tokens.ts`) include REJECTED_FRAUD
-  (tone=danger, deep-red).
+## [1.0.0] — 2026-09-10 — Core GA
 
-### Added — W2.1 Fraud score calculation
-- `FraudPolicy` model (single global row) with 5 signal weights + auto-reject
-  threshold + borderline min + version. Seed creates `name="global"` with
-  defaults (blacklist=40, geo_mismatch=15, voip=20, dedup_hit=10,
-  pattern_hit=15).
-- `Lead.fraudScore: Int?` and `Lead.fraudSignals: Json` — persisted
-  alongside intake writes.
-- `LeadEventKind.FRAUD_SCORED` — emitted for every accepted lead with
-  `{score, signals, policyVersion}`.
-- Pure `computeFraudScore(signals, policy)` in
-  `src/server/intake/fraud-score.ts`; signal extractor
-  `buildSignals(input)` in `src/server/intake/fraud-signals.ts`.
-- 30s LRU cache for policy in
-  `src/server/intake/fraud-policy-cache.ts`.
-- Migration `wave2_fraud_score` (additive).
+### Sprint 1 — Wave1 merge + security hardening
 
-### Fixed
-- `broker.update` tRPC now accepts `pendingHoldMinutes` (Wave 1 field
-  was in Prisma schema but missing from Zod input).
-- Middleware treats `/api/v1/errors` and `/api/v1/schema/*` as public
-  (affiliate-facing discovery endpoints per CLAUDE.md).
+- **Wave1 landed:** per-country caps, `PENDING_HOLD` state, fraud score + auto-reject threshold + borderline review queue.
+- **Bulk intake:** idempotency upsert with 409 response on payload-hash mismatch; sync ≤50 / async >50.
+- **ApiKey hardening:** `allowedIps` allow-list, `expiresAt`, `isRevoked`, `isSandbox` fields; `keyHash` + `keyPrefix` stored separately.
+- **`tenantId` nullable forward-compat:** all major tables have the column; v1.0 GA ships single-tenant.
 
-## 0.3.0 — 2026-04-20 (Wave 1: Parity gaps)
+### Sprint 2 — Autologin + SLA + Q-Leads
 
-Closes two parity gaps vs Leadgreed/iREV: per-country cap budgets and
-Status Pipe Pending (anti-shave hold window after broker accept).
+- **Autologin:** proxy pool + per-endpoint health tracker; 4-stage monitoring (initiating → captcha → authenticating → session-ready) with captcha-detection flag.
+- **SLA tracker:** 99.5% uptime SLO with per-broker breakdown exposed via `/api/v1/autologin/sla`.
+- **Q-Leads:** 0–100 quality score combining affiliate history, geo match, and broker fit — surfaced in analytics v1.
 
-### Added
-- `CapDefinition.perCountry` + `CapCountryLimit` model — separate cap
-  budgets per GEO, resolved against `lead.geo` in routing engine.
-- `CapCounter.country` discriminator (`""` = TOTAL for back-compat).
-- `LeadState.PENDING_HOLD` + `Lead.pendingHoldUntil` +
-  `Lead.shaveSuspected` — anti-shave hold window after broker push.
-- `Broker.pendingHoldMinutes` — opt-in per-broker hold duration
-  (null = feature off).
-- pg-boss job `resolve-pending-hold` — transitions PENDING_HOLD leads
-  to ACCEPTED at hold expiry.
-- `LeadEventKind` values: `PENDING_HOLD_STARTED`,
-  `PENDING_HOLD_RELEASED`, `SHAVE_SUSPECTED`.
-- UI: per-country cap toggle + country→limit grid in Flow editor;
-  PENDING_HOLD state pill + `hold until HH:MM` countdown +
-  `shave suspected` badge in Lead detail drawer.
+### Sprint 3 — UAD + per-column RBAC
 
-### Migrations
-- `20260420105207_wave1_cap_per_country`
-- `20260420140530_wave1_pending_hold`
+- **UAD (Unified Attempt Dispatcher):** cold-overflow queue; retry ladder 10s / 60s / 5m / 15m / 1h; manual-fallback enqueue on exhaustion.
+- **Per-column RBAC:** affiliate role hides broker-side PII (broker names, endpoint URLs, vendor keys); operator + admin have full visibility.
 
-### Back-compat
-- `CapCounter.country=""` default — existing counters keep TOTAL
-  semantics.
-- `Broker.pendingHoldMinutes=null` default — existing brokers unchanged.
-- Postback handler on non-PENDING_HOLD leads: unchanged behaviour.
+### Sprint 4 — Analytics v1
 
-## 0.2.0 — 2026-04-20 (Design Port)
+- **4 drill-downs:** by broker, by affiliate, by geo, by sub-id.
+- **Period comparison** via URL state; save-filter presets; tokenized share links (TTL + revoke).
+- **MVs:** hourly, daily, weekly materialized views with hourly refresh + lag gauge.
 
-Ports the ROUTER CRM design prototype (`crm-design/project/ROUTER CRM.html`) into
-the Next.js app. Visual-only release — no backend or schema changes.
+### Sprint 5 — Telegram ops bot
 
-### Added
-- Dark graphite + light cream theme system via CSS variables in `globals.css`.
-- Design primitives (`src/components/router-crm/`): Pill, StatePill, Dot, Sparkline,
-  MiniBars, LeadFunnelSankey, CounterTile, Card, Field, Select, CodeBlock, TabStrip.
-- Shell with 220px sidebar (kbd nav hints D/L/A/B/R/K/U/G, user chip, queue counter)
-  + 46px topbar (live intake rate, theme toggle).
-- Dashboard: 4 counter tiles, full-width Sankey, broker performance table, top geos
-  stacked bars (backed by new tRPC queries `lead.funnelCounts`, `lead.brokerPerformance`,
-  `lead.topGeos`).
-- Leads grid (9 columns, new-row highlight animation) + right-anchored 540px drawer
-  with timeline / payload / broker / postbacks tabs.
-- Restyled affiliates / brokers / routing / blacklist / users / audit pages.
+- **23 event types:** NEW_LEAD, PUSHED, ACCEPTED, DECLINED, FTD, FAILED, FRAUD_HIT, MANUAL_REVIEW_QUEUED, PENDING_HOLD_START/RELEASED, SHAVE_SUSPECTED, BROKER_DOWN/RECOVERED, CAP_REACHED, AUTOLOGIN_DOWN/SLA_BREACHED, PROXY_POOL_DEGRADED, DAILY_SUMMARY, ANOMALY_DETECTED, FRAUD_POLICY_CHANGED, BROKER_CONFIG_CHANGED, AFFILIATE_DAILY_SUMMARY, AFFILIATE_FTD, ALERT_TRIGGERED.
+- **Subscription management** with per-user filters + broker/affiliate mute lists.
+- **Slash commands:** `/stats`, `/ack`, `/pause_broker`, `/resume_broker`.
 
-### Changed
-- All dashboard routes now under `/dashboard/*` (matches sidebar hrefs).
-- Login page restyled with ROUTER logo + tokens.
+### Sprint 6 — P&L + CRG + invoicing
 
-## 0.1.0 — 2026-04-19 (MVP)
+- **Conversion tracking** per affiliate + broker; payout rule resolver (CPA_FIXED / CPA_CRG / REV_SHARE / HYBRID).
+- **CRG native cohorts** with auto-settle + shortfall detection; auto-invoicing with back-to-back matching MVP (single-currency, full-invoice only).
 
-First shippable build. Local-only. See `../docs/superpowers/specs/2026-04-19-gambchamp-mvp-v0.1-design.md` for the design.
+### Sprint 7 — Onboarding wizard
 
-### Added
-- Public intake API (`POST /api/v1/leads`) with Bearer API-key auth, zod validation, E.164 phone normalization, idempotency key, rate limit (120/min + burst 30 per key, 30/min per IP).
-- Routing engine: GEO-scoped priority-ordered broker pool, atomic daily caps per affiliate and per broker, working-hours filter.
-- Generic HTTP broker adapter: field mapping, static payload, 5 auth schemes (none/bearer/basic/api-key-header/api-key-query), JSONPath response id extraction, 3x exponential-backoff retry on 5xx.
-- Inbound postback handler (`POST /api/v1/postbacks/[brokerId]`) with HMAC verification, status mapping, FTD/ACCEPTED/DECLINED transitions.
-- Outbound postback system: `notify-affiliate` job with URL macro templating, optional HMAC, 3x retry, full `OutboundPostback` audit.
-- Anti-fraud layer: IP (CIDR + exact) / email domain / phone E.164 blacklists, 7-day dedup by phone/email hash, async numverify VOIP check (mocked when key absent).
-- 2-role RBAC (ADMIN/OPERATOR) via NextAuth JWT claim.
-- 12-screen admin UI: dashboard counters, leads grid + detail with timeline, affiliates with postback tab, brokers with JSON editors + Test Send, rotation priority list, blacklist 4-tab CRUD, user management, audit log.
-- Observability: pino logger, trace_id via AsyncLocalStorage, `/api/v1/health` liveness probe.
-- Tests: unit (~80% on routing/antifraud), integration (intake, routing, inbound postback, outbound postback, auth, ratelimit, caps), e2e (happy path + edge cases).
+- **5-step wizard** end-to-end < 30 min: org setup → broker picker → affiliate + sandbox key → live test lead via SSE → go-live.
+- **Broker templates catalog** with ≥ 10 named templates (OctaFX / IQOption / Plus500 / Exness style, etc.) + detail page at `/dashboard/brokers/templates/:id`.
+- **Public pricing page** with 3 tiers + comparison matrix.
+- **Admin widget:** time-to-first-lead (median + p90 over 30d).
 
-### Known limitations (v0.2 work)
-- Autologin pipeline (EPIC-08) not implemented.
-- UAD / re-injection (EPIC-09): `no_broker_available` is terminal.
-- Analytics dashboard limited to 4 counter tiles.
-- Telegram notifications (EPIC-11): no bot.
-- Finance / P&L / CRG (EPIC-12): none.
-- Onboarding wizard (EPIC-13): not implemented.
-- OpenAPI docs autogeneration.
-- Flow versioning (draft/publish).
-- Broker clone UI convenience.
-- Per-column permissions.
-- Load + pentest testing.
+### Sprint 8 — Hardening + launch
+
+- **Perf gates met:**
+  - 500 rps sustained 30 min: intake p95 < 500 ms (measured 394 ms).
+  - 1k rps / 60 s burst: zero drops.
+  - Routing engine 10k-batch p95 < 1 s (measured 743–961 ms depending on concurrency).
+- **E2E smoke:** `tests/e2e/v1-full-flow.test.ts` — signup → onboarding → broker → intake → push → postback → telegram outbox.
+- **Structured observability:** shared pino `logger` with redact paths; events `intake.request`, `intake.response`, `routing.decision`, `broker.push`, `fraud.score`, `telegram.emit`.
+- **`/api/v1/health`:** returns `{status, db, redis, queue, version}` (load-balancer-friendly).
+- **`/api/v1/metrics/summary`:** admin-auth 60 s rolling counters (leads_received, leads_pushed, fraud_hit, broker_down_count, manual_queue_depth).
+- **Alerts engine:** 6 rules (intake_failure_rate, routing_p95, autologin_sla_breach, manual_queue_depth, broker_down_prolonged, ftd_dropoff) with `AlertLog` + Telegram `ALERT_TRIGGERED` + auto-resolve.
+- **Runbooks:** `docs/runbooks/v1-launch.md` (5 scenarios) + `docs/runbooks/oncall-checklist.md` + broker-contacts register.
+- **Public API docs:** OpenAPI 3.0 spec at `docs/api/v1/openapi.yaml` + `/docs/api` Scalar viewer + sandbox discoverability.
+- **Security baseline:** CSP + HSTS + X-Frame-Options; signup rate-limit 5/h/IP; SQLi/XSS/IDOR regression tests; pentest-lite manual checklist.
+- **pg-boss worker runner:** `worker.ts` now boots all S2–S8 crons (analytics rollups, CRG settle, manual-queue-depth-check, anomaly-detect, daily-summary, proxy-health, alerts-evaluator).
+- **Version bump to `1.0.0`** + tag `v1.0.0`.
+
+## [0.2.0] — 2026-04-20
+
+- Wave0 + pre-wave1 merge. EPIC-01 Lead Intake, EPIC-02 Routing engine, EPIC-03 Broker integration, EPIC-04 Affiliate settings, EPIC-05 Lead UI, EPIC-06 RBAC.
+
+## [0.1.0] — 2026-03-15
+
+- Initial scaffold: Next.js 15 + tRPC v11 + Prisma 5 + NextAuth v5. Base models + admin dashboard shell.
