@@ -5,6 +5,7 @@ import { detectDuplicate } from "@/server/antifraud/dedup";
 import { normalizeIntake } from "@/server/antifraud/normalization";
 import { verifyApiKey } from "@/server/auth-api-key";
 import { prisma } from "@/server/db";
+import { clientIpAllowed, extractClientIp } from "@/server/intake/check-ip";
 import { getFraudPolicy } from "@/server/intake/fraud-policy-cache";
 import { computeFraudScore } from "@/server/intake/fraud-score";
 import { buildSignals } from "@/server/intake/fraud-signals";
@@ -40,6 +41,13 @@ export async function POST(req: Request) {
   return runWithTrace(trace_id, async () => {
     const ctx = await verifyApiKey(req.headers.get("authorization"));
     if (!ctx) return err("unauthorized", "invalid api key", 401, trace_id);
+
+    if (ctx.allowedIps.length > 0) {
+      const ip = extractClientIp(req);
+      if (!ip || !clientIpAllowed(ip, ctx.allowedIps)) {
+        return err("ip_not_allowed", "source ip not allowed for this api key", 403, trace_id);
+      }
+    }
 
     const url = new URL(req.url);
     const sandboxMode = url.searchParams.get("mode") === "sandbox";

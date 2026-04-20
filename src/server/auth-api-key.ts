@@ -5,6 +5,7 @@ export interface ApiKeyCtx {
   affiliateId: string;
   keyId: string;
   isSandbox: boolean;
+  allowedIps: string[];
 }
 
 function sha256(s: string) {
@@ -20,6 +21,12 @@ export async function verifyApiKey(
   const keyHash = sha256(m[1]);
   const row = await prisma.apiKey.findUnique({ where: { keyHash } });
   if (!row || row.isRevoked) return null;
+  if (row.expiresAt && row.expiresAt < new Date()) return null;
   await prisma.apiKey.update({ where: { id: row.id }, data: { lastUsedAt: new Date() } });
-  return { affiliateId: row.affiliateId, keyId: row.id, isSandbox: row.isSandbox };
+  return {
+    affiliateId: row.affiliateId,
+    keyId: row.id,
+    isSandbox: row.isSandbox,
+    allowedIps: row.allowedIps,
+  };
 }

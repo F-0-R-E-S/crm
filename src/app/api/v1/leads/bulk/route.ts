@@ -3,6 +3,7 @@ import { env } from "@/lib/env";
 import { verifyApiKey } from "@/server/auth-api-key";
 import { prisma } from "@/server/db";
 import { processBulkSync } from "@/server/intake/bulk";
+import { clientIpAllowed, extractClientIp } from "@/server/intake/check-ip";
 import { JOB_NAMES, startBossOnce } from "@/server/jobs/queue";
 import { logger, runWithTrace } from "@/server/observability";
 import { checkRateLimit } from "@/server/ratelimit";
@@ -26,6 +27,13 @@ export async function POST(req: Request) {
   return runWithTrace(trace_id, async () => {
     const ctx = await verifyApiKey(req.headers.get("authorization"));
     if (!ctx) return err("unauthorized", "invalid api key", 401, trace_id);
+
+    if (ctx.allowedIps.length > 0) {
+      const ip = extractClientIp(req);
+      if (!ip || !clientIpAllowed(ip, ctx.allowedIps)) {
+        return err("ip_not_allowed", "source ip not allowed for this api key", 403, trace_id);
+      }
+    }
 
     const rl = await checkRateLimit(`rl:bulk:${ctx.keyId}`, { capacity: 10, refillPerSec: 1 });
     if (!rl.allowed) {
