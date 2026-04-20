@@ -26,14 +26,17 @@ const GEO_WEIGHTS: Array<[string, number]> = [
 
 // Phone prefixes: picked so libphonenumber-js recognizes them as valid mobiles.
 const PHONE_GEN: Record<string, () => string> = {
-  DE: () => `+49${pick(["170", "171", "172", "173", "174", "175", "176", "177", "178", "179"])}${digits(7)}`,
+  DE: () =>
+    `+49${pick(["170", "171", "172", "173", "174", "175", "176", "177", "178", "179"])}${digits(7)}`,
   FR: () => `+33${pick(["6", "7"])}${digits(8)}`,
   IT: () => `+393${digits(9)}`,
   ES: () => `+34${pick(["6", "7"])}${digits(8)}`,
-  PL: () => `+48${pick(["50", "51", "53", "57", "60", "66", "69", "72", "73", "78", "79", "88"])}${digits(7)}`,
+  PL: () =>
+    `+48${pick(["50", "51", "53", "57", "60", "66", "69", "72", "73", "78", "79", "88"])}${digits(7)}`,
   NL: () => `+316${digits(8)}`,
   PT: () => `+3519${pick(["1", "2", "3", "6"])}${digits(7)}`,
-  AT: () => `+43${pick(["650", "660", "664", "676", "677", "680", "681", "688", "699"])}${digits(7)}`,
+  AT: () =>
+    `+43${pick(["650", "660", "664", "676", "677", "680", "681", "688", "699"])}${digits(7)}`,
   CH: () => `+41${pick(["74", "75", "76", "77", "78", "79"])}${digits(7)}`,
   BE: () => `+324${pick(["6", "7", "8", "9"])}${digits(7)}`,
   IE: () => `+3538${pick(["2", "3", "5", "6", "7", "9"])}${digits(7)}`,
@@ -41,16 +44,76 @@ const PHONE_GEN: Record<string, () => string> = {
 };
 
 const FIRST_NAMES = [
-  "Alex", "Maria", "Luca", "Sofia", "Max", "Emma", "Paul", "Anna", "Leo", "Julia",
-  "Tom", "Laura", "Ben", "Clara", "Nico", "Lena", "Finn", "Nina", "Hugo", "Elena",
-  "Jan", "Alice", "Oskar", "Léa", "Eric", "Chiara", "Kai", "Noa", "Diego", "Olivia",
-  "Pavel", "Iryna", "Piotr", "Zofia", "Sven", "Katja", "Marco", "Beatriz",
+  "Alex",
+  "Maria",
+  "Luca",
+  "Sofia",
+  "Max",
+  "Emma",
+  "Paul",
+  "Anna",
+  "Leo",
+  "Julia",
+  "Tom",
+  "Laura",
+  "Ben",
+  "Clara",
+  "Nico",
+  "Lena",
+  "Finn",
+  "Nina",
+  "Hugo",
+  "Elena",
+  "Jan",
+  "Alice",
+  "Oskar",
+  "Léa",
+  "Eric",
+  "Chiara",
+  "Kai",
+  "Noa",
+  "Diego",
+  "Olivia",
+  "Pavel",
+  "Iryna",
+  "Piotr",
+  "Zofia",
+  "Sven",
+  "Katja",
+  "Marco",
+  "Beatriz",
 ];
 const LAST_NAMES = [
-  "Muller", "Rossi", "Garcia", "Dubois", "Kowalski", "Janssen", "Silva", "Bauer",
-  "Bianchi", "Lopez", "Martin", "Nowak", "DeJong", "Costa", "Huber", "Russo",
-  "Fernandez", "Bernard", "Wozniak", "Peters", "Almeida", "Gruber", "Ricci",
-  "Sanchez", "Petit", "Kaminski", "Visser", "Santos", "Wagner", "Ferrari",
+  "Muller",
+  "Rossi",
+  "Garcia",
+  "Dubois",
+  "Kowalski",
+  "Janssen",
+  "Silva",
+  "Bauer",
+  "Bianchi",
+  "Lopez",
+  "Martin",
+  "Nowak",
+  "DeJong",
+  "Costa",
+  "Huber",
+  "Russo",
+  "Fernandez",
+  "Bernard",
+  "Wozniak",
+  "Peters",
+  "Almeida",
+  "Gruber",
+  "Ricci",
+  "Sanchez",
+  "Petit",
+  "Kaminski",
+  "Visser",
+  "Santos",
+  "Wagner",
+  "Ferrari",
 ];
 const SUB_IDS = [
   "fb-crypto-eu-q1",
@@ -266,10 +329,8 @@ async function postbackPhase(accepted: Accepted[]) {
     const CONCURRENCY = 8;
     for (let i = 0; i < items.length; i += CONCURRENCY) {
       const chunk = items.slice(i, i + CONCURRENCY);
-      const results = await Promise.all(
-        chunk.map((it) => sendPostback(it.leadId, status)),
-      );
-      for (const r of results) (r ? ok++ : fail++);
+      const results = await Promise.all(chunk.map((it) => sendPostback(it.leadId, status)));
+      for (const r of results) r ? ok++ : fail++;
     }
     console.log(`  ${status}: ok=${ok} fail=${fail}`);
   }

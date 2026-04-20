@@ -364,9 +364,7 @@ function SyncTab({ brokerId }: { brokerId: string }) {
               min={1}
               max={60}
               value={config.poll_interval_min ?? 5}
-              onChange={(e) =>
-                setConfig({ ...config, poll_interval_min: Number(e.target.value) })
-              }
+              onChange={(e) => setConfig({ ...config, poll_interval_min: Number(e.target.value) })}
               style={{ ...inputStyle(theme), width: 120 }}
             />
           </label>
@@ -375,9 +373,7 @@ function SyncTab({ brokerId }: { brokerId: string }) {
             <input
               placeholder="/status"
               value={config.status_poll_path ?? ""}
-              onChange={(e) =>
-                setConfig({ ...config, status_poll_path: e.target.value || null })
-              }
+              onChange={(e) => setConfig({ ...config, status_poll_path: e.target.value || null })}
               style={inputStyle(theme)}
             />
           </label>
@@ -436,7 +432,8 @@ function HealthTab({ brokerId }: { brokerId: string }) {
     <div style={{ maxWidth: 640, display: "flex", flexDirection: "column", gap: 12 }}>
       <div style={{ fontSize: 13 }}>
         Health-check истории пишутся в `BrokerHealthCheck`. Автоматический scheduled cron (30s) —
-        Operational Follow-up. Используйте кнопку ниже чтобы запустить проверку вручную прямо сейчас.
+        Operational Follow-up. Используйте кнопку ниже чтобы запустить проверку вручную прямо
+        сейчас.
       </div>
       <div>
         <button

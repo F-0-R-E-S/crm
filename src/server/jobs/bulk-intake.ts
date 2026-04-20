@@ -1,6 +1,6 @@
-import type { Job } from "pg-boss";
 import { processBulkItem } from "@/server/intake/bulk";
 import { logger } from "@/server/observability";
+import type { Job } from "pg-boss";
 
 export interface BulkIntakeJobData {
   affiliateId: string;

@@ -1,4 +1,4 @@
-import type { z, ZodObject, ZodRawShape, ZodSchema } from "zod";
+import type { ZodObject, ZodRawShape, ZodSchema, z } from "zod";
 import { intakeSchema_2026_01 } from "./v2026-01";
 
 export type StrictMode = "strict" | "compat";
@@ -47,10 +47,16 @@ export function parseWithMode(
   // Discover underlying ZodObject even when schema is wrapped in .refine()/.transform() (ZodEffects)
   // ZodEffects uses _def.schema; ZodObject is the top-level.
   let inner: unknown = schema;
-  while (inner && (inner as { _def?: { typeName?: string; schema?: unknown } })._def?.typeName === "ZodEffects") {
+  while (
+    inner &&
+    (inner as { _def?: { typeName?: string; schema?: unknown } })._def?.typeName === "ZodEffects"
+  ) {
     inner = (inner as { _def: { schema: unknown } })._def.schema;
   }
-  if (mode === "strict" && typeof (inner as { strict?: () => ZodObject<ZodRawShape> }).strict === "function") {
+  if (
+    mode === "strict" &&
+    typeof (inner as { strict?: () => ZodObject<ZodRawShape> }).strict === "function"
+  ) {
     const strictObj = (inner as ZodObject<ZodRawShape>).strict();
     const first = strictObj.safeParse(raw);
     if (!first.success) return { success: false, issues: first.error.issues };

@@ -6,10 +6,7 @@ function canonical(obj: unknown): string {
   if (Array.isArray(obj)) return `[${obj.map(canonical).join(",")}]`;
   const keys = Object.keys(obj as Record<string, unknown>).sort();
   return `{${keys
-    .map(
-      (k) =>
-        `${JSON.stringify(k)}:${canonical((obj as Record<string, unknown>)[k])}`,
-    )
+    .map((k) => `${JSON.stringify(k)}:${canonical((obj as Record<string, unknown>)[k])}`)
     .join(",")}}`;
 }
 
@@ -24,9 +21,7 @@ export interface ChainRow {
   payload: unknown;
 }
 
-export function verifyChain(
-  rows: ChainRow[],
-): { ok: true } | { ok: false; brokenAt: number } {
+export function verifyChain(rows: ChainRow[]): { ok: true } | { ok: false; brokenAt: number } {
   let prev: string | null = null;
   for (let i = 0; i < rows.length; i++) {
     const r = rows[i];

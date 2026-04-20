@@ -2,10 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/server/db";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ jobId: string }> },
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ jobId: string }> }) {
   const session = await auth();
   if (!session?.user)
     return NextResponse.json({ error: { code: "unauthorized" } }, { status: 401 });

@@ -217,10 +217,7 @@ export async function executeFlow(input: ExecuteInput): Promise<EngineDecision> 
         decisionTimeMs: performance.now() - startedAt,
       };
     }
-    type ProbT = { id: string; brokerId: string } & (
-      | { chance: number }
-      | { slots: number }
-    );
+    type ProbT = { id: string; brokerId: string } & ({ chance: number } | { slots: number });
     const probTargets: ProbT[] = [];
     for (const t of available) {
       if (t.kind !== "BrokerTarget") continue;

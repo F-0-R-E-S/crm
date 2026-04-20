@@ -1,7 +1,7 @@
-import type { Job } from "pg-boss";
 import { env } from "@/lib/env";
 import { prisma } from "@/server/db";
 import { logger } from "@/server/observability";
+import type { Job } from "pg-boss";
 
 export async function handleSandboxPurge(_job: Job<Record<string, never>>) {
   const cutoff = new Date(Date.now() - env.SANDBOX_TTL_DAYS * 24 * 3600 * 1000);

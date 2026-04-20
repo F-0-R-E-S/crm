@@ -19,9 +19,7 @@ describe("intake settings", () => {
 
   it("updateIntakeSettings валидирует max_rpm 10-2000", async () => {
     const aff = await prisma.affiliate.create({ data: { name: "v" } });
-    await expect(updateIntakeSettings(aff.id, { maxRpm: 5 }, "user-1")).rejects.toThrow(
-      /max_rpm/,
-    );
+    await expect(updateIntakeSettings(aff.id, { maxRpm: 5 }, "user-1")).rejects.toThrow(/max_rpm/);
     await expect(updateIntakeSettings(aff.id, { maxRpm: 3000 }, "user-1")).rejects.toThrow(
       /max_rpm/,
     );

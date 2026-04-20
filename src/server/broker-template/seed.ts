@@ -22,11 +22,7 @@ const GAMBLE_STATUS_MAP = {
   first_deposit: "FTD",
 };
 
-function row(
-  i: number,
-  vertical: "forex" | "crypto" | "gambling",
-  countries: string[],
-): SeedRow {
+function row(i: number, vertical: "forex" | "crypto" | "gambling", countries: string[]): SeedRow {
   const vendor = ["Alpha", "Beta", "Gamma", "Delta", "Sigma", "Omega"][i % 6];
   const protocol = i % 4 === 3 ? "rest-form" : "rest-json";
   const authType =

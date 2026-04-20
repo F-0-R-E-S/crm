@@ -24,7 +24,12 @@ describe("intake normalization", () => {
     await redis.flushdb();
     const aff = await prisma.affiliate.create({ data: { name: "nrm" } });
     await prisma.apiKey.create({
-      data: { affiliateId: aff.id, keyHash: sha(rawKey), keyPrefix: rawKey.slice(0, 12), label: "x" },
+      data: {
+        affiliateId: aff.id,
+        keyHash: sha(rawKey),
+        keyPrefix: rawKey.slice(0, 12),
+        label: "x",
+      },
     });
   });
 

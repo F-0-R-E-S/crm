@@ -25,9 +25,7 @@ export function applyMappingWithTransforms(
       case "concat": {
         const secondary = rule.concatWith ? lead[rule.concatWith] : undefined;
         const sep = rule.sep ?? " ";
-        const parts = [rawValue, secondary].filter(
-          (v) => v != null && String(v).length > 0,
-        );
+        const parts = [rawValue, secondary].filter((v) => v != null && String(v).length > 0);
         value = parts.join(sep);
         break;
       }
@@ -66,10 +64,7 @@ export interface ValidateResult {
   missing: string[];
 }
 
-export function validateMapping(
-  mapping: MappingConfig,
-  requiredTargets: string[],
-): ValidateResult {
+export function validateMapping(mapping: MappingConfig, requiredTargets: string[]): ValidateResult {
   const covered = new Set(Object.values(mapping).map((r) => r.target));
   const missing = requiredTargets.filter((t) => !covered.has(t));
   return { ok: missing.length === 0, missing };

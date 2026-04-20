@@ -20,8 +20,6 @@ export function evaluateSchedule(s: Schedule, at: Date = new Date()): ScheduleRe
   if (!s.windows.length) return { ok: true };
   const day = dayOfWeekInTz(at, s.tz);
   const mins = minutesOfDayInTz(at, s.tz);
-  const match = s.windows.some(
-    (w) => w.day === day && mins >= toMin(w.from) && mins < toMin(w.to),
-  );
+  const match = s.windows.some((w) => w.day === day && mins >= toMin(w.from) && mins < toMin(w.to));
   return match ? { ok: true } : { ok: false, reason: "outside_hours" };
 }

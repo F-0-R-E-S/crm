@@ -226,7 +226,10 @@ export default function FlowDetailPage({ params }: { params: Promise<{ flowId: s
             </thead>
             <tbody>
               {caps.map((c, i) => (
-                <tr key={`${c.scope}-${c.scope_ref_id}-${i}`} style={{ borderTop: "1px solid var(--bd-1)" }}>
+                <tr
+                  key={`${c.scope}-${c.scope_ref_id}-${i}`}
+                  style={{ borderTop: "1px solid var(--bd-1)" }}
+                >
                   <td style={{ padding: "8px 14px" }}>
                     <Pill size="xs">{c.scope}</Pill>
                   </td>
@@ -237,7 +240,12 @@ export default function FlowDetailPage({ params }: { params: Promise<{ flowId: s
                   <td style={{ fontFamily: "var(--mono)" }}>
                     {c.used} / {c.limit}
                   </td>
-                  <td style={{ fontFamily: "var(--mono)", color: c.remaining === 0 ? "oklch(72% 0.15 25)" : "var(--fg-0)" }}>
+                  <td
+                    style={{
+                      fontFamily: "var(--mono)",
+                      color: c.remaining === 0 ? "oklch(72% 0.15 25)" : "var(--fg-0)",
+                    }}
+                  >
                     {c.remaining}
                   </td>
                   <td style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--fg-2)" }}>
@@ -257,9 +265,7 @@ function Meta({ label, value, mono }: { label: string; value: string; mono?: boo
   return (
     <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12 }}>
       <span style={{ color: "var(--fg-2)" }}>{label}</span>
-      <span
-        style={{ fontFamily: mono ? "var(--mono)" : "inherit", color: "var(--fg-0)" }}
-      >
+      <span style={{ fontFamily: mono ? "var(--mono)" : "inherit", color: "var(--fg-0)" }}>
         {value}
       </span>
     </div>

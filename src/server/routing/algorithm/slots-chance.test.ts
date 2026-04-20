@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  selectBySlotsOrChance,
-  validateChanceSum,
-  validateSlotBounds,
-} from "./slots-chance";
+import { selectBySlotsOrChance, validateChanceSum, validateSlotBounds } from "./slots-chance";
 
 describe("slots-chance", () => {
   it("validateChanceSum — сумма != 100% → error", () => {

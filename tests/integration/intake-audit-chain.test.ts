@@ -31,9 +31,7 @@ describe("GET /api/v1/affiliates/[id]/leads/[leadId]/events", () => {
       },
     });
     const r = await GET(
-      new Request(
-        `http://localhost:3000/api/v1/affiliates/${aff.id}/leads/${lead.id}/events`,
-      ),
+      new Request(`http://localhost:3000/api/v1/affiliates/${aff.id}/leads/${lead.id}/events`),
       { params: Promise.resolve({ id: aff.id, leadId: lead.id }) },
     );
     expect(r.status).toBe(200);

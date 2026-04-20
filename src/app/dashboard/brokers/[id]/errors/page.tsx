@@ -120,11 +120,7 @@ export default function BrokerErrorsPage({ params }: { params: Promise<{ id: str
             }}
           >
             <Tile label="total pushes" value={data.total_pushes} />
-            <Tile
-              label="success"
-              value={data.success_pushes}
-              valueColor="oklch(80% 0.18 140)"
-            />
+            <Tile label="success" value={data.success_pushes} valueColor="oklch(80% 0.18 140)" />
             <Tile
               label="errors"
               value={data.error_pushes}
@@ -259,7 +255,7 @@ function Tile({
           fontSize: 20,
           fontWeight: 500,
           marginTop: 4,
-          color: alert ? "oklch(72% 0.18 25)" : valueColor ?? "var(--fg-0)",
+          color: alert ? "oklch(72% 0.18 25)" : (valueColor ?? "var(--fg-0)"),
         }}
       >
         {value}

@@ -13,7 +13,14 @@ describe("aggregateMetrics", () => {
     const now = new Date();
     await prisma.lead.createMany({
       data: [
-        { affiliateId: aff.id, geo: "UA", ip: "1.1.1.1", eventTs: now, traceId: "m1", state: "NEW" },
+        {
+          affiliateId: aff.id,
+          geo: "UA",
+          ip: "1.1.1.1",
+          eventTs: now,
+          traceId: "m1",
+          state: "NEW",
+        },
         {
           affiliateId: aff.id,
           geo: "UA",

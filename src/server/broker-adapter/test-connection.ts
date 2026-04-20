@@ -55,7 +55,8 @@ function classifyHttp(status: number): AuthStatus {
 
 function classifyError(e: unknown): { status: AuthStatus; message: string } {
   if (e instanceof Error) {
-    if (e.name === "AbortError") return { status: "timeout", message: "request aborted by timeout" };
+    if (e.name === "AbortError")
+      return { status: "timeout", message: "request aborted by timeout" };
     const anyE = e as Error & { code?: string };
     if (anyE.code === "ENOTFOUND" || /ENOTFOUND/i.test(e.message))
       return { status: "network_error", message: e.message };

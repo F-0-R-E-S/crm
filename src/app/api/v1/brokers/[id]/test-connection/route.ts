@@ -11,10 +11,7 @@ import { NextResponse } from "next/server";
 
 const HARD_MAX_MS = 5000;
 
-export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const trace_id = nanoid();
   return runWithTrace(trace_id, async () => {
     const s = await auth();
@@ -24,10 +21,7 @@ export async function POST(
     const { id } = await params;
     const broker = await prisma.broker.findUnique({ where: { id } });
     if (!broker)
-      return NextResponse.json(
-        { error: { code: "broker_not_found", trace_id } },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: { code: "broker_not_found", trace_id } }, { status: 404 });
 
     const url = new URL(req.url);
     const timeoutMs = Math.min(

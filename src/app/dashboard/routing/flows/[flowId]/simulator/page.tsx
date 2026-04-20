@@ -127,9 +127,7 @@ export default function SimulatorPage({ params }: { params: Promise<{ flowId: st
             >
               {running ? "Simulating…" : "Run simulate"}
             </button>
-            {err && (
-              <div style={{ color: "oklch(72% 0.15 25)", fontSize: 12 }}>error: {err}</div>
-            )}
+            {err && <div style={{ color: "oklch(72% 0.15 25)", fontSize: 12 }}>error: {err}</div>}
           </div>
         </section>
 
@@ -155,7 +153,9 @@ export default function SimulatorPage({ params }: { params: Promise<{ flowId: st
           </div>
           <div style={{ padding: 14 }}>
             {!result && (
-              <div style={{ color: "var(--fg-2)" }}>Run a simulation to see the decision trace.</div>
+              <div style={{ color: "var(--fg-2)" }}>
+                Run a simulation to see the decision trace.
+              </div>
             )}
             {result && (
               <>
@@ -203,10 +203,7 @@ export default function SimulatorPage({ params }: { params: Promise<{ flowId: st
                   </thead>
                   <tbody>
                     {result.filters_applied.map((s, i) => (
-                      <tr
-                        key={`${s.step}-${i}`}
-                        style={{ borderTop: "1px solid var(--bd-1)" }}
-                      >
+                      <tr key={`${s.step}-${i}`} style={{ borderTop: "1px solid var(--bd-1)" }}>
                         <td style={{ padding: "6px 0", fontFamily: "var(--mono)" }}>{s.step}</td>
                         <td style={{ fontFamily: "var(--mono)", fontSize: 10 }}>
                           {s.node_id ?? "—"}
@@ -249,11 +246,7 @@ function Field({
   return (
     <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
       <span style={{ fontSize: 11, color: "var(--fg-2)" }}>{label}</span>
-      <input
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        style={inputStyle(theme)}
-      />
+      <input value={value} onChange={(e) => onChange(e.target.value)} style={inputStyle(theme)} />
     </label>
   );
 }

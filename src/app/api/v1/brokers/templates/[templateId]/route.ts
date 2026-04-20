@@ -2,10 +2,7 @@ import { auth } from "@/auth";
 import { getTemplateById } from "@/server/broker-template/catalog";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ templateId: string }> },
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ templateId: string }> }) {
   const s = await auth();
   if (!s?.user || s.user.role !== "ADMIN") {
     return NextResponse.json({ error: { code: "forbidden" } }, { status: 403 });

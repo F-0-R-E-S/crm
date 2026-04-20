@@ -1,9 +1,6 @@
 import { auth } from "@/auth";
 import { prisma } from "@/server/db";
-import {
-  validateChanceSum,
-  validateSlotBounds,
-} from "@/server/routing/algorithm/slots-chance";
+import { validateChanceSum, validateSlotBounds } from "@/server/routing/algorithm/slots-chance";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -14,10 +11,7 @@ const Body = z.object({
   params: z.record(z.string(), z.unknown()),
 });
 
-export async function PUT(
-  req: Request,
-  { params }: { params: Promise<{ flowId: string }> },
-) {
+export async function PUT(req: Request, { params }: { params: Promise<{ flowId: string }> }) {
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN")
     return NextResponse.json({ error: { code: "forbidden" } }, { status: 403 });
@@ -35,8 +29,7 @@ export async function PUT(
   });
   if (!flow) return NextResponse.json({ error: { code: "flow_not_found" } }, { status: 404 });
   const latest = flow.versions[0];
-  if (!latest)
-    return NextResponse.json({ error: { code: "no_draft_version" } }, { status: 409 });
+  if (!latest) return NextResponse.json({ error: { code: "no_draft_version" } }, { status: 409 });
 
   if (parsed.data.mode === "SLOTS_CHANCE") {
     const p = parsed.data.params as {
@@ -44,23 +37,13 @@ export async function PUT(
       slots?: Record<string, number>;
     };
     if (p.chance) {
-      const v = validateChanceSum(
-        Object.entries(p.chance).map(([id, chance]) => ({ id, chance })),
-      );
+      const v = validateChanceSum(Object.entries(p.chance).map(([id, chance]) => ({ id, chance })));
       if (!v.ok)
-        return NextResponse.json(
-          { error: { code: v.code, message: v.message } },
-          { status: 422 },
-        );
+        return NextResponse.json({ error: { code: v.code, message: v.message } }, { status: 422 });
     } else if (p.slots) {
-      const v = validateSlotBounds(
-        Object.entries(p.slots).map(([id, slots]) => ({ id, slots })),
-      );
+      const v = validateSlotBounds(Object.entries(p.slots).map(([id, slots]) => ({ id, slots })));
       if (!v.ok)
-        return NextResponse.json(
-          { error: { code: v.code, message: v.message } },
-          { status: 422 },
-        );
+        return NextResponse.json({ error: { code: v.code, message: v.message } }, { status: 422 });
     }
   }
 

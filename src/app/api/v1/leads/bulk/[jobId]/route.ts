@@ -2,10 +2,7 @@ import { verifyApiKey } from "@/server/auth-api-key";
 import { startBossOnce } from "@/server/jobs/queue";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ jobId: string }> },
-) {
+export async function GET(req: Request, { params }: { params: Promise<{ jobId: string }> }) {
   const ctx = await verifyApiKey(req.headers.get("authorization"));
   if (!ctx) return NextResponse.json({ error: { code: "unauthorized" } }, { status: 401 });
 

@@ -1,7 +1,7 @@
-import type { Job } from "pg-boss";
 import { prisma } from "@/server/db";
 import { logger } from "@/server/observability";
 import { remainingCap } from "@/server/routing/constraints/caps";
+import type { Job } from "pg-boss";
 
 export interface FlowCapRefreshJob {
   flowVersionId?: string;

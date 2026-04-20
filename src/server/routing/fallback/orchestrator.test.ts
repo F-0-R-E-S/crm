@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
-  buildFallbackPlan,
-  detectFallbackCycle,
   type FallbackStepSpec,
   type TriggerClassifier,
+  buildFallbackPlan,
+  detectFallbackCycle,
 } from "./orchestrator";
 
 const steps: FallbackStepSpec[] = [

@@ -121,8 +121,7 @@ export default function BrokerTemplatesPage() {
             }}
             style={{
               textAlign: "left",
-              border:
-                selectedId === t.id ? "1px solid var(--fg-1)" : "1px solid var(--bd-1)",
+              border: selectedId === t.id ? "1px solid var(--fg-1)" : "1px solid var(--bd-1)",
               borderRadius: 6,
               padding: 14,
               background: selectedId === t.id ? "var(--bg-3)" : "transparent",
@@ -133,7 +132,9 @@ export default function BrokerTemplatesPage() {
               gap: 8,
             }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
+            <div
+              style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}
+            >
               <span style={{ fontWeight: 500, fontSize: 14 }}>{t.name}</span>
               <span style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--fg-2)" }}>
                 {t.vendor}
@@ -193,7 +194,14 @@ export default function BrokerTemplatesPage() {
 
           <div style={{ marginTop: 12, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
             <div>
-              <div style={{ fontSize: 10, color: "var(--fg-2)", marginBottom: 4, textTransform: "uppercase" }}>
+              <div
+                style={{
+                  fontSize: 10,
+                  color: "var(--fg-2)",
+                  marginBottom: 4,
+                  textTransform: "uppercase",
+                }}
+              >
                 Required fields
               </div>
               <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
@@ -205,7 +213,14 @@ export default function BrokerTemplatesPage() {
               </div>
             </div>
             <div>
-              <div style={{ fontSize: 10, color: "var(--fg-2)", marginBottom: 4, textTransform: "uppercase" }}>
+              <div
+                style={{
+                  fontSize: 10,
+                  color: "var(--fg-2)",
+                  marginBottom: 4,
+                  textTransform: "uppercase",
+                }}
+              >
                 Status mapping
               </div>
               <pre
@@ -226,7 +241,14 @@ export default function BrokerTemplatesPage() {
           </div>
 
           <div style={{ marginTop: 12 }}>
-            <div style={{ fontSize: 10, color: "var(--fg-2)", marginBottom: 4, textTransform: "uppercase" }}>
+            <div
+              style={{
+                fontSize: 10,
+                color: "var(--fg-2)",
+                marginBottom: 4,
+                textTransform: "uppercase",
+              }}
+            >
               Sample payload
             </div>
             <pre

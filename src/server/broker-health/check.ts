@@ -2,10 +2,7 @@ import type { TestConnectionResult } from "@/server/broker-adapter/test-connecti
 import { prisma } from "@/server/db";
 import { aggregateHealthStatus } from "./status";
 
-export async function recordHealthCheck(
-  brokerId: string,
-  r: TestConnectionResult,
-): Promise<void> {
+export async function recordHealthCheck(brokerId: string, r: TestConnectionResult): Promise<void> {
   await prisma.brokerHealthCheck.create({
     data: {
       brokerId,

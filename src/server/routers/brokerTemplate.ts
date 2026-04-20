@@ -20,13 +20,11 @@ export const brokerTemplateRouter = router({
       }),
     )
     .query(async ({ input }) => listTemplates(input)),
-  byId: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ input }) => {
-      const t = await getTemplateById(input.id);
-      if (!t) throw new Error("template_not_found");
-      return t;
-    }),
+  byId: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ input }) => {
+    const t = await getTemplateById(input.id);
+    if (!t) throw new Error("template_not_found");
+    return t;
+  }),
   createBroker: adminProcedure
     .input(
       z.object({

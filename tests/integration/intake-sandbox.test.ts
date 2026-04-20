@@ -85,7 +85,11 @@ describe("sandbox mode", () => {
     const r = await getErrors();
     expect(r.status).toBe(200);
     const b = await r.json();
-    expect(b.errors.find((e: { error_code: string }) => e.error_code === "duplicate_lead")).toBeTruthy();
-    expect(b.errors.find((e: { error_code: string }) => e.error_code === "geo_not_allowed")).toBeTruthy();
+    expect(
+      b.errors.find((e: { error_code: string }) => e.error_code === "duplicate_lead"),
+    ).toBeTruthy();
+    expect(
+      b.errors.find((e: { error_code: string }) => e.error_code === "geo_not_allowed"),
+    ).toBeTruthy();
   });
 });

@@ -20,35 +20,31 @@ export const affiliateRouter = router({
     });
   }),
 
-  stats: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const now = new Date();
-      const since = new Date(now.getTime() - 24 * 3600 * 1000);
-      const todayUtc = new Date(
-        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
-      );
+  stats: protectedProcedure.input(z.object({ id: z.string() })).query(async ({ ctx, input }) => {
+    const now = new Date();
+    const since = new Date(now.getTime() - 24 * 3600 * 1000);
+    const todayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
 
-      // KPI counters
-      const [leads24h, ftds24h, rejects24h, capRow] = await Promise.all([
-        ctx.prisma.lead.count({
-          where: { affiliateId: input.id, receivedAt: { gte: since } },
-        }),
-        ctx.prisma.lead.count({
-          where: { affiliateId: input.id, ftdAt: { gte: since } },
-        }),
-        ctx.prisma.lead.count({
-          where: { affiliateId: input.id, state: "REJECTED", receivedAt: { gte: since } },
-        }),
-        ctx.prisma.dailyCap.findFirst({
-          where: { scope: "AFFILIATE", scopeId: input.id, day: todayUtc },
-          select: { count: true },
-        }),
-      ]);
+    // KPI counters
+    const [leads24h, ftds24h, rejects24h, capRow] = await Promise.all([
+      ctx.prisma.lead.count({
+        where: { affiliateId: input.id, receivedAt: { gte: since } },
+      }),
+      ctx.prisma.lead.count({
+        where: { affiliateId: input.id, ftdAt: { gte: since } },
+      }),
+      ctx.prisma.lead.count({
+        where: { affiliateId: input.id, state: "REJECTED", receivedAt: { gte: since } },
+      }),
+      ctx.prisma.dailyCap.findFirst({
+        where: { scope: "AFFILIATE", scopeId: input.id, day: todayUtc },
+        select: { count: true },
+      }),
+    ]);
 
-      // Hourly series — 24 buckets, aligned to the hour containing `now`.
-      type Row = { bucket: Date; leads: bigint; ftds: bigint; rejects: bigint };
-      const rows = await ctx.prisma.$queryRaw<Row[]>`
+    // Hourly series — 24 buckets, aligned to the hour containing `now`.
+    type Row = { bucket: Date; leads: bigint; ftds: bigint; rejects: bigint };
+    const rows = await ctx.prisma.$queryRaw<Row[]>`
         SELECT
           date_trunc('hour', "receivedAt") AS bucket,
           COUNT(*)::bigint AS leads,
@@ -60,30 +56,30 @@ export const affiliateRouter = router({
         GROUP BY bucket
         ORDER BY bucket ASC
       `;
-      const byBucket = new Map(
-        rows.map((r) => [
-          new Date(r.bucket).toISOString(),
-          { leads: Number(r.leads), ftds: Number(r.ftds), rejects: Number(r.rejects) },
-        ]),
-      );
-      const series = Array.from({ length: 24 }, (_, i) => {
-        const t = new Date(now.getTime() - (23 - i) * 3600 * 1000);
-        t.setUTCMinutes(0, 0, 0);
-        const key = t.toISOString();
-        const v = byBucket.get(key) ?? { leads: 0, ftds: 0, rejects: 0 };
-        return { ts: key, ...v };
-      });
+    const byBucket = new Map(
+      rows.map((r) => [
+        new Date(r.bucket).toISOString(),
+        { leads: Number(r.leads), ftds: Number(r.ftds), rejects: Number(r.rejects) },
+      ]),
+    );
+    const series = Array.from({ length: 24 }, (_, i) => {
+      const t = new Date(now.getTime() - (23 - i) * 3600 * 1000);
+      t.setUTCMinutes(0, 0, 0);
+      const key = t.toISOString();
+      const v = byBucket.get(key) ?? { leads: 0, ftds: 0, rejects: 0 };
+      return { ts: key, ...v };
+    });
 
-      return {
-        kpi: {
-          leads24h,
-          ftds24h,
-          rejects24h,
-          capUsed: capRow?.count ?? 0,
-        },
-        series,
-      };
-    }),
+    return {
+      kpi: {
+        leads24h,
+        ftds24h,
+        rejects24h,
+        capUsed: capRow?.count ?? 0,
+      },
+      series,
+    };
+  }),
 
   create: adminProcedure
     .input(

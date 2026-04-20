@@ -2,10 +2,7 @@ import { auth } from "@/auth";
 import { archiveFlow } from "@/server/routing/flow/publish";
 import { NextResponse } from "next/server";
 
-export async function POST(
-  _req: Request,
-  { params }: { params: Promise<{ flowId: string }> },
-) {
+export async function POST(_req: Request, { params }: { params: Promise<{ flowId: string }> }) {
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN")
     return NextResponse.json({ error: { code: "forbidden" } }, { status: 403 });

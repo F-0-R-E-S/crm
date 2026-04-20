@@ -30,10 +30,8 @@ export function classifyPushResult(
   triggers?: FallbackTriggers,
 ): TriggerVerdict {
   if (r.connectionError && (triggers?.connectionError ?? true)) return "failover";
-  if (r.durationMs && triggers?.timeoutMs && r.durationMs >= triggers.timeoutMs)
-    return "failover";
-  if (r.httpStatus && (triggers?.httpStatusCodes ?? []).includes(r.httpStatus))
-    return "failover";
+  if (r.durationMs && triggers?.timeoutMs && r.durationMs >= triggers.timeoutMs) return "failover";
+  if (r.httpStatus && (triggers?.httpStatusCodes ?? []).includes(r.httpStatus)) return "failover";
   if (r.rejectReason && (triggers?.explicitReject ?? true)) return "failover";
   if (r.httpStatus && r.httpStatus >= 200 && r.httpStatus < 300) return "ok";
   return "terminal";

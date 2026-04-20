@@ -4,10 +4,7 @@ import { loadFlowById, updateDraftGraph } from "@/server/routing/flow/repository
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ flowId: string }> },
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ flowId: string }> }) {
   const { flowId } = await params;
   try {
     const f = await loadFlowById(flowId);
@@ -17,10 +14,7 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  req: Request,
-  { params }: { params: Promise<{ flowId: string }> },
-) {
+export async function PUT(req: Request, { params }: { params: Promise<{ flowId: string }> }) {
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN")
     return NextResponse.json({ error: { code: "forbidden" } }, { status: 403 });

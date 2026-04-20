@@ -16,9 +16,7 @@ function statusTone(s: string) {
 export default function FlowsListPage() {
   const { theme } = useThemeCtx();
   const [status, setStatus] = useState<Status>("ALL");
-  const { data, isLoading } = trpc.routing.list.useQuery(
-    status === "ALL" ? undefined : { status },
-  );
+  const { data, isLoading } = trpc.routing.list.useQuery(status === "ALL" ? undefined : { status });
 
   return (
     <div style={{ padding: "20px 28px" }}>

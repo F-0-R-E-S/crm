@@ -1,10 +1,7 @@
-import type { Job } from "pg-boss";
-import {
-  aggregateBrokerErrors,
-  writeErrorSample,
-} from "@/server/broker-errors/aggregator";
+import { aggregateBrokerErrors, writeErrorSample } from "@/server/broker-errors/aggregator";
 import { prisma } from "@/server/db";
 import { logger } from "@/server/observability";
+import type { Job } from "pg-boss";
 
 const BUCKET_SEC = 300;
 

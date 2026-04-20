@@ -44,9 +44,7 @@ describe("GET /api/v1/intake/metrics", () => {
     const from = new Date(Date.now() - 3600_000).toISOString();
     const to = new Date(Date.now() + 3600_000).toISOString();
     const r = await GET(
-      new Request(
-        `http://localhost:3000/api/v1/intake/metrics?from=${from}&to=${to}&interval=1h`,
-      ),
+      new Request(`http://localhost:3000/api/v1/intake/metrics?from=${from}&to=${to}&interval=1h`),
     );
     expect(r.status).toBe(200);
     const b = await r.json();

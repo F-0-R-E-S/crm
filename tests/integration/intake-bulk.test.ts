@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import { POST } from "@/app/api/v1/leads/bulk/route";
 import { GET as getJob } from "@/app/api/v1/leads/bulk/[jobId]/route";
+import { POST } from "@/app/api/v1/leads/bulk/route";
 import { prisma } from "@/server/db";
 import { redis } from "@/server/redis";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -29,7 +29,12 @@ describe("POST /api/v1/leads/bulk", () => {
     await redis.flushdb();
     const aff = await prisma.affiliate.create({ data: { name: "bk" } });
     await prisma.apiKey.create({
-      data: { affiliateId: aff.id, keyHash: sha(rawKey), keyPrefix: rawKey.slice(0, 12), label: "x" },
+      data: {
+        affiliateId: aff.id,
+        keyHash: sha(rawKey),
+        keyPrefix: rawKey.slice(0, 12),
+        label: "x",
+      },
     });
   });
 
@@ -57,10 +62,7 @@ describe("POST /api/v1/leads/bulk", () => {
   });
 
   it("частичный успех — смесь валидных и невалидных", async () => {
-    const leads = [
-      mk(1)[0],
-      { geo: "UA", ip: "8.8.8.8", event_ts: new Date().toISOString() },
-    ];
+    const leads = [mk(1)[0], { geo: "UA", ip: "8.8.8.8", event_ts: new Date().toISOString() }];
     const r = await post({ leads });
     expect(r.status).toBe(207);
     const b = await r.json();

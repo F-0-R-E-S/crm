@@ -18,9 +18,7 @@ export interface ProbDecision {
   drawDenominator: number;
 }
 
-export type ValidationResult =
-  | { ok: true }
-  | { ok: false; code: string; message: string };
+export type ValidationResult = { ok: true } | { ok: false; code: string; message: string };
 
 export function validateSlotBounds(targets: SlotsTarget[]): ValidationResult {
   for (const t of targets) {

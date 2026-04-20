@@ -36,11 +36,16 @@ function login(): string {
     }).toString();
 
     curl([
-      "-c", jarPath,
-      "-b", jarPath,
-      "-X", "POST",
-      "-H", "content-type: application/x-www-form-urlencoded",
-      "--data-binary", body,
+      "-c",
+      jarPath,
+      "-b",
+      jarPath,
+      "-X",
+      "POST",
+      "-H",
+      "content-type: application/x-www-form-urlencoded",
+      "--data-binary",
+      body,
       `${BASE}/api/auth/callback/credentials?json=true`,
     ]);
 

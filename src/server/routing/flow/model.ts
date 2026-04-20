@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-export const NodeIdSchema = z.string().min(1).max(64).regex(/^[a-zA-Z0-9_-]+$/);
+export const NodeIdSchema = z
+  .string()
+  .min(1)
+  .max(64)
+  .regex(/^[a-zA-Z0-9_-]+$/);
 
 export const FilterConditionSchema = z.object({
   field: z.enum(["geo", "subId", "utm_source", "utm_medium", "affiliateId", "timeOfDay"]),

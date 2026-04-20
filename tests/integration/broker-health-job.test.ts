@@ -31,14 +31,12 @@ describe("broker-health-check job", () => {
         },
       ],
     });
-    const spy = vi
-      .spyOn(globalThis, "fetch")
-      .mockResolvedValue(
-        new Response("{}", {
-          status: 200,
-          headers: { "content-type": "application/json" },
-        }),
-      );
+    const spy = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("{}", {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      }),
+    );
 
     await handleBrokerHealthCheck({
       data: {},

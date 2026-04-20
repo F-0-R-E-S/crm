@@ -3,18 +3,14 @@ import { aggregateBrokerErrors, computeSla } from "@/server/broker-errors/aggreg
 import { prisma } from "@/server/db";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const s = await auth();
   if (!s?.user || s.user.role !== "ADMIN")
     return NextResponse.json({ error: { code: "forbidden" } }, { status: 403 });
 
   const { id } = await params;
   const broker = await prisma.broker.findUnique({ where: { id }, select: { id: true } });
-  if (!broker)
-    return NextResponse.json({ error: { code: "broker_not_found" } }, { status: 404 });
+  if (!broker) return NextResponse.json({ error: { code: "broker_not_found" } }, { status: 404 });
 
   const url = new URL(req.url);
   const from = new Date(url.searchParams.get("from") ?? "");

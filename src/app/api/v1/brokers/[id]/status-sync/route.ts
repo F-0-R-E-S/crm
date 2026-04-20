@@ -19,17 +19,13 @@ async function guardAdmin() {
   return s;
 }
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await guardAdmin()))
     return NextResponse.json({ error: { code: "forbidden" } }, { status: 403 });
 
   const { id } = await params;
   const broker = await prisma.broker.findUnique({ where: { id } });
-  if (!broker)
-    return NextResponse.json({ error: { code: "broker_not_found" } }, { status: 404 });
+  if (!broker) return NextResponse.json({ error: { code: "broker_not_found" } }, { status: 404 });
 
   return NextResponse.json({
     mode: broker.syncMode,
@@ -40,17 +36,13 @@ export async function GET(
   });
 }
 
-export async function POST(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await guardAdmin()))
     return NextResponse.json({ error: { code: "forbidden" } }, { status: 403 });
 
   const { id } = await params;
   const broker = await prisma.broker.findUnique({ where: { id } });
-  if (!broker)
-    return NextResponse.json({ error: { code: "broker_not_found" } }, { status: 404 });
+  if (!broker) return NextResponse.json({ error: { code: "broker_not_found" } }, { status: 404 });
 
   const raw = await req.json().catch(() => null);
   const parsed = BodySchema.safeParse(raw);

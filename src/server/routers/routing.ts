@@ -51,29 +51,25 @@ export const routingRouter = router({
       return f;
     }),
 
-  publish: adminProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const f = await publishFlow(input.id, ctx.userId);
-      await writeAuditLog({
-        userId: ctx.userId,
-        action: "flow.publish",
-        entity: "Flow",
-        entityId: input.id,
-      });
-      return f;
-    }),
+  publish: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    const f = await publishFlow(input.id, ctx.userId);
+    await writeAuditLog({
+      userId: ctx.userId,
+      action: "flow.publish",
+      entity: "Flow",
+      entityId: input.id,
+    });
+    return f;
+  }),
 
-  archive: adminProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const f = await archiveFlow(input.id, ctx.userId);
-      await writeAuditLog({
-        userId: ctx.userId,
-        action: "flow.archive",
-        entity: "Flow",
-        entityId: input.id,
-      });
-      return f;
-    }),
+  archive: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    const f = await archiveFlow(input.id, ctx.userId);
+    await writeAuditLog({
+      userId: ctx.userId,
+      action: "flow.archive",
+      entity: "Flow",
+      entityId: input.id,
+    });
+    return f;
+  }),
 });

@@ -3,10 +3,7 @@ import { prisma } from "@/server/db";
 import { remainingCap } from "@/server/routing/constraints/caps";
 import { NextResponse } from "next/server";
 
-export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ flowId: string }> },
-) {
+export async function GET(_req: Request, { params }: { params: Promise<{ flowId: string }> }) {
   const session = await auth();
   if (!session?.user)
     return NextResponse.json({ error: { code: "unauthorized" } }, { status: 401 });

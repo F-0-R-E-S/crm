@@ -61,19 +61,16 @@ describe("GET /api/v1/brokers/templates", () => {
   });
 
   it("422 при unknown sort_by", async () => {
-    const r = await listGET(
-      new Request("http://localhost/api/v1/brokers/templates?sort_by=wrong"),
-    );
+    const r = await listGET(new Request("http://localhost/api/v1/brokers/templates?sort_by=wrong"));
     expect(r.status).toBe(422);
   });
 
   it("GET by id возвращает template + sample_payload", async () => {
     const t = await prisma.brokerTemplate.findFirst({ where: { slug: "t-forex-1" } });
     if (!t) throw new Error("seed missing");
-    const r = await byIdGET(
-      new Request(`http://localhost/api/v1/brokers/templates/${t.id}`),
-      { params: Promise.resolve({ templateId: t.id }) },
-    );
+    const r = await byIdGET(new Request(`http://localhost/api/v1/brokers/templates/${t.id}`), {
+      params: Promise.resolve({ templateId: t.id }),
+    });
     expect(r.status).toBe(200);
     const b = await r.json();
     expect(b.slug).toBe("t-forex-1");
@@ -81,10 +78,9 @@ describe("GET /api/v1/brokers/templates", () => {
   });
 
   it("GET by id — 404 если нет", async () => {
-    const r = await byIdGET(
-      new Request("http://localhost/api/v1/brokers/templates/nope"),
-      { params: Promise.resolve({ templateId: "nope" }) },
-    );
+    const r = await byIdGET(new Request("http://localhost/api/v1/brokers/templates/nope"), {
+      params: Promise.resolve({ templateId: "nope" }),
+    });
     expect(r.status).toBe(404);
   });
 });

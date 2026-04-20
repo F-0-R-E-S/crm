@@ -3,11 +3,10 @@ import { env } from "@/lib/env";
 import { checkBlacklists } from "@/server/antifraud/blacklist";
 import { detectDuplicate } from "@/server/antifraud/dedup";
 import { normalizeIntake } from "@/server/antifraud/normalization";
-import { getIntakeSettings } from "@/server/intake/settings";
-import { determineMockOutcome, mockOutcomeToResponse } from "@/server/intake/sandbox";
-import { buildIntakeEvent, dispatchIntakeEvent } from "@/server/webhooks/intake-outcome";
 import { verifyApiKey } from "@/server/auth-api-key";
 import { prisma } from "@/server/db";
+import { determineMockOutcome, mockOutcomeToResponse } from "@/server/intake/sandbox";
+import { getIntakeSettings } from "@/server/intake/settings";
 import { JOB_NAMES, startBossOnce } from "@/server/jobs/queue";
 import { logger, runWithTrace } from "@/server/observability";
 import { checkRateLimit } from "@/server/ratelimit";
@@ -18,6 +17,7 @@ import {
   getVersionEntry,
   parseWithMode,
 } from "@/server/schema/registry";
+import { buildIntakeEvent, dispatchIntakeEvent } from "@/server/webhooks/intake-outcome";
 import { nanoid } from "nanoid";
 import { NextResponse } from "next/server";
 
@@ -163,7 +163,13 @@ export async function POST(req: Request) {
       landingUrl: p.landing_url,
     });
     if (n.error) {
-      return err(n.error.code, `normalization failed: ${n.error.field}`, 422, trace_id, n.error.field);
+      return err(
+        n.error.code,
+        `normalization failed: ${n.error.field}`,
+        422,
+        trace_id,
+        n.error.field,
+      );
     }
     const phoneE164 = n.phoneE164;
     const email = n.email;

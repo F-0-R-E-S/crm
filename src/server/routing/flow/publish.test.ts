@@ -47,7 +47,13 @@ describe("publishFlow", () => {
   });
 
   it("publish с невалидным графом → flow_validation_error", async () => {
-    const bad: FlowGraph = { nodes: [{ id: "e", kind: "Entry" }, { id: "x", kind: "Exit" }], edges: [] };
+    const bad: FlowGraph = {
+      nodes: [
+        { id: "e", kind: "Entry" },
+        { id: "x", kind: "Exit" },
+      ],
+      edges: [],
+    };
     const flow = await createDraftFlow({ name: "B", timezone: "UTC", graph: bad });
     await expect(publishFlow(flow.id, "u1")).rejects.toThrow(/flow_validation_error/);
   });

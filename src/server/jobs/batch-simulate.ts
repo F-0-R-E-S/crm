@@ -1,6 +1,6 @@
-import type { Job } from "pg-boss";
 import { prisma } from "@/server/db";
 import { simulateRoute } from "@/server/routing/simulator";
+import type { Job } from "pg-boss";
 
 export interface BatchSimulateJob {
   jobId: string;

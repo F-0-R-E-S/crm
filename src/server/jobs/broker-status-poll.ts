@@ -1,7 +1,7 @@
-import type { Job } from "pg-boss";
 import { pollBrokerStatuses } from "@/server/broker-adapter/status-poll";
 import { prisma } from "@/server/db";
 import { logger } from "@/server/observability";
+import type { Job } from "pg-boss";
 
 export async function handleBrokerStatusPoll(_job: Job<Record<string, never>>) {
   const brokers = await prisma.broker.findMany({

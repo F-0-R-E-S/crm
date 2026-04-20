@@ -1,8 +1,8 @@
-import type { Job } from "pg-boss";
 import { prisma } from "@/server/db";
 import { JOB_NAMES, startBossOnce } from "@/server/jobs/queue";
 import { logger } from "@/server/observability";
 import { parseRetrySchedule } from "@/server/webhooks/intake-outcome";
+import type { Job } from "pg-boss";
 
 export interface IntakeWebhookDeliveryJob {
   deliveryId: string;

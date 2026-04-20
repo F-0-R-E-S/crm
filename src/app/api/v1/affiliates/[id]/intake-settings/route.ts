@@ -1,8 +1,5 @@
 import { auth } from "@/auth";
-import {
-  getIntakeSettings,
-  updateIntakeSettings,
-} from "@/server/intake/settings";
+import { getIntakeSettings, updateIntakeSettings } from "@/server/intake/settings";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 

@@ -194,7 +194,9 @@ export default function MappingPage({ params }: { params: Promise<{ id: string }
                       onChange={(e) =>
                         updateRow(src, {
                           transform:
-                            e.target.value === "" ? undefined : (e.target.value as Rule["transform"]),
+                            e.target.value === ""
+                              ? undefined
+                              : (e.target.value as Rule["transform"]),
                         })
                       }
                       style={{ ...inputStyle(theme), width: "100%" }}

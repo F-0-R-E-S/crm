@@ -7,16 +7,22 @@ const server = createServer(async (req, res) => {
   for await (const c of req) chunks.push(c as Buffer);
   const raw = Buffer.concat(chunks).toString("utf8");
   let parsed: unknown;
-  try { parsed = JSON.parse(raw); } catch { parsed = raw; }
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    parsed = raw;
+  }
   received.push({ path: req.url ?? "/", body: parsed });
   console.log(`[mock] ${req.method} ${req.url} →`, JSON.stringify(parsed));
   res.statusCode = 200;
   res.setHeader("content-type", "application/json");
-  res.end(JSON.stringify({
-    id: `mock-ext-${Date.now()}`,
-    status: "accepted",
-    autologin_url: "https://mock.broker/autologin/abc123",
-  }));
+  res.end(
+    JSON.stringify({
+      id: `mock-ext-${Date.now()}`,
+      status: "accepted",
+      autologin_url: "https://mock.broker/autologin/abc123",
+    }),
+  );
 });
 
 server.listen(4000, () => {

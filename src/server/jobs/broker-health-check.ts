@@ -1,4 +1,3 @@
-import type { Job } from "pg-boss";
 import {
   type TestConnectionBroker,
   testBrokerConnection,
@@ -6,6 +5,7 @@ import {
 import { recordHealthCheck } from "@/server/broker-health/check";
 import { prisma } from "@/server/db";
 import { logger } from "@/server/observability";
+import type { Job } from "pg-boss";
 
 export async function handleBrokerHealthCheck(_job: Job<Record<string, never>>) {
   const brokers = await prisma.broker.findMany({ where: { isActive: true } });
@@ -34,8 +34,5 @@ export async function handleBrokerHealthCheck(_job: Job<Record<string, never>>) 
       );
     }
   }
-  logger.info(
-    { event: "broker_health_check_batch", count: brokers.length },
-    "batch done",
-  );
+  logger.info({ event: "broker_health_check_batch", count: brokers.length }, "batch done");
 }

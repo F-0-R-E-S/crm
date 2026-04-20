@@ -122,10 +122,7 @@ export default function AffiliateDetail({ params }: { params: Promise<{ id: stri
   const { theme } = useThemeCtx();
   const utils = trpc.useUtils();
   const { data } = trpc.affiliate.byId.useQuery({ id });
-  const { data: stats } = trpc.affiliate.stats.useQuery(
-    { id },
-    { refetchInterval: 15_000 },
-  );
+  const { data: stats } = trpc.affiliate.stats.useQuery({ id }, { refetchInterval: 15_000 });
   const update = trpc.affiliate.update.useMutation({
     onSuccess: () => utils.affiliate.byId.invalidate({ id }),
   });

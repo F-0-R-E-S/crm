@@ -11,9 +11,7 @@ import { z } from "zod";
 
 const RuleSchema = z.object({
   target: z.string().min(1).max(128),
-  transform: z
-    .enum(["concat", "format_phone", "default", "uppercase", "lowercase"])
-    .optional(),
+  transform: z.enum(["concat", "format_phone", "default", "uppercase", "lowercase"]).optional(),
   concatWith: z.string().optional(),
   sep: z.string().optional(),
   defaultValue: z.union([z.string(), z.number(), z.boolean()]).optional(),
@@ -47,10 +45,7 @@ function sampleLead(template: { samplePayload: unknown } | null): Record<string,
   };
 }
 
-export async function PUT(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await guardAdmin()))
     return NextResponse.json({ error: { code: "forbidden" } }, { status: 403 });
 
@@ -59,8 +54,7 @@ export async function PUT(
     where: { id },
     include: { template: true },
   });
-  if (!broker)
-    return NextResponse.json({ error: { code: "broker_not_found" } }, { status: 404 });
+  if (!broker) return NextResponse.json({ error: { code: "broker_not_found" } }, { status: 404 });
 
   const raw = await req.json().catch(() => null);
   const parsed = BodySchema.safeParse(raw);
@@ -104,8 +98,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     where: { id },
     include: { template: true },
   });
-  if (!broker)
-    return NextResponse.json({ error: { code: "broker_not_found" } }, { status: 404 });
+  if (!broker) return NextResponse.json({ error: { code: "broker_not_found" } }, { status: 404 });
 
   const url = new URL(req.url);
   const wantPreview = url.searchParams.get("preview") === "1";

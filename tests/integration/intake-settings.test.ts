@@ -29,10 +29,9 @@ describe("intake settings REST", () => {
         role: "ADMIN",
       },
     });
-    const r = await GET(
-      new Request("http://localhost:3000/api/v1/affiliates/x/intake-settings"),
-      { params: Promise.resolve({ id: aff.id }) },
-    );
+    const r = await GET(new Request("http://localhost:3000/api/v1/affiliates/x/intake-settings"), {
+      params: Promise.resolve({ id: aff.id }),
+    });
     expect(r.status).toBe(200);
     const b = await r.json();
     expect(b.dedupe_window_days).toBe(30);
@@ -93,7 +92,12 @@ describe("intake settings REST", () => {
     });
     const rawKey = `ak_ap_${"x".repeat(40)}`;
     await prisma.apiKey.create({
-      data: { affiliateId: aff.id, keyHash: sha(rawKey), keyPrefix: rawKey.slice(0, 12), label: "x" },
+      data: {
+        affiliateId: aff.id,
+        keyHash: sha(rawKey),
+        keyPrefix: rawKey.slice(0, 12),
+        label: "x",
+      },
     });
     await updateIntakeSettings(aff.id, { allowedGeo: ["US"] }, "admin-1");
     invalidateCache();

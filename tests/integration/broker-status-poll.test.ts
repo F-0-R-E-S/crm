@@ -80,10 +80,9 @@ describe("POST /api/v1/brokers/{id}/status-sync", () => {
 
   it("GET возвращает текущую конфигурацию", async () => {
     const b = await seedBroker();
-    const r = await GET(
-      new Request(`http://localhost/api/v1/brokers/${b.id}/status-sync`),
-      { params: Promise.resolve({ id: b.id }) },
-    );
+    const r = await GET(new Request(`http://localhost/api/v1/brokers/${b.id}/status-sync`), {
+      params: Promise.resolve({ id: b.id }),
+    });
     expect(r.status).toBe(200);
     const body = await r.json();
     expect(body.mode).toBe("webhook");
