@@ -1,9 +1,21 @@
 import type { Bot } from "grammy";
 import { prisma } from "@/server/db";
+import { TELEGRAM_EVENT_TYPES, isTelegramEventType } from "./event-catalog";
 import { consumeLinkToken } from "./link-token";
 import { todayStats } from "./stats";
 
 const MD = { parse_mode: "Markdown" as const };
+
+async function activeSub(chatId: string) {
+  return prisma.telegramSubscription.findFirst({
+    where: { chatId, isActive: true },
+    include: { user: true },
+  });
+}
+
+function uniq<T>(arr: T[]): T[] {
+  return Array.from(new Set(arr));
+}
 
 export function registerCommands(bot: Bot) {
   bot.command("ping", (ctx) => ctx.reply("pong"));
@@ -31,9 +43,7 @@ export function registerCommands(bot: Bot) {
 
   bot.command("stats", async (ctx) => {
     const chatId = String(ctx.chat?.id ?? "");
-    const sub = await prisma.telegramSubscription.findFirst({
-      where: { chatId, isActive: true },
-    });
+    const sub = await activeSub(chatId);
     if (!sub) {
       await ctx.reply("Not linked. Run `/start <token>` first.", MD);
       return;
@@ -52,5 +62,76 @@ export function registerCommands(bot: Bot) {
       `Rejected: ${s.rejected}`,
     ].join("\n");
     await ctx.reply(body, MD);
+  });
+
+  bot.command("sub", async (ctx) => {
+    const chatId = String(ctx.chat?.id ?? "");
+    const sub = await activeSub(chatId);
+    if (!sub) {
+      await ctx.reply("Not linked. Run `/start <token>` first.", MD);
+      return;
+    }
+    const val = (ctx.match ?? "").trim().toUpperCase();
+    if (!val || !isTelegramEventType(val)) {
+      await ctx.reply(
+        `Invalid event type. Valid types:\n${TELEGRAM_EVENT_TYPES.join(", ")}`,
+        MD,
+      );
+      return;
+    }
+    const next = uniq([...sub.eventTypes, val]);
+    await prisma.telegramSubscription.update({
+      where: { id: sub.id },
+      data: { eventTypes: next },
+    });
+    await ctx.reply(`Subscribed to *${val}*.`, MD);
+  });
+
+  bot.command("unsub", async (ctx) => {
+    const chatId = String(ctx.chat?.id ?? "");
+    const sub = await activeSub(chatId);
+    if (!sub) {
+      await ctx.reply("Not linked. Run `/start <token>` first.", MD);
+      return;
+    }
+    const val = (ctx.match ?? "").trim().toUpperCase();
+    if (!val || !isTelegramEventType(val)) {
+      await ctx.reply(
+        `Invalid event type. Valid types:\n${TELEGRAM_EVENT_TYPES.join(", ")}`,
+        MD,
+      );
+      return;
+    }
+    const next = sub.eventTypes.filter((e) => e !== val);
+    await prisma.telegramSubscription.update({
+      where: { id: sub.id },
+      data: { eventTypes: next },
+    });
+    await ctx.reply(`Unsubscribed from *${val}*.`, MD);
+  });
+
+  bot.command("mutebroker", async (ctx) => {
+    const chatId = String(ctx.chat?.id ?? "");
+    const sub = await activeSub(chatId);
+    if (!sub) {
+      await ctx.reply("Not linked. Run `/start <token>` first.", MD);
+      return;
+    }
+    const id = (ctx.match ?? "").trim();
+    if (!id) {
+      await ctx.reply("Usage: `/mutebroker <brokerId>`", MD);
+      return;
+    }
+    const broker = await prisma.broker.findUnique({ where: { id } });
+    if (!broker) {
+      await ctx.reply(`Broker \`${id}\` not found.`, MD);
+      return;
+    }
+    const next = uniq([...sub.mutedBrokerIds, id]);
+    await prisma.telegramSubscription.update({
+      where: { id: sub.id },
+      data: { mutedBrokerIds: next },
+    });
+    await ctx.reply(`Muted broker *${broker.name}*.`, MD);
   });
 }
