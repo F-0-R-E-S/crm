@@ -1,7 +1,9 @@
 "use client";
+import { ConversionsWidget } from "@/components/analytics/ConversionsWidget";
 import { FilterBar, type FilterState } from "@/components/analytics/FilterBar";
 import { LineChartCard } from "@/components/analytics/LineChartCard";
 import { MetricTile } from "@/components/analytics/MetricTile";
+import { RejectsWidget } from "@/components/analytics/RejectsWidget";
 import { trpc } from "@/lib/trpc";
 import { useState } from "react";
 
@@ -26,6 +28,8 @@ export default function AnalyticsPage() {
 	const ftds = trpc.analytics.metricSeries.useQuery({ ...filters, metric: "ftds" });
 	const revenue = trpc.analytics.metricSeries.useQuery({ ...filters, metric: "revenue" });
 	const acceptance = trpc.analytics.metricSeries.useQuery({ ...filters, metric: "acceptanceRate" });
+	const conv = trpc.analytics.conversionBreakdown.useQuery(filters);
+	const rej = trpc.analytics.rejectBreakdown.useQuery(filters);
 
 	return (
 		<div style={{ padding: "20px 28px", display: "flex", flexDirection: "column", gap: 18 }}>
@@ -71,8 +75,10 @@ export default function AnalyticsPage() {
 				current={leads.data?.series ?? []}
 				compare={leads.data?.compare?.series ?? null}
 			/>
-			{/* Breakdowns placeholder — replaced in Task 11 */}
-			<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }} id="analytics-breakdowns" />
+			<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+				<ConversionsWidget data={conv.data} />
+				<RejectsWidget data={rej.data} />
+			</div>
 		</div>
 	);
 }
