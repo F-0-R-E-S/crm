@@ -468,10 +468,23 @@ model CapDefinition {
   window        CapWindow
   limit         Int
   timezone      String      @default("UTC")
+  perCountry    Boolean     @default(false)
   flowVersion   FlowVersion @relation(fields: [flowVersionId], references: [id], onDelete: Cascade)
+  countryLimits CapCountryLimit[]
 
   @@unique([flowVersionId, scope, scopeRefId, window])
   @@index([flowVersionId, scope])
+}
+
+model CapCountryLimit {
+  id           String        @id @default(cuid())
+  capDefId     String
+  country      String
+  limit        Int
+  capDefinition CapDefinition @relation(fields: [capDefId], references: [id], onDelete: Cascade)
+
+  @@unique([capDefId, country])
+  @@index([capDefId])
 }
 
 enum CapWindow {
@@ -486,10 +499,11 @@ model CapCounter {
   scopeId   String
   window    CapWindow
   bucketKey String
+  country   String    @default("")
   count     Int       @default(0)
   resetsAt  DateTime
 
-  @@unique([scope, scopeId, window, bucketKey])
+  @@unique([scope, scopeId, window, bucketKey, country])
   @@index([resetsAt])
 }
 
