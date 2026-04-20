@@ -6,7 +6,10 @@ export default auth((req) => {
   const { pathname } = req.nextUrl;
 
   const isPublic =
+    pathname === "/" ||
     pathname.startsWith("/login") ||
+    pathname.startsWith("/signup") ||
+    pathname.startsWith("/pricing") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/v1/health") ||
     pathname.startsWith("/api/v1/leads") ||
