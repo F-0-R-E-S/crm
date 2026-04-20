@@ -2,6 +2,7 @@
 import { Pill, TabStrip, btnStyle, inputStyle } from "@/components/router-crm";
 import { useThemeCtx } from "@/components/shell/ThemeProvider";
 import { trpc } from "@/lib/trpc";
+import Link from "next/link";
 import { use, useState } from "react";
 
 type Tab = "overview" | "keys" | "postback" | "history";
@@ -142,9 +143,23 @@ export default function AffiliateDetail({ params }: { params: Promise<{ id: stri
 
   return (
     <div style={{ padding: "20px 28px" }}>
-      <h1 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em", margin: "0 0 16px" }}>
-        {data.name}
-      </h1>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 14, margin: "0 0 16px" }}>
+        <h1 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em", margin: 0 }}>
+          {data.name}
+        </h1>
+        <Link
+          href={`/dashboard/affiliates/${id}/intake-settings` as never}
+          style={{ fontSize: 11, color: "var(--fg-2)", textDecoration: "none" }}
+        >
+          intake settings →
+        </Link>
+        <Link
+          href={`/dashboard/affiliates/${id}/webhooks` as never}
+          style={{ fontSize: 11, color: "var(--fg-2)", textDecoration: "none" }}
+        >
+          intake webhooks →
+        </Link>
+      </div>
       <TabStrip<Tab>
         tabs={[
           { key: "overview", label: "overview" },
