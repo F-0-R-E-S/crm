@@ -128,6 +128,7 @@ model Broker {
   template           BrokerTemplate? @relation(fields: [templateId], references: [id])
   syncMode           String         @default("webhook")
   pollIntervalMin    Int?
+  pendingHoldMinutes Int?
   statusPollPath     String?
   statusPollIdsParam String?
   lastHealthStatus   String         @default("unknown")
@@ -196,6 +197,8 @@ model Lead {
   lastPushAt        DateTime?
   acceptedAt        DateTime?
   ftdAt             DateTime?
+  pendingHoldUntil  DateTime?
+  shaveSuspected    Boolean            @default(false)
   traceId           String             @unique
   receivedAt        DateTime           @default(now())
   createdAt         DateTime           @default(now())
@@ -220,6 +223,7 @@ enum LeadState {
   REJECTED
   PUSHING
   PUSHED
+  PENDING_HOLD
   ACCEPTED
   DECLINED
   FTD
@@ -257,6 +261,9 @@ enum LeadEventKind {
   FLOW_FILTER_REJECT
   FALLBACK_HOP
   SIMULATE_DECISION
+  PENDING_HOLD_STARTED
+  PENDING_HOLD_RELEASED
+  SHAVE_SUSPECTED
 }
 
 model IdempotencyKey {
