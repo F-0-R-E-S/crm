@@ -18,6 +18,7 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
+    "gen:openapi": "tsx scripts/gen-openapi.ts",
     "db:reset": "prisma migrate reset --force --skip-seed && pnpm db:seed",
     "worker": "tsx worker.ts",
     "test:e2e": "vitest run --config vitest.e2e.config.ts"
@@ -80,6 +81,7 @@
     "tailwindcss": "^3.4.17",
     "tsx": "^4.21.0",
     "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "vitest": "^2.1.8",
+    "yaml": "^2.8.3"
   }
 }
