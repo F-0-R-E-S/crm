@@ -1,4 +1,8 @@
 import { prisma } from "@/server/db";
+import {
+	generateAffiliateInvoice,
+	generateBrokerInvoice,
+} from "@/server/finance/invoice-generate";
 import { computePnL } from "@/server/finance/pnl";
 import { protectedProcedure, router } from "@/server/trpc";
 import { Prisma } from "@prisma/client";
@@ -185,6 +189,36 @@ export const financeRouter = router({
 				where: input.brokerId ? { brokerId: input.brokerId } : {},
 				orderBy: { cohortEnd: "desc" },
 				take: 100,
+			}),
+		),
+
+	generateBrokerInvoice: protectedProcedure
+		.input(
+			z.object({
+				brokerId: z.string(),
+				periodStart: z.coerce.date(),
+				periodEnd: z.coerce.date(),
+			}),
+		)
+		.mutation(({ input }) =>
+			generateBrokerInvoice(input.brokerId, {
+				start: input.periodStart,
+				end: input.periodEnd,
+			}),
+		),
+
+	generateAffiliateInvoice: protectedProcedure
+		.input(
+			z.object({
+				affiliateId: z.string(),
+				periodStart: z.coerce.date(),
+				periodEnd: z.coerce.date(),
+			}),
+		)
+		.mutation(({ input }) =>
+			generateAffiliateInvoice(input.affiliateId, {
+				start: input.periodStart,
+				end: input.periodEnd,
 			}),
 		),
 });
