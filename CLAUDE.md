@@ -112,3 +112,17 @@
 - **Share links:** `AnalyticsShareLink` (token, query, expiresAt). `POST /api/v1/analytics/share` mints 16-byte hex token (30-day TTL). `GET /api/v1/analytics/share/:token` — 404 unknown, 410 expired. Share view re-executes the service to return live data.
 - **UI:** `/dashboard/analytics` (nav shortcut `Y`) — recharts-based. 4 metric tiles with sparklines + delta%, full-width line chart with compare overlay, 2-col breakdown grid (conversions funnel + rejects by reason). Filter bar with date range, groupBy, compare toggle, save/load preset, share.
 - **Export:** `GET /api/v1/analytics/export?query=<json>` — returns `text/csv` per drill-down (metricSeries / conversionBreakdown / rejectBreakdown / revenueBreakdown). In-memory buffered; streaming deferred until row counts exceed ~10k.
+
+## v1.0 Sprint 5 — Telegram ops bot (EPIC-11)
+
+- **Library:** `grammy`. Single global bot per deployment; `TelegramBotConfig` holds `botToken` + `webhookSecret`.
+- **Webhook:** `POST /api/telegram/webhook/:secret` → `grammy` `webhookCallback`. Secret rotated via admin page. No IP allowlist (Telegram does not publish a stable IP range).
+- **Event catalog:** 23 types in `src/server/telegram/event-catalog.ts` (lead lifecycle, broker/system, operational, affiliate-facing). Templates: one file per type under `src/server/telegram/templates/`.
+- **Emitter:** `src/server/telegram/emit.ts::emitTelegramEvent(type, payload, filters?)` — resolves matching subscriptions (by eventTypes, brokerFilter, affiliateFilter, mutedBrokerIds) and enqueues `telegram-send` pg-boss jobs. Empty-array filters = "all"; `mutedBrokerIds` always wins.
+- **Worker:** `src/server/jobs/telegram-send.ts` — renders per-template, sends via Telegram API, 3× retry with 429 `retry_after` honouring + exponential back-off for other errors, logs every attempt to `TelegramEventLog`.
+- **Commands:** `/start <token>` (link; 15-min single-use hashed token in `src/server/telegram/link-token.ts`), `/stats` (today's counters scoped to subscription filters), `/sub`/`/unsub`/`/mutebroker`, ADMIN-only `/ack <leadId>`/`/pause_broker <id>`/`/resume_broker <id>` — `/ack` writes `MANUAL_OVERRIDE` LeadEvent, broker commands write `AuditLog` with `via: "telegram"`.
+- **UI:** `/dashboard/settings/telegram` (user: link, filters, save) and `/dashboard/settings/telegram-admin` (admin: token, webhook info, test-send, event log auto-refreshed 30s).
+- **Emit points:** intake route (`NEW_LEAD`, `FRAUD_HIT`), push worker (`PUSHED`, `FAILED`, `CAP_REACHED`, `MANUAL_REVIEW_QUEUED`), pending-hold resolver (`PENDING_HOLD_RELEASED`), status-poll (`FTD`, `AFFILIATE_FTD`), broker-health transition (`BROKER_DOWN`, `BROKER_RECOVERED`). All sites use fire-and-forget `void emit(...).catch(...)`. S3 `emitAlert` stub now forwards to Telegram (`manual_queue_*`, `broker_down`, `fraud_hit`).
+- **Crons:** `anomaly-detect` every 15 min (50% hour-over-hour drop, prior > 10 leads → `ANOMALY_DETECTED`); `daily-summary` at 09:00 UTC (global `DAILY_SUMMARY` + per-affiliate `AFFILIATE_DAILY_SUMMARY`). Both registered in `worker.ts`.
+- **Env:** `TELEGRAM_WEBHOOK_BASE_URL` (optional; used by admin page to render webhook URL), `TELEGRAM_LINK_TOKEN_TTL_MIN` (default 15).
+- **Gotcha:** template.TEMPLATES maps `TelegramEventType` → renderer; add a renderer + register in `templates/index.ts` when adding a new event type. Completeness enforced by `tests/unit/telegram-templates.test.ts`.
