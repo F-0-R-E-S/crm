@@ -8,14 +8,16 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(cuid())
-  tenantId     String?
-  email        String     @unique
-  passwordHash String
-  role         UserRole   @default(OPERATOR)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  auditLogs    AuditLog[]
+  id             String              @id @default(cuid())
+  tenantId       String?
+  email          String              @unique
+  passwordHash   String
+  role           UserRole            @default(OPERATOR)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  auditLogs      AuditLog[]
+  manualClaims   ManualReviewQueue[] @relation("ManualReviewClaimer")
+  manualResolves ManualReviewQueue[] @relation("ManualReviewResolver")
 
   @@index([tenantId])
 }
@@ -23,6 +25,8 @@ model User {
 enum UserRole {
   ADMIN
   OPERATOR
+  AFFILIATE_VIEWER
+  BROKER_VIEWER
 }
 
 model Affiliate {
@@ -138,6 +142,7 @@ model Broker {
   template           BrokerTemplate? @relation(fields: [templateId], references: [id])
   syncMode           String         @default("webhook")
   pollIntervalMin    Int?
+  retrySchedule      String         @default("10,60,300,900,3600")
   pendingHoldMinutes Int?
   statusPollPath     String?
   statusPollIdsParam String?
@@ -153,6 +158,7 @@ model Broker {
   healthChecks       BrokerHealthCheck[]
   errorSamples       BrokerErrorSample[]
   autologinAttempts  AutologinAttempt[]
+  manualReviewLast   ManualReviewQueue[]
 
   @@index([isActive])
   @@index([syncMode, isActive])
@@ -228,6 +234,7 @@ model Lead {
   events            LeadEvent[]
   outboundPostbacks OutboundPostback[]
   autologinAttempts AutologinAttempt[]
+  manualReview      ManualReviewQueue?
 
   @@index([affiliateId, createdAt])
   @@index([brokerId, createdAt])
@@ -288,6 +295,10 @@ enum LeadEventKind {
   PENDING_HOLD_RELEASED
   SHAVE_SUSPECTED
   FRAUD_SCORED
+  MANUAL_REVIEW_ENQUEUED
+  MANUAL_REVIEW_CLAIMED
+  MANUAL_REVIEW_RESOLVED
+  MANUAL_REVIEW_REQUEUED
 }
 
 model IdempotencyKey {
@@ -684,4 +695,43 @@ enum AutologinStatus {
   RUNNING
   SUCCEEDED
   FAILED
+}
+
+// --- EPIC-09 Manual Review Queue ---
+
+enum ManualReviewReason {
+  BROKER_FAILED
+  CAP_REACHED
+  NO_BROKER_MATCH
+  FRAUD_BORDERLINE
+}
+
+enum ManualReviewResolution {
+  ACCEPT
+  REJECT
+  REQUEUE
+}
+
+model ManualReviewQueue {
+  id             String                  @id @default(cuid())
+  leadId         String                  @unique
+  reason         ManualReviewReason
+  lastBrokerId   String?
+  lastError      String?
+  createdAt      DateTime                @default(now())
+  claimedBy      String?
+  claimedAt      DateTime?
+  resolvedBy     String?
+  resolvedAt     DateTime?
+  resolution     ManualReviewResolution?
+  resolutionNote String?
+
+  lead       Lead    @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  claimer    User?   @relation("ManualReviewClaimer", fields: [claimedBy], references: [id])
+  resolver   User?   @relation("ManualReviewResolver", fields: [resolvedBy], references: [id])
+  lastBroker Broker? @relation(fields: [lastBrokerId], references: [id])
+
+  @@index([resolvedAt])
+  @@index([claimedBy])
+  @@index([reason, createdAt])
 }
