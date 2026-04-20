@@ -9,6 +9,11 @@ import { clientIpAllowed, extractClientIp } from "@/server/intake/check-ip";
 import { getFraudPolicy } from "@/server/intake/fraud-policy-cache";
 import { computeFraudScore } from "@/server/intake/fraud-score";
 import { buildSignals } from "@/server/intake/fraud-signals";
+import {
+  computeQualityScore,
+  loadAffiliateHistory,
+  loadBrokerGeoStats,
+} from "@/server/intake/quality-score";
 import { determineMockOutcome, mockOutcomeToResponse } from "@/server/intake/sandbox";
 import { getIntakeSettings } from "@/server/intake/settings";
 import { JOB_NAMES, startBossOnce } from "@/server/jobs/queue";
@@ -283,6 +288,18 @@ export async function POST(req: Request) {
       }
     }
 
+    // Q-Leads quality score — pure blend of fraud + 30-day affiliate history + broker/GEO stats.
+    const [affHistory, brokerGeoStats] = await Promise.all([
+      loadAffiliateHistory(ctx.affiliateId),
+      loadBrokerGeoStats(null, geo),
+    ]);
+    const quality = computeQualityScore({
+      fraudScore: fraud.score,
+      signalKinds: fraud.fired.map((f) => f.kind),
+      affiliate: affHistory,
+      brokerGeo: brokerGeoStats,
+    });
+
     // Pick final state: REJECTED_FRAUD for auto-fraud, REJECTED for other reject reasons,
     // NEW otherwise.
     const finalState: "NEW" | "REJECTED" | "REJECTED_FRAUD" = autoFraudReject
@@ -314,6 +331,8 @@ export async function POST(req: Request) {
         rejectReason,
         fraudScore: fraud.score,
         fraudSignals: firedJson,
+        qualityScore: quality.score,
+        qualitySignals: quality.components as unknown as Prisma.InputJsonValue,
         needsReview,
         events: {
           create: [
