@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
 import { runDocsRegen } from "@/../scripts/docs-regen";
+import { describe, expect, it } from "vitest";
 
 describe("docs-regen smoke", () => {
   it("runs in dry mode without throwing and returns a manifest", async () => {
