@@ -6,9 +6,10 @@ export interface RejectsWidgetProps {
     byReason: Array<{ reason: string; count: number }>;
     total: number;
   };
+  onReasonClick?: (reason: string) => void;
 }
 
-export function RejectsWidget({ data }: RejectsWidgetProps) {
+export function RejectsWidget({ data, onReasonClick }: RejectsWidgetProps) {
   const rows = (data?.byReason ?? []).slice(0, 12);
   const total = data?.total ?? 0;
   return (
@@ -32,7 +33,10 @@ export function RejectsWidget({ data }: RejectsWidgetProps) {
           justifyContent: "space-between",
         }}
       >
-        <span>Rejects by reason</span>
+        <span>
+          Rejects by reason{" "}
+          {onReasonClick ? <span style={{ fontSize: 10 }}>· click bar to drill</span> : null}
+        </span>
         {total > 0 ? <span>{total} total</span> : null}
       </div>
       <div style={{ height: 240 }}>
@@ -45,6 +49,12 @@ export function RejectsWidget({ data }: RejectsWidgetProps) {
               dataKey="count"
               fill="var(--danger, oklch(63% 0.22 25))"
               isAnimationActive={false}
+              cursor={onReasonClick ? "pointer" : undefined}
+              onClick={(p) => {
+                if (!onReasonClick) return;
+                const reason = (p as { reason?: string } | undefined)?.reason;
+                if (reason) onReasonClick(reason);
+              }}
             />
           </BarChart>
         </ResponsiveContainer>

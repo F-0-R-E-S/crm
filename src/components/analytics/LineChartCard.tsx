@@ -20,6 +20,7 @@ export interface LineChartCardProps {
   current: SeriesPoint[];
   compare?: SeriesPoint[] | null;
   height?: number;
+  onPointClick?: (bucket: string) => void;
 }
 
 interface MergedRow {
@@ -51,6 +52,7 @@ export function LineChartCard({
   current,
   compare = null,
   height = 260,
+  onPointClick,
 }: LineChartCardProps) {
   const data = mergeSeries(current, compare);
   const hasCompare = Array.isArray(compare) && compare.length > 0;
@@ -73,11 +75,20 @@ export function LineChartCard({
           marginBottom: 6,
         }}
       >
-        {title}
+        {title} {onPointClick ? <span style={{ fontSize: 10 }}>· click point to drill</span> : null}
       </div>
       <div style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={data}>
+          <LineChart
+            data={data}
+            onClick={(state) => {
+              if (!onPointClick) return;
+              const payload = (state as { activePayload?: Array<{ payload: { bucket: string } }> })
+                ?.activePayload;
+              const bucket = payload?.[0]?.payload?.bucket;
+              if (bucket) onPointClick(bucket);
+            }}
+          >
             <CartesianGrid vertical={false} strokeDasharray="2 2" stroke="var(--bd-1)" />
             <XAxis dataKey="bucket" tickFormatter={fmtBucket} minTickGap={30} fontSize={10} />
             <YAxis width={40} fontSize={10} />
@@ -87,7 +98,7 @@ export function LineChartCard({
               dataKey="current"
               stroke="var(--accent, oklch(76% 0.12 220))"
               strokeWidth={1.5}
-              dot={false}
+              dot={onPointClick ? { r: 3 } : false}
               isAnimationActive={false}
             />
             {hasCompare ? (
