@@ -1,6 +1,7 @@
 import { rbacPreviewRouter } from "../rbac/preview";
 import { router } from "../trpc";
 import { affiliateRouter } from "./affiliate";
+import { alertLogRouter } from "./alertLog";
 import { analyticsRouter } from "./analytics";
 import { auditRouter } from "./audit";
 import { blacklistRouter } from "./blacklist";
@@ -25,6 +26,7 @@ export const appRouter = router({
   blacklist: blacklistRouter,
   user: userRouter,
   audit: auditRouter,
+  alertLog: alertLogRouter,
   manualReview: manualReviewRouter,
   rbacPreview: rbacPreviewRouter,
   analytics: analyticsRouter,

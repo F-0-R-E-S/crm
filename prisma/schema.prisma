@@ -1069,7 +1069,10 @@ model AlertLog {
   measurement  Json      @default("{}")
   message      String
   resolvedAt   DateTime?
+  ackedAt      DateTime?
+  ackedBy      String?
 
   @@index([ruleKey, triggeredAt])
   @@index([resolvedAt])
+  @@index([ackedAt])
 }
