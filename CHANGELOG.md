@@ -2,6 +2,39 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v2.0.0-s2 (2026-04-21)
+
+**v2.0 Sprint 2 — Tenant Routing + Branding + Data Isolation.**
+
+- **Hostname → tenant resolution.** New `src/server/tenant/domain-role.ts` — pure-string resolver parses `<role>.<slug>.<root>` into `{ tenantSlug, domainRole: "network" | "autologin" | "api" }`. `src/middleware.ts` calls it on every request (using `x-forwarded-host` when behind Fly), propagates the result via `x-tenant-slug` / `x-tenant-domain-role` headers, and 404s paths that don't match the domain role (e.g., `api.acme.gambchamp.io/dashboard` → 404 before auth).
+- **Server-side tenant registry.** New `src/server/tenant-registry.ts` with `tenantIdFromSlug()` + `tenantIdFromDomain()` (60-second LRU cache). Cache is flushed on every tenant CRUD mutation.
+- **Session ↔ host assertion.** `protectedProcedure` now rejects `session.user.tenantId !== hostTenantId` with `UNAUTHORIZED: tenant_host_mismatch`. `SUPER_ADMIN` bypasses this (needed for cross-tenant impersonation via `network.*` default domain).
+- **Per-tenant branding pipeline.** New `src/server/tenant/branding.ts` with Zod `TenantThemeSchema` (`brandName`, `logoUrl`, `primaryColor`, `accentColor`, `legalLinks`). Strict parsing (rejects unknown fields + dangerous color values). `getTenantBranding(tenantId)` 60s-cached. `src/components/shell/TenantBrandingStyle.tsx` (RSC) injects `--brand` + `--accent` CSS vars into the dashboard layout.
+- **Super-admin tenant CRUD UI.** New `/super-admin/tenants` + `/super-admin/tenants/new` + `/super-admin/tenants/[id]` — gated by `SUPER_ADMIN` role in `src/app/super-admin/layout.tsx` (regular ADMINs are redirected to `/dashboard`). Create wizard (slug/displayName/domains/theme/featureFlags), edit with theme JSON editor, delete with non-empty-tenant guard + audit-log trail.
+- **Super-admin tRPC router.** New `src/server/routers/tenant.ts` with `list` / `byId` / `create` / `update` / `remove` (super-admin) + `myBranding` / `updateMyBranding` (tenant admin). Every write flushes the tenant registry + branding caches.
+- **Per-tenant branding settings.** New `/dashboard/settings/branding` (tenant admin only) — form editor for displayName/brandName/logoUrl/primary+accent colors/legal links. Shortcut `V`.
+- **Cross-tenant pentest.** New `tests/e2e/tenant-isolation-pentest.test.ts` seeds two tenants (α, β), each with own user + affiliate + broker + lead + flow + manual-review-queue + alert-log. Probes **22 tRPC procedures** (list, byId, writes, inverse direction). Result: **22 / 22 isolated** (0 leaks). Fixed one real leak found during development: `scheduledChange.create` accepted cross-tenant `entityId` — router now explicit-filters target Flow/Broker with `tenantId: ctx.tenantId` before insert.
+- **Lead.tenantId hardened.** Migration `20260422100000_v2_s2_lead_tenant_notnull` backfills any NULL legacy leads to `tenant_default`, then `SET NOT NULL` + `SET DEFAULT 'tenant_default'`. Prisma schema updated to non-nullable. Intake bulk handler now uses `getActiveTenantId() ?? "tenant_default"`.
+- **Env var.** `ROOT_DOMAIN` added to `src/lib/env.ts` (empty string disables the 3-domain pattern — every host → `tenant_default`, preserving `crm-node.fly.dev` prod behavior).
+- **Nav.** Sidebar now shows a "super-admin" group (with `Z` shortcut) only for SUPER_ADMIN. New `V` shortcut routes to `/dashboard/settings/branding`.
+- **Version bump** → `2.0.0-s2`.
+
+### Tests added (Sprint 2)
+
+- `src/server/tenant/domain-role.test.ts` (15 tests — hostname parsing + path-role gating).
+- `src/server/tenant/branding.test.ts` (8 tests — Zod round-trip + CSS-var emit).
+- `src/server/tenant-registry.test.ts` (6 tests — cache hit/miss + DB lookup + inactive gate).
+- `tests/e2e/tenant-isolation-pentest.test.ts` (22 probes across 13 test blocks).
+
+**Totals:** 786 passed | 10 skipped | 1 todo (from a 734-pass S1 baseline — +52 new tests).
+
+### Known gaps going into S2.0-3
+
+- No custom logo upload handler (logoUrl is a BYO URL — upload-to-S3/Tigris deferred to S2.0-3).
+- `clearTenantCache()` is local-only — if we scale to multi-instance, switch to Redis pub/sub.
+- Pentest covers tRPC procedures; `/api/v1/*` routes still rely on `withTenant()` + api-key-stamped tenantId (same mechanism, different entry point). Add REST-side probes in S2.0-3.
+- Logo/favicon on `/login`, `/pricing`, `/` landing pages still shows the default GambChamp wordmark — S2.0-3 will wire the tenant branding into the auth layout as well.
+
 ## v2.0.0-s1 (2026-04-21)
 
 **v2.0 Sprint 1 — White-Label Foundation (tenantId activation).**

@@ -1,13 +1,22 @@
 # Working notes for Claude Code
 
-## v2.0 preview — multi-tenancy (S2.0-1 landed 2026-04-21)
+## v2.0 multi-tenancy (S2.0-1 + S2.0-2 landed 2026-04-21)
 
-- **Tenant model live** (`prisma/schema.prisma`). Every tenant-scoped model carries `tenantId`; primary tables (`Affiliate`, `ApiKey`, `Broker`, `BrokerTemplate`, `User`) are `NOT NULL` + DB `DEFAULT 'tenant_default'`. `Lead.tenantId` stays nullable (hot-path).
-- **`withTenant(tenantId, fn)`** (`src/server/db-tenant.ts`) scopes Prisma calls via AsyncLocalStorage. `attachTenantMiddleware` ($use) auto-filters reads / updates / deletes on `TENANT_SCOPED_MODELS`, post-filters findUnique, and fills `tenantId = tenant_default` on creates with no scope. Creates inside `withTenant` inherit the scope's id when tenantId is omitted.
-- **tRPC** — `ctx.tenantId` set from `session.user.tenantId`. `protectedProcedure` runs inside `withTenant(ctx.tenantId, …)`. New `superAdminProcedure` skips the scope (cross-tenant CRUD for `SUPER_ADMIN` role).
-- **NextAuth** — `session.user.tenantId` populated via JWT callback. `User.tenantId` tracked at sign-in time.
-- **Intake** — `verifyApiKey` returns `tenantId`; `/api/v1/leads`, `/api/v1/leads/bulk`, `/api/v1/postbacks/:brokerId` wrap their handler in `withTenant(key.tenantId, …)` and stamp `Lead.tenantId` on creation.
-- **Not yet (S2.0-2+)** — hostname → tenant middleware, per-tenant branding, 3-domain split, tenant admin UI, pentest matrix.
+- **Tenant model live** (`prisma/schema.prisma`). Every tenant-scoped model carries `tenantId`; primary tables (`Affiliate`, `ApiKey`, `Broker`, `BrokerTemplate`, `Lead`, `User`) are `NOT NULL` + DB `DEFAULT 'tenant_default'`.
+- **`withTenant(tenantId, fn)`** (`src/server/db-tenant.ts`) scopes Prisma calls via AsyncLocalStorage. `attachTenantMiddleware` ($use) auto-filters reads / updates / deletes on `TENANT_SCOPED_MODELS`, post-filters findUnique, and fills `tenantId = tenant_default` on creates with no scope.
+- **tRPC** — `ctx.tenantId`, `ctx.hostTenantId`, `ctx.sessionTenantId` set. `protectedProcedure` rejects `sessionTenantId !== hostTenantId` (except SUPER_ADMIN) and runs inside `withTenant(ctx.tenantId, …)`. `superAdminProcedure` skips scoping (cross-tenant CRUD).
+- **Hostname → tenant (S2.0-2).** `src/server/tenant/domain-role.ts` parses `<role>.<slug>.<root>` → `{ tenantSlug, domainRole }`. `src/middleware.ts` reads `x-forwarded-host` (Fly), resolves, 404s path mismatches, and propagates via `x-tenant-slug` header. `src/server/tenant-registry.ts` resolves slug → tenantId (60s LRU, flushed on CRUD).
+- **Domain roles.**
+  - `network.<slug>.<root>` → `/dashboard/*`, `/super-admin/*`, `/login`, `/`, `/api/trpc/*`, `/api/auth/*`, `/docs/*`, `/share/*`. Rejects `/api/v1/*`.
+  - `autologin.<slug>.<root>` → `/autologin/*`, `/api/v1/autologin/*`, `/api/auth/*`, `/api/v1/health`.
+  - `api.<slug>.<root>` → only `/api/v1/*`.
+  - No match / `crm-node.fly.dev` / `localhost` → `tenant_default` / `network`.
+- **Branding.** `Tenant.theme` (Zod `TenantThemeSchema`): `brandName` / `logoUrl` / `primaryColor` / `accentColor` / `legalLinks`. Server-only `getTenantBranding(tenantId)` (60s LRU) + `TenantBrandingStyle` RSC injects `--brand` / `--accent` CSS vars into the dashboard layout.
+- **Super-admin UI.** `/super-admin/tenants` (list) / `/super-admin/tenants/new` / `/super-admin/tenants/[id]` — only for `UserRole.SUPER_ADMIN`. `src/server/routers/tenant.ts` drives CRUD + audit log on every write.
+- **Tenant branding settings.** `/dashboard/settings/branding` (tenant admin only, shortcut `V`) — form-edit own tenant's theme. Uses `tenant.myBranding` / `tenant.updateMyBranding` tRPC procs.
+- **Intake** — `verifyApiKey` returns `tenantId`; `/api/v1/leads`, `/api/v1/leads/bulk`, `/api/v1/postbacks/:brokerId` wrap their handler in `withTenant(key.tenantId, …)` and stamp `Lead.tenantId`.
+- **Env var.** `ROOT_DOMAIN` (empty = disable 3-domain pattern; every host → `tenant_default`).
+- **Pentest.** `tests/e2e/tenant-isolation-pentest.test.ts` — 22 probes, 100% isolated. Adding a new tenant-scoped tRPC proc? Add a probe there.
 
 ## Stack
 - Next.js 15 (App Router, Server Components by default, `"use client"` only when needed).
