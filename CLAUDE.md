@@ -174,6 +174,21 @@
 - **Release:** version `1.0.0` in `package.json`; `CHANGELOG.md` populated; tag `v1.0.0` on `main`.
 - **Known v1.0.1 follow-ups:** extend structured logging to onboarding wizard, health endpoint broker-health polling, self-host Scalar viewer, admin UI for AlertLog ack, batch AuditLog hash-chain lookups.
 
+## v1.5 S1.5-3 — Broker Clone + Delayed Actions (April 2026)
+
+- **Broker Clone:** `Broker.clonedFromId` self-relation. `src/server/brokers/clone.ts::cloneBroker` copies all whitelisted config, blanks `endpointUrl` / `postbackSecret` / `authConfig` / `autologinLoginUrl`, starts clone paused. tRPC `broker.clone` (AuditLog emitted) + `broker.listClones`. Detail page: "Clone…" button + `CloneDialog` (copy/blank preview) + "cloned from" / "cloned as N" badges.
+- **Delayed Actions:** new `ScheduledChange` table (entityType Flow/Broker/Cap, status PENDING/APPLIED/CANCELLED/FAILED, payload JSON patch, applyAt, latencyMs, appliedBy, errorMessage).
+  - **Patch allowlist** (`src/server/scheduled-changes/patch.ts`): Broker {isActive, dailyCap, workingHours, retrySchedule, pendingHoldMinutes, autologinEnabled}; Flow {status (DRAFT→PUBLISHED via `publishFlow`), activeVersionId}; Cap {limit, perCountry, countryLimits (array re-create)}.
+  - **Orchestrator** (`src/server/scheduled-changes/orchestrator.ts`): `applyScheduledChange(id)` inside Prisma transaction, stamps `latencyMs` = drift from target, writes `scheduled_change_applied` / `_failed` AuditLog, emits Telegram events (both admin-only).
+  - **Cron** (`src/server/jobs/apply-scheduled-changes.ts` + `worker.ts`): `*/1 * * * *` schedule. SLA success criterion: 95% of changes apply within ±5 min of target — `scheduled-change-sla.test.ts` asserts 20/20.
+  - **tRPC router** (`src/server/routers/scheduledChange.ts`): `list` (filters status / entityType / applyAt range), `byId`, `create`, `cancel`, `applyNow`, `retry`, `allowedFields`. All adminProcedure.
+  - **Admin UI:** `/dashboard/settings/scheduled-changes` (nav shortcut `J`). Filter bar + per-row Apply now / Cancel / Retry.
+  - **Audit hash-chain:** `src/server/audit.ts::getSystemUserId` upserts `system@gambchamp.local` so cron-driven `writeAuditLog({userId:"system"})` satisfies FK.
+  - **Telegram:** `SCHEDULED_CHANGE_APPLIED` + `SCHEDULED_CHANGE_FAILED` events added to `event-catalog.ts` (both in `ADMIN_ONLY_EVENTS`); templates `scheduled-change-applied.ts` / `-failed.ts`.
+- **Parking lot:** per-entity "Schedule change" wizard on Flow/Broker/Cap edit pages (admin list suffices for S3); baseline-drift detection (last-write-wins for v1.5); auto-subscribing admins to the new events.
+- **Tests added:** broker-clone (4), broker-clone-router (3), scheduled-change-apply (3), scheduled-change-cancel (1), scheduled-change-failure (2), scheduled-change-router (6), scheduled-change-sla (1), patch (8), telegram-template (2) = 30 new.
+- **Release:** version `1.5.0-s3` in `package.json`; tag `v1.5.0-s3-clone-and-delayed`.
+
 ## v1.5 S1.5-2 — EPIC-17 Visual Rule-Builder residuals (April 2026)
 
 - **Deep filter-condition builder:** Inspector's Filter block replaced with a full rule-builder — field × op matrix (`legalOpsForField` — `matches` restricted to string fields, `timeOfDay` to set-like ops), op-aware value editor (single-input / chip list / time-range), AND/OR logic toggle, live Zod validation + row error highlight. `src/components/routing-editor/FilterConditionEditor.tsx` + `filter-conditions.ts` pure helper (21 tests).

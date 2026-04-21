@@ -2,6 +2,89 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v1.5.0-s3 (2026-04-20)
+
+S1.5-3 — Broker Clone (iREV-parity productivity feature) and Delayed
+Actions (CRM Mate-parity scheduling). Both ship behind `adminProcedure`.
+
+### Added
+
+- **Broker Clone** — `Broker.clonedFromId` self-relation. Pure
+  `cloneBroker` helper in `src/server/brokers/clone.ts` copies all
+  whitelisted config and blanks `endpointUrl`, `postbackSecret`,
+  `authConfig`, `autologinLoginUrl`; clone starts paused. tRPC mutation
+  `broker.clone` + attribution queries via `broker.listClones`. Broker
+  detail page shows "Clone…" button, `CloneDialog.tsx` with
+  copy/blank preview, "cloned from" and "cloned as N" badges.
+  7 tests (4 helper + 3 router).
+- **Delayed Actions / Scheduled Changes** — new `ScheduledChange` table
+  with `entityType` enum (Flow / Broker / Cap), `status` enum
+  (PENDING / APPLIED / CANCELLED / FAILED), `payload` JSON patch,
+  `applyAt`, `latencyMs`, `appliedBy`, `errorMessage` + three indexes.
+  Pure `validatePatch` in `src/server/scheduled-changes/patch.ts`
+  enforces per-entity allowlist:
+  - Broker: `isActive`, `dailyCap`, `workingHours`, `retrySchedule`,
+    `pendingHoldMinutes`, `autologinEnabled`.
+  - Flow: `status` (DRAFT→PUBLISHED via `publishFlow`), `activeVersionId`.
+  - Cap: `limit`, `perCountry`, `countryLimits` (array re-create).
+  `applyScheduledChange` orchestrator wraps the patch in a Prisma
+  transaction, stamps `latencyMs` = drift from target, writes
+  `scheduled_change_applied` / `_failed` AuditLog entries, and emits
+  `SCHEDULED_CHANGE_APPLIED` / `SCHEDULED_CHANGE_FAILED` Telegram
+  events (both admin-only).
+- **pg-boss cron `apply-scheduled-changes`** — runs every 60 seconds
+  via `runApplyScheduledChanges`. Picks PENDING rows where
+  `applyAt <= now()`. Worker registered in `worker.ts`. SLA success
+  criterion (§10): 95 % of changes apply within ±5 min of target —
+  verified by `scheduled-change-sla.test.ts` (20/20 rows).
+- **tRPC `scheduledChange` router** — `list` (status / entityType /
+  applyAt range filters), `byId`, `create` (validates patch upfront),
+  `cancel` (PENDING only), `applyNow` (forces immediate orchestrator
+  run), `retry` (FAILED → PENDING), `allowedFields` (exposes allowlist
+  to UI).
+- **Admin page** at `/dashboard/settings/scheduled-changes` (nav
+  shortcut `J`). Filter bar + table with Apply now / Cancel / Retry
+  actions and patch preview column.
+- **System actor for unattended cron writes** — `getSystemUserId` upserts
+  `system@gambchamp.local` so audit-log rows satisfy FK constraint
+  when `appliedBy = "system"`.
+- **Telegram events + templates** — `SCHEDULED_CHANGE_APPLIED` /
+  `SCHEDULED_CHANGE_FAILED` in `event-catalog.ts`;
+  `scheduled-change-applied.ts` + `scheduled-change-failed.ts`
+  templates in `templates/`. Both registered in the admin-only set.
+
+### Tests
+
+- **Integration:** `broker-clone.test.ts` (4), `broker-clone-router.test.ts`
+  (3), `scheduled-change-apply.test.ts` (3),
+  `scheduled-change-cancel.test.ts` (1),
+  `scheduled-change-failure.test.ts` (2),
+  `scheduled-change-router.test.ts` (6),
+  `scheduled-change-sla.test.ts` (SLA assertion).
+- **Unit:** `patch.test.ts` (8 allowlist cases), telegram template
+  render checks (2).
+
+### Changed
+
+- `tests/helpers/db.ts::resetDb()` — adds `scheduledChange.deleteMany()`.
+- `prisma/seed.ts` — inserts 1 PENDING (applyAt in 1 h) + 1 APPLIED
+  scheduled change for the seed broker so dev UI renders non-empty.
+- `src/server/audit.ts::writeAuditLog` — resolves `userId === "system"`
+  through `getSystemUserId` upsert to keep the hash chain happy for
+  cron-driven entries.
+- `src/components/shell/NavConfig.ts` — adds `scheduled changes` entry
+  (group `settings`, kbd `J`).
+
+### Parking lot / deferred
+
+- Per-entity "Schedule change" wizard on each Flow / Broker / Cap edit
+  page — scoped out to S1.5-4 follow-up. The admin page lets operators
+  manage scheduled changes today; per-entity wizard is a UX sugar.
+- Baseline-drift detection (spec open question 5 in plan) — v1.5 ships
+  last-write-wins. 3-way merge explicitly deferred to v2.0.
+- Auto-subscribing admins to the two new Telegram events — documented
+  in plan; not auto-assigned (new default).
+
 ## v1.5.0-s2 (2026-04-20)
 
 S1.5-2 — EPIC-17 Visual Rule-Builder residuals on top of the v1.0.2 /
