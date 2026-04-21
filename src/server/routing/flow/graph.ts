@@ -120,36 +120,34 @@ export function flowToGraph(
   flow: FlowGraph,
   positions?: Record<string, { x: number; y: number }>,
 ): VisualGraph {
-  // Bucket by visual type for auto-layout.
-  const byType: Record<VisualNodeType, FlowNode[]> = {
-    entry: [],
-    filter: [],
-    branch: [],
-    algorithm: [],
-    brokerTarget: [],
-    fallback: [],
-    exit: [],
+  // Compute per-bucket row index for auto-layout fall-back, but emit
+  // nodes in the original FlowGraph order so a no-op round-trip is
+  // byte-stable. (Reactflow renders by absolute position, not list
+  // order, so emitting in any order is equally valid visually.)
+  const rowIndexByType: Record<VisualNodeType, number> = {
+    entry: 0,
+    filter: 0,
+    branch: 0,
+    algorithm: 0,
+    brokerTarget: 0,
+    fallback: 0,
+    exit: 0,
   };
-  for (const n of flow.nodes) {
-    byType[visualTypeFor(n.kind)].push(n);
-  }
 
-  const nodes: VisualNode[] = [];
-  for (const t of Object.keys(byType) as VisualNodeType[]) {
-    const list = byType[t];
-    list.forEach((n, i) => {
-      const override = positions?.[n.id];
-      const metaPos = (n as FlowNode & { meta?: { pos?: { x: number; y: number } } }).meta?.pos;
-      const x = override?.x ?? metaPos?.x ?? COLUMN_X[t];
-      const y = override?.y ?? metaPos?.y ?? i * ROW_STEP;
-      nodes.push({
-        id: n.id,
-        type: t,
-        position: { x, y },
-        data: { kind: n.kind, label: labelFor(n), raw: n },
-      });
-    });
-  }
+  const nodes: VisualNode[] = flow.nodes.map((n) => {
+    const t = visualTypeFor(n.kind);
+    const rowI = rowIndexByType[t]++;
+    const override = positions?.[n.id];
+    const metaPos = (n as FlowNode & { meta?: { pos?: { x: number; y: number } } }).meta?.pos;
+    const x = override?.x ?? metaPos?.x ?? COLUMN_X[t];
+    const y = override?.y ?? metaPos?.y ?? rowI * ROW_STEP;
+    return {
+      id: n.id,
+      type: t,
+      position: { x, y },
+      data: { kind: n.kind, label: labelFor(n), raw: n },
+    };
+  });
 
   const edges: VisualEdge[] = flow.edges.map((e, idx) => ({
     id: `${e.from}->${e.to}#${idx}`,
