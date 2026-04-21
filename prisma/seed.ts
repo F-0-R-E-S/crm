@@ -5,6 +5,8 @@ import { backfillDefaultOrg } from "../src/server/onboarding/backfill";
 import type { FlowGraph } from "../src/server/routing/flow/model";
 import { publishFlow } from "../src/server/routing/flow/publish";
 import { createDraftFlow } from "../src/server/routing/flow/repository";
+import { seedCanonicalStatuses } from "./seeds/canonical-statuses";
+import { seedStatusMappings } from "./seeds/status-mappings";
 
 const prisma = new PrismaClient();
 
@@ -133,6 +135,12 @@ async function main() {
     });
     console.log("seeded 2 scheduled changes (1 pending, 1 applied)");
   }
+
+  const canonCount = await seedCanonicalStatuses(prisma);
+  console.log(`canonical statuses: ${canonCount} upserted`);
+
+  const mappingCount = await seedStatusMappings(prisma);
+  console.log(`status mappings: ${mappingCount} upserted across 10 demo brokers`);
 
   if (process.env.SEED_PERF === "1") {
     await seedPerfFlow();

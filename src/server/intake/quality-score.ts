@@ -92,6 +92,96 @@ export async function loadAffiliateHistory(affiliateId: string): Promise<Affilia
   };
 }
 
+// --- v1.5 S4: Q-Leads trend extension -----------------------------------
+
+export type AffiliateTrend = "up" | "flat" | "down";
+
+export interface AffiliateTrendInput {
+  /** avg quality score for leads in last 7 days (null = no history) */
+  avg7d: number | null;
+  /** avg quality score for leads in 7d..14d window (null = no prior) */
+  avgPrev7d: number | null;
+  /** avg7d − avgPrev7d (0 when either is null) */
+  delta: number;
+}
+
+export interface QualityResultWithTrend extends QualityResult {
+  trend: AffiliateTrend;
+  trendDelta: number;
+}
+
+/**
+ * Classify the per-affiliate trend.
+ *   down: avg declined > 10 pts over last 7 days
+ *   up:   avg stable AND >= 80 for last 7 days
+ *   flat: otherwise (including insufficient history)
+ */
+export function classifyAffiliateTrend(input: AffiliateTrendInput): AffiliateTrend {
+  if (input.avg7d == null) return "flat";
+  if (input.delta < -10) return "down";
+  if (input.avg7d >= 80 && Math.abs(input.delta) <= 5) return "up";
+  return "flat";
+}
+
+/** Apply ±N pts trend adjustment and clamp to 0..100. */
+export function applyAffiliateTrend(score: number, trend: AffiliateTrend): number {
+  const adj = trend === "down" ? -5 : trend === "up" ? 3 : 0;
+  return Math.max(0, Math.min(100, score + adj));
+}
+
+export interface QualityInputWithTrend extends QualityInput {
+  trend: AffiliateTrendInput;
+}
+
+/**
+ * Wrap `computeQualityScore` with the v1.5 per-affiliate trend adjustment.
+ * Backward-compatible: when trend has no history, returns identical score +
+ * `trend: "flat"` + `trendDelta: 0`.
+ */
+export function computeQualityScoreWithTrend(input: QualityInputWithTrend): QualityResultWithTrend {
+  const base = computeQualityScore(input);
+  const trend = classifyAffiliateTrend(input.trend);
+  const adjusted = applyAffiliateTrend(base.score, trend);
+  return {
+    score: adjusted,
+    components: base.components,
+    trend,
+    trendDelta: input.trend.delta,
+  };
+}
+
+/**
+ * Load the 7-day and prior-7-day average Q-scores for an affiliate.
+ * Result drives `classifyAffiliateTrend` — both averages are means over
+ * non-null `Lead.qualityScore` values in their window.
+ */
+export async function loadAffiliate7dTrend(affiliateId: string): Promise<AffiliateTrendInput> {
+  const now = Date.now();
+  const D7 = 7 * 86_400_000;
+  const last7Start = new Date(now - D7);
+  const last7End = new Date(now);
+  const prev7Start = new Date(now - 2 * D7);
+  const prev7End = last7Start;
+  const rows = await prisma.$queryRaw<Array<{ avg_last: number | null; avg_prev: number | null }>>`
+    SELECT
+      AVG("qualityScore") FILTER (
+        WHERE "createdAt" >= ${last7Start} AND "createdAt" < ${last7End}
+      )::float AS avg_last,
+      AVG("qualityScore") FILTER (
+        WHERE "createdAt" >= ${prev7Start} AND "createdAt" < ${prev7End}
+      )::float AS avg_prev
+    FROM "Lead"
+    WHERE "affiliateId" = ${affiliateId}
+      AND "qualityScore" IS NOT NULL
+      AND "createdAt" >= ${prev7Start}
+  `;
+  const r = rows[0] ?? { avg_last: null, avg_prev: null };
+  const avg7d = r.avg_last;
+  const avgPrev7d = r.avg_prev;
+  const delta = avg7d != null && avgPrev7d != null ? avg7d - avgPrev7d : 0;
+  return { avg7d, avgPrev7d, delta };
+}
+
 export async function loadBrokerGeoStats(
   brokerId: string | null,
   geo: string,

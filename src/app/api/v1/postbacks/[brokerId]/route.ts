@@ -3,6 +3,7 @@ import { emitConversion } from "@/server/finance/emit-conversion";
 import { JOB_NAMES, getBoss, startBossOnce } from "@/server/jobs/queue";
 import { logger, runWithTrace } from "@/server/observability";
 import { verifyHmac } from "@/server/postback/hmac";
+import { UNMAPPED, classifyLeadStatus } from "@/server/status-groups/classify";
 import type { ConversionKind, LeadState, Prisma } from "@prisma/client";
 import { JSONPath } from "jsonpath-plus";
 import { nanoid } from "nanoid";
@@ -140,12 +141,19 @@ export async function POST(req: Request, { params }: { params: Promise<{ brokerI
       });
     }
 
+    // Resolve canonical status via StatusMapping (EPIC-18). `unmapped` is a
+    // valid sentinel — seen-but-unclassified raws. Operators normalize via
+    // /dashboard/brokers/<id>/status-mapping.
+    const canonicalCode = await classifyLeadStatus(brokerId, String(rawStatus ?? ""));
+    const canonicalStatusValue = canonicalCode === UNMAPPED ? UNMAPPED : canonicalCode;
+
     await prisma.$transaction([
       prisma.lead.update({
         where: { id: lead.id },
         data: {
           state: resolved,
           lastBrokerStatus: String(rawStatus ?? ""),
+          canonicalStatus: canonicalStatusValue,
           ...(resolved === "FTD" ? { ftdAt: new Date() } : {}),
           ...(resolved === "ACCEPTED" ? { acceptedAt: new Date() } : {}),
           ...leadDataExtras,

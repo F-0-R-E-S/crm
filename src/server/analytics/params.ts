@@ -11,7 +11,12 @@ export const AnalyticsFilters = z.object({
   affiliateIds: z.array(z.string()).default([]),
   brokerIds: z.array(z.string()).default([]),
   geos: z.array(z.string()).default([]),
+  canonicalStatuses: z.array(z.string()).optional(),
 });
+/**
+ * Post-parse type. `canonicalStatuses` is optional for backward compatibility
+ * — consumers treat `undefined` as empty array.
+ */
 export type AnalyticsFilters = z.infer<typeof AnalyticsFilters>;
 
 export const CompareTo = z.enum(["previous_period", "year_ago", "custom"]).nullable().default(null);

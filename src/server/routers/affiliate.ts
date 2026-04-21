@@ -91,6 +91,74 @@ export const affiliateRouter = router({
     };
   }),
 
+  /**
+   * Daily average qualityScore for an affiliate across the last N days.
+   * Used by /dashboard/affiliates/[id] quality-trend chart.
+   */
+  qualityTrend: protectedProcedure
+    .input(z.object({ affiliateId: z.string(), days: z.number().int().min(7).max(90).default(30) }))
+    .query(async ({ ctx, input }) => {
+      const since = new Date(Date.now() - input.days * 86_400_000);
+      type Row = { day: Date; avg_q: number | null; leads: bigint };
+      const rows = await ctx.prisma.$queryRaw<Row[]>`
+        SELECT date_trunc('day', "createdAt") AS day,
+               AVG("qualityScore")::float AS avg_q,
+               COUNT(*)::bigint AS leads
+        FROM "Lead"
+        WHERE "affiliateId" = ${input.affiliateId}
+          AND "qualityScore" IS NOT NULL
+          AND "createdAt" >= ${since}
+        GROUP BY day
+        ORDER BY day ASC
+      `;
+      return rows.map((r) => ({
+        date: new Date(r.day).toISOString().slice(0, 10),
+        avgQ: r.avg_q == null ? null : Math.round(r.avg_q * 100) / 100,
+        leads: Number(r.leads),
+      }));
+    }),
+
+  /**
+   * Per-affiliate 7-day sparkline + current avg, for /dashboard/affiliates list.
+   * Returns one row per affiliate; 0-lead affiliates get `avg7d = null` and
+   * empty sparkline so UI can fall back.
+   */
+  qualitySparklines: protectedProcedure.query(async ({ ctx }) => {
+    const since = new Date(Date.now() - 7 * 86_400_000);
+    type Row = { affiliate_id: string; day: Date; avg_q: number | null };
+    const rows = await ctx.prisma.$queryRaw<Row[]>`
+      SELECT "affiliateId" AS affiliate_id,
+             date_trunc('day', "createdAt") AS day,
+             AVG("qualityScore")::float AS avg_q
+      FROM "Lead"
+      WHERE "qualityScore" IS NOT NULL
+        AND "createdAt" >= ${since}
+      GROUP BY "affiliateId", day
+      ORDER BY "affiliateId", day
+    `;
+    const byAff = new Map<string, Array<{ date: string; avgQ: number }>>();
+    for (const r of rows) {
+      if (r.avg_q == null) continue;
+      const list = byAff.get(r.affiliate_id) ?? [];
+      list.push({
+        date: new Date(r.day).toISOString().slice(0, 10),
+        avgQ: Math.round(r.avg_q * 100) / 100,
+      });
+      byAff.set(r.affiliate_id, list);
+    }
+    const out: Array<{
+      affiliateId: string;
+      points: Array<{ date: string; avgQ: number }>;
+      avg7d: number | null;
+    }> = [];
+    for (const [affId, points] of byAff) {
+      const sum = points.reduce((a, p) => a + p.avgQ, 0);
+      const avg = points.length ? Math.round((sum / points.length) * 10) / 10 : null;
+      out.push({ affiliateId: affId, points, avg7d: avg });
+    }
+    return out;
+  }),
+
   create: adminProcedure
     .input(
       z.object({

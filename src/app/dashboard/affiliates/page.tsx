@@ -1,18 +1,33 @@
 "use client";
-import { Pill, btnStyle, inputStyle } from "@/components/router-crm";
+import { Pill, Sparkline, btnStyle, inputStyle } from "@/components/router-crm";
 import { useThemeCtx } from "@/components/shell/ThemeProvider";
 import { trpc } from "@/lib/trpc";
 import Link from "next/link";
 import { useState } from "react";
 
+function qualityColor(avg: number | null): string {
+  if (avg == null) return "var(--fg-2)";
+  if (avg >= 71) return "oklch(72% 0.15 150)";
+  if (avg >= 41) return "oklch(72% 0.15 80)";
+  return "oklch(72% 0.15 25)";
+}
+
 export default function AffiliatesPage() {
   const { theme } = useThemeCtx();
   const utils = trpc.useUtils();
   const { data } = trpc.affiliate.list.useQuery();
+  const { data: sparklines } = trpc.affiliate.qualitySparklines.useQuery();
   const create = trpc.affiliate.create.useMutation({
     onSuccess: () => utils.affiliate.list.invalidate(),
   });
   const [name, setName] = useState("");
+
+  const sparkByAff = new Map(
+    (sparklines ?? []).map((s) => [
+      s.affiliateId,
+      { points: s.points.map((p) => p.avgQ), avg7d: s.avg7d },
+    ]),
+  );
 
   return (
     <div style={{ padding: "20px 28px" }}>
@@ -55,6 +70,7 @@ export default function AffiliatesPage() {
             <th>cap</th>
             <th>postback</th>
             <th>status</th>
+            <th>q trend</th>
           </tr>
         </thead>
         <tbody>
@@ -88,6 +104,34 @@ export default function AffiliatesPage() {
                     paused
                   </Pill>
                 )}
+              </td>
+              <td>
+                {(() => {
+                  const sp = sparkByAff.get(a.id);
+                  const avg = sp?.avg7d ?? null;
+                  const pts = sp?.points ?? [];
+                  return (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      {pts.length >= 2 ? (
+                        <div style={{ color: qualityColor(avg) }}>
+                          <Sparkline points={pts} width={60} height={18} />
+                        </div>
+                      ) : (
+                        <span style={{ color: "var(--fg-2)", fontFamily: "var(--mono)" }}>—</span>
+                      )}
+                      <span
+                        style={{
+                          fontSize: 11,
+                          fontFamily: "var(--mono)",
+                          color: qualityColor(avg),
+                          fontWeight: 500,
+                        }}
+                      >
+                        {avg != null ? Math.round(avg) : "—"}
+                      </span>
+                    </div>
+                  );
+                })()}
               </td>
             </tr>
           ))}

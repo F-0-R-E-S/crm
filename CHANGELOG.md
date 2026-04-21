@@ -2,6 +2,86 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v1.5.0-s4 (2026-04-20)
+
+S1.5-4 — EPIC-18 Status Groups and Q-Leads v1.5 trend extension.
+Normalizes per-broker raw statuses into 20 canonical codes across 4
+categories; layers a 7-day per-affiliate trend adjustment on top of the
+v1.0 quality score.
+
+### Added
+
+- **Status Groups schema** — `StatusCategory` enum
+  (`NEW | QUALIFIED | REJECTED | CONVERTED`), `CanonicalStatus` model
+  (20 rows seeded via `prisma/seeds/canonical-statuses.ts`),
+  `StatusMapping` model (`@@unique([brokerId, rawStatus])`).
+  `Lead.canonicalStatus String?` + `LeadDailyRoll.canonicalStatus
+  String?` denormalized columns so analytics can group directly
+  without joining the mapping table.
+- **Classifier** — `classifyLeadStatus(brokerId, rawStatus)` in
+  `src/server/status-groups/classify.ts`; 30s LRU cache per broker with
+  `invalidateStatusMappingCache(brokerId?)`. Returns `"unmapped"` for
+  null/empty raws, unknown brokers, and never-seen raws. Wired into
+  `/api/v1/postbacks/[brokerId]/route.ts` — every postback now writes
+  both `Lead.lastBrokerStatus` and `Lead.canonicalStatus`.
+- **Status-mapping tRPC router** — `listCanonical`,
+  `observedRawStatuses` (grouped by frequency last 30d),
+  `upsert`/`bulkUpsert`/`remove` (admin-only, AuditLog + cache
+  invalidation), `suggestFor` (Levenshtein similarity vs code+label),
+  `coverageForBroker` (mapped-volume / total-volume), `backfillLeads`
+  (inline UPDATE chain).
+- **Admin UI** — `/dashboard/brokers/[id]/status-mapping` grid with
+  coverage + unmapped tiles, per-row canonical dropdown, bulk "apply
+  suggested", "remap existing leads" (backfill) button, filter toggle.
+- **Seed data for top-10 brokers** —
+  `prisma/seeds/status-mappings.ts` upserts 10 demo brokers + ~100
+  raw→canonical rows demonstrating 95%+ coverage path.
+- **Q-Leads v1.5 trend** — `computeQualityScoreWithTrend` extends the
+  base scorer with a per-affiliate 7-day moving average adjustment:
+  `down` (Δ<-10) → -5 pts; `up` (avg≥80, stable) → +3 pts;
+  `flat` otherwise. Backward-compatible — no history = flat = 0 adj.
+  `loadAffiliate7dTrend(affiliateId)` pulls `AVG(qualityScore)` over
+  last-7d vs 7d..14d windows. Intake route (`/api/v1/leads`) now
+  persists `qualitySignals.affiliateTrend` + `trendDelta` alongside
+  the component breakdown.
+- **Per-affiliate quality UI** —
+  `affiliate.qualityTrend({ affiliateId, days })` daily avg Q-score
+  series with 7d MA overlay rendered by `QualityTrendWidget` on
+  `/dashboard/affiliates/[id]`. `affiliate.qualitySparklines` feeds a
+  per-row 7-day sparkline + current avg with tone-coded color
+  (≥71 green, 41-70 amber, <41 red) in `/dashboard/affiliates`.
+- **Analytics canonical-status adoption** — `AnalyticsFilters`
+  extended with optional `canonicalStatuses` multi-select;
+  `analytics.canonicalStatusBreakdown` groups by `Lead.canonicalStatus`
+  across the window; `drillDown` gains `canonical-status` kind
+  returning leads for a specific canonical code.
+
+### Changed
+
+- `src/server/analytics/drilldown.ts::buildLeadWhere` accepts
+  `canonicalStatus` + reads `filters.canonicalStatuses` (backward-
+  compatible — missing field treated as empty array).
+- `tests/helpers/db.ts::resetDb` wipes `statusMapping` +
+  `canonicalStatus`.
+
+### Tests
+
+30 added: 10 unit `classifyLeadStatus`, 11 unit
+`computeQualityScoreWithTrend` + helpers, 7 integration
+`status-mapping-router` (CRUD + suggestFor + coverage + backfill),
+2 integration `postback-canonical-status`, 2 integration
+`analytics-canonical-status` (drill-down + breakdown).
+
+### Notes
+
+- Flaky `tests/integration/telegram-events-wired.test.ts` pre-existing
+  on `main`; not introduced by S4.
+- Materialized-view canonical rollup per plan §S1.5-4 day 9 deferred:
+  `LeadDailyRoll` has the nullable `canonicalStatus` column but the
+  refresh cron still writes `NULL` — `canonicalStatusBreakdown` reads
+  `Lead` directly for now (bounded by window + filters). Promoting
+  into the rollup is follow-up work for S1.5-5 hardening.
+
 ## v1.5.0-s3 (2026-04-20)
 
 S1.5-3 — Broker Clone (iREV-parity productivity feature) and Delayed

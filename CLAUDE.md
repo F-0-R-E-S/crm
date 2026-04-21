@@ -174,6 +174,20 @@
 - **Release:** version `1.0.0` in `package.json`; `CHANGELOG.md` populated; tag `v1.0.0` on `main`.
 - **Known v1.0.1 follow-ups:** extend structured logging to onboarding wizard, health endpoint broker-health polling, self-host Scalar viewer, admin UI for AlertLog ack, batch AuditLog hash-chain lookups.
 
+## v1.5 S1.5-4 — EPIC-18 Status Groups + Q-Leads v1.5 trend (April 2026)
+
+- **Schema:** `StatusCategory` enum (`NEW | QUALIFIED | REJECTED | CONVERTED`); `CanonicalStatus` model (20 seeded rows via `prisma/seeds/canonical-statuses.ts`); `StatusMapping` model (`@@unique([brokerId, rawStatus])`, `@@index([canonicalStatusId])`); `Lead.canonicalStatus String?` + `LeadDailyRoll.canonicalStatus String?` denormalized.
+- **Classifier:** `src/server/status-groups/classify.ts::classifyLeadStatus(brokerId, rawStatus)` — 30s LRU per-broker cache with `invalidateStatusMappingCache(brokerId?)`. Returns `"unmapped"` for null/empty/unknown. Trims whitespace; case-sensitive by design. Called from `src/app/api/v1/postbacks/[brokerId]/route.ts`; every postback writes `Lead.canonicalStatus`.
+- **Router:** `src/server/routers/statusMapping.ts` — `listCanonical` (protected), `observedRawStatuses` (last-30d raw freq + mapping join), `upsert/bulkUpsert/remove` (admin, AuditLog + cache invalidate), `suggestFor` (Levenshtein — `src/server/status-groups/suggest.ts`), `coverageForBroker`, `backfillLeads`.
+- **UI:** `/dashboard/brokers/[id]/status-mapping` — coverage + unmapped tiles, raw table with per-row canonical dropdown, bulk "apply suggested", "remap existing leads" backfill. Link added on broker detail top-bar.
+- **Seed demo mappings:** `prisma/seeds/status-mappings.ts` ships 10 demo brokers × ~10 raw statuses = ~100 mappings, upserted from `prisma/seed.ts`.
+- **Q-Leads v1.5 trend:** `computeQualityScoreWithTrend` in `src/server/intake/quality-score.ts` layers a per-affiliate 7d trend adjustment on top of the v1.0 score — `down` (Δ<-10) → -5 pts; `up` (avg≥80, |Δ|≤5) → +3; `flat` else. `loadAffiliate7dTrend(affiliateId)` pulls last-7d vs 7d..14d AVG in one `$queryRaw`. Intake route persists `qualitySignals.affiliateTrend` + `trendDelta` alongside the existing components.
+- **Affiliate UI:** `/dashboard/affiliates/[id]` renders `QualityTrendWidget` (30d daily avg + 7d MA overlay, color-coded by tone). `/dashboard/affiliates` table gains "q trend" column — 7d sparkline + avg from `affiliate.qualitySparklines`.
+- **Analytics:** `AnalyticsFilters.canonicalStatuses` multi-select (optional for backward compat). `analytics.canonicalStatusBreakdown` groups `Lead.canonicalStatus` counts across window. `drillDown` gains `canonical-status` kind.
+- **Tests added:** 30 — unit `classifyLeadStatus` (10), unit `computeQualityScoreWithTrend` (11), integration `status-mapping-router` (7), integration `postback-canonical-status` (2), integration `analytics-canonical-status` (2). Coverage seed (broker top-10) drives the 95% coverage demo; production coverage query exists as `statusMapping.coverageForBroker`.
+- **Deferred:** materialized-view `LeadDailyRoll.canonicalStatus` population (column exists, refresh cron still writes NULL — `canonicalStatusBreakdown` reads `Lead` directly). Telegram `STATUS_MAPPING_BACKFILL_PROGRESS` event (plan §A.4) deferred — backfill runs inline.
+- **Release:** version `1.5.0-s4` in `package.json`; tag `v1.5.0-s4-status-groups-qleads`.
+
 ## v1.5 S1.5-3 — Broker Clone + Delayed Actions (April 2026)
 
 - **Broker Clone:** `Broker.clonedFromId` self-relation. `src/server/brokers/clone.ts::cloneBroker` copies all whitelisted config, blanks `endpointUrl` / `postbackSecret` / `authConfig` / `autologinLoginUrl`, starts clone paused. tRPC `broker.clone` (AuditLog emitted) + `broker.listClones`. Detail page: "Clone…" button + `CloneDialog` (copy/blank preview) + "cloned from" / "cloned as N" badges.

@@ -10,7 +10,8 @@ import { getFraudPolicy } from "@/server/intake/fraud-policy-cache";
 import { computeFraudScore } from "@/server/intake/fraud-score";
 import { buildSignals } from "@/server/intake/fraud-signals";
 import {
-  computeQualityScore,
+  computeQualityScoreWithTrend,
+  loadAffiliate7dTrend,
   loadAffiliateHistory,
   loadBrokerGeoStats,
 } from "@/server/intake/quality-score";
@@ -317,16 +318,19 @@ export async function POST(req: Request) {
       }
     }
 
-    // Q-Leads quality score — pure blend of fraud + 30-day affiliate history + broker/GEO stats.
-    const [affHistory, brokerGeoStats] = await Promise.all([
+    // Q-Leads quality score — pure blend of fraud + 30-day affiliate history + broker/GEO stats
+    // plus v1.5 per-affiliate 7-day trend adjustment.
+    const [affHistory, brokerGeoStats, affTrend] = await Promise.all([
       loadAffiliateHistory(ctx.affiliateId),
       loadBrokerGeoStats(null, geo),
+      loadAffiliate7dTrend(ctx.affiliateId),
     ]);
-    const quality = computeQualityScore({
+    const quality = computeQualityScoreWithTrend({
       fraudScore: fraud.score,
       signalKinds: fraud.fired.map((f) => f.kind),
       affiliate: affHistory,
       brokerGeo: brokerGeoStats,
+      trend: affTrend,
     });
 
     // Pick final state: REJECTED_FRAUD for auto-fraud, REJECTED for other reject reasons,
@@ -361,7 +365,13 @@ export async function POST(req: Request) {
         fraudScore: fraud.score,
         fraudSignals: firedJson,
         qualityScore: quality.score,
-        qualitySignals: quality.components as unknown as Prisma.InputJsonValue,
+        qualitySignals: {
+          ...quality.components,
+          affiliateTrend: quality.trend,
+          trendDelta: Number.isFinite(quality.trendDelta)
+            ? Math.round(quality.trendDelta * 100) / 100
+            : 0,
+        } as unknown as Prisma.InputJsonValue,
         needsReview,
         events: {
           create: [

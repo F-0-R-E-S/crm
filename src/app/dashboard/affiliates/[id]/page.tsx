@@ -7,6 +7,162 @@ import { use, useState } from "react";
 
 type Tab = "overview" | "keys" | "postback" | "history";
 
+type QTrendPoint = { date: string; avgQ: number | null; leads: number };
+
+function qualityTone(avg: number | null): "green" | "amber" | "red" | "muted" {
+  if (avg == null) return "muted";
+  if (avg >= 71) return "green";
+  if (avg >= 41) return "amber";
+  return "red";
+}
+
+function qualityStroke(avg: number | null) {
+  switch (qualityTone(avg)) {
+    case "green":
+      return "oklch(72% 0.15 150)";
+    case "amber":
+      return "oklch(72% 0.15 80)";
+    case "red":
+      return "oklch(72% 0.15 25)";
+    default:
+      return "var(--fg-2)";
+  }
+}
+
+function QualityTrendWidget({ data }: { data: QTrendPoint[] }) {
+  const W = 800;
+  const H = 160;
+  const PAD = { t: 10, r: 12, b: 22, l: 32 };
+  const values = data.map((d) => d.avgQ ?? 0);
+  const max = Math.max(100, ...values);
+  const min = 0;
+  const range = max - min || 1;
+  const n = Math.max(1, data.length - 1);
+  // 7-day moving average
+  const ma: Array<number | null> = data.map((_, i) => {
+    const slice = data.slice(Math.max(0, i - 6), i + 1).filter((p) => p.avgQ != null);
+    if (slice.length === 0) return null;
+    return slice.reduce((s, p) => s + (p.avgQ ?? 0), 0) / slice.length;
+  });
+  const currentAvg = ma.length > 0 ? ma[ma.length - 1] : null;
+  const xAt = (i: number) => PAD.l + (data.length === 1 ? 0 : (i / n) * (W - PAD.l - PAD.r));
+  const yAt = (v: number) => H - PAD.b - ((v - min) / range) * (H - PAD.t - PAD.b);
+  const seriesPath = data
+    .filter((p) => p.avgQ != null)
+    .map((p, i, arr) => {
+      const idx = data.indexOf(p);
+      return `${i === 0 ? "M" : "L"}${xAt(idx).toFixed(1)},${yAt(p.avgQ as number).toFixed(1)}`;
+    })
+    .join(" ");
+  const maPath = ma
+    .map((v, i) => (v == null ? null : `${xAt(i).toFixed(1)},${yAt(v).toFixed(1)}`))
+    .filter(Boolean)
+    .map((pt, i) => `${i === 0 ? "M" : "L"}${pt}`)
+    .join(" ");
+
+  return (
+    <div
+      style={{
+        border: "1px solid var(--bd-1)",
+        borderRadius: 6,
+        padding: "14px 16px",
+      }}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "baseline",
+          marginBottom: 10,
+        }}
+      >
+        <div
+          style={{
+            fontSize: 11,
+            fontFamily: "var(--mono)",
+            color: "var(--fg-2)",
+            textTransform: "uppercase",
+            letterSpacing: "0.06em",
+          }}
+        >
+          quality trend · last {data.length || 30} days
+        </div>
+        <div
+          style={{
+            fontSize: 11,
+            fontFamily: "var(--mono)",
+            color: qualityStroke(currentAvg),
+            fontWeight: 500,
+          }}
+        >
+          7d avg: {currentAvg != null ? Math.round(currentAvg) : "—"}
+        </div>
+      </div>
+      {data.length === 0 ? (
+        <div style={{ padding: 24, fontSize: 12, color: "var(--fg-2)", textAlign: "center" }}>
+          No quality data yet.
+        </div>
+      ) : (
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          preserveAspectRatio="none"
+          style={{ width: "100%", height: H, display: "block" }}
+          role="img"
+          aria-label="quality trend"
+        >
+          <title>quality trend</title>
+          {[0, 40, 70, 100].map((y) => (
+            <line
+              key={`g-${y}`}
+              x1={PAD.l}
+              x2={W - PAD.r}
+              y1={yAt(y)}
+              y2={yAt(y)}
+              stroke="var(--bd-1)"
+              strokeDasharray={y === 0 ? "0" : "2 3"}
+              strokeWidth={0.8}
+            />
+          ))}
+          {[0, 40, 70, 100].map((y) => (
+            <text
+              key={`gl-${y}`}
+              x={PAD.l - 6}
+              y={yAt(y) + 3}
+              fontSize={9}
+              fontFamily="var(--mono)"
+              fill="var(--fg-2)"
+              textAnchor="end"
+            >
+              {y}
+            </text>
+          ))}
+          {seriesPath && (
+            <path
+              d={seriesPath}
+              fill="none"
+              stroke="var(--accent)"
+              strokeWidth={1.5}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              opacity={0.6}
+            />
+          )}
+          {maPath && (
+            <path
+              d={maPath}
+              fill="none"
+              stroke={qualityStroke(currentAvg)}
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          )}
+        </svg>
+      )}
+    </div>
+  );
+}
+
 const EVENT_KINDS = ["lead_pushed", "accepted", "declined", "ftd", "failed"] as const;
 
 type SeriesPoint = { ts: string; leads: number; ftds: number; rejects: number };
@@ -124,6 +280,7 @@ export default function AffiliateDetail({ params }: { params: Promise<{ id: stri
   const utils = trpc.useUtils();
   const { data } = trpc.affiliate.byId.useQuery({ id });
   const { data: stats } = trpc.affiliate.stats.useQuery({ id }, { refetchInterval: 15_000 });
+  const { data: qTrend } = trpc.affiliate.qualityTrend.useQuery({ affiliateId: id, days: 30 });
   const update = trpc.affiliate.update.useMutation({
     onSuccess: () => utils.affiliate.byId.invalidate({ id }),
   });
@@ -275,6 +432,7 @@ export default function AffiliateDetail({ params }: { params: Promise<{ id: stri
             </div>
             <Sparkline series={stats?.series ?? []} />
           </div>
+          <QualityTrendWidget data={qTrend ?? []} />
         </div>
       )}
 

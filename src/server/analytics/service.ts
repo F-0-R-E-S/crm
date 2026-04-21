@@ -260,6 +260,47 @@ export async function rejectBreakdown(p: AnalyticsParams): Promise<RejectBreakdo
   return { byReason, total };
 }
 
+export interface CanonicalStatusBreakdownRow {
+  canonicalStatus: string;
+  count: number;
+}
+
+export interface CanonicalStatusBreakdownResult {
+  rows: CanonicalStatusBreakdownRow[];
+  total: number;
+}
+
+/**
+ * Per-canonical-status lead counts in the window. Reads `Lead` directly:
+ * `canonicalStatus` is denormalized on the lead and not yet rolled up into
+ * `LeadDailyRoll`. Bounded by window + optional filters so it stays cheap.
+ */
+export async function canonicalStatusBreakdown(
+  p: AnalyticsParams,
+): Promise<CanonicalStatusBreakdownResult> {
+  const where: Record<string, unknown> = {
+    createdAt: { gte: p.from, lt: p.to },
+    canonicalStatus: { not: null },
+  };
+  if (p.filters.affiliateIds.length > 0) where.affiliateId = { in: p.filters.affiliateIds };
+  if (p.filters.brokerIds.length > 0) where.brokerId = { in: p.filters.brokerIds };
+  if (p.filters.geos.length > 0) where.geo = { in: p.filters.geos };
+  const canonicalStatuses = p.filters.canonicalStatuses ?? [];
+  if (canonicalStatuses.length > 0) {
+    where.canonicalStatus = { in: canonicalStatuses };
+  }
+  const rows = await prisma.lead.groupBy({
+    by: ["canonicalStatus"],
+    where,
+    _count: { _all: true },
+  });
+  const out = rows
+    .map((r) => ({ canonicalStatus: r.canonicalStatus ?? "unmapped", count: r._count._all }))
+    .sort((a, b) => b.count - a.count);
+  const total = out.reduce((s, r) => s + r.count, 0);
+  return { rows: out, total };
+}
+
 export interface RevenueBreakdownRow {
   bucket: string;
   revenue: number;

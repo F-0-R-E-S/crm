@@ -117,6 +117,12 @@ export default function BrokerDetail({ params }: { params: Promise<{ id: string 
             Mapping editor
           </Link>
           <Link
+            href={`/dashboard/brokers/${id}/status-mapping` as never}
+            style={{ ...btnStyle(theme), textDecoration: "none" }}
+          >
+            Status mapping
+          </Link>
+          <Link
             href={`/dashboard/brokers/${id}/errors` as never}
             style={{ ...btnStyle(theme), textDecoration: "none" }}
           >

@@ -31,7 +31,7 @@ export function bucketToRange(
   return { from: start, to: end, extra: {} };
 }
 
-export type DrillDownKind = "metric" | "conversion" | "reject" | "revenue";
+export type DrillDownKind = "metric" | "conversion" | "reject" | "revenue" | "canonical-status";
 
 export function buildLeadWhere(
   kind: DrillDownKind,
@@ -42,6 +42,7 @@ export function buildLeadWhere(
     metric?: "leads" | "ftds" | "accepted" | "revenue" | "acceptanceRate";
     stage?: "received" | "validated" | "pushed" | "accepted" | "ftd" | "rejected";
     reason?: string;
+    canonicalStatus?: string;
     affiliateId?: string;
     brokerId?: string;
     geo?: string;
@@ -53,10 +54,16 @@ export function buildLeadWhere(
   if (opts.filters.affiliateIds.length > 0) where.affiliateId = { in: opts.filters.affiliateIds };
   if (opts.filters.brokerIds.length > 0) where.brokerId = { in: opts.filters.brokerIds };
   if (opts.filters.geos.length > 0) where.geo = { in: opts.filters.geos };
+  const canonicalStatuses = opts.filters.canonicalStatuses ?? [];
+  if (canonicalStatuses.length > 0) {
+    where.canonicalStatus = { in: canonicalStatuses };
+  }
   if (opts.affiliateId) where.affiliateId = opts.affiliateId;
   if (opts.brokerId) where.brokerId = opts.brokerId;
   if (opts.geo) where.geo = opts.geo;
-  if (kind === "reject") {
+  if (kind === "canonical-status" && opts.canonicalStatus) {
+    where.canonicalStatus = opts.canonicalStatus;
+  } else if (kind === "reject") {
     where.state = "REJECTED";
     if (opts.reason) where.rejectReason = opts.reason;
   } else if (kind === "metric") {

@@ -14,6 +14,7 @@ import { onboardingRouter } from "./onboarding";
 import { rotationRouter } from "./rotation";
 import { routingRouter } from "./routing";
 import { scheduledChangeRouter } from "./scheduledChange";
+import { statusMappingRouter } from "./statusMapping";
 import { telegramRouter } from "./telegram";
 import { userRouter } from "./user";
 
@@ -35,5 +36,6 @@ export const appRouter = router({
   finance: financeRouter,
   onboarding: onboardingRouter,
   scheduledChange: scheduledChangeRouter,
+  statusMapping: statusMappingRouter,
 });
 export type AppRouter = typeof appRouter;

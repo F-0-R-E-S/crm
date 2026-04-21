@@ -281,6 +281,7 @@ model Lead {
   fraudSignals      Json               @default("[]")
   qualityScore      Int?
   qualitySignals    Json               @default("{}")
+  canonicalStatus   String?
   needsReview       Boolean            @default(false)
   traceId           String             @unique
   receivedAt        DateTime           @default(now())
@@ -802,6 +803,7 @@ model LeadDailyRoll {
   affiliateId     String
   brokerId        String   @default("__none__") // sentinel keeps unique tuple intact for brokerless rejects
   geo             String
+  canonicalStatus String?
   totalReceived   Int      @default(0)
   totalValidated  Int      @default(0)
   totalRejected   Int      @default(0)
@@ -817,6 +819,7 @@ model LeadDailyRoll {
   @@index([affiliateId, date])
   @@index([brokerId, date])
   @@index([geo, date])
+  @@index([canonicalStatus, date])
 }
 
 model LeadHourlyRoll {
@@ -1097,6 +1100,44 @@ model ScheduledChange {
   @@index([status, applyAt])
   @@index([entityType, entityId])
   @@index([createdBy])
+}
+
+// --- EPIC-18 Status Groups (v1.5 S4) ---
+
+enum StatusCategory {
+  NEW
+  QUALIFIED
+  REJECTED
+  CONVERTED
+}
+
+model CanonicalStatus {
+  id          String          @id @default(cuid())
+  code        String          @unique
+  label       String
+  description String?
+  category    StatusCategory
+  sortOrder   Int             @default(100)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  mappings    StatusMapping[]
+
+  @@index([category, sortOrder])
+}
+
+model StatusMapping {
+  id                String          @id @default(cuid())
+  brokerId          String
+  rawStatus         String
+  canonicalStatusId String
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  updatedBy         String?
+  canonicalStatus   CanonicalStatus @relation(fields: [canonicalStatusId], references: [id], onDelete: Cascade)
+
+  @@unique([brokerId, rawStatus])
+  @@index([canonicalStatusId])
+  @@index([brokerId])
 }
 
 // --- EPIC S8: Alert rules engine ---

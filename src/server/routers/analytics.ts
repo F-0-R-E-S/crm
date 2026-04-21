@@ -2,6 +2,7 @@ import { memoizeCached } from "@/server/analytics/cache";
 import { bucketToRange, buildLeadWhere } from "@/server/analytics/drilldown";
 import { AnalyticsFilters, AnalyticsParams, GroupBy, MetricKey } from "@/server/analytics/params";
 import {
+  canonicalStatusBreakdown,
   conversionBreakdown,
   metricSeries,
   rejectBreakdown,
@@ -29,6 +30,11 @@ export const analyticsRouter = router({
     .input(AnalyticsParams)
     .query(async ({ input }) =>
       memoizeCached("revenueBreakdown", input, () => revenueBreakdown(input)),
+    ),
+  canonicalStatusBreakdown: protectedProcedure
+    .input(AnalyticsParams)
+    .query(async ({ input }) =>
+      memoizeCached("canonicalStatusBreakdown", input, () => canonicalStatusBreakdown(input)),
     ),
 
   // --- Presets ---
@@ -138,6 +144,15 @@ export const analyticsRouter = router({
           page: z.number().int().min(1).default(1),
           pageSize: z.number().int().min(1).max(200).default(50),
         }),
+        z.object({
+          kind: z.literal("canonical-status"),
+          canonicalStatus: z.string().min(1),
+          from: z.coerce.date(),
+          to: z.coerce.date(),
+          filters: AnalyticsFilters,
+          page: z.number().int().min(1).default(1),
+          pageSize: z.number().int().min(1).max(200).default(50),
+        }),
       ]),
     )
     .query(async ({ input }) => {
@@ -162,6 +177,7 @@ export const analyticsRouter = router({
         metric: input.kind === "metric" ? input.metric : undefined,
         stage: input.kind === "conversion" ? input.stage : undefined,
         reason: input.kind === "reject" ? input.reason : undefined,
+        canonicalStatus: input.kind === "canonical-status" ? input.canonicalStatus : undefined,
         affiliateId: extra.affiliateId,
         brokerId: extra.brokerId,
         geo: extra.geo,
