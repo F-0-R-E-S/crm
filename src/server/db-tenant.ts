@@ -12,21 +12,14 @@
  * preserve AsyncLocalStorage context for the slot read. `$use` honors it
  * correctly, which is essential for this design.
  */
-import { AsyncLocalStorage } from "node:async_hooks";
-import { Prisma, type PrismaClient } from "@prisma/client";
-
-export const DEFAULT_TENANT_ID = "tenant_default";
-
-type TenantSlot = { tenantId: string };
-const storage = new AsyncLocalStorage<TenantSlot>();
-
-export function withTenant<T>(tenantId: string, fn: () => Promise<T> | T): Promise<T> | T {
-  return storage.run({ tenantId }, fn) as Promise<T> | T;
-}
-
-export function getActiveTenantId(): string | null {
-  return storage.getStore()?.tenantId ?? null;
-}
+import type { PrismaClient } from "@prisma/client";
+// Re-export the pure-context helpers so existing callers continue to work.
+export {
+  DEFAULT_TENANT_ID,
+  getActiveTenantId,
+  withTenant,
+} from "./tenant-context";
+import { DEFAULT_TENANT_ID, getActiveTenantId } from "./tenant-context";
 
 /**
  * Models that carry a `tenantId` column (v2.0 S2.0-1). Reads/updates/deletes
@@ -168,5 +161,3 @@ export function attachTenantMiddleware<T extends PrismaClient>(client: T): T {
 export function extendPrismaWithTenant<T extends PrismaClient>(client: T): T {
   return attachTenantMiddleware(client);
 }
-
-export { Prisma };
