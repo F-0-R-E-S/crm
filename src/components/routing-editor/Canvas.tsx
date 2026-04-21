@@ -10,7 +10,7 @@
 
 import type { FlowEdge, FlowNode } from "@/server/routing/flow/model";
 import { useEffect, useMemo, useRef, useState } from "react";
-import ReactFlow, {
+import {
   Background,
   type Connection,
   Controls,
@@ -19,12 +19,13 @@ import ReactFlow, {
   type NodeTypes,
   type OnEdgesChange,
   type OnNodesChange,
+  ReactFlow,
   ReactFlowProvider,
   type ReactFlowInstance,
   applyEdgeChanges,
   applyNodeChanges,
-} from "reactflow";
-import "reactflow/dist/style.css";
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 import {
   AlgorithmNode,
   BranchNode,
@@ -92,7 +93,7 @@ export function Canvas({
   onDeleteEdge,
   onNodeContextMenu,
 }: Props) {
-  const rfRef = useRef<ReactFlowInstance | null>(null);
+  const rfRef = useRef<ReactFlowInstance<VisualNode, VisualEdge> | null>(null);
 
   // reactflow v11 wants edges in a locally-applied store. If we just pass
   // the prop and a no-op onEdgesChange, the prop sync happens but selection

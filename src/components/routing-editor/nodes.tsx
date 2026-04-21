@@ -14,7 +14,7 @@
 
 import { Pill } from "@/components/router-crm";
 import type { FlowNode } from "@/server/routing/flow/model";
-import { Handle, Position } from "reactflow";
+import { Handle, Position } from "@xyflow/react";
 
 interface NodeData {
   kind: FlowNode["kind"];
