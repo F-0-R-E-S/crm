@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ApiDocsClient from "./ApiDocsClient";
 
 export const metadata: Metadata = {
   title: "API Docs — GambChamp CRM",
@@ -6,12 +7,11 @@ export const metadata: Metadata = {
 };
 
 /**
- * Server-rendered Scalar API Reference viewer.
- * Loads the Scalar standalone bundle from jsDelivr (pinned); reads the spec from /api/v1/openapi.
+ * Self-hosted Scalar API Reference viewer (v1.0.1).
+ * Uses the locally bundled `@scalar/api-reference-react` package — no CDN dependency.
+ * Spec source remains `/api/v1/openapi` (yaml file under `docs/api/v1/openapi.yaml`).
  */
 export default function ApiDocsPage() {
-  const scalarSrc =
-    "https://cdn.jsdelivr.net/npm/@scalar/api-reference@1/dist/browser/standalone.min.js";
   return (
     <div style={{ minHeight: "100vh" }}>
       <header
@@ -30,15 +30,7 @@ export default function ApiDocsPage() {
           catalog.
         </span>
       </header>
-      <script
-        id="api-reference"
-        type="application/json"
-        // biome-ignore lint/security/noDangerouslySetInnerHtml: Scalar config tag; JSON.stringify is safe
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({ url: "/api/v1/openapi", theme: "default", layout: "modern" }),
-        }}
-      />
-      <script src={scalarSrc} async />
+      <ApiDocsClient specUrl="/api/v1/openapi" />
     </div>
   );
 }

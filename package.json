@@ -29,6 +29,7 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.4",
     "@prisma/client": "^5.22.0",
+    "@scalar/api-reference-react": "^0.9.24",
     "@tanstack/react-query": "^5.62.8",
     "@trpc/client": "^11.0.0-rc.660",
     "@trpc/next": "^11.0.0-rc.660",
