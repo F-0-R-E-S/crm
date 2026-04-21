@@ -150,11 +150,13 @@ export function flowToGraph(
   });
 
   const edges: VisualEdge[] = flow.edges.map((e, idx) => ({
-    id: `${e.from}->${e.to}#${idx}`,
+    // Edge ids are used as React keys AND as DOM/SVG ids; avoid `>` / `#`
+    // which some selectors choke on. `_to_` is a readable safe separator.
+    id: `${e.from}_to_${e.to}_${idx}`,
     source: e.from,
     target: e.to,
     label: e.condition === "default" ? undefined : e.condition,
-    data: { condition: e.condition },
+    data: { condition: e.condition ?? "default" },
   }));
 
   return { nodes, edges };

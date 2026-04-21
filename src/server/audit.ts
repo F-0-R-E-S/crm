@@ -26,7 +26,13 @@ export async function writeAuditLog(input: {
   entityId?: string | null;
   diff?: unknown;
 }): Promise<void> {
-  const userId = input.userId === "system" ? await getSystemUserId() : input.userId;
+  let userId = input.userId === "system" ? await getSystemUserId() : input.userId;
+  // Stale JWTs (e.g. after a DB reset) can reference a User.id that no
+  // longer exists, which would blow up every mutation with an FK violation.
+  // Check existence; fall back to the system user so the mutation succeeds
+  // and the session will naturally refresh at next login.
+  const exists = await prisma.user.findUnique({ where: { id: userId }, select: { id: true } });
+  if (!exists) userId = await getSystemUserId();
   await prisma.auditLog.create({
     data: {
       userId,
