@@ -9,7 +9,7 @@
 // it. Biome won't flag a CSS import since it's a side-effect module.
 
 import type { FlowEdge, FlowNode } from "@/server/routing/flow/model";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ReactFlow, {
   Background,
   type Connection,
@@ -20,6 +20,7 @@ import ReactFlow, {
   type OnEdgesChange,
   type OnNodesChange,
   type ReactFlowInstance,
+  applyEdgeChanges,
   applyNodeChanges,
 } from "reactflow";
 import "reactflow/dist/style.css";
@@ -91,6 +92,21 @@ export function Canvas({
   onNodeContextMenu,
 }: Props) {
   const rfRef = useRef<ReactFlowInstance | null>(null);
+
+  // reactflow v11 wants edges in a locally-applied store. If we just pass
+  // the prop and a no-op onEdgesChange, the prop sync happens but selection
+  // / delete updates are swallowed AND in some paths the initial render
+  // drops them entirely. Keep a local edge state synced from props; apply
+  // reactflow's changes locally so the renderer is happy.
+  const [localEdges, setLocalEdges] = useState(edges);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: sync on prop identity change, not on every re-render
+  useEffect(() => {
+    setLocalEdges(edges);
+  }, [edges]);
+
+  const handleEdgesChange: OnEdgesChange = (changes) => {
+    setLocalEdges((curr) => applyEdgeChanges(changes, curr) as VisualEdge[]);
+  };
 
   // Auto-fit the viewport when nodes transition from 0 → N (async graph
   // load) or when the set of node ids changes. reactflow's `fitView` prop
@@ -198,16 +214,6 @@ export function Canvas({
     for (const e of deleted) onDeleteEdge(e.id);
   };
 
-  // Reactflow v11 controlled mode requires BOTH onNodesChange and
-  // onEdgesChange — without the latter, edges are silently not synced
-  // into reactflow's internal store and never render. We don't have
-  // edge-level state to persist (conditions are encoded in the FlowEdge
-  // model), so this handler is a no-op that exists purely to satisfy
-  // the v11 contract.
-  const handleEdgesChange: OnEdgesChange = () => {
-    /* no-op: all edge mutations go through onConnect / onEdgesDelete */
-  };
-
   const handleNodeContextMenu = (ev: React.MouseEvent, node: RFNode) => {
     if (!onNodeContextMenu) return;
     ev.preventDefault();
@@ -227,7 +233,7 @@ export function Canvas({
     >
       <ReactFlow
         nodes={nodes}
-        edges={edges}
+        edges={localEdges}
         nodeTypes={nodeTypes}
         onNodesChange={handleChange}
         onEdgesChange={handleEdgesChange}
