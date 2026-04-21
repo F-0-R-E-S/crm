@@ -13,9 +13,9 @@ export interface OperatorTokenClaims {
 }
 
 function getSecret(): Uint8Array {
-  const secret = process.env.NEXTAUTH_SECRET;
+  const secret = process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET;
   if (!secret || secret.length < 32) {
-    throw new Error("NEXTAUTH_SECRET missing or too short (>= 32 bytes required)");
+    throw new Error("NEXTAUTH_SECRET (or AUTH_SECRET) missing or too short (>= 32 bytes required)");
   }
   return new TextEncoder().encode(secret);
 }
