@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 const CORS_METHODS = "GET,POST,PUT,PATCH,DELETE,OPTIONS";
 const CORS_HEADERS = "authorization, content-type, x-idempotency-key, x-api-version";

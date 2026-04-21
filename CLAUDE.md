@@ -1,5 +1,14 @@
 # Working notes for Claude Code
 
+## v2.0 preview — multi-tenancy (S2.0-1 landed 2026-04-21)
+
+- **Tenant model live** (`prisma/schema.prisma`). Every tenant-scoped model carries `tenantId`; primary tables (`Affiliate`, `ApiKey`, `Broker`, `BrokerTemplate`, `User`) are `NOT NULL` + DB `DEFAULT 'tenant_default'`. `Lead.tenantId` stays nullable (hot-path).
+- **`withTenant(tenantId, fn)`** (`src/server/db-tenant.ts`) scopes Prisma calls via AsyncLocalStorage. `attachTenantMiddleware` ($use) auto-filters reads / updates / deletes on `TENANT_SCOPED_MODELS`, post-filters findUnique, and fills `tenantId = tenant_default` on creates with no scope. Creates inside `withTenant` inherit the scope's id when tenantId is omitted.
+- **tRPC** — `ctx.tenantId` set from `session.user.tenantId`. `protectedProcedure` runs inside `withTenant(ctx.tenantId, …)`. New `superAdminProcedure` skips the scope (cross-tenant CRUD for `SUPER_ADMIN` role).
+- **NextAuth** — `session.user.tenantId` populated via JWT callback. `User.tenantId` tracked at sign-in time.
+- **Intake** — `verifyApiKey` returns `tenantId`; `/api/v1/leads`, `/api/v1/leads/bulk`, `/api/v1/postbacks/:brokerId` wrap their handler in `withTenant(key.tenantId, …)` and stamp `Lead.tenantId` on creation.
+- **Not yet (S2.0-2+)** — hostname → tenant middleware, per-tenant branding, 3-domain split, tenant admin UI, pentest matrix.
+
 ## Stack
 - Next.js 15 (App Router, Server Components by default, `"use client"` only when needed).
 - tRPC v11 with `superjson` transformer. Client lives in `src/lib/trpc.ts`, router in `src/server/routers/_app.ts`.

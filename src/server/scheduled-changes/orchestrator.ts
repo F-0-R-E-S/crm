@@ -2,7 +2,7 @@ import { writeAuditLog } from "@/server/audit";
 import { prisma } from "@/server/db";
 import { logger } from "@/server/observability";
 import { emitTelegramEvent } from "@/server/telegram/emit";
-import type { ScheduledChange } from "@prisma/client";
+import type { Prisma, ScheduledChange } from "@prisma/client";
 import { type ALLOWED_FIELDS, SchedulePatchError, applyPatch, validatePatch } from "./patch";
 
 type EntityType = keyof typeof ALLOWED_FIELDS;
@@ -38,7 +38,7 @@ export async function applyScheduledChange(id: string, appliedBy = "system"): Pr
         entityType,
         entityId: change.entityId,
         patch,
-        ctx: { prisma: tx, appliedBy },
+        ctx: { prisma: tx as unknown as Prisma.TransactionClient, appliedBy },
       });
     });
     const appliedAt = new Date();

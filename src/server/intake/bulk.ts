@@ -4,6 +4,7 @@ import { checkBlacklists } from "@/server/antifraud/blacklist";
 import { detectDuplicate } from "@/server/antifraud/dedup";
 import { normalizeIntake } from "@/server/antifraud/normalization";
 import { prisma } from "@/server/db";
+import { getActiveTenantId } from "@/server/db-tenant";
 import { getSchemaForVersion } from "@/server/schema/registry";
 
 export interface BulkItemResult {
@@ -70,6 +71,7 @@ export async function processBulkItem(
 
   const lead = await prisma.lead.create({
     data: {
+      tenantId: getActiveTenantId(),
       affiliateId,
       externalLeadId: (p.external_lead_id as string) ?? null,
       firstName: (p.first_name as string) ?? null,

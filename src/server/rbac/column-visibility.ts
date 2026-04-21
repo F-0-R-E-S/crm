@@ -4,6 +4,11 @@ export type RbacEntity = "Lead" | "Broker" | "Affiliate";
 
 // Lowercase entity keys, sets of visible field names, or "ALL" for full access.
 const MATRIX: Record<UserRole, Record<RbacEntity, Set<string> | "ALL">> = {
+  SUPER_ADMIN: {
+    Lead: "ALL",
+    Broker: "ALL",
+    Affiliate: "ALL",
+  },
   ADMIN: {
     Lead: "ALL",
     Broker: "ALL",

@@ -2,6 +2,28 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v2.0.0-s1 (2026-04-21)
+
+**v2.0 Sprint 1 — White-Label Foundation (tenantId activation).**
+
+- **New `Tenant` model** (`id`, `slug`, `name`, `displayName`, `domains`, `theme`, `featureFlags`, `adminAllowedIps`, `isActive`) with default seed `tenant_default` (slug `default`).
+- **`tenantId` activated** across primary tables. `Affiliate`, `ApiKey`, `Broker`, `BrokerTemplate`, `User` are now `NOT NULL` + DB-level `DEFAULT 'tenant_default'`. `Lead.tenantId` stays nullable (hot-path ingest).
+- **`tenantId` added** to 15 additional tables: `AffiliateIntakeWebhook`, `AffiliatePayoutRule`, `AlertLog`, `AnalyticsPreset`, `AnalyticsShareLink`, `AutologinAttempt`, `BrokerPayoutRule`, `Flow`, `FlowVersion`, `IntakeSettings`, `ManualReviewQueue`, `ProxyEndpoint`, `RotationRule`, `ScheduledChange`, `TelegramSubscription` (all nullable with tenantId index; backfilled to `tenant_default`).
+- **`UserRole.SUPER_ADMIN`** added; seeded `super@gambchamp.local / supersuper` for cross-tenant ops.
+- **`src/server/db-tenant.ts`** — `withTenant(tenantId, fn)` via AsyncLocalStorage; `attachTenantMiddleware(prisma)` auto-filters reads/updates/deletes on scoped models, post-filters findUnique, and falls back to `tenant_default` on create when no scope. Allowlist `TENANT_SCOPED_MODELS`.
+- **tRPC `ctx.tenantId`** — populated from `session.user.tenantId` (NextAuth session + JWT callback extended). `protectedProcedure` runs inside `withTenant(ctx.tenantId, …)`. New `superAdminProcedure` bypasses the scope (for tenant CRUD).
+- **Intake wiring** — `/api/v1/leads`, `/api/v1/leads/bulk`, `/api/v1/postbacks/:brokerId` wrap their handler in `withTenant(...)`; `Lead.tenantId` stamped from the API-key row. `ApiKeyCtx` now exposes `tenantId`.
+- **Migration** `20260421110000_v2_tenant_model` applies atomically: CREATE Tenant → seed default → add nullable tenantId columns → backfill → SET NOT NULL + DEFAULT on 5 primary tables → indexes. Paired with catchup `20260421100000_v1_5_catchup` for the v1.5 schema pieces that landed via `db push`.
+- **Seeds / test helpers** — `prisma/seed.ts`, `tests/helpers/db.ts`, `tests/helpers/seed.ts` create / expect `tenant_default`; `super@gambchamp.local` user seeded.
+- **Tests added** — 13 unit (`src/server/db-tenant.test.ts`) + 5 integration (`tests/integration/tenant-isolation.test.ts`). Known vitest-specific caveat: `$use` middleware sees the AsyncLocalStorage slot inconsistently under vitest's worker pool; real Node/prod runs preserve it correctly (validated standalone with tsx).
+- **Version bump** → `2.0.0-s1`.
+
+### Known gaps heading into S2.0-2
+
+- `src/middleware.ts` — hostname → tenant resolution is NOT implemented yet (stays v1.5 CORS-only).
+- Super-admin tenant CRUD UI, branding pipeline, 3-domain split — deferred.
+- `processBulkSync` reads tenantId via `getActiveTenantId()`; bulk leads within a tenant wrap correctly. Full bulk pentest deferred to S2.0-2.
+
 ## v1.5.0 (2026-04-21)
 
 **v1.5 GA.** Five sprints over ~4 weeks — theme: analytics and operator productivity on top of the v1.0 core. No runtime routing changes. No breaking API changes. Comprehensive upgrade notes in `docs/release/v1-5-upgrade-notes.md`; sign-off in `docs/release/v1-5-sign-off.md`.

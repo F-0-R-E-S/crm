@@ -54,5 +54,17 @@ export async function resetDb() {
     prisma.user.deleteMany(),
     prisma.onboardingProgress.deleteMany(),
     prisma.org.deleteMany(),
+    prisma.tenant.deleteMany(),
   ]);
+  // Always seed default tenant so subsequent fixtures can FK-reference it.
+  await prisma.tenant.upsert({
+    where: { id: "tenant_default" },
+    update: {},
+    create: {
+      id: "tenant_default",
+      slug: "default",
+      name: "Default Tenant",
+      displayName: "GambChamp Default",
+    },
+  });
 }

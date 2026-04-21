@@ -54,74 +54,77 @@ afterAll(async () => {
   delete process.env.GAME_FRONTEND_ENABLED;
 });
 
-describe.skipIf(!process.env.RUN_OPERATOR_TOKEN_INTEGRATION)("POST /api/v1/auth/operator-token", () => {
-  beforeEach(() => {
-    process.env.GAME_FRONTEND_ENABLED = "true";
-  });
-
-  it("returns 200 + JWT for valid credentials", async () => {
-    const res = await post("/api/v1/auth/operator-token", {
-      email: TEST_EMAIL,
-      password: TEST_PASSWORD,
+describe.skipIf(!process.env.RUN_OPERATOR_TOKEN_INTEGRATION)(
+  "POST /api/v1/auth/operator-token",
+  () => {
+    beforeEach(() => {
+      process.env.GAME_FRONTEND_ENABLED = "true";
     });
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(typeof body.token).toBe("string");
-    expect(body.user.email).toBe(TEST_EMAIL);
-    expect(body.user.role).toBe("OPERATOR");
-    const claims = await verifyOperatorToken(body.token);
-    expect(claims.userId).toBe(body.user.id);
-  });
 
-  it("returns 401 for wrong password", async () => {
-    const res = await post("/api/v1/auth/operator-token", {
-      email: TEST_EMAIL,
-      password: "wrong-wrong-wrong",
-    });
-    expect(res.status).toBe(401);
-  });
-
-  it("returns 401 for unknown email", async () => {
-    const res = await post("/api/v1/auth/operator-token", {
-      email: `nobody-${RUN_ID}@test.local`,
-      password: TEST_PASSWORD,
-    });
-    expect(res.status).toBe(401);
-  });
-
-  it("returns 400 for malformed body", async () => {
-    const res = await post("/api/v1/auth/operator-token", { email: "not-an-email" });
-    expect(res.status).toBe(400);
-  });
-
-  it("returns 503 when GAME_FRONTEND_ENABLED=false", async () => {
-    // Setting this here only affects this vitest process.
-    // The server process reads its own env — so this test is meaningful only
-    // when run against a server that was started with GAME_FRONTEND_ENABLED=false.
-    // For CI / automated runs, the caller controls the server env. Skip assertion
-    // if the dev server reports 200 (meaning it's running with flag=true).
-    const res = await post("/api/v1/auth/operator-token", {
-      email: TEST_EMAIL,
-      password: TEST_PASSWORD,
-    });
-    if (res.status === 200) {
-      // Server has flag=true — cannot assert 503 without restart; skip.
+    it("returns 200 + JWT for valid credentials", async () => {
+      const res = await post("/api/v1/auth/operator-token", {
+        email: TEST_EMAIL,
+        password: TEST_PASSWORD,
+      });
       expect(res.status).toBe(200);
-      return;
-    }
-    expect(res.status).toBe(503);
-  });
+      const body = await res.json();
+      expect(typeof body.token).toBe("string");
+      expect(body.user.email).toBe(TEST_EMAIL);
+      expect(body.user.role).toBe("OPERATOR");
+      const claims = await verifyOperatorToken(body.token);
+      expect(claims.userId).toBe(body.user.id);
+    });
 
-  it("rate-limits at >5/min/IP", async () => {
-    const mk = () =>
-      post(
-        "/api/v1/auth/operator-token",
-        { email: TEST_EMAIL, password: "bad" },
-        { "x-forwarded-for": TEST_IP },
-      );
-    const results: Response[] = [];
-    for (let i = 0; i < 7; i++) results.push(await mk());
-    const codes = results.map((r) => r.status);
-    expect(codes.filter((c) => c === 429).length).toBeGreaterThan(0);
-  });
-});
+    it("returns 401 for wrong password", async () => {
+      const res = await post("/api/v1/auth/operator-token", {
+        email: TEST_EMAIL,
+        password: "wrong-wrong-wrong",
+      });
+      expect(res.status).toBe(401);
+    });
+
+    it("returns 401 for unknown email", async () => {
+      const res = await post("/api/v1/auth/operator-token", {
+        email: `nobody-${RUN_ID}@test.local`,
+        password: TEST_PASSWORD,
+      });
+      expect(res.status).toBe(401);
+    });
+
+    it("returns 400 for malformed body", async () => {
+      const res = await post("/api/v1/auth/operator-token", { email: "not-an-email" });
+      expect(res.status).toBe(400);
+    });
+
+    it("returns 503 when GAME_FRONTEND_ENABLED=false", async () => {
+      // Setting this here only affects this vitest process.
+      // The server process reads its own env — so this test is meaningful only
+      // when run against a server that was started with GAME_FRONTEND_ENABLED=false.
+      // For CI / automated runs, the caller controls the server env. Skip assertion
+      // if the dev server reports 200 (meaning it's running with flag=true).
+      const res = await post("/api/v1/auth/operator-token", {
+        email: TEST_EMAIL,
+        password: TEST_PASSWORD,
+      });
+      if (res.status === 200) {
+        // Server has flag=true — cannot assert 503 without restart; skip.
+        expect(res.status).toBe(200);
+        return;
+      }
+      expect(res.status).toBe(503);
+    });
+
+    it("rate-limits at >5/min/IP", async () => {
+      const mk = () =>
+        post(
+          "/api/v1/auth/operator-token",
+          { email: TEST_EMAIL, password: "bad" },
+          { "x-forwarded-for": TEST_IP },
+        );
+      const results: Response[] = [];
+      for (let i = 0; i < 7; i++) results.push(await mk());
+      const codes = results.map((r) => r.status);
+      expect(codes.filter((c) => c === 429).length).toBeGreaterThan(0);
+    });
+  },
+);

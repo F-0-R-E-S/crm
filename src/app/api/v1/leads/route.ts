@@ -5,6 +5,7 @@ import { detectDuplicate } from "@/server/antifraud/dedup";
 import { normalizeIntake } from "@/server/antifraud/normalization";
 import { verifyApiKey } from "@/server/auth-api-key";
 import { prisma } from "@/server/db";
+import { withTenant } from "@/server/db-tenant";
 import { clientIpAllowed, extractClientIp } from "@/server/intake/check-ip";
 import { getFraudPolicy } from "@/server/intake/fraud-policy-cache";
 import { computeFraudScore } from "@/server/intake/fraud-score";
@@ -65,449 +66,454 @@ export async function POST(req: Request) {
       return err("unauthorized", "invalid api key", 401, trace_id);
     }
 
-    if (ctx.allowedIps.length > 0) {
-      const ip = extractClientIp(req);
-      if (!ip || !clientIpAllowed(ip, ctx.allowedIps)) {
-        return err("ip_not_allowed", "source ip not allowed for this api key", 403, trace_id);
-      }
-    }
-
-    const url = new URL(req.url);
-    const sandboxMode = url.searchParams.get("mode") === "sandbox";
-    if (sandboxMode && !ctx.isSandbox) {
-      return err("sandbox_forbidden", "production key cannot call sandbox mode", 403, trace_id);
-    }
-    if (!sandboxMode && ctx.isSandbox) {
-      return err("sandbox_required", "sandbox key must use ?mode=sandbox", 403, trace_id);
-    }
-    if (sandboxMode) {
-      const bodyTextSb = await req.text();
-      let rawSb: Record<string, unknown> = {};
-      try {
-        rawSb = JSON.parse(bodyTextSb);
-      } catch {
-        // ignore — determinism by external_lead_id optional
-      }
-      const outcome = determineMockOutcome((rawSb.external_lead_id as string) ?? null);
-      const resp = mockOutcomeToResponse(outcome, trace_id);
-      return NextResponse.json(resp.body, { status: resp.status });
-    }
-
-    const settings = await getIntakeSettings(ctx.affiliateId);
-    const idemKey = req.headers.get("x-idempotency-key");
-
-    const rl = await checkRateLimit(`rl:intake:${ctx.keyId}`, {
-      capacity: Math.max(10, Math.floor(settings.maxRpm / 2)),
-      refillPerSec: Math.max(1, Math.floor(settings.maxRpm / 60)),
-    });
-    if (!rl.allowed) {
-      const r = err("rate_limited", "too many requests", 429, trace_id);
-      r.headers.set("Retry-After", String(rl.retryAfterSec));
-      return r;
-    }
-
-    const contentLength = Number(req.headers.get("content-length") ?? "0");
-    if (contentLength > env.INTAKE_MAX_PAYLOAD_BYTES) {
-      return err(
-        "payload_too_large",
-        `body exceeds ${env.INTAKE_MAX_PAYLOAD_BYTES} bytes`,
-        413,
-        trace_id,
-      );
-    }
-    const bodyText = await req.text();
-    if (Buffer.byteLength(bodyText, "utf8") > env.INTAKE_MAX_PAYLOAD_BYTES) {
-      return err(
-        "payload_too_large",
-        `body exceeds ${env.INTAKE_MAX_PAYLOAD_BYTES} bytes`,
-        413,
-        trace_id,
-      );
-    }
-    const payloadHash = sha256(bodyText);
-    if (idemKey) {
-      const cached = await prisma.idempotencyKey.findUnique({
-        where: { affiliateId_key: { affiliateId: ctx.affiliateId, key: idemKey } },
-      });
-      if (cached && cached.expiresAt > new Date()) {
-        if (cached.payloadHash !== payloadHash) {
-          return err(
-            "idempotency_mismatch",
-            "payload differs from original request for same idempotency key",
-            409,
-            trace_id,
-            "x-idempotency-key",
-          );
+    return withTenant(ctx.tenantId, async () => {
+      if (ctx.allowedIps.length > 0) {
+        const ip = extractClientIp(req);
+        if (!ip || !clientIpAllowed(ip, ctx.allowedIps)) {
+          return err("ip_not_allowed", "source ip not allowed for this api key", 403, trace_id);
         }
-        return NextResponse.json(cached.responseBody as object, { status: cached.responseCode });
       }
-    }
-    let raw: unknown;
-    try {
-      raw = JSON.parse(bodyText);
-    } catch {
-      return err("malformed_json", "invalid json body", 400, trace_id);
-    }
-    const requestedVersion = req.headers.get("x-api-version") ?? DEFAULT_VERSION;
-    const schema = getSchemaForVersion(requestedVersion);
-    if (!schema) {
-      return err(
-        "unsupported_version",
-        `api version ${requestedVersion} is not supported`,
-        400,
-        trace_id,
-        "x-api-version",
-      );
-    }
-    const mode = env.INTAKE_STRICT_UNKNOWN_FIELDS ? "strict" : "compat";
-    const parsed = parseWithMode(schema, raw, mode);
-    if (!parsed.success) {
-      const first = parsed.issues[0];
-      if (first.code === "unrecognized_keys") {
-        const key = (first as unknown as { keys?: string[] }).keys?.[0] ?? "unknown";
-        return err("unknown_field", first.message, 422, trace_id, key);
+
+      const url = new URL(req.url);
+      const sandboxMode = url.searchParams.get("mode") === "sandbox";
+      if (sandboxMode && !ctx.isSandbox) {
+        return err("sandbox_forbidden", "production key cannot call sandbox mode", 403, trace_id);
       }
-      return err("validation_error", first.message, 422, trace_id, first.path.join("."));
-    }
-    if (parsed.unknownFields.length) {
-      logger.warn(
-        { event: "intake_unknown_fields", unknown: parsed.unknownFields },
-        "compat-mode ignored unknown fields",
-      );
-    }
-    const p = parsed.data as {
-      external_lead_id?: string;
-      first_name?: string;
-      last_name?: string;
-      email?: string | null;
-      phone?: string | null;
-      geo: string;
-      ip: string;
-      landing_url?: string;
-      sub_id?: string;
-      utm?: Record<string, unknown>;
-      event_ts: string;
-    };
+      if (!sandboxMode && ctx.isSandbox) {
+        return err("sandbox_required", "sandbox key must use ?mode=sandbox", 403, trace_id);
+      }
+      if (sandboxMode) {
+        const bodyTextSb = await req.text();
+        let rawSb: Record<string, unknown> = {};
+        try {
+          rawSb = JSON.parse(bodyTextSb);
+        } catch {
+          // ignore — determinism by external_lead_id optional
+        }
+        const outcome = determineMockOutcome((rawSb.external_lead_id as string) ?? null);
+        const resp = mockOutcomeToResponse(outcome, trace_id);
+        return NextResponse.json(resp.body, { status: resp.status });
+      }
 
-    // Normalize (phone E.164 / email lowercase / GEO ISO-3166-1 + warnings)
-    const n = normalizeIntake({
-      phone: p.phone,
-      email: p.email,
-      geo: p.geo,
-      ip: p.ip,
-      landingUrl: p.landing_url,
-    });
-    if (n.error) {
-      return err(
-        n.error.code,
-        `normalization failed: ${n.error.field}`,
-        422,
-        trace_id,
-        n.error.field,
-      );
-    }
-    const phoneE164 = n.phoneE164;
-    const email = n.email;
-    const geo = n.geo as string;
-    const phoneHash = phoneE164 ? sha256(phoneE164) : null;
-    const emailHash = email ? sha256(email) : null;
+      const settings = await getIntakeSettings(ctx.affiliateId);
+      const idemKey = req.headers.get("x-idempotency-key");
 
-    // Apply affiliate intake-settings (STORY-007)
-    if (settings.allowedGeo.length > 0 && !settings.allowedGeo.includes(geo)) {
-      return err("geo_not_allowed", `geo ${geo} not in allowed list`, 422, trace_id, "geo");
-    }
-    for (const rf of settings.requiredFields) {
-      if (rf === "phone" && !phoneE164)
-        return err("missing_required_field", "phone required", 422, trace_id, "phone");
-      if (rf === "email" && !email)
-        return err("missing_required_field", "email required", 422, trace_id, "email");
-      if (rf === "first_name" && !p.first_name)
-        return err("missing_required_field", "first_name required", 422, trace_id, "first_name");
-      if (rf === "last_name" && !p.last_name)
-        return err("missing_required_field", "last_name required", 422, trace_id, "last_name");
-    }
-
-    // Anti-fraud: blacklist first
-    const bl = await checkBlacklists({ ip: p.ip, email, phoneE164 });
-    let rejectReason: string | null = bl;
-
-    // Dedup: multi-strategy → 409 on hit
-    if (!rejectReason) {
-      const fingerprint =
-        email || phoneE164 ? sha256(`${email ?? ""}|${phoneE164 ?? ""}|${geo}`) : null;
-      const ipLandingFingerprint =
-        !email && !phoneE164 && p.landing_url ? sha256(`${p.ip}|${p.landing_url}`) : null;
-      const dd = await detectDuplicate({
-        affiliateId: ctx.affiliateId,
-        externalLeadId: p.external_lead_id ?? null,
-        phoneHash,
-        emailHash,
-        fingerprint,
-        ipLandingFingerprint,
-        windowDays: settings.dedupeWindowDays,
-        crossAffiliate: env.ANTIFRAUD_DEDUP_CROSS_AFFILIATE,
+      const rl = await checkRateLimit(`rl:intake:${ctx.keyId}`, {
+        capacity: Math.max(10, Math.floor(settings.maxRpm / 2)),
+        refillPerSec: Math.max(1, Math.floor(settings.maxRpm / 60)),
       });
-      if (dd.duplicate) {
-        return NextResponse.json(
-          {
-            error: {
-              code: "duplicate_lead",
-              message: "lead already seen",
-              trace_id,
-              existing_lead_id: dd.existingLeadId,
-              matched_by: dd.matchedBy,
-              first_seen_at: dd.firstSeenAt.toISOString(),
-              confidence: dd.confidence,
-            },
-          },
-          { status: 409 },
+      if (!rl.allowed) {
+        const r = err("rate_limited", "too many requests", 429, trace_id);
+        r.headers.set("Retry-After", String(rl.retryAfterSec));
+        return r;
+      }
+
+      const contentLength = Number(req.headers.get("content-length") ?? "0");
+      if (contentLength > env.INTAKE_MAX_PAYLOAD_BYTES) {
+        return err(
+          "payload_too_large",
+          `body exceeds ${env.INTAKE_MAX_PAYLOAD_BYTES} bytes`,
+          413,
+          trace_id,
         );
       }
-    }
-
-    // Fraud score (W2.1 + W2.2 enforcement)
-    const fraudPolicy = await getFraudPolicy();
-    const fraudSignals = buildSignals({
-      blacklistHit: bl,
-      phoneE164,
-      geo,
-      dedupHit: false,
-      voipHit: false,
-    });
-    const fraud = computeFraudScore(fraudSignals, fraudPolicy);
-    // JSON-serializable form of signals for Prisma Json columns.
-    const firedJson: Prisma.InputJsonValue = fraud.fired.map((f) => ({
-      kind: f.kind,
-      weight: f.weight,
-      ...(f.detail !== undefined ? { detail: f.detail as Prisma.InputJsonValue } : {}),
-    }));
-    logger.info({
-      event: "fraud.score",
-      affiliate_id: ctx.affiliateId,
-      score: fraud.score,
-      signals: fraud.fired.map((f) => ({ kind: f.kind, weight: f.weight })),
-      decision:
-        fraud.score >= fraudPolicy.autoRejectThreshold
-          ? "auto_reject"
-          : fraud.score >= fraudPolicy.borderlineMin
-            ? "needs_review"
-            : "accept",
-    });
-    // W2.2: enforce auto-reject for scores at/above the threshold.
-    let autoFraudReject = false;
-    let needsReview = false;
-    if (!rejectReason && fraud.score >= fraudPolicy.autoRejectThreshold) {
-      autoFraudReject = true;
-      rejectReason = "fraud_auto";
-    } else if (
-      !rejectReason &&
-      fraud.score >= fraudPolicy.borderlineMin &&
-      fraud.score < fraudPolicy.autoRejectThreshold
-    ) {
-      needsReview = true;
-    }
-
-    if (!rejectReason) {
-      const aff = await prisma.affiliate.findUnique({
-        where: { id: ctx.affiliateId },
-        select: { totalDailyCap: true },
-      });
-      if (aff?.totalDailyCap != null) {
-        const count = await incrementCap("AFFILIATE", ctx.affiliateId, todayUtc());
-        if (count > aff.totalDailyCap) rejectReason = "affiliate_cap_full";
+      const bodyText = await req.text();
+      if (Buffer.byteLength(bodyText, "utf8") > env.INTAKE_MAX_PAYLOAD_BYTES) {
+        return err(
+          "payload_too_large",
+          `body exceeds ${env.INTAKE_MAX_PAYLOAD_BYTES} bytes`,
+          413,
+          trace_id,
+        );
       }
-    }
+      const payloadHash = sha256(bodyText);
+      if (idemKey) {
+        const cached = await prisma.idempotencyKey.findUnique({
+          where: { affiliateId_key: { affiliateId: ctx.affiliateId, key: idemKey } },
+        });
+        if (cached && cached.expiresAt > new Date()) {
+          if (cached.payloadHash !== payloadHash) {
+            return err(
+              "idempotency_mismatch",
+              "payload differs from original request for same idempotency key",
+              409,
+              trace_id,
+              "x-idempotency-key",
+            );
+          }
+          return NextResponse.json(cached.responseBody as object, { status: cached.responseCode });
+        }
+      }
+      let raw: unknown;
+      try {
+        raw = JSON.parse(bodyText);
+      } catch {
+        return err("malformed_json", "invalid json body", 400, trace_id);
+      }
+      const requestedVersion = req.headers.get("x-api-version") ?? DEFAULT_VERSION;
+      const schema = getSchemaForVersion(requestedVersion);
+      if (!schema) {
+        return err(
+          "unsupported_version",
+          `api version ${requestedVersion} is not supported`,
+          400,
+          trace_id,
+          "x-api-version",
+        );
+      }
+      const mode = env.INTAKE_STRICT_UNKNOWN_FIELDS ? "strict" : "compat";
+      const parsed = parseWithMode(schema, raw, mode);
+      if (!parsed.success) {
+        const first = parsed.issues[0];
+        if (first.code === "unrecognized_keys") {
+          const key = (first as unknown as { keys?: string[] }).keys?.[0] ?? "unknown";
+          return err("unknown_field", first.message, 422, trace_id, key);
+        }
+        return err("validation_error", first.message, 422, trace_id, first.path.join("."));
+      }
+      if (parsed.unknownFields.length) {
+        logger.warn(
+          { event: "intake_unknown_fields", unknown: parsed.unknownFields },
+          "compat-mode ignored unknown fields",
+        );
+      }
+      const p = parsed.data as {
+        external_lead_id?: string;
+        first_name?: string;
+        last_name?: string;
+        email?: string | null;
+        phone?: string | null;
+        geo: string;
+        ip: string;
+        landing_url?: string;
+        sub_id?: string;
+        utm?: Record<string, unknown>;
+        event_ts: string;
+      };
 
-    // Q-Leads quality score — pure blend of fraud + 30-day affiliate history + broker/GEO stats
-    // plus v1.5 per-affiliate 7-day trend adjustment.
-    const [affHistory, brokerGeoStats, affTrend] = await Promise.all([
-      loadAffiliateHistory(ctx.affiliateId),
-      loadBrokerGeoStats(null, geo),
-      loadAffiliate7dTrend(ctx.affiliateId),
-    ]);
-    const quality = computeQualityScoreWithTrend({
-      fraudScore: fraud.score,
-      signalKinds: fraud.fired.map((f) => f.kind),
-      affiliate: affHistory,
-      brokerGeo: brokerGeoStats,
-      trend: affTrend,
-    });
-
-    // Pick final state: REJECTED_FRAUD for auto-fraud, REJECTED for other reject reasons,
-    // NEW otherwise.
-    const finalState: "NEW" | "REJECTED" | "REJECTED_FRAUD" = autoFraudReject
-      ? "REJECTED_FRAUD"
-      : rejectReason
-        ? "REJECTED"
-        : "NEW";
-
-    const lead = await prisma.lead.create({
-      data: {
-        affiliateId: ctx.affiliateId,
-        externalLeadId: p.external_lead_id,
-        firstName: p.first_name,
-        lastName: p.last_name,
-        email,
-        phone: phoneE164,
-        phoneHash,
-        emailHash,
-        geo,
+      // Normalize (phone E.164 / email lowercase / GEO ISO-3166-1 + warnings)
+      const n = normalizeIntake({
+        phone: p.phone,
+        email: p.email,
+        geo: p.geo,
         ip: p.ip,
         landingUrl: p.landing_url,
-        subId: p.sub_id,
-        utm: (p.utm ?? {}) as object,
-        normalizationWarnings: n.warnings as unknown as object,
-        rawPayload: { phone: n.raw.phone, email: n.raw.email, geo: n.raw.geo },
-        eventTs: new Date(p.event_ts),
-        traceId: trace_id,
-        state: finalState,
-        rejectReason,
-        fraudScore: fraud.score,
-        fraudSignals: firedJson,
-        qualityScore: quality.score,
-        qualitySignals: {
-          ...quality.components,
-          affiliateTrend: quality.trend,
-          trendDelta: Number.isFinite(quality.trendDelta)
-            ? Math.round(quality.trendDelta * 100) / 100
-            : 0,
-        } as unknown as Prisma.InputJsonValue,
-        needsReview,
-        events: {
-          create: [
-            { kind: "RECEIVED", meta: { ip: p.ip, geo } },
+      });
+      if (n.error) {
+        return err(
+          n.error.code,
+          `normalization failed: ${n.error.field}`,
+          422,
+          trace_id,
+          n.error.field,
+        );
+      }
+      const phoneE164 = n.phoneE164;
+      const email = n.email;
+      const geo = n.geo as string;
+      const phoneHash = phoneE164 ? sha256(phoneE164) : null;
+      const emailHash = email ? sha256(email) : null;
+
+      // Apply affiliate intake-settings (STORY-007)
+      if (settings.allowedGeo.length > 0 && !settings.allowedGeo.includes(geo)) {
+        return err("geo_not_allowed", `geo ${geo} not in allowed list`, 422, trace_id, "geo");
+      }
+      for (const rf of settings.requiredFields) {
+        if (rf === "phone" && !phoneE164)
+          return err("missing_required_field", "phone required", 422, trace_id, "phone");
+        if (rf === "email" && !email)
+          return err("missing_required_field", "email required", 422, trace_id, "email");
+        if (rf === "first_name" && !p.first_name)
+          return err("missing_required_field", "first_name required", 422, trace_id, "first_name");
+        if (rf === "last_name" && !p.last_name)
+          return err("missing_required_field", "last_name required", 422, trace_id, "last_name");
+      }
+
+      // Anti-fraud: blacklist first
+      const bl = await checkBlacklists({ ip: p.ip, email, phoneE164 });
+      let rejectReason: string | null = bl;
+
+      // Dedup: multi-strategy → 409 on hit
+      if (!rejectReason) {
+        const fingerprint =
+          email || phoneE164 ? sha256(`${email ?? ""}|${phoneE164 ?? ""}|${geo}`) : null;
+        const ipLandingFingerprint =
+          !email && !phoneE164 && p.landing_url ? sha256(`${p.ip}|${p.landing_url}`) : null;
+        const dd = await detectDuplicate({
+          affiliateId: ctx.affiliateId,
+          externalLeadId: p.external_lead_id ?? null,
+          phoneHash,
+          emailHash,
+          fingerprint,
+          ipLandingFingerprint,
+          windowDays: settings.dedupeWindowDays,
+          crossAffiliate: env.ANTIFRAUD_DEDUP_CROSS_AFFILIATE,
+        });
+        if (dd.duplicate) {
+          return NextResponse.json(
             {
-              kind: "FRAUD_SCORED" as const,
-              meta: {
-                score: fraud.score,
-                signals: firedJson,
-                policyVersion: fraudPolicy.version,
-                autoFraudReject,
-                needsReview,
+              error: {
+                code: "duplicate_lead",
+                message: "lead already seen",
+                trace_id,
+                existing_lead_id: dd.existingLeadId,
+                matched_by: dd.matchedBy,
+                first_seen_at: dd.firstSeenAt.toISOString(),
+                confidence: dd.confidence,
               },
             },
-            ...(rejectReason
-              ? [{ kind: "REJECTED_ANTIFRAUD" as const, meta: { reason: rejectReason } }]
-              : []),
-          ],
-        },
-      },
-    });
-
-    const responseStatus: "received" | "rejected" | "rejected_fraud" = autoFraudReject
-      ? "rejected_fraud"
-      : rejectReason
-        ? "rejected"
-        : "received";
-    const body: Record<string, unknown> = {
-      lead_id: lead.id,
-      status: responseStatus,
-      reject_reason: rejectReason,
-      normalization_warnings: n.warnings,
-      trace_id,
-      received_at: lead.receivedAt.toISOString(),
-    };
-    if (autoFraudReject) {
-      // Expose signal kinds only — do NOT leak weights (per spec).
-      body.reason_codes = fraud.fired.map((f) => f.kind);
-    }
-    if (needsReview) body.needs_review = true;
-    const status = 202;
-
-    if (idemKey) {
-      const ttl = new Date(Date.now() + 24 * 3600 * 1000);
-      await prisma.idempotencyKey.upsert({
-        where: { affiliateId_key: { affiliateId: ctx.affiliateId, key: idemKey } },
-        create: {
-          key: idemKey,
-          affiliateId: ctx.affiliateId,
-          leadId: lead.id,
-          payloadHash,
-          responseCode: status,
-          responseBody: body as Prisma.InputJsonValue,
-          expiresAt: ttl,
-        },
-        update: {},
-      });
-    }
-
-    logger.info(
-      {
-        event: "lead_received",
-        lead_id: lead.id,
-        affiliate_id: ctx.affiliateId,
-        geo,
-        state: lead.state,
-      },
-      "lead received",
-    );
-    logger.info({
-      event: "intake.response",
-      status: 202,
-      duration_ms: Date.now() - _intakeStart,
-      outcome: "accepted",
-      lead_id: lead.id,
-    });
-    void incrCounter(COUNTER_NAMES.LEADS_RECEIVED).catch(() => {});
-    if (autoFraudReject) {
-      void incrCounter(COUNTER_NAMES.FRAUD_HIT).catch(() => {});
-    }
-
-    // Telegram: emit NEW_LEAD for accepted leads and FRAUD_HIT for auto-reject.
-    if (lead.state === "NEW") {
-      void emitTelegramEvent(
-        "NEW_LEAD",
-        { leadId: lead.id, affiliateId: lead.affiliateId, geo: lead.geo },
-        { affiliateId: lead.affiliateId },
-      ).catch((e) => logger.warn({ err: (e as Error).message }, "[telegram-emit] NEW_LEAD failed"));
-    }
-    if (autoFraudReject) {
-      void emitTelegramEvent(
-        "FRAUD_HIT",
-        { leadId: lead.id, fraudScore: lead.fraudScore, signals: firedJson },
-        { affiliateId: lead.affiliateId },
-      ).catch((e) =>
-        logger.warn({ err: (e as Error).message }, "[telegram-emit] FRAUD_HIT failed"),
-      );
-    }
-
-    if (lead.state === "NEW") {
-      const boss = await startBossOnce();
-      await boss.send(JOB_NAMES.pushLead, { leadId: lead.id, traceId: trace_id });
-      if (env.ANTIFRAUD_VOIP_CHECK_ENABLED && phoneE164) {
-        await boss.send(JOB_NAMES.voipCheck, { leadId: lead.id });
+            { status: 409 },
+          );
+        }
       }
-    }
 
-    // STORY-011: dispatch intake outcome to affiliate webhooks (async fire-and-forget)
-    const intakeEventType: "intake.accepted" | "intake.rejected" | "intake.duplicate" =
-      rejectReason === "duplicate"
-        ? "intake.duplicate"
+      // Fraud score (W2.1 + W2.2 enforcement)
+      const fraudPolicy = await getFraudPolicy();
+      const fraudSignals = buildSignals({
+        blacklistHit: bl,
+        phoneE164,
+        geo,
+        dedupHit: false,
+        voipHit: false,
+      });
+      const fraud = computeFraudScore(fraudSignals, fraudPolicy);
+      // JSON-serializable form of signals for Prisma Json columns.
+      const firedJson: Prisma.InputJsonValue = fraud.fired.map((f) => ({
+        kind: f.kind,
+        weight: f.weight,
+        ...(f.detail !== undefined ? { detail: f.detail as Prisma.InputJsonValue } : {}),
+      }));
+      logger.info({
+        event: "fraud.score",
+        affiliate_id: ctx.affiliateId,
+        score: fraud.score,
+        signals: fraud.fired.map((f) => ({ kind: f.kind, weight: f.weight })),
+        decision:
+          fraud.score >= fraudPolicy.autoRejectThreshold
+            ? "auto_reject"
+            : fraud.score >= fraudPolicy.borderlineMin
+              ? "needs_review"
+              : "accept",
+      });
+      // W2.2: enforce auto-reject for scores at/above the threshold.
+      let autoFraudReject = false;
+      let needsReview = false;
+      if (!rejectReason && fraud.score >= fraudPolicy.autoRejectThreshold) {
+        autoFraudReject = true;
+        rejectReason = "fraud_auto";
+      } else if (
+        !rejectReason &&
+        fraud.score >= fraudPolicy.borderlineMin &&
+        fraud.score < fraudPolicy.autoRejectThreshold
+      ) {
+        needsReview = true;
+      }
+
+      if (!rejectReason) {
+        const aff = await prisma.affiliate.findUnique({
+          where: { id: ctx.affiliateId },
+          select: { totalDailyCap: true },
+        });
+        if (aff?.totalDailyCap != null) {
+          const count = await incrementCap("AFFILIATE", ctx.affiliateId, todayUtc());
+          if (count > aff.totalDailyCap) rejectReason = "affiliate_cap_full";
+        }
+      }
+
+      // Q-Leads quality score — pure blend of fraud + 30-day affiliate history + broker/GEO stats
+      // plus v1.5 per-affiliate 7-day trend adjustment.
+      const [affHistory, brokerGeoStats, affTrend] = await Promise.all([
+        loadAffiliateHistory(ctx.affiliateId),
+        loadBrokerGeoStats(null, geo),
+        loadAffiliate7dTrend(ctx.affiliateId),
+      ]);
+      const quality = computeQualityScoreWithTrend({
+        fraudScore: fraud.score,
+        signalKinds: fraud.fired.map((f) => f.kind),
+        affiliate: affHistory,
+        brokerGeo: brokerGeoStats,
+        trend: affTrend,
+      });
+
+      // Pick final state: REJECTED_FRAUD for auto-fraud, REJECTED for other reject reasons,
+      // NEW otherwise.
+      const finalState: "NEW" | "REJECTED" | "REJECTED_FRAUD" = autoFraudReject
+        ? "REJECTED_FRAUD"
         : rejectReason
-          ? "intake.rejected"
-          : "intake.accepted";
-    try {
-      await dispatchIntakeEvent(
-        ctx.affiliateId,
-        buildIntakeEvent(intakeEventType, {
-          leadId: lead.id,
-          affiliateId: ctx.affiliateId,
-          traceId: trace_id,
-          rejectReason,
-        }),
-      );
-    } catch (e) {
-      logger.warn({ event: "intake_webhook_dispatch_failed", err: (e as Error).message });
-    }
+          ? "REJECTED"
+          : "NEW";
 
-    const response = NextResponse.json(body, { status });
-    const entry = getVersionEntry(requestedVersion);
-    if (entry?.status === "deprecated") {
-      response.headers.set(
-        "X-API-Deprecation",
-        `version=${entry.version}; sunset=${entry.sunsetAt ?? "TBD"}`,
+      const lead = await prisma.lead.create({
+        data: {
+          tenantId: ctx.tenantId,
+          affiliateId: ctx.affiliateId,
+          externalLeadId: p.external_lead_id,
+          firstName: p.first_name,
+          lastName: p.last_name,
+          email,
+          phone: phoneE164,
+          phoneHash,
+          emailHash,
+          geo,
+          ip: p.ip,
+          landingUrl: p.landing_url,
+          subId: p.sub_id,
+          utm: (p.utm ?? {}) as object,
+          normalizationWarnings: n.warnings as unknown as object,
+          rawPayload: { phone: n.raw.phone, email: n.raw.email, geo: n.raw.geo },
+          eventTs: new Date(p.event_ts),
+          traceId: trace_id,
+          state: finalState,
+          rejectReason,
+          fraudScore: fraud.score,
+          fraudSignals: firedJson,
+          qualityScore: quality.score,
+          qualitySignals: {
+            ...quality.components,
+            affiliateTrend: quality.trend,
+            trendDelta: Number.isFinite(quality.trendDelta)
+              ? Math.round(quality.trendDelta * 100) / 100
+              : 0,
+          } as unknown as Prisma.InputJsonValue,
+          needsReview,
+          events: {
+            create: [
+              { kind: "RECEIVED", meta: { ip: p.ip, geo } },
+              {
+                kind: "FRAUD_SCORED" as const,
+                meta: {
+                  score: fraud.score,
+                  signals: firedJson,
+                  policyVersion: fraudPolicy.version,
+                  autoFraudReject,
+                  needsReview,
+                },
+              },
+              ...(rejectReason
+                ? [{ kind: "REJECTED_ANTIFRAUD" as const, meta: { reason: rejectReason } }]
+                : []),
+            ],
+          },
+        },
+      });
+
+      const responseStatus: "received" | "rejected" | "rejected_fraud" = autoFraudReject
+        ? "rejected_fraud"
+        : rejectReason
+          ? "rejected"
+          : "received";
+      const body: Record<string, unknown> = {
+        lead_id: lead.id,
+        status: responseStatus,
+        reject_reason: rejectReason,
+        normalization_warnings: n.warnings,
+        trace_id,
+        received_at: lead.receivedAt.toISOString(),
+      };
+      if (autoFraudReject) {
+        // Expose signal kinds only — do NOT leak weights (per spec).
+        body.reason_codes = fraud.fired.map((f) => f.kind);
+      }
+      if (needsReview) body.needs_review = true;
+      const status = 202;
+
+      if (idemKey) {
+        const ttl = new Date(Date.now() + 24 * 3600 * 1000);
+        await prisma.idempotencyKey.upsert({
+          where: { affiliateId_key: { affiliateId: ctx.affiliateId, key: idemKey } },
+          create: {
+            key: idemKey,
+            affiliateId: ctx.affiliateId,
+            leadId: lead.id,
+            payloadHash,
+            responseCode: status,
+            responseBody: body as Prisma.InputJsonValue,
+            expiresAt: ttl,
+          },
+          update: {},
+        });
+      }
+
+      logger.info(
+        {
+          event: "lead_received",
+          lead_id: lead.id,
+          affiliate_id: ctx.affiliateId,
+          geo,
+          state: lead.state,
+        },
+        "lead received",
       );
-    }
-    return response;
+      logger.info({
+        event: "intake.response",
+        status: 202,
+        duration_ms: Date.now() - _intakeStart,
+        outcome: "accepted",
+        lead_id: lead.id,
+      });
+      void incrCounter(COUNTER_NAMES.LEADS_RECEIVED).catch(() => {});
+      if (autoFraudReject) {
+        void incrCounter(COUNTER_NAMES.FRAUD_HIT).catch(() => {});
+      }
+
+      // Telegram: emit NEW_LEAD for accepted leads and FRAUD_HIT for auto-reject.
+      if (lead.state === "NEW") {
+        void emitTelegramEvent(
+          "NEW_LEAD",
+          { leadId: lead.id, affiliateId: lead.affiliateId, geo: lead.geo },
+          { affiliateId: lead.affiliateId },
+        ).catch((e) =>
+          logger.warn({ err: (e as Error).message }, "[telegram-emit] NEW_LEAD failed"),
+        );
+      }
+      if (autoFraudReject) {
+        void emitTelegramEvent(
+          "FRAUD_HIT",
+          { leadId: lead.id, fraudScore: lead.fraudScore, signals: firedJson },
+          { affiliateId: lead.affiliateId },
+        ).catch((e) =>
+          logger.warn({ err: (e as Error).message }, "[telegram-emit] FRAUD_HIT failed"),
+        );
+      }
+
+      if (lead.state === "NEW") {
+        const boss = await startBossOnce();
+        await boss.send(JOB_NAMES.pushLead, { leadId: lead.id, traceId: trace_id });
+        if (env.ANTIFRAUD_VOIP_CHECK_ENABLED && phoneE164) {
+          await boss.send(JOB_NAMES.voipCheck, { leadId: lead.id });
+        }
+      }
+
+      // STORY-011: dispatch intake outcome to affiliate webhooks (async fire-and-forget)
+      const intakeEventType: "intake.accepted" | "intake.rejected" | "intake.duplicate" =
+        rejectReason === "duplicate"
+          ? "intake.duplicate"
+          : rejectReason
+            ? "intake.rejected"
+            : "intake.accepted";
+      try {
+        await dispatchIntakeEvent(
+          ctx.affiliateId,
+          buildIntakeEvent(intakeEventType, {
+            leadId: lead.id,
+            affiliateId: ctx.affiliateId,
+            traceId: trace_id,
+            rejectReason,
+          }),
+        );
+      } catch (e) {
+        logger.warn({ event: "intake_webhook_dispatch_failed", err: (e as Error).message });
+      }
+
+      const response = NextResponse.json(body, { status });
+      const entry = getVersionEntry(requestedVersion);
+      if (entry?.status === "deprecated") {
+        response.headers.set(
+          "X-API-Deprecation",
+          `version=${entry.version}; sunset=${entry.sunsetAt ?? "TBD"}`,
+        );
+      }
+      return response;
+    }); // withTenant
   });
 }

@@ -4,6 +4,7 @@ import { prisma } from "./db";
 export interface ApiKeyCtx {
   affiliateId: string;
   keyId: string;
+  tenantId: string;
   isSandbox: boolean;
   allowedIps: string[];
 }
@@ -19,6 +20,8 @@ export async function verifyApiKey(
   const m = /^Bearer\s+(\S+)$/i.exec(authHeader);
   if (!m) return null;
   const keyHash = sha256(m[1]);
+  // Query unscoped: api-key lookup is cross-tenant (tenantId is derived FROM
+  // the row). The filter that follows is defense in depth.
   const row = await prisma.apiKey.findUnique({ where: { keyHash } });
   if (!row || row.isRevoked) return null;
   if (row.expiresAt && row.expiresAt < new Date()) return null;
@@ -26,6 +29,7 @@ export async function verifyApiKey(
   return {
     affiliateId: row.affiliateId,
     keyId: row.id,
+    tenantId: row.tenantId,
     isSandbox: row.isSandbox,
     allowedIps: row.allowedIps,
   };

@@ -15,14 +15,47 @@ function sha256(s: string) {
 }
 
 async function main() {
+  // --- Default tenant (v2.0 S2.0-1 activation) ---
+  const tenant = await prisma.tenant.upsert({
+    where: { id: "tenant_default" },
+    update: {},
+    create: {
+      id: "tenant_default",
+      slug: "default",
+      name: "Default Tenant",
+      displayName: "GambChamp Default",
+    },
+  });
+  console.log(`tenant: ${tenant.slug} (${tenant.id})`);
+  const TENANT_ID = tenant.id;
+
   // --- Admin user ---
   const adminHash = await bcrypt.hash("changeme", 10);
   const admin = await prisma.user.upsert({
     where: { email: "admin@gambchamp.local" },
     update: {},
-    create: { email: "admin@gambchamp.local", passwordHash: adminHash, role: UserRole.ADMIN },
+    create: {
+      email: "admin@gambchamp.local",
+      passwordHash: adminHash,
+      role: UserRole.ADMIN,
+      tenantId: TENANT_ID,
+    },
   });
   console.log(`admin: ${admin.email} / changeme`);
+
+  // --- Super-admin user (cross-tenant ops) ---
+  const superHash = await bcrypt.hash("supersuper", 10);
+  const superUser = await prisma.user.upsert({
+    where: { email: "super@gambchamp.local" },
+    update: {},
+    create: {
+      email: "super@gambchamp.local",
+      passwordHash: superHash,
+      role: UserRole.SUPER_ADMIN,
+      tenantId: TENANT_ID,
+    },
+  });
+  console.log(`super-admin: ${superUser.email} / supersuper`);
 
   // --- Test affiliate + API key ---
   const aff = await prisma.affiliate.upsert({
@@ -30,6 +63,7 @@ async function main() {
     update: {},
     create: {
       id: "seed-affiliate-1",
+      tenantId: TENANT_ID,
       name: "Test Affiliate",
       contactEmail: "aff@example.com",
       totalDailyCap: 1000,
@@ -43,6 +77,7 @@ async function main() {
     where: { keyHash: sha256(rawKey) },
     update: {},
     create: {
+      tenantId: TENANT_ID,
       affiliateId: aff.id,
       keyHash: sha256(rawKey),
       keyPrefix: rawKey.slice(0, 12),
@@ -57,6 +92,7 @@ async function main() {
     update: {},
     create: {
       id: "seed-broker-1",
+      tenantId: TENANT_ID,
       name: "Mock Broker",
       dailyCap: 500,
       endpointUrl: "http://localhost:4000/push",
@@ -170,6 +206,7 @@ async function seedPerfFlow(): Promise<void> {
       update: {},
       create: {
         id: `perf-broker-${i}`,
+        tenantId: "tenant_default",
         name: `perf-broker-${i}`,
         endpointUrl: "http://127.0.0.1:9/perf",
         fieldMapping: { firstName: "first_name", lastName: "last_name", email: "email" },
@@ -209,6 +246,7 @@ async function seedPerfFlow(): Promise<void> {
     update: {},
     create: {
       id: "perf-affiliate",
+      tenantId: "tenant_default",
       name: "perf-affiliate",
       contactEmail: "perf@example.com",
       totalDailyCap: 100000,
@@ -219,6 +257,7 @@ async function seedPerfFlow(): Promise<void> {
     where: { keyHash: sha256(rawKey) },
     update: {},
     create: {
+      tenantId: "tenant_default",
       affiliateId: perfAff.id,
       keyHash: sha256(rawKey),
       keyPrefix: rawKey.slice(0, 16),

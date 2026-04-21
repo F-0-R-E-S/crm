@@ -19,3 +19,22 @@ if (!process.env.REDIS_URL) {
 if (!process.env.AUDIT_HASH_CHAIN_SECRET) {
   process.env.AUDIT_HASH_CHAIN_SECRET = "test-audit-secret-16chars-min";
 }
+
+// Ensure the default tenant row exists for v2.0 tenant-scoped models.
+// Best-effort: swallow connection errors so unit tests that don't touch the DB
+// aren't blocked.
+import { PrismaClient } from "@prisma/client";
+const _bootstrapPrisma = new PrismaClient();
+await _bootstrapPrisma.tenant
+  .upsert({
+    where: { id: "tenant_default" },
+    update: {},
+    create: {
+      id: "tenant_default",
+      slug: "default",
+      name: "Default Tenant",
+      displayName: "GambChamp Default",
+    },
+  })
+  .catch(() => {});
+await _bootstrapPrisma.$disconnect().catch(() => {});

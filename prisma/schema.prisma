@@ -7,9 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Tenant {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  displayName     String
+  domains         String[] @default([])
+  theme           Json     @default("{}")
+  featureFlags    Json     @default("{}")
+  adminAllowedIps String[] @default([])
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([isActive])
+}
+
 model User {
   id              String              @id @default(cuid())
-  tenantId        String?
+  tenantId        String              @default("tenant_default")
   email           String              @unique
   passwordHash    String
   role            UserRole            @default(OPERATOR)
@@ -28,6 +44,7 @@ model User {
 }
 
 enum UserRole {
+  SUPER_ADMIN
   ADMIN
   OPERATOR
   AFFILIATE_VIEWER
@@ -82,7 +99,7 @@ model OnboardingProgress {
 
 model Affiliate {
   id                String             @id @default(cuid())
-  tenantId          String?
+  tenantId          String             @default("tenant_default")
   name              String
   contactEmail      String?
   isActive          Boolean            @default(true)
@@ -105,6 +122,7 @@ model Affiliate {
 
 model AffiliateIntakeWebhook {
   id           String            @id @default(cuid())
+  tenantId     String?
   affiliateId  String
   url          String
   secret       String
@@ -118,6 +136,7 @@ model AffiliateIntakeWebhook {
   deliveries   WebhookDelivery[]
 
   @@index([affiliateId, isActive])
+  @@index([tenantId])
 }
 
 model WebhookDelivery {
@@ -140,6 +159,7 @@ model WebhookDelivery {
 
 model IntakeSettings {
   affiliateId      String    @id
+  tenantId         String?
   requiredFields   String[]  @default([])
   allowedGeo       String[]  @default([])
   dedupeWindowDays Int       @default(30)
@@ -150,11 +170,13 @@ model IntakeSettings {
   updatedAt        DateTime  @updatedAt
   createdAt        DateTime  @default(now())
   affiliate        Affiliate @relation(fields: [affiliateId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
 }
 
 model ApiKey {
   id          String    @id @default(cuid())
-  tenantId    String?
+  tenantId    String    @default("tenant_default")
   affiliateId String
   keyHash     String    @unique
   keyPrefix   String
@@ -173,7 +195,7 @@ model ApiKey {
 
 model Broker {
   id                 String         @id @default(cuid())
-  tenantId           String?
+  tenantId           String         @default("tenant_default")
   name               String
   isActive           Boolean        @default(true)
   dailyCap           Int?
@@ -238,6 +260,7 @@ enum BrokerAuthType {
 
 model RotationRule {
   id       String  @id @default(cuid())
+  tenantId String?
   geo      String
   brokerId String
   priority Int
@@ -246,6 +269,7 @@ model RotationRule {
 
   @@unique([geo, brokerId])
   @@index([geo, isActive, priority])
+  @@index([tenantId])
 }
 
 model Lead {
@@ -485,6 +509,7 @@ model AuditLog {
 
 model Flow {
   id              String        @id @default(cuid())
+  tenantId        String?
   name            String
   timezone        String        @default("UTC")
   status          FlowStatus    @default(DRAFT)
@@ -497,6 +522,7 @@ model Flow {
   activeVersion   FlowVersion?  @relation("FlowActiveVersion", fields: [activeVersionId], references: [id])
 
   @@index([status, updatedAt])
+  @@index([tenantId])
 }
 
 enum FlowStatus {
@@ -507,6 +533,7 @@ enum FlowStatus {
 
 model FlowVersion {
   id             String                @id @default(cuid())
+  tenantId       String?
   flowId         String
   versionNumber  Int
   graph          Json
@@ -525,6 +552,7 @@ model FlowVersion {
 
   @@unique([flowId, versionNumber])
   @@index([flowId, createdAt])
+  @@index([tenantId])
 }
 
 model FlowBranch {
@@ -627,7 +655,7 @@ model CapCounter {
 
 model BrokerTemplate {
   id                 String         @id @default(cuid())
-  tenantId           String?
+  tenantId           String         @default("tenant_default")
   slug               String         @unique
   name               String
   vendor             String
@@ -698,6 +726,7 @@ model BrokerErrorSample {
 
 model ProxyEndpoint {
   id               String             @id @default(cuid())
+  tenantId         String?
   label            String
   provider         String             @default("brightdata")
   host             String
@@ -716,10 +745,12 @@ model ProxyEndpoint {
 
   @@index([isActive, lastHealthStatus])
   @@index([country])
+  @@index([tenantId])
 }
 
 model AutologinAttempt {
   id              String          @id @default(cuid())
+  tenantId        String?
   leadId          String
   brokerId        String
   proxyEndpointId String?
@@ -741,6 +772,7 @@ model AutologinAttempt {
   @@index([leadId, startedAt])
   @@index([status, startedAt])
   @@index([startedAt])
+  @@index([tenantId])
 }
 
 enum AutologinStage {
@@ -773,6 +805,7 @@ enum ManualReviewResolution {
 
 model ManualReviewQueue {
   id             String                  @id @default(cuid())
+  tenantId       String?
   leadId         String                  @unique
   reason         ManualReviewReason
   lastBrokerId   String?
@@ -793,6 +826,7 @@ model ManualReviewQueue {
   @@index([resolvedAt])
   @@index([claimedBy])
   @@index([reason, createdAt])
+  @@index([tenantId])
 }
 
 // --- EPIC-10 Analytics v1 ---
@@ -847,6 +881,7 @@ model LeadHourlyRoll {
 
 model AnalyticsShareLink {
   id         String    @id @default(cuid())
+  tenantId   String?
   token      String    @unique
   query      Json
   createdBy  String
@@ -855,10 +890,12 @@ model AnalyticsShareLink {
 
   @@index([expiresAt])
   @@index([createdBy, createdAt])
+  @@index([tenantId])
 }
 
 model AnalyticsPreset {
   id         String    @id @default(cuid())
+  tenantId   String?
   userId     String
   name       String
   query      Json
@@ -869,6 +906,7 @@ model AnalyticsPreset {
   @@unique([userId, name])
   @@index([userId, createdAt])
   @@index([userId, isDefault])
+  @@index([tenantId])
 }
 
 // --- EPIC-11 Telegram Ops Bot ---
@@ -887,6 +925,7 @@ model TelegramBotConfig {
 
 model TelegramSubscription {
   id               String    @id @default(cuid())
+  tenantId         String?
   userId           String
   chatId           String // negative ids allowed (groups/channels); store as string
   telegramUserId   String?
@@ -904,6 +943,7 @@ model TelegramSubscription {
   @@unique([userId, chatId])
   @@index([chatId, isActive])
   @@index([linkTokenHash])
+  @@index([tenantId])
 }
 
 model TelegramEventLog {
@@ -968,6 +1008,7 @@ model Conversion {
 
 model BrokerPayoutRule {
   id                  String         @id @default(cuid())
+  tenantId            String?
   brokerId            String
   kind                PayoutRuleKind
   cpaAmount           Decimal?       @db.Decimal(12, 2)
@@ -983,10 +1024,12 @@ model BrokerPayoutRule {
 
   @@index([brokerId, activeFrom])
   @@index([brokerId, activeTo])
+  @@index([tenantId])
 }
 
 model AffiliatePayoutRule {
   id           String         @id @default(cuid())
+  tenantId     String?
   affiliateId  String
   brokerId     String?
   kind         PayoutRuleKind
@@ -1002,6 +1045,7 @@ model AffiliatePayoutRule {
 
   @@index([affiliateId, brokerId, activeFrom])
   @@index([affiliateId, activeTo])
+  @@index([tenantId])
 }
 
 model CRGCohort {
@@ -1084,6 +1128,7 @@ enum ScheduledChangeStatus {
 
 model ScheduledChange {
   id           String                 @id @default(cuid())
+  tenantId     String?
   entityType   ScheduledChangeEntity
   entityId     String
   payload      Json
@@ -1100,6 +1145,7 @@ model ScheduledChange {
   @@index([status, applyAt])
   @@index([entityType, entityId])
   @@index([createdBy])
+  @@index([tenantId])
 }
 
 // --- EPIC-18 Status Groups (v1.5 S4) ---
@@ -1143,6 +1189,7 @@ model StatusMapping {
 // --- EPIC S8: Alert rules engine ---
 model AlertLog {
   id           String    @id @default(cuid())
+  tenantId     String?
   ruleKey      String
   severity     String // 'warning' | 'critical'
   triggeredAt  DateTime  @default(now())
@@ -1157,4 +1204,5 @@ model AlertLog {
   @@index([ruleKey, triggeredAt])
   @@index([resolvedAt])
   @@index([ackedAt])
+  @@index([tenantId])
 }
