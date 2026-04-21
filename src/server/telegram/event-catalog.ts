@@ -25,6 +25,7 @@ export const TELEGRAM_EVENT_TYPES = [
   "ALERT_TRIGGERED",
   "SCHEDULED_CHANGE_APPLIED",
   "SCHEDULED_CHANGE_FAILED",
+  "STATUS_MAPPING_BACKFILL_PROGRESS",
 ] as const;
 
 export type TelegramEventType = (typeof TELEGRAM_EVENT_TYPES)[number];
@@ -37,6 +38,7 @@ export const ADMIN_ONLY_EVENTS: ReadonlySet<TelegramEventType> = new Set<Telegra
   "PROXY_POOL_DEGRADED",
   "SCHEDULED_CHANGE_APPLIED",
   "SCHEDULED_CHANGE_FAILED",
+  "STATUS_MAPPING_BACKFILL_PROGRESS",
 ]);
 
 export function isTelegramEventType(v: string): v is TelegramEventType {

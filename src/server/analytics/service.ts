@@ -271,31 +271,74 @@ export interface CanonicalStatusBreakdownResult {
 }
 
 /**
- * Per-canonical-status lead counts in the window. Reads `Lead` directly:
- * `canonicalStatus` is denormalized on the lead and not yet rolled up into
- * `LeadDailyRoll`. Bounded by window + optional filters so it stays cheap.
+ * Per-canonical-status lead counts in the window.
+ *
+ * Strategy (v1.5): prefer `LeadDailyRoll` which now groups by `canonicalStatus`;
+ * fall back to `Lead` direct-scan for the current UTC day where the rollup may
+ * not yet have run. Result is the union (sum by canonicalStatus) of the two.
+ *
+ * `__none__` sentinel in the rollup maps back to `unmapped` for display parity
+ * with the pre-v1.5 direct-scan behaviour.
  */
 export async function canonicalStatusBreakdown(
   p: AnalyticsParams,
 ): Promise<CanonicalStatusBreakdownResult> {
-  const where: Record<string, unknown> = {
-    createdAt: { gte: p.from, lt: p.to },
-    canonicalStatus: { not: null },
-  };
-  if (p.filters.affiliateIds.length > 0) where.affiliateId = { in: p.filters.affiliateIds };
-  if (p.filters.brokerIds.length > 0) where.brokerId = { in: p.filters.brokerIds };
-  if (p.filters.geos.length > 0) where.geo = { in: p.filters.geos };
-  const canonicalStatuses = p.filters.canonicalStatuses ?? [];
-  if (canonicalStatuses.length > 0) {
-    where.canonicalStatus = { in: canonicalStatuses };
+  const today = new Date();
+  today.setUTCHours(0, 0, 0, 0);
+  // Rollup covers the window up to (but not including) today's UTC midnight.
+  const rollupTo = p.to > today ? today : p.to;
+  const rollupHasWindow = rollupTo > p.from;
+
+  const totals = new Map<string, number>();
+
+  if (rollupHasWindow) {
+    const { clause, params } = buildWhere("date", p.from, rollupTo, p.filters);
+    let sql = `SELECT "canonicalStatus" AS cs, COALESCE(SUM("totalReceived"),0)::int AS c
+      FROM "LeadDailyRoll" WHERE ${clause}`;
+    const filterParams = [...params];
+    const canonicalStatuses = p.filters.canonicalStatuses ?? [];
+    if (canonicalStatuses.length > 0) {
+      filterParams.push(canonicalStatuses);
+      sql += ` AND "canonicalStatus" = ANY($${filterParams.length}::text[])`;
+    }
+    sql += " GROUP BY 1";
+    const rows = (await prisma.$queryRawUnsafe(sql, ...filterParams)) as Array<{
+      cs: string;
+      c: number;
+    }>;
+    for (const r of rows) {
+      const key = r.cs === "__none__" ? "unmapped" : r.cs;
+      totals.set(key, (totals.get(key) ?? 0) + (Number(r.c) || 0));
+    }
   }
-  const rows = await prisma.lead.groupBy({
-    by: ["canonicalStatus"],
-    where,
-    _count: { _all: true },
-  });
-  const out = rows
-    .map((r) => ({ canonicalStatus: r.canonicalStatus ?? "unmapped", count: r._count._all }))
+
+  // Same-day fallback: scan Lead for [max(p.from, today), p.to) where the
+  // rollup may still be pending.
+  const tailFrom = p.from > today ? p.from : today;
+  if (p.to > tailFrom) {
+    const where: Record<string, unknown> = {
+      createdAt: { gte: tailFrom, lt: p.to },
+    };
+    if (p.filters.affiliateIds.length > 0) where.affiliateId = { in: p.filters.affiliateIds };
+    if (p.filters.brokerIds.length > 0) where.brokerId = { in: p.filters.brokerIds };
+    if (p.filters.geos.length > 0) where.geo = { in: p.filters.geos };
+    const canonicalStatuses = p.filters.canonicalStatuses ?? [];
+    if (canonicalStatuses.length > 0) {
+      where.canonicalStatus = { in: canonicalStatuses };
+    }
+    const rows = await prisma.lead.groupBy({
+      by: ["canonicalStatus"],
+      where,
+      _count: { _all: true },
+    });
+    for (const r of rows) {
+      const key = r.canonicalStatus ?? "unmapped";
+      totals.set(key, (totals.get(key) ?? 0) + r._count._all);
+    }
+  }
+
+  const out = Array.from(totals.entries())
+    .map(([canonicalStatus, count]) => ({ canonicalStatus, count }))
     .sort((a, b) => b.count - a.count);
   const total = out.reduce((s, r) => s + r.count, 0);
   return { rows: out, total };

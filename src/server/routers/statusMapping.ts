@@ -1,6 +1,7 @@
 import { writeAuditLog } from "@/server/audit";
 import { invalidateStatusMappingCache } from "@/server/status-groups/classify";
 import { suggestMappings } from "@/server/status-groups/suggest";
+import { emitTelegramEvent } from "@/server/telegram/emit";
 import { adminProcedure, protectedProcedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -220,19 +221,60 @@ export const statusMappingRouter = router({
   backfillLeads: adminProcedure
     .input(z.object({ brokerId: z.string() }))
     .mutation(async ({ ctx, input }) => {
+      const PROGRESS_STEP = 10_000;
       // Reset then populate. We use two raw SQL statements.
       // Mapped raws → canonical code.
       const mappings = await ctx.prisma.statusMapping.findMany({
         where: { brokerId: input.brokerId },
         include: { canonicalStatus: { select: { code: true } } },
       });
+      const broker = await ctx.prisma.broker.findUnique({
+        where: { id: input.brokerId },
+        select: { name: true },
+      });
+      const total = await ctx.prisma.lead.count({
+        where: { brokerId: input.brokerId, lastBrokerStatus: { not: null } },
+      });
+      await emitTelegramEvent(
+        "STATUS_MAPPING_BACKFILL_PROGRESS",
+        {
+          brokerId: input.brokerId,
+          brokerName: broker?.name,
+          phase: "start",
+          processed: 0,
+          total,
+          updated: 0,
+          unmapped: 0,
+        },
+        { brokerId: input.brokerId },
+      );
+
       let updated = 0;
+      let processed = 0;
+      let nextTick = PROGRESS_STEP;
       for (const m of mappings) {
         const res = await ctx.prisma.lead.updateMany({
           where: { brokerId: input.brokerId, lastBrokerStatus: m.rawStatus },
           data: { canonicalStatus: m.canonicalStatus.code },
         });
         updated += res.count;
+        processed += res.count;
+        while (processed >= nextTick) {
+          await emitTelegramEvent(
+            "STATUS_MAPPING_BACKFILL_PROGRESS",
+            {
+              brokerId: input.brokerId,
+              brokerName: broker?.name,
+              phase: "progress",
+              processed,
+              total,
+              updated,
+              unmapped: 0,
+            },
+            { brokerId: input.brokerId },
+          );
+          nextTick += PROGRESS_STEP;
+        }
       }
       // Everything else with a status → unmapped
       const unmappedRes = await ctx.prisma.lead.updateMany({
@@ -242,6 +284,20 @@ export const statusMappingRouter = router({
         },
         data: { canonicalStatus: "unmapped" },
       });
+      processed += unmappedRes.count;
+      await emitTelegramEvent(
+        "STATUS_MAPPING_BACKFILL_PROGRESS",
+        {
+          brokerId: input.brokerId,
+          brokerName: broker?.name,
+          phase: "finish",
+          processed,
+          total,
+          updated,
+          unmapped: unmappedRes.count,
+        },
+        { brokerId: input.brokerId },
+      );
       await writeAuditLog({
         userId: ctx.userId,
         action: "status_mapping.backfill",

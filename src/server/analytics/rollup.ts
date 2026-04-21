@@ -42,7 +42,7 @@ export async function refreshDailyRollups({ from, to }: RollupRange): Promise<vo
     dayEnd.setUTCDate(dayEnd.getUTCDate() + 1);
     await prisma.$executeRaw(Prisma.sql`
 			INSERT INTO "LeadDailyRoll" (
-				id, date, "affiliateId", "brokerId", geo,
+				id, date, "affiliateId", "brokerId", geo, "canonicalStatus",
 				"totalReceived", "totalValidated", "totalRejected",
 				"totalPushed", "totalAccepted", "totalDeclined", "totalFtd",
 				"sumRevenue", "updatedAt"
@@ -53,6 +53,7 @@ export async function refreshDailyRollups({ from, to }: RollupRange): Promise<vo
 				"affiliateId",
 				COALESCE("brokerId", '__none__'),
 				geo,
+				COALESCE("canonicalStatus", '__none__'),
 				COUNT(*)::int,
 				SUM(CASE WHEN state::text <> 'REJECTED' AND state::text <> 'REJECTED_FRAUD' THEN 1 ELSE 0 END)::int,
 				SUM(CASE WHEN state::text = 'REJECTED' OR state::text = 'REJECTED_FRAUD' THEN 1 ELSE 0 END)::int,
@@ -64,8 +65,8 @@ export async function refreshDailyRollups({ from, to }: RollupRange): Promise<vo
 				NOW()
 			FROM "Lead"
 			WHERE "receivedAt" >= ${dayStart} AND "receivedAt" < ${dayEnd}
-			GROUP BY 2, "affiliateId", COALESCE("brokerId", '__none__'), geo
-			ON CONFLICT (date, "affiliateId", "brokerId", geo) DO UPDATE SET
+			GROUP BY 2, "affiliateId", COALESCE("brokerId", '__none__'), geo, COALESCE("canonicalStatus", '__none__')
+			ON CONFLICT (date, "affiliateId", "brokerId", geo, "canonicalStatus") DO UPDATE SET
 				"totalReceived"  = EXCLUDED."totalReceived",
 				"totalValidated" = EXCLUDED."totalValidated",
 				"totalRejected"  = EXCLUDED."totalRejected",

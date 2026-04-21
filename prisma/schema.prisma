@@ -803,7 +803,7 @@ model LeadDailyRoll {
   affiliateId     String
   brokerId        String   @default("__none__") // sentinel keeps unique tuple intact for brokerless rejects
   geo             String
-  canonicalStatus String?
+  canonicalStatus String   @default("__none__") // sentinel for pre-v1.5 rows / leads without canonical mapping
   totalReceived   Int      @default(0)
   totalValidated  Int      @default(0)
   totalRejected   Int      @default(0)
@@ -814,7 +814,7 @@ model LeadDailyRoll {
   sumRevenue      Decimal  @default(0) @db.Decimal(18, 4)
   updatedAt       DateTime @updatedAt
 
-  @@unique([date, affiliateId, brokerId, geo])
+  @@unique([date, affiliateId, brokerId, geo, canonicalStatus])
   @@index([date])
   @@index([affiliateId, date])
   @@index([brokerId, date])

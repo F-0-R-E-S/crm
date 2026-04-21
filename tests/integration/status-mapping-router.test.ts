@@ -207,4 +207,40 @@ describe("statusMapping router", () => {
     });
     expect(canonicalLeads).toHaveLength(3);
   });
+
+  it("backfillLeads emits STATUS_MAPPING_BACKFILL_PROGRESS start+finish", async () => {
+    const emitMod = await import("@/server/telegram/emit");
+    const spy = vi.spyOn(emitMod, "emitTelegramEvent").mockResolvedValue(0);
+    try {
+      const { ctx } = await makeCtx("ADMIN");
+      const caller = appRouter.createCaller(ctx);
+      const broker = await makeBroker();
+      const canon = await makeCanonical("ftd", "CONVERTED");
+      await prisma.statusMapping.create({
+        data: { brokerId: broker.id, rawStatus: "FTD", canonicalStatusId: canon.id },
+      });
+      const aff = await prisma.affiliate.create({ data: { name: "bf-emit-aff" } });
+      for (let i = 0; i < 3; i++) {
+        await prisma.lead.create({
+          data: {
+            affiliateId: aff.id,
+            brokerId: broker.id,
+            geo: "XX",
+            ip: "1.1.1.1",
+            eventTs: new Date(),
+            traceId: `bfe-${i}-${Math.random()}`,
+            state: "PUSHED",
+            lastBrokerStatus: "FTD",
+          },
+        });
+      }
+      await caller.statusMapping.backfillLeads({ brokerId: broker.id });
+      const calls = spy.mock.calls.filter((c) => c[0] === "STATUS_MAPPING_BACKFILL_PROGRESS");
+      expect(calls.length).toBeGreaterThanOrEqual(2);
+      expect(calls[0][1].phase).toBe("start");
+      expect(calls[calls.length - 1][1].phase).toBe("finish");
+    } finally {
+      spy.mockRestore();
+    }
+  });
 });

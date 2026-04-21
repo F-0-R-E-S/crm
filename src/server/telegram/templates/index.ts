@@ -25,6 +25,7 @@ import { render as renderPushed } from "./pushed";
 import { render as renderScheduledChangeApplied } from "./scheduled-change-applied";
 import { render as renderScheduledChangeFailed } from "./scheduled-change-failed";
 import { render as renderShaveSuspected } from "./shave-suspected";
+import { render as renderStatusMappingBackfillProgress } from "./status-mapping-backfill-progress";
 
 export type Renderer = (p: Record<string, unknown>) => string;
 
@@ -55,6 +56,7 @@ export const TEMPLATES: Partial<Record<TelegramEventType, Renderer>> = {
   ALERT_TRIGGERED: renderAlertTriggered,
   SCHEDULED_CHANGE_APPLIED: renderScheduledChangeApplied,
   SCHEDULED_CHANGE_FAILED: renderScheduledChangeFailed,
+  STATUS_MAPPING_BACKFILL_PROGRESS: renderStatusMappingBackfillProgress,
 };
 
 export function fallbackRender(p: Record<string, unknown>): string {

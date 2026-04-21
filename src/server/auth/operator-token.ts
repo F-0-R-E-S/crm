@@ -1,5 +1,5 @@
-import { SignJWT, jwtVerify, errors as joseErrors } from "jose";
 import type { UserRole } from "@prisma/client";
+import { SignJWT, errors as joseErrors, jwtVerify } from "jose";
 
 const ISSUER = "crm-node";
 const AUDIENCE = "crm-tycoon";
@@ -24,8 +24,7 @@ export async function signOperatorToken(
   input: { userId: string; role: UserRole },
   opts: { ttlSec?: number; expSec?: number } = {},
 ): Promise<string> {
-  const exp =
-    opts.expSec ?? Math.floor(Date.now() / 1000) + (opts.ttlSec ?? DEFAULT_TTL_SEC);
+  const exp = opts.expSec ?? Math.floor(Date.now() / 1000) + (opts.ttlSec ?? DEFAULT_TTL_SEC);
   return new SignJWT({ scope: "operator", role: input.role })
     .setProtectedHeader({ alg: ALG })
     .setSubject(input.userId)

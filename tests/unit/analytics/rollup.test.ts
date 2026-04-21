@@ -109,6 +109,44 @@ describe("refreshDailyRollups / refreshHourlyRollups", () => {
     expect(rows[0].totalRejected).toBe(1);
   });
 
+  it("buckets daily rollups by canonicalStatus", async () => {
+    const { aff, bk } = await seedAffAndBroker();
+    const now = new Date("2026-06-15T14:00:00.000Z");
+    await prisma.lead.create({
+      data: {
+        affiliateId: aff.id,
+        brokerId: bk.id,
+        geo: "US",
+        ip: "1.1.1.1",
+        eventTs: now,
+        state: "FTD",
+        receivedAt: now,
+        traceId: "t-cs-1",
+        canonicalStatus: "ftd",
+      },
+    });
+    await prisma.lead.create({
+      data: {
+        affiliateId: aff.id,
+        brokerId: bk.id,
+        geo: "US",
+        ip: "1.1.1.2",
+        eventTs: now,
+        state: "ACCEPTED",
+        receivedAt: now,
+        traceId: "t-cs-2",
+        canonicalStatus: "accepted",
+      },
+    });
+    await refreshDailyRollups({ from: dayStart(now), to: dayEnd(now) });
+
+    const rows = await prisma.leadDailyRoll.findMany({ orderBy: { canonicalStatus: "asc" } });
+    expect(rows).toHaveLength(2);
+    const byCs = new Map(rows.map((r) => [r.canonicalStatus, r]));
+    expect(byCs.get("accepted")?.totalAccepted).toBe(1);
+    expect(byCs.get("ftd")?.totalFtd).toBe(1);
+  });
+
   it("buckets hourly rollups correctly", async () => {
     const { aff, bk } = await seedAffAndBroker();
     const at = new Date("2026-06-15T10:23:00.000Z");

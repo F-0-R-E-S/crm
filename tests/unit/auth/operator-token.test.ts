@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeAll } from "vitest";
 import { signOperatorToken, verifyOperatorToken } from "@/server/auth/operator-token";
 import type { UserRole } from "@prisma/client";
+import { beforeAll, describe, expect, it } from "vitest";
 
 const SECRET = "test-secret-at-least-32-bytes-long-for-jose-hs256!!";
 const NOW = Math.floor(Date.now() / 1000);
@@ -23,7 +23,7 @@ describe("operator-token", () => {
 
   it("rejects a tampered token", async () => {
     const token = await signOperatorToken({ userId: "u_x", role: "OPERATOR" as UserRole });
-    await expect(verifyOperatorToken(token + "x")).rejects.toThrow();
+    await expect(verifyOperatorToken(`${token}x`)).rejects.toThrow();
   });
 
   it("rejects a token signed with a different secret", async () => {
