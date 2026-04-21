@@ -275,3 +275,10 @@ Five sprints, one tag. Theme: analytics + ops ergonomics on top of the v1.0 core
 - **Lint:** 28 warnings → 0 via per-line fixes + targeted `biome-ignore` with reasons (a11y label/htmlFor pairs, svg titles, keyboard handlers on clickable rows, positional array-index keys on svg children, one jsonpath-plus v10 type gap). No `biome.json` rule-level changes.
 - **Ops script:** `scripts/purge-stale-queue.ts` — `pnpm tsx scripts/purge-stale-queue.ts` one-shot `DELETE FROM pgboss.job WHERE state IN ('created','retry') AND createdon < NOW() - INTERVAL '30 minutes'`.
 - **Release:** version `1.0.1` in `package.json`; `CHANGELOG.md` appended; tag `v1.0.1` on `main`.
+
+## Readiness checklist (living document)
+
+- **File:** `docs/superpowers/READINESS_CHECKLIST.md` — canonical source of truth for what's shipped vs pending.
+- **When to update:** on every release/sprint completion, before committing, flip `- [ ]` → `- [x]` for items actually on prod, bump the Snapshot table (`Last updated`, `Prod version`, `Local HEAD`, test count), add parking-lot entries with severity.
+- **Cross-references:** paired with the roadmap spec (`docs/superpowers/specs/2026-04-20-multi-version-roadmap-design.md`) and per-sprint plans under `docs/superpowers/plans/`.
+- **Verification before flipping:** `curl https://crm-node.fly.dev/api/v1/health` must return the matching `version`; tests must be green; only then mark the box.
