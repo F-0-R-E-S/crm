@@ -25,6 +25,7 @@ export const NAV_ITEMS: NavItem[] = [
   { path: "/dashboard/settings/blacklist", label: "blacklist", kbd: "K", indent: true },
   { path: "/dashboard/settings/users", label: "users", kbd: "U", indent: true },
   { path: "/dashboard/settings/audit", label: "audit log", kbd: "G", indent: true },
+  { path: "/dashboard/settings/alerts", label: "alerts", kbd: "H", indent: true },
   { path: "/dashboard/settings/rbac-preview", label: "rbac preview", kbd: "Q", indent: true },
   { path: "/dashboard/settings/telegram", label: "telegram", kbd: "", indent: true },
   { path: "/dashboard/settings/telegram-admin", label: "telegram admin", kbd: "", indent: true },
