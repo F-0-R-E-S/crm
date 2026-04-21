@@ -41,6 +41,16 @@
   - `src/server/routing/filters.ts::isWithinWorkingHours` — legacy; new code uses `src/server/routing/constraints/schedule.ts::evaluateSchedule`.
 - **Tests:** WRR/Slots-Chance statistical tests take 1-3s (10k-20k iterations) — запускать отдельно при timeout issues. Edge-case 100k iteration test for 0.01% chance deliberately skipped from default suite.
 
+## Routing UI (v1.0.2 rebuild)
+
+- **Overview:** `src/app/dashboard/routing/page.tsx` — dashboard view (KPI tiles, flows table, by-GEO bars, broker pool health roster, top-5 cap-blocked 24h). Pulls from `routing.overview` tRPC proc.
+- **Flow list:** `src/app/dashboard/routing/flows/page.tsx` — unchanged shape.
+- **Visual editor:** `src/app/dashboard/routing/flows/[flowId]/page.tsx` — reactflow-driven split-pane (versions | canvas | inspector). Uses `src/components/routing-editor/*` for the canvas + node renderers + inspectors.
+- **Graph adapter:** `src/server/routing/flow/graph.ts::flowToGraph()` / `graphToFlow()` / `extractPositions()` — round-trip between persistence `FlowGraph` (nodes+edges) and reactflow's `{id, position, data, type}` shape.
+- **Editor components:** `src/components/routing-editor/{Canvas,Inspector,AlgorithmInspector,CapInspector,ScheduleGrid,VersionHistory,nodes}.tsx`.
+- **Simulator:** `src/app/dashboard/routing/flows/[flowId]/simulator/page.tsx` — tabbed single/batch mode with vertical execution-trace timeline.
+- **New tRPC procs:** `routing.listAlgoConfigs` / `upsertAlgoConfig` / `listBrokersForFlow` / `overview`.
+
 ## Intake pipeline (EPIC-01)
 
 - **Entry:** `src/app/api/v1/leads/route.ts` — Bearer API-key + X-API-Version + sandbox mode + size/injection hardening + multi-strategy dedup (409 response) + idempotency payload-hash + Zod strict/compat + intake-settings application.

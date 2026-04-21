@@ -2,6 +2,64 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v1.0.2 (2026-04-21)
+
+Routing UI rebuild — pulls v1.5 EPIC-17 "Visual Rule-Builder" forward.
+
+### Added
+
+- **Visual flow editor** (`/dashboard/routing/flows/:id`) — replaces the
+  old JSON-heavy detail page with a three-pane layout: version history
+  sidebar (left), reactflow canvas (center), node-kind-dispatched
+  inspector (right). Custom node renderers for Entry / Filter /
+  Algorithm / BrokerTarget / Fallback / Exit. Broker-target nodes surface
+  `lastHealthStatus` and `autologinEnabled` directly on the card.
+- **Flow↔visual graph adapter** — `src/server/routing/flow/graph.ts`
+  with `flowToGraph()` + `graphToFlow()` + `extractPositions()`. Fully
+  round-trippable through `FlowGraphSchema`. Auto-layout buckets nodes
+  by role (entry → filter → algorithm → broker → fallback → exit) and
+  spaces them on a left→right grid; user drag edits can be snapshotted
+  via the optional `positions` argument.
+- **Algorithm inspector** — per-broker WRR sliders (1–100) with preview
+  %, Slots-Chance rows (must sum to 100%) with auto-normalize button and
+  reset. Reuses existing server-side validators.
+- **7×24 schedule grid** — click-drag paint / right-click erase; TZ
+  field round-trips into the `entryFilters.schedule` JSON consumed by
+  `src/server/routing/constraints/schedule.ts` (DST-aware).
+- **Cap inspector** — scoped-to-broker view of cap definitions with
+  inline hourly/daily/weekly windows, per-country limit sub-rows, and
+  live remaining from `/api/v1/routing/caps/:flowId` (refresh every 30s).
+  Reuses the Wave1 `CapCountryLimit` model.
+- **Simulator upgrade** (`/dashboard/routing/flows/:id/simulator`) —
+  tabbed single/batch mode. Single renders a vertical decision trace
+  with per-step ok/fail + detail; batch takes a JSON array of lead
+  payloads and shows a results table. Fallback path rendering highlights
+  which fallback hops fired.
+- **Routing overview** (`/dashboard/routing`) — KPI tiles (active flows,
+  received/routed 24h, hit-rate), flows table, by-GEO bars, broker pool
+  roster with health, top-5 cap-blocked events (24h). Replaces the old
+  rotation-rules legacy UI entirely.
+- **New tRPC procedures** on `routing.*`:
+  - `listAlgoConfigs` / `upsertAlgoConfig` — mirrors the existing REST
+    algorithm endpoint; validates chance-sum + slot-bounds.
+  - `listBrokersForFlow` — trimmed summary without broker secrets.
+  - `overview` — 24h aggregation for the overview dashboard.
+- **Tests** — `src/server/routing/flow/graph.test.ts` (5 round-trip
+  tests); `tests/integration/routing-ui-procedures.test.ts` (5 tests
+  covering listBrokersForFlow secret redaction, algo upsert,
+  chance-sum validation, PUBLISHED guard + OPERATOR block, overview
+  aggregation). Test count: 534 + 1 todo.
+
+### Changed
+
+- `flows/page.tsx` back-link renamed "← overview" (legacy rotation
+  rules UI is gone).
+- `package.json` → `1.0.2`.
+
+### Ops
+
+- New runtime dependency: `reactflow@11.11.4`.
+
 ## v1.0.1 (2026-04-21)
 
 Hotfix sprint following the v1.0 launch checklist.
