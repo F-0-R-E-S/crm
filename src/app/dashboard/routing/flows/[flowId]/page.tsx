@@ -18,11 +18,12 @@
 // last-saved badge, an empty-state nudge in the inspector and a
 // client-side publish guard.
 
-import { Pill, btnStyle } from "@/components/router-crm";
+import { btnStyle } from "@/components/router-crm";
 import {
   type AlgoEntry,
   Canvas,
   type CapDefRow,
+  DraftPublishBadge,
   Inspector,
   type LiveCap,
   type ScheduleValue,
@@ -30,6 +31,7 @@ import {
   VersionHistory,
   type VisualEdge,
   type VisualNode,
+  computeDraftPublishState,
   normalizeSchedule,
 } from "@/components/routing-editor";
 import { useThemeCtx } from "@/components/shell/ThemeProvider";
@@ -58,12 +60,6 @@ interface ServerVersion {
   graph: unknown;
   algorithm: unknown;
   entryFilters: unknown;
-}
-
-function statusTone(s: string) {
-  if (s === "PUBLISHED") return "success" as const;
-  if (s === "ARCHIVED") return "neutral" as const;
-  return "warn" as const;
 }
 
 function capRowsFromServer(
@@ -598,17 +594,28 @@ export default function FlowVisualEditorPage({
     return JSON.stringify({ n, e, capRows });
   }, [visual, capRows]);
   const firstSigRef = useRef<string | null>(null);
+  const lastSavedSigRef = useRef<string | null>(null);
+  // Debounced save queued iff local signature drifted from last-saved
+  // signature. Surfaces as "unsaved changes" on the header badge.
+  const debouncePending =
+    !readOnly &&
+    lastSavedSigRef.current !== null &&
+    saveSignature !== "" &&
+    lastSavedSigRef.current !== saveSignature;
   useEffect(() => {
     if (!visual || readOnly) return;
     if (firstSigRef.current === null) {
       // Record the signature of the initially-loaded graph so we don't
       // immediately save on hydration.
       firstSigRef.current = saveSignature;
+      lastSavedSigRef.current = saveSignature;
       return;
     }
     if (firstSigRef.current === saveSignature) return;
     const h = setTimeout(() => {
-      handleSave();
+      handleSave().then(() => {
+        lastSavedSigRef.current = saveSignature;
+      });
     }, 500);
     return () => clearTimeout(h);
   }, [saveSignature, visual, readOnly, handleSave]);
@@ -659,6 +666,26 @@ export default function FlowVisualEditorPage({
 
   const saveInFlight = updateDraft.isPending || updateCaps.isPending || upsertAlgo.isPending;
 
+  // Derive active + latest version numbers for the draft/publish badge.
+  // The `versions` array is already ordered ascending by versionNumber.
+  const activeVersionNumber = flow
+    ? ((flow.versions ?? []).find((v) => v.id === flow.activeVersionId)?.versionNumber ?? null)
+    : null;
+  const latestVersionNumber = flow
+    ? ((flow.versions ?? [])[flow.versions.length - 1]?.versionNumber ?? null)
+    : null;
+
+  const draftPublishState = computeDraftPublishState({
+    flowStatus: (flow?.status ?? "DRAFT") as "DRAFT" | "PUBLISHED" | "ARCHIVED",
+    isLatestDraft,
+    saveInFlight,
+    debouncePending,
+    savedAt,
+    now: Date.now(),
+    activeVersionNumber,
+    latestVersionNumber,
+  });
+
   if (isLoading) return <div style={{ padding: 28 }}>Loading…</div>;
   if (!flow) return <div style={{ padding: 28 }}>Flow not found.</div>;
 
@@ -690,17 +717,10 @@ export default function FlowVisualEditorPage({
         <h1 style={{ fontSize: 18, fontWeight: 500, letterSpacing: "-0.02em", margin: 0 }}>
           {flow.name}
         </h1>
-        <Pill tone={statusTone(flow.status)} size="xs">
-          {flow.status.toLowerCase()}
-        </Pill>
+        <DraftPublishBadge state={draftPublishState} />
         <span style={{ fontSize: 11, fontFamily: "var(--mono)", color: "var(--fg-2)" }}>
           {flow.id.slice(0, 10)}
         </span>
-        {readOnly && (
-          <Pill tone="neutral" size="xs">
-            read-only
-          </Pill>
-        )}
         <div style={{ marginLeft: "auto", display: "flex", gap: 6, alignItems: "center" }}>
           {liveErr && (
             <span style={{ fontSize: 10, color: "oklch(72% 0.15 25)" }}>caps: {liveErr}</span>
