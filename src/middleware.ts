@@ -11,6 +11,7 @@ export default auth((req) => {
     pathname.startsWith("/signup") ||
     pathname.startsWith("/pricing") ||
     pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/v1/auth/operator-token") ||
     pathname.startsWith("/api/v1/health") ||
     pathname.startsWith("/api/v1/leads") ||
     pathname.startsWith("/api/v1/postbacks/") ||

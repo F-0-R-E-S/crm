@@ -103,3 +103,49 @@ Production defaults (set during S8 perf baseline — see `docs/perf/v1-baseline.
 - Founder / commercial: `[TELEGRAM @handle]`
 - Broker vendor contacts: `docs/runbooks/broker-contacts.md`
 - Redis / infra on-call: `[PHONE]`
+
+---
+
+## v1.5 additions
+
+### Status-mapping backfill stuck or slow
+
+- **Symptom:** an operator kicks `statusMapping.backfillLeads({brokerId})` from `/dashboard/brokers/:id/status-mapping` and it appears to hang. Telegram `STATUS_MAPPING_BACKFILL_PROGRESS` events are not arriving, or stop arriving mid-run.
+- **Confirm:**
+  - Backfill is an inline tRPC mutation — it holds the request open until complete. A browser timing out at 60 s does not mean the backfill failed; `SELECT count(*) FROM "Lead" WHERE "brokerId"=$1 AND "canonicalStatus" IS NOT NULL` should advance.
+  - `SELECT * FROM "AuditLog" WHERE action='status_mapping.backfill' ORDER BY "createdAt" DESC LIMIT 5;` — the terminal row has `diff.updated` + `diff.unmapped` counts.
+- **Triage:**
+  1. If total lead count for the broker is > 500k, the inline backfill can exceed 30 s. Acceptable — re-kick from a shell-level tRPC call and let it run.
+  2. Telegram events silent? Check `TelegramEventLog` for `STATUS_MAPPING_BACKFILL_PROGRESS` rows and the subscription set — new event, admins are **not** auto-subscribed. Operators must `/sub STATUS_MAPPING_BACKFILL_PROGRESS` in Telegram once.
+  3. `updateMany` long-running? Check `pg_stat_activity` — the backfill runs one `updateMany` per mapping. Adding an index on `(brokerId, lastBrokerStatus)` helps; already in place as `@@index([brokerId, lastBrokerStatus])` on `Lead`.
+- **Mitigation:** backfill is idempotent — safe to re-run. Each run overwrites `Lead.canonicalStatus` based on the current `StatusMapping` rows.
+
+### Scheduled-change apply failure
+
+- **Symptom:** alert `SCHEDULED_CHANGE_FAILED` fires in Telegram; a row in `ScheduledChange` sits in `FAILED` status beyond its target `applyAt`.
+- **Confirm:**
+  - `SELECT id, "entityType", "entityId", status, "errorMessage", "applyAt", "latencyMs" FROM "ScheduledChange" WHERE status='FAILED' ORDER BY "applyAt" DESC LIMIT 20;`
+  - The `errorMessage` column carries the Prisma / validation failure.
+- **Triage:**
+  1. `errorMessage LIKE '[VALIDATION]%'` — operator submitted an out-of-allowlist field. No runtime concern; show the offender in the admin UI and let them fix.
+  2. `errorMessage LIKE '[ENTITY_NOT_FOUND]%'` — the target row was deleted between schedule and apply. Safe to cancel.
+  3. Apply-time DB error (FK, unique constraint) — re-check the patch against the current state via the admin dialog's "baseline drift" view; in v1.5 the policy is last-write-wins (no 3-way merge — v2.0).
+- **Mitigation:** `/dashboard/settings/scheduled-changes` → Retry. If retry is not safe, Cancel and re-schedule manually. Cron retries only PENDING rows.
+
+### Preset ownership (per-user) + share-link cleanup
+
+- `AnalyticsPreset` rows are owned per user (`AnalyticsPreset.userId`); no org-level shared presets in v1.5 (deferred to v2.0 — see parking lot). If a departed user's presets must be migrated, `UPDATE "AnalyticsPreset" SET "userId"=$new WHERE "userId"=$old;` is safe.
+- Share links — `DELETE /api/v1/analytics/share` (admin) purges expired `AnalyticsShareLink` rows. Wire into a daily cron if the table grows past ~5k rows.
+
+### canonicalStatus mapping-gap / `unmapped` sentinel
+
+- **Symptom:** `/dashboard/brokers/:id/status-mapping` coverage tile shows < 95 %, or analytics canonical-status breakdown contains a large `'unmapped'` bucket.
+- **Confirm:**
+  - `statusMapping.coverageForBroker({brokerId})` returns `{mappedVolume, unmappedVolume, totalVolume, coveragePct}` over the last 30 days.
+  - Raw statuses that have been seen but not mapped: `statusMapping.observedRawStatuses({brokerId})` returns them ordered by frequency.
+- **Triage:**
+  1. Use the UI's "Apply suggested" button to bulk-accept Levenshtein-suggested mappings (code+label similarity, score threshold 0.6 by default).
+  2. After mapping, click "Remap existing leads" to trigger the inline backfill (emits `STATUS_MAPPING_BACKFILL_PROGRESS` Telegram events).
+  3. Mapping cache is 30 s LRU per broker — new mappings take effect within that window for the postback hot-path.
+- **Mitigation:** `'unmapped'` is a *valid* canonical value — it means "seen but uncategorized". Analytics drill-down surfaces the raw statuses feeding into the unmapped bucket.
+
