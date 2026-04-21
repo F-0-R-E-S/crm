@@ -5,7 +5,7 @@
 // time. Parent owns the canonical FlowGraph; Inspector emits patches back.
 
 import { Pill } from "@/components/router-crm";
-import type { FlowNode } from "@/server/routing/flow/model";
+import type { FilterNode, FlowNode } from "@/server/routing/flow/model";
 import {
   type AlgoEntry,
   type AlgoMode,
@@ -13,7 +13,9 @@ import {
   type AvailableBroker,
 } from "./AlgorithmInspector";
 import { type CapDefRow, CapInspector, type LiveCap } from "./CapInspector";
+import { FilterConditionEditor } from "./FilterConditionEditor";
 import { ScheduleGrid, type ScheduleValue, normalizeSchedule } from "./ScheduleGrid";
+import type { FilterCondition, FilterLogic } from "./filter-conditions";
 
 interface BrokerSummary {
   id: string;
@@ -310,21 +312,16 @@ export function Inspector(props: Props) {
             onChange={props.onScheduleChange}
             readOnly={readOnly}
           />
-          <div style={{ fontSize: 11, color: "var(--fg-2)", marginTop: 12 }}>conditions</div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 4 }}>
-            {node.conditions.map((c, i) => (
-              <span
-                key={`${c.field}-${i}`}
-                style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--fg-1)" }}
-              >
-                {c.field} {c.op}{" "}
-                {Array.isArray(c.value) ? `[${c.value.join(", ")}]` : String(c.value)}
-              </span>
-            ))}
+          <div style={{ fontSize: 11, color: "var(--fg-2)", marginTop: 12, marginBottom: 6 }}>
+            conditions
           </div>
-          <div style={{ fontSize: 10, color: "var(--fg-2)", marginTop: 8 }}>
-            Conditions are edited via the graph JSON (deep edits coming in a later iteration).
-          </div>
+          <FilterConditionEditor
+            node={node as FilterNode}
+            readOnly={readOnly}
+            onChange={(patch: { conditions: FilterCondition[]; logic: FilterLogic }) =>
+              props.onNodePatch(patch as Partial<FlowNode>)
+            }
+          />
         </div>
       )}
 
