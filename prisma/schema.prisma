@@ -203,6 +203,9 @@ model Broker {
   lastPolledAt       DateTime?
   autologinEnabled   Boolean        @default(false)
   autologinLoginUrl  String?
+  clonedFromId       String?
+  clonedFrom         Broker?        @relation("BrokerClones", fields: [clonedFromId], references: [id], onDelete: SetNull)
+  clones             Broker[]       @relation("BrokerClones")
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
   rotationRules      RotationRule[]
@@ -217,6 +220,7 @@ model Broker {
   @@index([syncMode, isActive])
   @@index([templateId])
   @@index([tenantId])
+  @@index([clonedFromId])
 }
 
 enum HttpMethod {
@@ -1058,6 +1062,41 @@ model AffiliateInvoice {
   @@unique([affiliateId, periodStart, periodEnd])
   @@index([status, periodEnd])
   @@index([affiliateId, periodEnd])
+}
+
+// --- v1.5-s3 Scheduled changes (Delayed Actions) ---
+
+enum ScheduledChangeEntity {
+  Flow
+  Broker
+  Cap
+}
+
+enum ScheduledChangeStatus {
+  PENDING
+  APPLIED
+  CANCELLED
+  FAILED
+}
+
+model ScheduledChange {
+  id           String                 @id @default(cuid())
+  entityType   ScheduledChangeEntity
+  entityId     String
+  payload      Json
+  applyAt      DateTime
+  status       ScheduledChangeStatus  @default(PENDING)
+  createdBy    String
+  appliedAt    DateTime?
+  appliedBy    String?
+  errorMessage String?
+  latencyMs    Int?
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  @@index([status, applyAt])
+  @@index([entityType, entityId])
+  @@index([createdBy])
 }
 
 // --- EPIC S8: Alert rules engine ---

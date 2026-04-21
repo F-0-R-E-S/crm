@@ -4,6 +4,7 @@ import { useThemeCtx } from "@/components/shell/ThemeProvider";
 import { trpc } from "@/lib/trpc";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
+import CloneDialog from "./CloneDialog";
 
 type Tab = "config" | "mapping" | "postback" | "test" | "sync" | "health";
 
@@ -80,6 +81,12 @@ export default function BrokerDetail({ params }: { params: Promise<{ id: string 
   });
   const test = trpc.broker.testSend.useMutation();
   const [tab, setTab] = useState<Tab>("config");
+  const [showClone, setShowClone] = useState(false);
+  const clonedFromQ = trpc.broker.byId.useQuery(
+    { id: (data?.clonedFromId as string) ?? "" },
+    { enabled: Boolean(data?.clonedFromId) },
+  );
+  const clonesQ = trpc.broker.listClones.useQuery({ sourceId: id });
 
   if (!data) return <div style={{ padding: 28 }}>Loading…</div>;
 
@@ -100,6 +107,9 @@ export default function BrokerDetail({ params }: { params: Promise<{ id: string 
         </Pill>
         <Pill size="xs">{data.syncMode}</Pill>
         <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+          <button type="button" style={btnStyle(theme)} onClick={() => setShowClone(true)}>
+            Clone…
+          </button>
           <Link
             href={`/dashboard/brokers/${id}/mapping` as never}
             style={{ ...btnStyle(theme), textDecoration: "none" }}
@@ -114,6 +124,53 @@ export default function BrokerDetail({ params }: { params: Promise<{ id: string 
           </Link>
         </div>
       </div>
+
+      {/* Attribution badges */}
+      {(data.clonedFromId || (clonesQ.data?.length ?? 0) > 0) && (
+        <div
+          style={{
+            display: "flex",
+            gap: 10,
+            alignItems: "center",
+            marginBottom: 14,
+            fontSize: 12,
+            color: "var(--fg-2)",
+          }}
+        >
+          {data.clonedFromId && clonedFromQ.data && (
+            <div>
+              cloned from{" "}
+              <Link
+                href={`/dashboard/brokers/${data.clonedFromId}` as never}
+                style={{ color: "var(--fg-0)" }}
+              >
+                {clonedFromQ.data.name}
+              </Link>
+            </div>
+          )}
+          {(clonesQ.data?.length ?? 0) > 0 && (
+            <div>
+              cloned as {clonesQ.data?.length} broker{clonesQ.data?.length === 1 ? "" : "s"}:{" "}
+              {clonesQ.data?.slice(0, 3).map((c, i) => (
+                <span key={c.id}>
+                  <Link
+                    href={`/dashboard/brokers/${c.id}` as never}
+                    style={{ color: "var(--fg-0)" }}
+                  >
+                    {c.name}
+                  </Link>
+                  {i < Math.min(2, (clonesQ.data?.length ?? 0) - 1) ? ", " : ""}
+                </span>
+              ))}
+              {(clonesQ.data?.length ?? 0) > 3 ? ` +${(clonesQ.data?.length ?? 0) - 3} more` : ""}
+            </div>
+          )}
+        </div>
+      )}
+
+      {showClone && (
+        <CloneDialog sourceId={id} sourceName={data.name} onClose={() => setShowClone(false)} />
+      )}
       <TabStrip<Tab>
         tabs={[
           { key: "config", label: "config" },

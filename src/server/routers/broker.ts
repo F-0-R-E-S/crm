@@ -2,6 +2,7 @@ import { writeAuditLog } from "@/server/audit";
 import { applyBrokerAuth } from "@/server/broker-adapter/auth";
 import { pushToBroker } from "@/server/broker-adapter/push";
 import { buildPayload } from "@/server/broker-adapter/template";
+import { cloneBroker } from "@/server/brokers/clone";
 import { redact, redactMany } from "@/server/rbac/redact";
 import { adminProcedure, protectedProcedure, router } from "@/server/trpc";
 import type { UserRole } from "@prisma/client";
@@ -61,6 +62,29 @@ export const brokerRouter = router({
         diff: { before, after },
       });
       return after;
+    }),
+  clone: adminProcedure
+    .input(z.object({ sourceId: z.string().min(1), newName: z.string().min(1).max(200) }))
+    .mutation(async ({ ctx, input }) => {
+      const clone = await cloneBroker({ sourceId: input.sourceId, newName: input.newName });
+      await writeAuditLog({
+        userId: ctx.userId,
+        action: "broker.clone",
+        entity: "Broker",
+        entityId: clone.id,
+        diff: { sourceId: input.sourceId, cloneId: clone.id, newName: input.newName },
+      });
+      return clone;
+    }),
+  listClones: protectedProcedure
+    .input(z.object({ sourceId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const rows = await ctx.prisma.broker.findMany({
+        where: { clonedFromId: input.sourceId },
+        orderBy: { createdAt: "desc" },
+        select: { id: true, name: true, isActive: true, createdAt: true },
+      });
+      return rows;
     }),
   testSend: adminProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
     const b = await ctx.prisma.broker.findUniqueOrThrow({ where: { id: input.id } });
