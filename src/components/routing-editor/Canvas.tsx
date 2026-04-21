@@ -9,7 +9,7 @@
 // it. Biome won't flag a CSS import since it's a side-effect module.
 
 import type { FlowEdge, FlowNode } from "@/server/routing/flow/model";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import ReactFlow, {
   Background,
   type Connection,
@@ -18,6 +18,7 @@ import ReactFlow, {
   type Node as RFNode,
   type NodeTypes,
   type OnNodesChange,
+  type ReactFlowInstance,
   applyNodeChanges,
 } from "reactflow";
 import "reactflow/dist/style.css";
@@ -88,6 +89,20 @@ export function Canvas({
   onDeleteEdge,
   onNodeContextMenu,
 }: Props) {
+  const rfRef = useRef<ReactFlowInstance | null>(null);
+
+  // Auto-fit the viewport when nodes transition from 0 → N (async graph
+  // load) or when the set of node ids changes. reactflow's `fitView` prop
+  // only fires on initial mount, which misses late-arriving data.
+  const nodeIds = useMemo(() => nodes.map((n) => n.id).join("|"), [nodes]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally depend on the id set, not the node objects (position drags would retrigger a fit-view)
+  useEffect(() => {
+    const i = rfRef.current;
+    if (!i || nodes.length === 0) return;
+    const raf = requestAnimationFrame(() => i.fitView({ padding: 0.2, duration: 200 }));
+    return () => cancelAnimationFrame(raf);
+  }, [nodeIds]);
+
   const nodeTypes = useMemo<NodeTypes>(() => {
     // Bake broker info into the broker-pool node render so it can show
     // health/autologin pills without a separate hook.
@@ -209,12 +224,18 @@ export function Canvas({
         onNodesDelete={handleNodesDelete}
         onEdgesDelete={handleEdgesDelete}
         onNodeContextMenu={handleNodeContextMenu}
+        onInit={(instance) => {
+          rfRef.current = instance;
+          // Late-arriving async graph: call fitView once nodes exist.
+          if (nodes.length > 0) setTimeout(() => instance.fitView({ padding: 0.2 }), 50);
+        }}
         nodesDraggable={!readOnly}
         nodesConnectable={!readOnly}
         edgesFocusable={!readOnly}
         elementsSelectable
         deleteKeyCode={readOnly ? null : ["Delete", "Backspace"]}
         fitView
+        fitViewOptions={{ padding: 0.2 }}
         proOptions={{ hideAttribution: true }}
       >
         <Background gap={14} color="var(--bd-1)" />
