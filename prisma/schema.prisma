@@ -274,7 +274,7 @@ model RotationRule {
 
 model Lead {
   id                String             @id @default(cuid())
-  tenantId          String?
+  tenantId          String             @default("tenant_default")
   externalLeadId    String?
   affiliateId       String
   brokerId          String?

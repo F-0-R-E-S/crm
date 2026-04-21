@@ -71,7 +71,7 @@ export async function processBulkItem(
 
   const lead = await prisma.lead.create({
     data: {
-      tenantId: getActiveTenantId(),
+      tenantId: getActiveTenantId() ?? "tenant_default",
       affiliateId,
       externalLeadId: (p.external_lead_id as string) ?? null,
       firstName: (p.first_name as string) ?? null,
