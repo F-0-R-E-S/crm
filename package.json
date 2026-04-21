@@ -43,6 +43,7 @@
     "grammy": "^1.42.0",
     "ioredis": "^5.10.1",
     "ip-cidr": "^4.0.2",
+    "jose": "5.9.6",
     "jsonpath-plus": "^10.4.0",
     "libphonenumber-js": "^1.12.41",
     "nanoid": "^5.1.9",

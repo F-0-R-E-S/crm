@@ -34,6 +34,8 @@ const BaseSchema = z.object({
   AUDIT_HASH_CHAIN_SECRET: z.string().min(16),
   TELEGRAM_WEBHOOK_BASE_URL: z.string().url().optional(),
   TELEGRAM_LINK_TOKEN_TTL_MIN: z.coerce.number().int().positive().default(15),
+  GAME_ORIGIN: z.string().optional().default(""),
+  GAME_FRONTEND_ENABLED: zBool.optional().default(true),
 });
 
 export type Env = z.infer<typeof BaseSchema> & { authSecret: string };
