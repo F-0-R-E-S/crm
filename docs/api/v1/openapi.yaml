@@ -1,17 +1,30 @@
 openapi: 3.0.0
 info:
-  version: 1.0.0
+  version: 1.0.1
   title: GambChamp CRM API
-  description: |
+  description: >-
     Lead distribution platform public API.
+
     All intake and routing endpoints require a Bearer api key.
 
+
     ## Sandbox
-    Toggle `isSandbox: true` on any api key (dashboard → settings → api keys) — requests continue
-    to hit the same URLs but responses become deterministic mocks based on the `external_lead_id`
-    prefix. See `GET /api/v1/errors` for the mock outcome catalog.
+
+    Toggle `isSandbox: true` on any api key (dashboard → settings → api keys) —
+    requests continue to hit the same URLs but responses become deterministic
+    mocks based on the `external_lead_id` prefix. See `GET /api/v1/errors` for
+    the mock outcome catalog.
+
 
     Interactive docs: [/docs/api](/docs/api).
+
+
+    ## Spec source
+
+    The `/leads`, `/leads/bulk` (POST), and `/health` paths are auto-generated
+    from the Zod schemas in `src/server/schema/registry.ts`. Routing, schema
+    discovery, and ops paths are hand-authored and merged — they expose internal
+    runtime shapes that don't live in the intake registry.
 servers:
   - url: https://api.gambchamp.example.com
     description: production
@@ -33,172 +46,232 @@ components:
       scheme: bearer
       bearerFormat: api-key
   schemas:
-    LeadCreate:
-      type: object
-      required: [external_lead_id, first_name, last_name, email, phone, country]
-      properties:
-        external_lead_id: { type: string, maxLength: 120 }
-        first_name: { type: string }
-        last_name: { type: string }
-        email: { type: string, format: email }
-        phone: { type: string, description: E.164 format recommended }
-        country: { type: string, minLength: 2, maxLength: 2 }
-        ip: { type: string }
-        sub_id: { type: string }
-        event_ts: { type: string, format: date-time }
-        landing_url: { type: string, format: uri }
-        utm_source: { type: string }
-        utm_medium: { type: string }
-        utm_campaign: { type: string }
     Error:
       type: object
       properties:
         error:
           type: object
           properties:
-            code: { type: string }
-            message: { type: string }
-            field: { type: string }
-            trace_id: { type: string }
+            code:
+              type: string
+            message:
+              type: string
+            field:
+              type: string
+            trace_id:
+              type: string
+          required:
+            - code
+            - message
+      required:
+        - error
+    LeadAcceptedResponse:
+      type: object
+      properties:
+        trace_id:
+          type: string
+        lead_id:
+          type: string
+        status:
+          type: string
+          example: received
+      required:
+        - trace_id
+        - lead_id
+        - status
+    LeadCreate:
+      type: object
+      properties:
+        external_lead_id:
+          type: string
+          maxLength: 64
+        first_name:
+          type: string
+          maxLength: 80
+        last_name:
+          type: string
+          maxLength: 80
+        email:
+          type: string
+          nullable: true
+          maxLength: 254
+          format: email
+        phone:
+          type: string
+          nullable: true
+          maxLength: 32
+        geo:
+          type: string
+          minLength: 2
+          maxLength: 2
+        ip:
+          type: string
+          minLength: 1
+        landing_url:
+          type: string
+          maxLength: 2048
+          format: uri
+        sub_id:
+          type: string
+          maxLength: 128
+        utm:
+          type: object
+          additionalProperties:
+            nullable: true
+        event_ts:
+          type: string
+          format: date-time
+      required:
+        - geo
+        - ip
+        - event_ts
+      description: Single-lead intake payload (schema version 2026-01).
+    BulkLeadsRequest:
+      type: object
+      properties:
+        leads:
+          type: array
+          items:
+            $ref: "#/components/schemas/LeadCreate"
+      required:
+        - leads
+    BulkJobStatus:
+      type: object
+      properties:
+        status:
+          type: string
+        completed:
+          type: integer
+        failed:
+          type: integer
+        total:
+          type: integer
+      required:
+        - status
+        - completed
+        - failed
+        - total
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - ok
+            - degraded
+        db:
+          type: string
+        redis:
+          type: string
+        queue:
+          type: object
+          properties:
+            pending:
+              type: integer
+            failed_last_hour:
+              type: integer
+          required:
+            - pending
+            - failed_last_hour
+        version:
+          type: string
+      required:
+        - status
+        - db
+        - redis
+        - queue
+        - version
+  parameters: {}
 paths:
   /api/v1/leads:
     post:
-      tags: [Intake]
+      tags:
+        - Intake
       summary: Submit a single lead
-      security: [{ bearerAuth: [] }]
+      security:
+        - bearerAuth: []
       parameters:
-        - in: header
-          name: x-api-version
+        - schema:
+            type: string
+            example: 2026-01
           required: true
-          schema: { type: string, example: "2026-01" }
-        - in: header
+          name: x-api-version
+          in: header
+        - schema:
+            type: string
+          required: false
           name: x-idempotency-key
+          in: header
+        - schema:
+            type: string
           required: false
-          schema: { type: string }
-        - in: header
           name: x-trace-id
-          required: false
-          schema: { type: string }
+          in: header
       requestBody:
         required: true
         content:
           application/json:
-            schema: { $ref: "#/components/schemas/LeadCreate" }
+            schema:
+              $ref: "#/components/schemas/LeadCreate"
       responses:
         "202":
           description: Accepted; async processing
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  trace_id: { type: string }
-                  lead_id: { type: string }
-                  status: { type: string, example: received }
-        "401": { description: invalid api key, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
-        "403": { description: ip not allowed or sandbox mismatch, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
-        "409": { description: idempotency conflict, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
-        "422": { description: validation error or fraud auto-reject, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
-  /api/v1/leads/bulk:
-    post:
-      tags: [Intake]
-      summary: Submit a batch of leads (sync ≤50, async >50)
-      security: [{ bearerAuth: [] }]
-      parameters:
-        - in: header
-          name: x-api-version
-          required: true
-          schema: { type: string }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                leads:
-                  type: array
-                  items: { $ref: "#/components/schemas/LeadCreate" }
-      responses:
-        "202": { description: queued async job — returns job_id }
-        "207": { description: multi-status — per-lead results for sync batches }
-  /api/v1/leads/bulk/{jobId}:
-    get:
-      tags: [Intake]
-      summary: Get bulk job status
-      security: [{ bearerAuth: [] }]
-      parameters:
-        - in: path
-          name: jobId
-          required: true
-          schema: { type: string }
-      responses:
-        "200":
-          description: current status
+                $ref: "#/components/schemas/LeadAcceptedResponse"
+        "401":
+          description: invalid api key
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status: { type: string }
-                  completed: { type: integer }
-                  failed: { type: integer }
-                  total: { type: integer }
-  /api/v1/routing/simulate:
+                $ref: "#/components/schemas/Error"
+        "403":
+          description: ip not allowed or sandbox mismatch
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: idempotency conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: validation error or fraud auto-reject
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/v1/leads/bulk:
     post:
-      tags: [Routing]
-      summary: Dry-run the routing engine for a lead or batch
-      security: [{ bearerAuth: [] }]
+      tags:
+        - Intake
+      summary: Submit a batch of leads (sync ≤50, async >50)
+      security:
+        - bearerAuth: []
+      parameters:
+        - schema:
+            type: string
+          required: true
+          name: x-api-version
+          in: header
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                flow_id: { type: string }
-                lead:
-                  type: object
-                  properties:
-                    affiliate_id: { type: string }
-                    geo: { type: string }
-                leads:
-                  type: array
-                  items: { type: object }
+              $ref: "#/components/schemas/BulkLeadsRequest"
       responses:
-        "200": { description: sync decision (single or small batch) }
-        "202": { description: queued async batch — returns job_id }
-  /api/v1/routing/simulate/{jobId}:
-    get:
-      tags: [Routing]
-      summary: Get routing simulate job result
-      parameters:
-        - in: path
-          name: jobId
-          required: true
-          schema: { type: string }
-      responses:
-        "200": { description: results }
-  /api/v1/schema/leads:
-    get:
-      tags: [Schema]
-      summary: Discover the JSON schema for a schema version
-      parameters:
-        - in: query
-          name: version
-          required: false
-          schema: { type: string, example: "2026-01" }
-      responses:
-        "200": { description: schema document }
-  /api/v1/errors:
-    get:
-      tags: [Schema]
-      summary: Error + sandbox-outcome catalog
-      responses:
-        "200": { description: catalog }
+        "202":
+          description: queued async job — returns job_id
+        "207":
+          description: multi-status — per-lead results for sync batches
   /api/v1/health:
     get:
-      tags: [Operations]
+      tags:
+        - Operations
       summary: Health check
       responses:
         "200":
@@ -206,21 +279,102 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status: { type: string, enum: [ok, degraded] }
-                  db: { type: string }
-                  redis: { type: string }
-                  queue:
+                $ref: "#/components/schemas/Health"
+        "503":
+          description: degraded
+  /api/v1/leads/bulk/{jobId}:
+    get:
+      tags:
+        - Intake
+      summary: Get bulk job status
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: current status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BulkJobStatus"
+  /api/v1/routing/simulate:
+    post:
+      tags:
+        - Routing
+      summary: Dry-run the routing engine for a lead or batch
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                flow_id:
+                  type: string
+                lead:
+                  type: object
+                  properties:
+                    affiliate_id:
+                      type: string
+                    geo:
+                      type: string
+                leads:
+                  type: array
+                  items:
                     type: object
-                    properties:
-                      pending: { type: integer }
-                      failed_last_hour: { type: integer }
-                  version: { type: string }
-        "503": { description: degraded }
+      responses:
+        "200":
+          description: sync decision (single or small batch)
+        "202":
+          description: queued async batch — returns job_id
+  /api/v1/routing/simulate/{jobId}:
+    get:
+      tags:
+        - Routing
+      summary: Get routing simulate job result
+      parameters:
+        - in: path
+          name: jobId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: results
+  /api/v1/schema/leads:
+    get:
+      tags:
+        - Schema
+      summary: Discover the JSON schema for a schema version
+      parameters:
+        - in: query
+          name: version
+          required: false
+          schema:
+            type: string
+            example: 2026-01
+      responses:
+        "200":
+          description: schema document
+  /api/v1/errors:
+    get:
+      tags:
+        - Schema
+      summary: Error + sandbox-outcome catalog
+      responses:
+        "200":
+          description: catalog
   /api/v1/metrics/summary:
     get:
-      tags: [Operations]
+      tags:
+        - Operations
       summary: 60s rolling counters + queue depth (ADMIN session required)
       responses:
         "200":
@@ -230,11 +384,17 @@ paths:
               schema:
                 type: object
                 properties:
-                  window_seconds: { type: integer }
-                  leads_received: { type: integer }
-                  leads_pushed: { type: integer }
-                  fraud_hit: { type: integer }
-                  broker_down_count: { type: integer }
-                  manual_queue_depth: { type: integer }
-        "401": { description: unauthorized }
-        "403": { description: forbidden }
+                  window_seconds:
+                    type: integer
+                  leads_received:
+                    type: integer
+                  leads_pushed:
+                    type: integer
+                  fraud_hit:
+                    type: integer
+                  broker_down_count:
+                    type: integer
+                  manual_queue_depth:
+                    type: integer
+        "401":
+          description: unauthorized
