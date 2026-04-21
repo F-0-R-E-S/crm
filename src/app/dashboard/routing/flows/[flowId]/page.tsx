@@ -207,16 +207,21 @@ export default function FlowVisualEditorPage({
   const readOnly = !isLatestDraft;
 
   // ── hydrate visual graph from the selected version ───────────────────
+  //
+  // S1.5-2: position precedence is now (explicit > meta.pos > auto-layout).
+  // The `algorithm.__positions` side-channel is kept for backward compat
+  // with flows saved before `meta.pos` existed; newly saved flows write
+  // positions directly onto FlowNode.meta.pos.
   const hydratedFor = useRef<string | null>(null);
   useEffect(() => {
     if (!selectedVersion) return;
     if (hydratedFor.current === selectedVersion.id) return;
     try {
       const g = selectedVersion.graph as FlowGraph;
-      const positions = (
+      const legacyPositions = (
         selectedVersion.algorithm as { __positions?: Record<string, { x: number; y: number }> }
       )?.__positions;
-      setVisual(visualFromFlow(g, positions));
+      setVisual(visualFromFlow(g, legacyPositions));
       hydratedFor.current = selectedVersion.id;
     } catch (e) {
       setSaveErr(`graph load failed: ${(e as Error).message}`);

@@ -107,6 +107,11 @@ function labelFor(node: FlowNode): string {
 /**
  * Deterministically layout a FlowGraph for reactflow consumption.
  *
+ * Position precedence (first match wins):
+ *   1. explicit `positions` argument (legacy side-channel, still honored)
+ *   2. `node.meta.pos` persisted on the FlowNode itself
+ *   3. auto-layout column/row buckets
+ *
  * @param flow - The persistence-side FlowGraph (from DB / API).
  * @param positions - Optional per-node overrides, keyed by node.id.
  *                    Lets callers preserve user drag edits across round trips.
@@ -134,8 +139,9 @@ export function flowToGraph(
     const list = byType[t];
     list.forEach((n, i) => {
       const override = positions?.[n.id];
-      const x = override?.x ?? COLUMN_X[t];
-      const y = override?.y ?? i * ROW_STEP;
+      const metaPos = (n as FlowNode & { meta?: { pos?: { x: number; y: number } } }).meta?.pos;
+      const x = override?.x ?? metaPos?.x ?? COLUMN_X[t];
+      const y = override?.y ?? metaPos?.y ?? i * ROW_STEP;
       nodes.push({
         id: n.id,
         type: t,
@@ -157,15 +163,26 @@ export function flowToGraph(
 }
 
 /**
- * Strip layout metadata back to the persistence-side FlowGraph shape.
+ * Fold visual-graph state back to the persistence-side FlowGraph shape.
  *
- * - Drops `position` (auto-laid out on next read).
+ * - Stamps the current reactflow `position` onto `meta.pos` of each
+ *   node so layout survives the JSON round-trip. Callers that don't
+ *   want positions persisted can pass `{persistPositions: false}`.
  * - Re-builds edges from visual-graph `source`/`target`/`data.condition`.
  * - Preserves node.kind by reading `data.raw` (the last authoritative
  *   snapshot of the node from the inspector edits).
  */
-export function graphToFlow(visual: VisualGraph): FlowGraph {
-  const nodes: FlowNode[] = visual.nodes.map((v) => v.data.raw);
+export function graphToFlow(visual: VisualGraph, opts?: { persistPositions?: boolean }): FlowGraph {
+  const persistPositions = opts?.persistPositions !== false;
+  const nodes: FlowNode[] = visual.nodes.map((v) => {
+    const raw = v.data.raw as FlowNode & { meta?: Record<string, unknown> };
+    if (!persistPositions) return v.data.raw;
+    const nextMeta = {
+      ...(raw.meta ?? {}),
+      pos: { x: v.position.x, y: v.position.y },
+    };
+    return { ...raw, meta: nextMeta } as FlowNode;
+  });
   const edges: FlowEdge[] = visual.edges.map((e) => ({
     from: e.source,
     to: e.target,

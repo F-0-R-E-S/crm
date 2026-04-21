@@ -12,10 +12,24 @@ export const FilterConditionSchema = z.object({
   value: z.union([z.string(), z.array(z.string()), z.number()]),
 });
 
+/**
+ * Optional per-node layout metadata. The visual editor stores the
+ * user's drag-end position here so opening a flow reproduces the hand-
+ * arranged canvas rather than re-running auto-layout. The v1.0 engine
+ * ignores this field entirely — it's authoring-side UX only.
+ */
+export const NodeMetaSchema = z
+  .object({
+    pos: z.object({ x: z.number(), y: z.number() }).optional(),
+  })
+  .passthrough()
+  .optional();
+
 export const EntryNodeSchema = z.object({
   id: NodeIdSchema,
   kind: z.literal("Entry"),
   label: z.string().max(120).optional(),
+  meta: NodeMetaSchema,
 });
 
 export const FilterNodeSchema = z.object({
@@ -24,6 +38,7 @@ export const FilterNodeSchema = z.object({
   label: z.string().max(120).optional(),
   conditions: z.array(FilterConditionSchema).min(1),
   logic: z.enum(["AND", "OR"]).default("AND"),
+  meta: NodeMetaSchema,
 });
 
 export const AlgorithmNodeSchema = z.object({
@@ -31,6 +46,7 @@ export const AlgorithmNodeSchema = z.object({
   kind: z.literal("Algorithm"),
   label: z.string().max(120).optional(),
   mode: z.enum(["WEIGHTED_ROUND_ROBIN", "SLOTS_CHANCE"]),
+  meta: NodeMetaSchema,
 });
 
 export const BrokerTargetNodeSchema = z.object({
@@ -41,6 +57,7 @@ export const BrokerTargetNodeSchema = z.object({
   slots: z.number().int().min(1).max(10_000).optional(),
   chance: z.number().min(0.01).max(100).optional(),
   label: z.string().max(120).optional(),
+  meta: NodeMetaSchema,
 });
 
 export const FallbackNodeSchema = z.object({
@@ -54,12 +71,14 @@ export const FallbackNodeSchema = z.object({
     connectionError: z.boolean().default(true),
     explicitReject: z.boolean().default(true),
   }),
+  meta: NodeMetaSchema,
 });
 
 export const ExitNodeSchema = z.object({
   id: NodeIdSchema,
   kind: z.literal("Exit"),
   label: z.string().max(120).optional(),
+  meta: NodeMetaSchema,
 });
 
 export const FlowNodeSchema = z.discriminatedUnion("kind", [

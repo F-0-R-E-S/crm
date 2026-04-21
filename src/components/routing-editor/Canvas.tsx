@@ -140,6 +140,32 @@ export function Canvas({
     }
   };
 
+  // S1.5-2: on drag-end, stamp meta.pos onto data.raw so the save
+  // signature picks up the change and debounced-save persists it.
+  // Reactflow fires `onNodeDragStop` after the drag interaction ends;
+  // we only mutate at this boundary (not on every drag frame) so we
+  // don't spam saves.
+  const handleNodeDragStop = (_ev: React.MouseEvent, draggedNode: RFNode) => {
+    if (readOnly) return;
+    const next = nodes.map((n) => {
+      if (n.id !== draggedNode.id) return n;
+      const raw = n.data.raw as FlowNode & { meta?: Record<string, unknown> };
+      const nextRaw = {
+        ...raw,
+        meta: {
+          ...(raw.meta ?? {}),
+          pos: { x: draggedNode.position.x, y: draggedNode.position.y },
+        },
+      } as FlowNode;
+      return {
+        ...n,
+        position: draggedNode.position,
+        data: { ...n.data, raw: nextRaw },
+      };
+    });
+    onNodesChange(next);
+  };
+
   const handleConnect = (conn: Connection) => {
     if (readOnly || !onConnect) return;
     if (!conn.source || !conn.target) return;
@@ -178,6 +204,7 @@ export function Canvas({
         edges={edges}
         nodeTypes={nodeTypes}
         onNodesChange={handleChange}
+        onNodeDragStop={handleNodeDragStop}
         onConnect={handleConnect}
         onNodesDelete={handleNodesDelete}
         onEdgesDelete={handleEdgesDelete}
