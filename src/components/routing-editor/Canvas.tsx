@@ -19,6 +19,7 @@ import ReactFlow, {
   type NodeTypes,
   type OnEdgesChange,
   type OnNodesChange,
+  ReactFlowProvider,
   type ReactFlowInstance,
   applyEdgeChanges,
   applyNodeChanges,
@@ -231,35 +232,37 @@ export function Canvas({
         overflow: "hidden",
       }}
     >
-      <ReactFlow
-        nodes={nodes}
-        edges={localEdges}
-        nodeTypes={nodeTypes}
-        onNodesChange={handleChange}
-        onEdgesChange={handleEdgesChange}
-        onNodeDragStop={handleNodeDragStop}
-        onConnect={handleConnect}
-        onNodesDelete={handleNodesDelete}
-        onEdgesDelete={handleEdgesDelete}
-        onNodeContextMenu={handleNodeContextMenu}
-        onInit={(instance) => {
-          rfRef.current = instance;
-          // Late-arriving async graph: call fitView once nodes exist.
-          if (nodes.length > 0) setTimeout(() => instance.fitView({ padding: 0.2 }), 50);
-        }}
-        nodesDraggable={!readOnly}
-        nodesConnectable={!readOnly}
-        edgesFocusable={!readOnly}
-        elementsSelectable
-        deleteKeyCode={readOnly ? null : ["Delete", "Backspace"]}
-        fitView
-        fitViewOptions={{ padding: 0.2 }}
-        proOptions={{ hideAttribution: true }}
-      >
-        <Background gap={14} color="var(--bd-1)" />
-        <Controls showInteractive={false} />
-        <MiniMap pannable zoomable maskColor="rgba(0,0,0,0.4)" />
-      </ReactFlow>
+      <ReactFlowProvider>
+        <ReactFlow
+          nodes={nodes}
+          edges={localEdges}
+          nodeTypes={nodeTypes}
+          onNodesChange={handleChange}
+          onEdgesChange={handleEdgesChange}
+          onNodeDragStop={handleNodeDragStop}
+          onConnect={handleConnect}
+          onNodesDelete={handleNodesDelete}
+          onEdgesDelete={handleEdgesDelete}
+          onNodeContextMenu={handleNodeContextMenu}
+          onInit={(instance) => {
+            rfRef.current = instance;
+            // Late-arriving async graph: call fitView once nodes exist.
+            if (nodes.length > 0) setTimeout(() => instance.fitView({ padding: 0.2 }), 50);
+          }}
+          nodesDraggable={!readOnly}
+          nodesConnectable={!readOnly}
+          edgesFocusable={!readOnly}
+          elementsSelectable
+          deleteKeyCode={readOnly ? null : ["Delete", "Backspace"]}
+          fitView
+          fitViewOptions={{ padding: 0.2 }}
+          proOptions={{ hideAttribution: true }}
+        >
+          <Background gap={14} color="var(--bd-1)" />
+          <Controls showInteractive={false} />
+          <MiniMap pannable zoomable maskColor="rgba(0,0,0,0.4)" />
+        </ReactFlow>
+      </ReactFlowProvider>
     </div>
   );
 }
