@@ -19,7 +19,8 @@ describe("/api/v1/health", () => {
     expect(body.queue).toBeDefined();
     expect(typeof body.queue.pending).toBe("number");
     expect(typeof body.queue.failed_last_hour).toBe("number");
-    expect(body.version).toMatch(/^\d+\.\d+\.\d+$/);
+    // Accepts both stable (1.2.3) and prerelease (1.5.0-s1) versions.
+    expect(body.version).toMatch(/^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?$/);
   });
 });
 
