@@ -1,0 +1,277 @@
+"use client";
+// Inspector — node-kind-dispatched edit panel.
+//
+// Mounts on the right side of the visual editor and edits one node at a
+// time. Parent owns the canonical FlowGraph; Inspector emits patches back.
+
+import { Pill } from "@/components/router-crm";
+import type { FlowNode } from "@/server/routing/flow/model";
+import { type AlgoEntry, type AlgoMode, AlgorithmInspector } from "./AlgorithmInspector";
+import { type CapDefRow, CapInspector, type LiveCap } from "./CapInspector";
+import { ScheduleGrid, type ScheduleValue, normalizeSchedule } from "./ScheduleGrid";
+
+interface BrokerSummary {
+  id: string;
+  name: string;
+  isActive: boolean;
+  dailyCap: number | null;
+  lastHealthStatus: string;
+  autologinEnabled: boolean;
+}
+
+interface Props {
+  node: FlowNode | null;
+  readOnly: boolean;
+  // Broker lookup — by id
+  brokers: BrokerSummary[];
+  // Algorithm config for the selected broker-pool node's parent algo
+  algoMode: AlgoMode;
+  algoEntries: AlgoEntry[];
+  onAlgoChange: (entries: AlgoEntry[]) => void;
+  onAlgoModeChange: (mode: AlgoMode) => void;
+  // Caps
+  capRows: CapDefRow[];
+  liveCaps: LiveCap[];
+  onCapChange: (rows: CapDefRow[]) => void;
+  onAddCap: (brokerId: string) => void;
+  onRemoveCap: (uid: string) => void;
+  // Schedule (for Filter nodes with schedule-like predicate)
+  schedule: ScheduleValue | null;
+  onScheduleChange: (v: ScheduleValue) => void;
+  // Generic node edits (label, etc.)
+  onNodePatch: (patch: Partial<FlowNode>) => void;
+}
+
+const sectionStyle = {
+  borderTop: "1px solid var(--bd-1)",
+  paddingTop: 12,
+  marginTop: 12,
+};
+
+const inp = {
+  fontFamily: "var(--sans)",
+  fontSize: 12,
+  padding: "4px 8px",
+  border: "1px solid var(--bd-1)",
+  background: "var(--bg-1)",
+  color: "var(--fg-0)",
+  borderRadius: 3,
+  width: "100%",
+};
+
+export function Inspector(props: Props) {
+  const { node, readOnly, brokers } = props;
+
+  if (!node) {
+    return (
+      <div style={{ padding: 14, color: "var(--fg-2)", fontSize: 12 }}>
+        Select a node on the canvas to edit its configuration.
+      </div>
+    );
+  }
+
+  const broker = node.kind === "BrokerTarget" ? brokers.find((b) => b.id === node.brokerId) : null;
+
+  return (
+    <div
+      style={{
+        padding: 14,
+        display: "flex",
+        flexDirection: "column",
+        gap: 4,
+        overflow: "auto",
+        height: "100%",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <Pill size="xs">{node.kind}</Pill>
+        <span style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--fg-2)" }}>
+          {node.id}
+        </span>
+      </div>
+      <label style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 8 }}>
+        <span style={{ fontSize: 10, color: "var(--fg-2)", letterSpacing: "0.08em" }}>LABEL</span>
+        <input
+          disabled={readOnly}
+          value={node.label ?? ""}
+          onChange={(e) => props.onNodePatch({ label: e.target.value } as Partial<FlowNode>)}
+          style={inp}
+        />
+      </label>
+
+      {/* Kind-specific panels */}
+      {node.kind === "Algorithm" && (
+        <>
+          <div style={sectionStyle}>
+            <div style={{ fontSize: 11, color: "var(--fg-2)", marginBottom: 6 }}>algorithm</div>
+            <div style={{ display: "flex", gap: 6 }}>
+              {(["WEIGHTED_ROUND_ROBIN", "SLOTS_CHANCE"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  disabled={readOnly}
+                  onClick={() => {
+                    props.onNodePatch({ mode: m } as Partial<FlowNode>);
+                    props.onAlgoModeChange(m);
+                  }}
+                  style={{
+                    flex: 1,
+                    fontSize: 11,
+                    padding: "6px 8px",
+                    border: `1px solid ${node.mode === m ? "var(--fg-0)" : "var(--bd-1)"}`,
+                    background: node.mode === m ? "var(--bg-3)" : "var(--bg-2)",
+                    color: "var(--fg-0)",
+                    borderRadius: 3,
+                    cursor: readOnly ? "default" : "pointer",
+                  }}
+                >
+                  {m === "WEIGHTED_ROUND_ROBIN" ? "WRR" : "Slots-Chance"}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div style={sectionStyle}>
+            <AlgorithmInspector
+              mode={props.algoMode}
+              entries={props.algoEntries}
+              readOnly={readOnly}
+              onChange={props.onAlgoChange}
+            />
+          </div>
+        </>
+      )}
+
+      {node.kind === "BrokerTarget" && (
+        <>
+          <div style={sectionStyle}>
+            <label
+              htmlFor="broker-target-broker"
+              style={{ fontSize: 10, color: "var(--fg-2)", letterSpacing: "0.08em" }}
+            >
+              BROKER
+            </label>
+            <select
+              id="broker-target-broker"
+              disabled={readOnly}
+              value={node.brokerId}
+              onChange={(e) => props.onNodePatch({ brokerId: e.target.value } as Partial<FlowNode>)}
+              style={{ ...inp, appearance: "auto", marginTop: 3 }}
+            >
+              {brokers.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name} ({b.lastHealthStatus})
+                </option>
+              ))}
+              {brokers.find((b) => b.id === node.brokerId) === undefined && (
+                <option value={node.brokerId}>unknown: {node.brokerId}</option>
+              )}
+            </select>
+            {broker && (
+              <div style={{ display: "flex", gap: 4, marginTop: 6, flexWrap: "wrap" }}>
+                {broker.autologinEnabled && (
+                  <Pill size="xs" tone="accent">
+                    autologin
+                  </Pill>
+                )}
+                <Pill
+                  size="xs"
+                  tone={
+                    broker.lastHealthStatus === "healthy"
+                      ? "success"
+                      : broker.lastHealthStatus === "degraded"
+                        ? "warn"
+                        : broker.lastHealthStatus === "down"
+                          ? "danger"
+                          : "neutral"
+                  }
+                >
+                  {broker.lastHealthStatus}
+                </Pill>
+                {broker.dailyCap != null && <Pill size="xs">daily cap {broker.dailyCap}</Pill>}
+                {!broker.isActive && (
+                  <Pill size="xs" tone="warn">
+                    broker inactive
+                  </Pill>
+                )}
+              </div>
+            )}
+          </div>
+          <div style={sectionStyle}>
+            <div style={{ fontSize: 11, color: "var(--fg-2)", marginBottom: 6 }}>caps</div>
+            <CapInspector
+              brokerId={node.brokerId}
+              rows={props.capRows}
+              liveCaps={props.liveCaps}
+              readOnly={readOnly}
+              onChange={props.onCapChange}
+              onAdd={() => props.onAddCap(node.brokerId)}
+              onRemove={props.onRemoveCap}
+            />
+          </div>
+        </>
+      )}
+
+      {node.kind === "Filter" && (
+        <div style={sectionStyle}>
+          <div style={{ fontSize: 11, color: "var(--fg-2)", marginBottom: 6 }}>schedule</div>
+          <ScheduleGrid
+            value={normalizeSchedule(props.schedule)}
+            onChange={props.onScheduleChange}
+            readOnly={readOnly}
+          />
+          <div style={{ fontSize: 11, color: "var(--fg-2)", marginTop: 12 }}>conditions</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 4 }}>
+            {node.conditions.map((c, i) => (
+              <span
+                key={`${c.field}-${i}`}
+                style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--fg-1)" }}
+              >
+                {c.field} {c.op}{" "}
+                {Array.isArray(c.value) ? `[${c.value.join(", ")}]` : String(c.value)}
+              </span>
+            ))}
+          </div>
+          <div style={{ fontSize: 10, color: "var(--fg-2)", marginTop: 8 }}>
+            Conditions are edited via the graph JSON (deep edits coming in a later iteration).
+          </div>
+        </div>
+      )}
+
+      {node.kind === "Fallback" && (
+        <div style={sectionStyle}>
+          <div style={{ fontSize: 11, color: "var(--fg-2)", marginBottom: 6 }}>triggers</div>
+          <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--fg-1)" }}>
+            timeout: {node.triggers.timeoutMs}ms
+            <br />
+            http: {node.triggers.httpStatusCodes.join(", ")}
+            <br />
+            connection error: {String(node.triggers.connectionError)}
+            <br />
+            explicit reject: {String(node.triggers.explicitReject)}
+            <br />
+            max hops: {node.maxHop}
+          </div>
+          <div style={{ fontSize: 10, color: "var(--fg-2)", marginTop: 8 }}>
+            Manual review is the tail fallback when max-hops is exhausted.
+          </div>
+        </div>
+      )}
+
+      {node.kind === "Entry" && (
+        <div style={sectionStyle}>
+          <div style={{ fontSize: 11, color: "var(--fg-2)" }}>
+            Traffic enters here. Configure entry filters at the flow level.
+          </div>
+        </div>
+      )}
+
+      {node.kind === "Exit" && (
+        <div style={sectionStyle}>
+          <div style={{ fontSize: 11, color: "var(--fg-2)" }}>
+            Terminal node — flow dispatches lead to the selected broker.
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
