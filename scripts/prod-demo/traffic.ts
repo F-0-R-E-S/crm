@@ -150,7 +150,7 @@ function buildFixtures(n: number): Fixture[] {
       key: KEY_EU!,
       email: `dup${i}@clean.io`,
       phone: pick(DE_PHONES, i),
-      ip: "195.10.20." + String(10 + i),
+      ip: `195.10.20.${String(10 + i)}`,
     });
   }
 
@@ -199,10 +199,7 @@ async function main() {
     console.log("\nrejected breakdown:");
     for (const r of rejected.slice(0, 20)) {
       const body = r.body as Record<string, unknown> | null;
-      console.log(
-        `  ${r.status} ${r.geo} ${r.fixture}`,
-        JSON.stringify(body ?? {}).slice(0, 100),
-      );
+      console.log(`  ${r.status} ${r.geo} ${r.fixture}`, JSON.stringify(body ?? {}).slice(0, 100));
     }
   }
 }

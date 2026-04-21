@@ -267,7 +267,7 @@ async function seed(): Promise<SeedResult> {
           totalDailyCap: a.totalDailyCap,
           isActive: true,
           postbackUrl: "http://localhost:4001/tracker?click_id={sub_id}&status={status}",
-          postbackSecret: "demo-secret-" + a.name.toLowerCase().replace(/\W+/g, "-"),
+          postbackSecret: `demo-secret-${a.name.toLowerCase().replace(/\W+/g, "-")}`,
           postbackEvents: ["lead_pushed", "ftd", "declined"],
           intakeSettings: {
             create: {
@@ -299,7 +299,11 @@ async function seed(): Promise<SeedResult> {
           isRevoked: false,
         },
       });
-      affiliateApiKeys.push({ label: aff.name + "/" + variant, affiliateId: aff.id, apiKey: rawKey });
+      affiliateApiKeys.push({
+        label: `${aff.name}/${variant}`,
+        affiliateId: aff.id,
+        apiKey: rawKey,
+      });
     }
   }
 
@@ -428,11 +432,11 @@ async function seed(): Promise<SeedResult> {
   for (const b of brokers) {
     await prisma.statusMapping.createMany({
       data: [
-        { brokerId: b.id, rawStatus: "accepted", canonicalStatusId: (await cs("qualified")) },
-        { brokerId: b.id, rawStatus: "declined", canonicalStatusId: (await cs("declined")) },
-        { brokerId: b.id, rawStatus: "ftd", canonicalStatusId: (await cs("ftd")) },
-        { brokerId: b.id, rawStatus: "redeposit", canonicalStatusId: (await cs("redeposit")) },
-        { brokerId: b.id, rawStatus: "call_back", canonicalStatusId: (await cs("call_back")) },
+        { brokerId: b.id, rawStatus: "accepted", canonicalStatusId: await cs("qualified") },
+        { brokerId: b.id, rawStatus: "declined", canonicalStatusId: await cs("declined") },
+        { brokerId: b.id, rawStatus: "ftd", canonicalStatusId: await cs("ftd") },
+        { brokerId: b.id, rawStatus: "redeposit", canonicalStatusId: await cs("redeposit") },
+        { brokerId: b.id, rawStatus: "call_back", canonicalStatusId: await cs("call_back") },
       ],
     });
   }
@@ -639,6 +643,12 @@ async function seed(): Promise<SeedResult> {
         kind: "Fallback" as const,
         label: "Last-resort",
         maxHop: 3,
+        triggers: {
+          timeoutMs: 2000,
+          httpStatusCodes: [500, 502, 503, 504],
+          connectionError: true,
+          explicitReject: true,
+        },
       },
       {
         id: "bt_echo",
@@ -832,7 +842,7 @@ async function seed(): Promise<SeedResult> {
 
   async function cs(code: string): Promise<string> {
     const row = await prisma.canonicalStatus.findUnique({ where: { code } });
-    if (!row) throw new Error("no canonical " + code);
+    if (!row) throw new Error(`no canonical ${code}`);
     return row.id;
   }
 }
@@ -845,7 +855,9 @@ async function main() {
   const res = await seed();
   console.log("\n═══ DONE ═══");
   console.log("tenantId:", res.tenantId);
-  console.log("admin / super creds: admin@gambchamp.local:changeme  super@gambchamp.local:supersuper");
+  console.log(
+    "admin / super creds: admin@gambchamp.local:changeme  super@gambchamp.local:supersuper",
+  );
   console.log("adminApiKey (manual):", res.adminApiKey);
   console.log("flowId:", res.flowId);
   console.log("brokers:", res.brokerIds.length);

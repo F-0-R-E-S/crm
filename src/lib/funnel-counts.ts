@@ -18,9 +18,13 @@ export interface FunnelCounts {
   ftd: number;
 }
 
+// Every state after broker selection — PENDING_HOLD means the lead was
+// pushed successfully and is inside the anti-shave hold window, so it
+// still counts as "routed" on the dashboard funnel.
 const ROUTED_STATES: LeadStateKey[] = [
   "PUSHING",
   "PUSHED",
+  "PENDING_HOLD",
   "ACCEPTED",
   "FTD",
   "DECLINED",
@@ -42,14 +46,14 @@ export function funnelCounts(leads: LeadLike[]): FunnelCounts {
   };
   for (const l of leads) {
     out.received++;
-    if (l.state === "REJECTED") {
+    if (l.state === "REJECTED" || l.state === "REJECTED_FRAUD") {
       out.rejected++;
       continue;
     }
     out.validated++;
     if (ROUTED_STATES.includes(l.state)) out.routed++;
     if (l.state === "FAILED" && l.rejectReason === "no_broker_available") out.no_broker++;
-    if (l.state === "PUSHED" || l.state === "PUSHING") out.pushed++;
+    if (l.state === "PUSHED" || l.state === "PUSHING" || l.state === "PENDING_HOLD") out.pushed++;
     if (l.state === "ACCEPTED") out.accepted++;
     if (l.state === "DECLINED") out.declined++;
     if (l.state === "FTD") out.ftd++;

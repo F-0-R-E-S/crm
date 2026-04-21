@@ -41,4 +41,23 @@ describe("funnelCounts", () => {
     const c = funnelCounts([lead("FAILED")]);
     expect(c.no_broker).toBe(0);
   });
+  it("PENDING_HOLD counts as routed + pushed (anti-shave hold window)", () => {
+    const c = funnelCounts([lead("PENDING_HOLD"), lead("PENDING_HOLD"), lead("PENDING_HOLD")]);
+    expect(c.received).toBe(3);
+    expect(c.validated).toBe(3);
+    expect(c.routed).toBe(3);
+    expect(c.pushed).toBe(3);
+    expect(c.rejected).toBe(0);
+  });
+  it("REJECTED_FRAUD counts as rejected (not validated)", () => {
+    const c = funnelCounts([
+      lead("REJECTED_FRAUD"),
+      lead("REJECTED_FRAUD"),
+      lead("REJECTED"),
+      lead("PUSHED"),
+    ]);
+    expect(c.rejected).toBe(3);
+    expect(c.validated).toBe(1);
+    expect(c.routed).toBe(1);
+  });
 });
