@@ -17,6 +17,7 @@ import ReactFlow, {
   MiniMap,
   type Node as RFNode,
   type NodeTypes,
+  type OnEdgesChange,
   type OnNodesChange,
   type ReactFlowInstance,
   applyNodeChanges,
@@ -197,6 +198,16 @@ export function Canvas({
     for (const e of deleted) onDeleteEdge(e.id);
   };
 
+  // Reactflow v11 controlled mode requires BOTH onNodesChange and
+  // onEdgesChange — without the latter, edges are silently not synced
+  // into reactflow's internal store and never render. We don't have
+  // edge-level state to persist (conditions are encoded in the FlowEdge
+  // model), so this handler is a no-op that exists purely to satisfy
+  // the v11 contract.
+  const handleEdgesChange: OnEdgesChange = () => {
+    /* no-op: all edge mutations go through onConnect / onEdgesDelete */
+  };
+
   const handleNodeContextMenu = (ev: React.MouseEvent, node: RFNode) => {
     if (!onNodeContextMenu) return;
     ev.preventDefault();
@@ -219,6 +230,7 @@ export function Canvas({
         edges={edges}
         nodeTypes={nodeTypes}
         onNodesChange={handleChange}
+        onEdgesChange={handleEdgesChange}
         onNodeDragStop={handleNodeDragStop}
         onConnect={handleConnect}
         onNodesDelete={handleNodesDelete}
