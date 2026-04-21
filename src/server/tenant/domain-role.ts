@@ -17,16 +17,18 @@
  * Edge runtime where we cannot hit Prisma; the slug → id resolution happens
  * in the tRPC context / route handlers (Node runtime).
  */
-export type DomainRole = "network" | "autologin" | "api";
+export type DomainRole = "network" | "autologin" | "api" | "any";
 
 export interface DomainResolution {
   tenantSlug: string;
   domainRole: DomainRole;
 }
 
+// Default host (no subdomain routing) must serve every surface — otherwise
+// the existing deployment loses /api/v1/* intake.
 const DEFAULT_RESOLUTION: DomainResolution = {
   tenantSlug: "default",
-  domainRole: "network",
+  domainRole: "any",
 };
 
 const ROLE_PREFIXES = new Set<string>(["network", "autologin", "api"]);
@@ -101,6 +103,7 @@ export function resolveDomain(
  * - `api.*`       → `/api/v1/*`. Rejects everything else.
  */
 export function isPathAllowedForRole(pathname: string, role: DomainRole): boolean {
+  if (role === "any") return true; // default host — serve every surface
   if (role === "api") {
     // api.* serves only /api/v1/* (+ health always accessible).
     return pathname === "/api/v1/health" || pathname.startsWith("/api/v1/");

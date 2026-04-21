@@ -7,40 +7,40 @@ describe("resolveDomain — hostname → { tenantSlug, domainRole }", () => {
   it("falls back to default tenant on missing hostname", () => {
     expect(resolveDomain(undefined, ROOT)).toEqual({
       tenantSlug: "default",
-      domainRole: "network",
+      domainRole: "any",
     });
     expect(resolveDomain(null, ROOT)).toEqual({
       tenantSlug: "default",
-      domainRole: "network",
+      domainRole: "any",
     });
   });
 
   it("returns default for localhost / 127.0.0.1", () => {
     expect(resolveDomain("localhost", ROOT)).toEqual({
       tenantSlug: "default",
-      domainRole: "network",
+      domainRole: "any",
     });
     expect(resolveDomain("localhost:3000", ROOT)).toEqual({
       tenantSlug: "default",
-      domainRole: "network",
+      domainRole: "any",
     });
     expect(resolveDomain("127.0.0.1", ROOT)).toEqual({
       tenantSlug: "default",
-      domainRole: "network",
+      domainRole: "any",
     });
   });
 
   it("returns default for the prod fly host", () => {
     expect(resolveDomain("crm-node.fly.dev", ROOT)).toEqual({
       tenantSlug: "default",
-      domainRole: "network",
+      domainRole: "any",
     });
   });
 
   it("returns default on exact root domain", () => {
     expect(resolveDomain(ROOT, ROOT)).toEqual({
       tenantSlug: "default",
-      domainRole: "network",
+      domainRole: "any",
     });
   });
 
@@ -75,25 +75,25 @@ describe("resolveDomain — hostname → { tenantSlug, domainRole }", () => {
   it("unknown role prefix → default (conservative)", () => {
     expect(resolveDomain("www.acme.gambchamp.io", ROOT)).toEqual({
       tenantSlug: "default",
-      domainRole: "network",
+      domainRole: "any",
     });
   });
 
   it("host outside root domain → default", () => {
     expect(resolveDomain("network.acme.example.com", ROOT)).toEqual({
       tenantSlug: "default",
-      domainRole: "network",
+      domainRole: "any",
     });
   });
 
   it("empty / missing root domain → every host becomes default", () => {
     expect(resolveDomain("network.acme.gambchamp.io", null)).toEqual({
       tenantSlug: "default",
-      domainRole: "network",
+      domainRole: "any",
     });
     expect(resolveDomain("network.acme.gambchamp.io", "")).toEqual({
       tenantSlug: "default",
-      domainRole: "network",
+      domainRole: "any",
     });
   });
 
