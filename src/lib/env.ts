@@ -36,6 +36,10 @@ const BaseSchema = z.object({
   TELEGRAM_LINK_TOKEN_TTL_MIN: z.coerce.number().int().positive().default(15),
   GAME_ORIGIN: z.string().optional().default(""),
   GAME_FRONTEND_ENABLED: zBool.optional().default(true),
+  // v2.0 S2.0-2 — wildcard root domain used to parse `<role>.<slug>.<root>`
+  // tenant-scoped subdomains. Empty string = no custom tenant subdomains
+  // (every host resolves to `tenant_default`). Example: `gambchamp.io`.
+  ROOT_DOMAIN: z.string().optional().default(""),
 });
 
 export type Env = z.infer<typeof BaseSchema> & { authSecret: string };

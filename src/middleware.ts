@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import { isPathAllowedForRole, resolveDomain } from "@/server/tenant/domain-role";
 import { type NextRequest, NextResponse } from "next/server";
 
 const CORS_METHODS = "GET,POST,PUT,PATCH,DELETE,OPTIONS";
@@ -44,12 +45,34 @@ function withCors(res: NextResponse, req: NextRequest): NextResponse {
   return res;
 }
 
+/**
+ * v2.0 S2.0-2 — extract the hostname from `x-forwarded-host` (fly) or `host`.
+ */
+function resolveHostname(req: NextRequest): string | null {
+  return (
+    req.headers.get("x-forwarded-host") ?? req.headers.get("host") ?? req.nextUrl.hostname ?? null
+  );
+}
+
 export default auth((req) => {
   const preflight = handlePreflight(req);
   if (preflight) return preflight;
 
   const isLoggedIn = !!req.auth;
   const { pathname } = req.nextUrl;
+
+  // v2.0 S2.0-2 — resolve tenant from hostname + enforce domain-role gating.
+  const rootDomain = process.env.ROOT_DOMAIN ?? "";
+  const hostname = resolveHostname(req);
+  const { tenantSlug, domainRole } = resolveDomain(hostname, rootDomain);
+
+  // Domain-role path gating — a request to `api.acme.gambchamp.io/dashboard`
+  // returns 404 even before auth runs (hides tenant surface).
+  // Health endpoint is always allowed (for k8s / fly probes).
+  const isHealthProbe = pathname === "/api/v1/health";
+  if (!isHealthProbe && !isPathAllowedForRole(pathname, domainRole)) {
+    return new NextResponse(null, { status: 404 });
+  }
 
   const isPublic =
     pathname === "/" ||
@@ -81,7 +104,15 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/", req.nextUrl.origin));
   }
 
-  const res = NextResponse.next();
+  // Propagate tenant-slug + domain-role to downstream handlers. Never trust
+  // client-supplied values — strip any existing headers before setting ours.
+  const reqHeaders = new Headers(req.headers);
+  reqHeaders.delete("x-tenant-slug");
+  reqHeaders.delete("x-tenant-domain-role");
+  reqHeaders.set("x-tenant-slug", tenantSlug);
+  reqHeaders.set("x-tenant-domain-role", domainRole);
+
+  const res = NextResponse.next({ request: { headers: reqHeaders } });
   return withCors(res, req);
 });
 
