@@ -226,17 +226,26 @@ export function BrokerPoolNode({
 
 export function FallbackNode({ data }: { data: NodeData }) {
   const node = data.raw as Extract<FlowNode, { kind: "Fallback" }>;
+  // Defensive: older seeds (pre-v2.0 battle-demo) may have persisted a
+  // Fallback without the triggers object. Fall back to schema defaults
+  // so the canvas doesn't crash while a migration catches up.
+  const triggers = node.triggers ?? {
+    timeoutMs: 2000,
+    httpStatusCodes: [500, 502, 503, 504],
+    connectionError: true,
+    explicitReject: true,
+  };
   return (
     <div style={BASE_STYLE}>
-      <Header kind="Fallback" sub={`≤${node.maxHop} hops`} />
+      <Header kind="Fallback" sub={`≤${node.maxHop ?? 3} hops`} />
       <div style={{ fontWeight: 500, marginBottom: 6 }}>{data.label}</div>
       <div style={{ fontSize: 10, color: "var(--fg-2)" }}>
-        triggers: timeout={node.triggers.timeoutMs}ms
-        {node.triggers.connectionError ? " · conn" : ""}
-        {node.triggers.explicitReject ? " · reject" : ""}
+        triggers: timeout={triggers.timeoutMs}ms
+        {triggers.connectionError ? " · conn" : ""}
+        {triggers.explicitReject ? " · reject" : ""}
       </div>
       <div style={{ fontSize: 10, color: "var(--fg-2)", marginTop: 2 }}>
-        http: {node.triggers.httpStatusCodes.join(",")}
+        http: {triggers.httpStatusCodes.join(",")}
       </div>
       <Handle type="target" position={Position.Left} style={{ background: "var(--fg-2)" }} />
       <Handle

@@ -325,25 +325,35 @@ export function Inspector(props: Props) {
         </div>
       )}
 
-      {node.kind === "Fallback" && (
-        <div style={sectionStyle}>
-          <div style={{ fontSize: 11, color: "var(--fg-2)", marginBottom: 6 }}>triggers</div>
-          <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--fg-1)" }}>
-            timeout: {node.triggers.timeoutMs}ms
-            <br />
-            http: {node.triggers.httpStatusCodes.join(", ")}
-            <br />
-            connection error: {String(node.triggers.connectionError)}
-            <br />
-            explicit reject: {String(node.triggers.explicitReject)}
-            <br />
-            max hops: {node.maxHop}
-          </div>
-          <div style={{ fontSize: 10, color: "var(--fg-2)", marginTop: 8 }}>
-            Manual review is the tail fallback when max-hops is exhausted.
-          </div>
-        </div>
-      )}
+      {node.kind === "Fallback" &&
+        (() => {
+          // Defensive against seeds missing triggers — see nodes.tsx.
+          const triggers = node.triggers ?? {
+            timeoutMs: 2000,
+            httpStatusCodes: [500, 502, 503, 504],
+            connectionError: true,
+            explicitReject: true,
+          };
+          return (
+            <div style={sectionStyle}>
+              <div style={{ fontSize: 11, color: "var(--fg-2)", marginBottom: 6 }}>triggers</div>
+              <div style={{ fontFamily: "var(--mono)", fontSize: 11, color: "var(--fg-1)" }}>
+                timeout: {triggers.timeoutMs}ms
+                <br />
+                http: {triggers.httpStatusCodes.join(", ")}
+                <br />
+                connection error: {String(triggers.connectionError)}
+                <br />
+                explicit reject: {String(triggers.explicitReject)}
+                <br />
+                max hops: {node.maxHop ?? 3}
+              </div>
+              <div style={{ fontSize: 10, color: "var(--fg-2)", marginTop: 8 }}>
+                Manual review is the tail fallback when max-hops is exhausted.
+              </div>
+            </div>
+          );
+        })()}
 
       {node.kind === "Entry" && (
         <div style={sectionStyle}>
