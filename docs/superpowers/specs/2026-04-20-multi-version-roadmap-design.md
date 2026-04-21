@@ -176,13 +176,15 @@ Design-system constants (from `SPEC.md`):
 
 ## 12. Related documents
 
-- `product_backlog/PRODUCT_BACKLOG_v1.md` — original 23-epic backlog (this roadmap supersedes sprint mapping but keeps epic numbering for traceability).
-- `product_backlog/RELEASE_PLAN_SPRINTS_v1.md` — original 24-sprint plan (superseded by §4–§7 above).
-- `strategic_analysis_report.md` — competitive analysis covering Leadgreed, Elnopy, HyperOne, CRM Mate.
-- `Transcript_videos/GetLinked/`, `Transcript_videos/trackbox/` — new competitor data feeding §8.
-- `GAP_ANALYSIS_v1.md` — sources for Idempotency-Key + E.164 wedges.
-- `crm-node/CLAUDE.md` — current-state notes (shipped subsystems, deprecated shims, operational follow-ups).
-- `crm-node-wave1/` — wave1 parity branch to be merged in v1.0 S1.
+> Paths updated 2026-04-22 after the workspace restructure. See `../../../../README.md` at the workspace root for the full map.
+
+- `../../../docs/strategic/strategic_analysis_report.md` — competitive analysis covering Leadgreed, Elnopy, HyperOne, CRM Mate (+ iREV in v1.3).
+- `../../../docs/competitor_research/Transcript_videos/GetLinked/`, `../../../docs/competitor_research/Transcript_videos/trackbox/` — new-competitor raw data feeding §8.
+- `../../../docs/strategic/GAP_ANALYSIS_v1.md` — sources for Idempotency-Key + E.164 wedges.
+- `../../CLAUDE.md` — current-state notes (shipped subsystems, deprecated shims, operational follow-ups).
+- `../READINESS_CHECKLIST.md` — living program-state flag updated per release.
+- *(historical — moved to Trash 2026-04-22)* `product_backlog/PRODUCT_BACKLOG_v1.md` / `product_backlog/RELEASE_PLAN_SPRINTS_v1.md` — original 23-epic backlog + 24-sprint plan; superseded by §4–§7 above.
+- *(historical — merged in v1.0 S1)* `crm-node-wave1/` — wave1 parity branch.
 
 ## 13. Open questions
 
