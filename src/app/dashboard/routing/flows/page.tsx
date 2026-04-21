@@ -28,7 +28,7 @@ export default function FlowsListPage() {
           href={"/dashboard/routing" as never}
           style={{ fontSize: 11, color: "var(--fg-2)", textDecoration: "none" }}
         >
-          ← legacy rotation rules
+          ← overview
         </Link>
         <span style={{ fontSize: 11, color: "var(--fg-2)", marginLeft: "auto" }}>
           {data?.length ?? 0} flows

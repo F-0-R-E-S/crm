@@ -224,4 +224,105 @@ export const routingRouter = router({
     });
     return rows;
   }),
+
+  // Overview: aggregated stats for /dashboard/routing. Covers the last
+  // 24h by default: total leads received + per-state counts, plus the
+  // top 5 cap-blocked events by scope.
+  overview: protectedProcedure.query(async () => {
+    const now = new Date();
+    const since = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+    const [flows, leadsByState, capBlocked, brokers] = await Promise.all([
+      prisma.flow.findMany({
+        where: { status: { in: ["PUBLISHED", "DRAFT"] } },
+        orderBy: { updatedAt: "desc" },
+        include: { activeVersion: { select: { id: true, versionNumber: true } } },
+      }),
+      prisma.lead.groupBy({
+        by: ["state", "geo"],
+        where: { createdAt: { gte: since } },
+        _count: { _all: true },
+      }),
+      prisma.leadEvent.groupBy({
+        by: ["leadId"],
+        where: { kind: "CAP_BLOCKED", createdAt: { gte: since } },
+        _count: { _all: true },
+      }),
+      prisma.broker.findMany({
+        select: {
+          id: true,
+          name: true,
+          isActive: true,
+          lastHealthStatus: true,
+          dailyCap: true,
+        },
+      }),
+    ]);
+
+    // Top 5 cap-blocked leads with their geos
+    const topCapLeadIds = capBlocked.slice(0, 5).map((r) => r.leadId);
+    const topCapLeads =
+      topCapLeadIds.length > 0
+        ? await prisma.lead.findMany({
+            where: { id: { in: topCapLeadIds } },
+            select: { id: true, geo: true, affiliateId: true, createdAt: true },
+          })
+        : [];
+
+    const receivedByGeo = new Map<string, number>();
+    const routedByGeo = new Map<string, number>();
+    for (const r of leadsByState) {
+      receivedByGeo.set(r.geo, (receivedByGeo.get(r.geo) ?? 0) + r._count._all);
+      if (["ACCEPTED", "PUSHED", "FTD"].includes(r.state)) {
+        routedByGeo.set(r.geo, (routedByGeo.get(r.geo) ?? 0) + r._count._all);
+      }
+    }
+
+    const geoStats = Array.from(receivedByGeo.entries())
+      .map(([geo, received]) => ({
+        geo,
+        received,
+        routed: routedByGeo.get(geo) ?? 0,
+      }))
+      .sort((a, b) => b.received - a.received);
+
+    const totalReceived = leadsByState.reduce((a, r) => a + r._count._all, 0);
+    const totalRouted = leadsByState
+      .filter((r) => ["ACCEPTED", "PUSHED", "FTD"].includes(r.state))
+      .reduce((a, r) => a + r._count._all, 0);
+
+    return {
+      since: since.toISOString(),
+      flows: flows.map((f) => ({
+        id: f.id,
+        name: f.name,
+        status: f.status,
+        timezone: f.timezone,
+        activeVersionId: f.activeVersionId,
+        activeVersionNumber: f.activeVersion?.versionNumber ?? null,
+      })),
+      geoStats,
+      totals: {
+        received: totalReceived,
+        routed: totalRouted,
+        hitRate: totalReceived > 0 ? totalRouted / totalReceived : 0,
+      },
+      topCapBlocked: capBlocked.slice(0, 5).map((r) => {
+        const lead = topCapLeads.find((l) => l.id === r.leadId);
+        return {
+          leadId: r.leadId,
+          geo: lead?.geo ?? "—",
+          affiliateId: lead?.affiliateId ?? "—",
+          events: r._count._all,
+        };
+      }),
+      brokers: brokers.map((b) => ({
+        id: b.id,
+        name: b.name,
+        isActive: b.isActive,
+        lastHealthStatus: b.lastHealthStatus,
+        dailyCap: b.dailyCap,
+      })),
+    };
+  }),
 });

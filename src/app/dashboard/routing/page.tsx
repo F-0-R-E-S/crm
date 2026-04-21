@@ -1,156 +1,265 @@
 "use client";
-import { Pill, btnStyle, inputStyle } from "@/components/router-crm";
+// Routing overview — modernized dashboard-style view.
+//
+// Sections (top → bottom):
+//   1. KPI tiles: active flows · routed 24h · hit-rate · down-brokers
+//   2. Flows table (link to editor)
+//   3. By-GEO snapshot: received / routed per GEO (last 24h)
+//   4. Broker health summary
+//   5. Top-5 cap-blocked events (last 24h)
+//
+// Pulls from the new `routing.overview` tRPC procedure; falls back gracefully
+// when data is loading.
+
+import { CounterTile, Pill, btnStyle } from "@/components/router-crm";
 import { useThemeCtx } from "@/components/shell/ThemeProvider";
 import { trpc } from "@/lib/trpc";
-import { useState } from "react";
+import Link from "next/link";
 
-export default function RoutingPage() {
+function statusTone(s: string) {
+  if (s === "PUBLISHED") return "success" as const;
+  if (s === "ARCHIVED") return "neutral" as const;
+  return "warn" as const;
+}
+
+function healthTone(s: string) {
+  if (s === "healthy") return "success" as const;
+  if (s === "degraded") return "warn" as const;
+  if (s === "down") return "danger" as const;
+  return "neutral" as const;
+}
+
+export default function RoutingOverviewPage() {
   const { theme } = useThemeCtx();
-  const utils = trpc.useUtils();
-  const { data: byGeo } = trpc.rotation.listByGeo.useQuery();
-  const brokers = trpc.broker.list.useQuery();
-  const create = trpc.rotation.create.useMutation({
-    onSuccess: () => utils.rotation.listByGeo.invalidate(),
-  });
-  const reorder = trpc.rotation.reorder.useMutation({
-    onSuccess: () => utils.rotation.listByGeo.invalidate(),
-  });
-  const toggle = trpc.rotation.toggle.useMutation({
-    onSuccess: () => utils.rotation.listByGeo.invalidate(),
-  });
-  const del = trpc.rotation.delete.useMutation({
-    onSuccess: () => utils.rotation.listByGeo.invalidate(),
-  });
-
-  const geos = Object.keys(byGeo ?? {});
-  const [selectedGeo, setSelectedGeo] = useState<string | null>(geos[0] ?? null);
-  const [newGeo, setNewGeo] = useState("");
-  const [newBrokerId, setNewBrokerId] = useState("");
-
-  const rules = selectedGeo && byGeo ? (byGeo[selectedGeo] ?? []) : [];
+  const { data, isLoading } = trpc.routing.overview.useQuery();
 
   return (
     <div
       style={{
         padding: "20px 28px",
-        height: "calc(100vh - 46px)",
         display: "flex",
         flexDirection: "column",
-        gap: 14,
+        gap: 18,
       }}
     >
       <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
         <h1 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em", margin: 0 }}>
-          Routing (legacy rules)
+          Routing
         </h1>
-        <a
-          href="/dashboard/routing/flows"
-          style={{ fontSize: 12, color: "var(--fg-1)", textDecoration: "none", marginLeft: "auto" }}
-        >
-          Routing Flows (new) →
-        </a>
-      </div>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "260px 1fr",
-          gap: 14,
-          flex: 1,
-          overflow: "hidden",
-        }}
-      >
-        <aside style={{ border: "1px solid var(--bd-1)", borderRadius: 6, overflow: "auto" }}>
-          <div
-            style={{ padding: 12, borderBottom: "1px solid var(--bd-1)", display: "flex", gap: 6 }}
+        <span style={{ fontSize: 11, color: "var(--fg-2)" }}>
+          last 24h{data?.since ? ` · since ${new Date(data.since).toLocaleString()}` : ""}
+        </span>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+          <Link
+            href={"/dashboard/routing/flows" as never}
+            style={{ ...btnStyle(theme), textDecoration: "none" }}
           >
-            <input
-              value={newGeo}
-              onChange={(e) => setNewGeo(e.target.value.toUpperCase())}
-              maxLength={2}
-              placeholder="GEO"
-              style={{ ...inputStyle(theme), width: 70 }}
+            All flows
+          </Link>
+        </div>
+      </div>
+
+      {isLoading && <div style={{ color: "var(--fg-2)" }}>loading overview…</div>}
+
+      {data && (
+        <>
+          {/* KPI tiles */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: 12,
+            }}
+          >
+            <CounterTile
+              label="Active flows"
+              value={data.flows.filter((f) => f.status === "PUBLISHED").length}
             />
-            <select
-              value={newBrokerId}
-              onChange={(e) => setNewBrokerId(e.target.value)}
-              style={{ ...inputStyle(theme), flex: 1 }}
-            >
-              <option value="">broker…</option>
-              {brokers.data?.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              style={btnStyle(theme, "primary")}
-              onClick={() => {
-                if (!newGeo || !newBrokerId) return;
-                const existing = byGeo?.[newGeo] ?? [];
-                const priority = (existing[existing.length - 1]?.priority ?? 0) + 1;
-                create.mutate({ geo: newGeo, brokerId: newBrokerId, priority });
-                setNewGeo("");
-                setNewBrokerId("");
+            <CounterTile label="Received 24h" value={data.totals.received} />
+            <CounterTile label="Routed 24h" value={data.totals.routed} />
+            <CounterTile
+              label="Hit rate (24h)"
+              value={`${Math.round(data.totals.hitRate * 1000) / 10}%`}
+            />
+          </div>
+
+          {/* Flows table */}
+          <section style={{ border: "1px solid var(--bd-1)", borderRadius: 6, overflow: "hidden" }}>
+            <header
+              style={{
+                padding: "10px 14px",
+                borderBottom: "1px solid var(--bd-1)",
+                background: "var(--bg-2)",
+                fontSize: 13,
+                fontWeight: 500,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
-              +
-            </button>
-          </div>
-          <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
-            {geos.map((g) => {
-              const count = (byGeo?.[g] ?? []).filter((r) => r.isActive).length;
-              const active = g === selectedGeo;
-              return (
-                <li key={g}>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedGeo(g)}
+              <span>Flows</span>
+              <span style={{ fontSize: 11, color: "var(--fg-2)" }}>{data.flows.length} rows</span>
+            </header>
+            {data.flows.length === 0 ? (
+              <div style={{ padding: 14, color: "var(--fg-2)" }}>
+                No flows yet. Auto-migration creates <code>auto:&lt;GEO&gt;</code> flows on first
+                push.
+              </div>
+            ) : (
+              <table style={{ width: "100%", fontSize: 12 }}>
+                <thead>
+                  <tr
                     style={{
-                      width: "100%",
                       textAlign: "left",
-                      border: "none",
-                      background: active ? "var(--bg-3)" : "transparent",
-                      padding: "10px 14px",
-                      color: active ? "var(--fg-0)" : "var(--fg-1)",
-                      fontSize: 13,
-                      cursor: "pointer",
-                      display: "flex",
-                      justifyContent: "space-between",
+                      color: "var(--fg-2)",
                       fontFamily: "var(--mono)",
+                      fontSize: 10,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
                     }}
                   >
-                    <span>{g}</span>
-                    <span style={{ color: "var(--fg-2)" }}>{count} active</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </aside>
-        <section style={{ border: "1px solid var(--bd-1)", borderRadius: 6, overflow: "auto" }}>
-          {!selectedGeo && (
-            <div style={{ padding: 28, color: "var(--fg-2)" }}>
-              Select a geo to see its broker pool.
-            </div>
-          )}
-          {selectedGeo && (
-            <>
+                    <th style={{ padding: "10px 14px" }}>name</th>
+                    <th>status</th>
+                    <th>timezone</th>
+                    <th>active v#</th>
+                    <th>id</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.flows.map((f) => (
+                    <tr key={f.id} style={{ borderTop: "1px solid var(--bd-1)" }}>
+                      <td style={{ padding: "8px 14px" }}>
+                        <Link
+                          href={`/dashboard/routing/flows/${f.id}` as never}
+                          style={{
+                            color: "var(--fg-0)",
+                            textDecoration: "none",
+                            fontWeight: 500,
+                          }}
+                        >
+                          {f.name}
+                        </Link>
+                      </td>
+                      <td>
+                        <Pill tone={statusTone(f.status)} size="xs">
+                          {f.status.toLowerCase()}
+                        </Pill>
+                      </td>
+                      <td style={{ fontFamily: "var(--mono)" }}>{f.timezone}</td>
+                      <td style={{ fontFamily: "var(--mono)" }}>{f.activeVersionNumber ?? "—"}</td>
+                      <td style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--fg-2)" }}>
+                        {f.id.slice(0, 10)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
+
+          {/* Two-column: By-GEO + Brokers */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <section
+              style={{ border: "1px solid var(--bd-1)", borderRadius: 6, overflow: "hidden" }}
+            >
               <header
                 style={{
-                  padding: "14px 18px",
+                  padding: "10px 14px",
                   borderBottom: "1px solid var(--bd-1)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  background: "var(--bg-2)",
+                  fontSize: 13,
+                  fontWeight: 500,
                 }}
               >
-                <div style={{ fontSize: 14, fontWeight: 500 }}>
-                  pool for <span style={{ fontFamily: "var(--mono)" }}>{selectedGeo}</span>
+                By GEO (24h)
+              </header>
+              {data.geoStats.length === 0 ? (
+                <div style={{ padding: 14, color: "var(--fg-2)" }}>
+                  No lead activity in the last 24h.
                 </div>
-                <span style={{ fontSize: 11, fontFamily: "var(--mono)", color: "var(--fg-2)" }}>
-                  lower priority = tried first
-                </span>
+              ) : (
+                <table style={{ width: "100%", fontSize: 12 }}>
+                  <thead>
+                    <tr
+                      style={{
+                        textAlign: "left",
+                        color: "var(--fg-2)",
+                        fontFamily: "var(--mono)",
+                        fontSize: 10,
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                      }}
+                    >
+                      <th style={{ padding: "8px 14px" }}>geo</th>
+                      <th>received</th>
+                      <th>routed</th>
+                      <th>hit</th>
+                      <th />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.geoStats.map((g) => {
+                      const hit = g.received > 0 ? g.routed / g.received : 0;
+                      const pct = Math.round(hit * 100);
+                      return (
+                        <tr key={g.geo} style={{ borderTop: "1px solid var(--bd-1)" }}>
+                          <td
+                            style={{
+                              padding: "6px 14px",
+                              fontFamily: "var(--mono)",
+                              fontWeight: 600,
+                            }}
+                          >
+                            {g.geo}
+                          </td>
+                          <td style={{ fontFamily: "var(--mono)" }}>{g.received}</td>
+                          <td style={{ fontFamily: "var(--mono)" }}>{g.routed}</td>
+                          <td style={{ fontFamily: "var(--mono)" }}>{pct}%</td>
+                          <td
+                            aria-hidden
+                            style={{
+                              paddingRight: 14,
+                              width: 120,
+                            }}
+                          >
+                            <div
+                              style={{
+                                height: 6,
+                                background: "var(--bg-3)",
+                                borderRadius: 3,
+                                overflow: "hidden",
+                              }}
+                            >
+                              <div
+                                style={{
+                                  height: 6,
+                                  width: `${pct}%`,
+                                  background: "oklch(70% 0.14 150)",
+                                }}
+                              />
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </section>
+
+            <section
+              style={{ border: "1px solid var(--bd-1)", borderRadius: 6, overflow: "hidden" }}
+            >
+              <header
+                style={{
+                  padding: "10px 14px",
+                  borderBottom: "1px solid var(--bd-1)",
+                  background: "var(--bg-2)",
+                  fontSize: 13,
+                  fontWeight: 500,
+                }}
+              >
+                Broker pool
               </header>
               <table style={{ width: "100%", fontSize: 12 }}>
                 <thead>
@@ -164,118 +273,89 @@ export default function RoutingPage() {
                       textTransform: "uppercase",
                     }}
                   >
-                    <th style={{ padding: "10px 18px" }}>priority</th>
-                    <th>broker</th>
-                    <th>on/off</th>
-                    <th>actions</th>
+                    <th style={{ padding: "8px 14px" }}>broker</th>
+                    <th>status</th>
+                    <th>health</th>
+                    <th>daily cap</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {rules.map((r) => (
-                    <tr key={r.id} style={{ borderTop: "1px solid var(--bd-1)" }}>
-                      <td
-                        style={{ padding: "10px 18px", fontFamily: "var(--mono)", fontWeight: 600 }}
-                      >
-                        {r.priority}
-                      </td>
+                  {data.brokers.map((b) => (
+                    <tr key={b.id} style={{ borderTop: "1px solid var(--bd-1)" }}>
+                      <td style={{ padding: "6px 14px", fontWeight: 500 }}>{b.name}</td>
                       <td>
-                        {r.broker.name}{" "}
-                        {!r.broker.isActive && (
-                          <Pill tone="warn" size="xs">
-                            broker off
-                          </Pill>
-                        )}
-                      </td>
-                      <td>
-                        <Pill tone={r.isActive ? "success" : "neutral"} size="xs">
-                          <input
-                            type="checkbox"
-                            checked={r.isActive}
-                            onChange={(e) =>
-                              toggle.mutate({ id: r.id, isActive: e.target.checked })
-                            }
-                            style={{ marginRight: 6 }}
-                          />
-                          {r.isActive ? "on" : "off"}
+                        <Pill size="xs" tone={b.isActive ? "success" : "neutral"}>
+                          {b.isActive ? "on" : "off"}
                         </Pill>
                       </td>
                       <td>
-                        <button
-                          type="button"
-                          onClick={() => reorder.mutate({ id: r.id, direction: "up" })}
-                          style={btnStyle(theme)}
-                        >
-                          ↑
-                        </button>{" "}
-                        <button
-                          type="button"
-                          onClick={() => reorder.mutate({ id: r.id, direction: "down" })}
-                          style={btnStyle(theme)}
-                        >
-                          ↓
-                        </button>{" "}
-                        <button
-                          type="button"
-                          onClick={() => del.mutate({ id: r.id })}
-                          style={{ ...btnStyle(theme), color: "oklch(72% 0.15 25)" }}
-                        >
-                          del
-                        </button>
+                        <Pill size="xs" tone={healthTone(b.lastHealthStatus)}>
+                          {b.lastHealthStatus}
+                        </Pill>
                       </td>
+                      <td style={{ fontFamily: "var(--mono)" }}>{b.dailyCap ?? "—"}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              <footer
-                style={{
-                  padding: "14px 18px",
-                  borderTop: "1px solid var(--bd-1)",
-                  background: "var(--bg-2)",
-                }}
-              >
-                <div
-                  style={{
-                    fontSize: 10,
-                    fontFamily: "var(--mono)",
-                    color: "var(--fg-2)",
-                    letterSpacing: "0.08em",
-                    textTransform: "uppercase",
-                    marginBottom: 8,
-                  }}
-                >
-                  decision flow
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 6,
-                    fontSize: 12,
-                    flexWrap: "wrap",
-                  }}
-                >
-                  <code style={{ fontFamily: "var(--mono)" }}>lead.geo={selectedGeo}</code>
-                  {rules
-                    .filter((r) => r.isActive)
-                    .map((r) => (
-                      <span key={r.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        →
-                        <Pill tone="info" size="xs">
-                          p{r.priority} · {r.broker.name}
-                        </Pill>
-                        <span style={{ color: "var(--fg-2)", fontSize: 10 }}>fail?</span>
-                      </span>
-                    ))}
-                  →{" "}
-                  <Pill tone="danger" size="xs">
-                    no_broker_available
-                  </Pill>
-                </div>
-              </footer>
-            </>
-          )}
-        </section>
-      </div>
+            </section>
+          </div>
+
+          {/* Top cap-blocked */}
+          <section style={{ border: "1px solid var(--bd-1)", borderRadius: 6, overflow: "hidden" }}>
+            <header
+              style={{
+                padding: "10px 14px",
+                borderBottom: "1px solid var(--bd-1)",
+                background: "var(--bg-2)",
+                fontSize: 13,
+                fontWeight: 500,
+              }}
+            >
+              Top cap-blocked leads (24h)
+            </header>
+            {data.topCapBlocked.length === 0 ? (
+              <div style={{ padding: 14, color: "var(--fg-2)" }}>
+                No cap-blocked events in the last 24h.
+              </div>
+            ) : (
+              <table style={{ width: "100%", fontSize: 12 }}>
+                <thead>
+                  <tr
+                    style={{
+                      textAlign: "left",
+                      color: "var(--fg-2)",
+                      fontFamily: "var(--mono)",
+                      fontSize: 10,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    <th style={{ padding: "8px 14px" }}>lead</th>
+                    <th>geo</th>
+                    <th>affiliate</th>
+                    <th>events</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.topCapBlocked.map((r) => (
+                    <tr key={r.leadId} style={{ borderTop: "1px solid var(--bd-1)" }}>
+                      <td style={{ padding: "6px 14px", fontFamily: "var(--mono)", fontSize: 11 }}>
+                        {r.leadId.slice(0, 16)}
+                      </td>
+                      <td style={{ fontFamily: "var(--mono)" }}>{r.geo}</td>
+                      <td style={{ fontFamily: "var(--mono)", fontSize: 10, color: "var(--fg-2)" }}>
+                        {r.affiliateId.slice(0, 14)}
+                      </td>
+                      <td style={{ fontFamily: "var(--mono)" }}>{r.events}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
+        </>
+      )}
     </div>
   );
 }
