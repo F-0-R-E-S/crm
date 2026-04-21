@@ -3,6 +3,7 @@ import { Pill, btnStyle, inputStyle } from "@/components/router-crm";
 import { useThemeCtx } from "@/components/shell/ThemeProvider";
 import { trpc } from "@/lib/trpc";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Status = "DRAFT" | "PUBLISHED" | "ARCHIVED" | "ALL";
@@ -13,10 +14,68 @@ function statusTone(s: string) {
   return "warn" as const;
 }
 
+const COMMON_TZS = [
+  "UTC",
+  "Europe/London",
+  "Europe/Berlin",
+  "Europe/Moscow",
+  "America/New_York",
+  "America/Los_Angeles",
+  "Asia/Dubai",
+  "Asia/Singapore",
+  "Asia/Tokyo",
+];
+
+function newFlowGraph() {
+  return {
+    nodes: [
+      { id: "entry", kind: "Entry" as const, label: "Entry" },
+      {
+        id: "algo",
+        kind: "Algorithm" as const,
+        mode: "WEIGHTED_ROUND_ROBIN" as const,
+        label: "WRR",
+      },
+      { id: "exit", kind: "Exit" as const, label: "Exit" },
+    ],
+    edges: [
+      { from: "entry", to: "algo" },
+      { from: "algo", to: "exit" },
+    ],
+  };
+}
+
 export default function FlowsListPage() {
+  const router = useRouter();
   const { theme } = useThemeCtx();
   const [status, setStatus] = useState<Status>("ALL");
+  const [creating, setCreating] = useState(false);
+  const [name, setName] = useState("");
+  const [tz, setTz] = useState("UTC");
+  const [err, setErr] = useState<string | null>(null);
+  const utils = trpc.useUtils();
   const { data, isLoading } = trpc.routing.list.useQuery(status === "ALL" ? undefined : { status });
+  const createMut = trpc.routing.create.useMutation({
+    onSuccess: (f) => {
+      setCreating(false);
+      setName("");
+      setTz("UTC");
+      setErr(null);
+      utils.routing.list.invalidate();
+      router.push(`/dashboard/routing/flows/${f.id}` as never);
+    },
+    onError: (e) => setErr(e.message),
+  });
+
+  function handleCreate() {
+    setErr(null);
+    const trimmed = name.trim();
+    if (!trimmed) {
+      setErr("name is required");
+      return;
+    }
+    createMut.mutate({ name: trimmed, timezone: tz, graph: newFlowGraph() });
+  }
 
   return (
     <div style={{ padding: "20px 28px" }}>
@@ -33,7 +92,85 @@ export default function FlowsListPage() {
         <span style={{ fontSize: 11, color: "var(--fg-2)", marginLeft: "auto" }}>
           {data?.length ?? 0} flows
         </span>
+        <button
+          type="button"
+          onClick={() => setCreating(true)}
+          style={{ ...btnStyle(theme, "primary"), fontSize: 11 }}
+        >
+          + New flow
+        </button>
       </div>
+
+      {creating && (
+        <div
+          style={{
+            border: "1px solid var(--bd-1)",
+            borderRadius: 6,
+            padding: 16,
+            marginBottom: 16,
+            background: "var(--bg-1)",
+            display: "grid",
+            gridTemplateColumns: "1fr 220px auto auto",
+            gap: 8,
+            alignItems: "end",
+          }}
+        >
+          <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11 }}>
+            <span
+              style={{ color: "var(--fg-2)", textTransform: "uppercase", letterSpacing: "0.08em" }}
+            >
+              name
+            </span>
+            <input
+              // biome-ignore lint/a11y/noAutofocus: intentional — create-flow modal auto-focuses the first input
+              autoFocus
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="e.g. geo-routing-prod"
+              style={inputStyle(theme)}
+            />
+          </label>
+          <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11 }}>
+            <span
+              style={{ color: "var(--fg-2)", textTransform: "uppercase", letterSpacing: "0.08em" }}
+            >
+              timezone
+            </span>
+            <select value={tz} onChange={(e) => setTz(e.target.value)} style={inputStyle(theme)}>
+              {COMMON_TZS.map((z) => (
+                <option key={z} value={z}>
+                  {z}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            onClick={handleCreate}
+            disabled={createMut.isPending}
+            style={{ ...btnStyle(theme, "primary"), fontSize: 12 }}
+          >
+            {createMut.isPending ? "creating…" : "Create"}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setCreating(false);
+              setErr(null);
+              setName("");
+            }}
+            style={{ ...btnStyle(theme), fontSize: 12 }}
+          >
+            Cancel
+          </button>
+          {err && (
+            <div style={{ gridColumn: "1 / -1", color: "var(--fg-danger, #e87c7c)", fontSize: 11 }}>
+              {err}
+            </div>
+          )}
+        </div>
+      )}
 
       <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
         {(["ALL", "DRAFT", "PUBLISHED", "ARCHIVED"] as Status[]).map((s) => (
@@ -62,7 +199,8 @@ export default function FlowsListPage() {
             textAlign: "center",
           }}
         >
-          No flows yet. Auto-migration creates <code>auto:&lt;GEO&gt;</code> flows on first push.
+          No flows yet. Click <b>+ New flow</b> above, or an <code>auto:&lt;GEO&gt;</code> flow will
+          be created automatically on first push.
         </div>
       )}
 
