@@ -156,12 +156,14 @@ export function Canvas({
   }, [brokers]);
 
   const handleChange: OnNodesChange = (changes) => {
-    // Reactflow mutates node state (positions + selection). Apply and
-    // surface back to parent; position diffs will round-trip into the
-    // positions snapshot on save. When readOnly we still accept selection
-    // changes so the inspector can show details, but we drop positional
-    // edits.
-    const filtered = readOnly ? changes.filter((c) => c.type === "select") : changes;
+    // Reactflow mutates node state (positions + dimensions + selection).
+    // In readOnly mode we still accept selection + dimensions (the latter
+    // is xyflow's internal measurement — without it, edges can't compute
+    // anchor points on handles, so the entire graph renders without any
+    // connecting lines). Only positional edits are dropped in readOnly.
+    const filtered = readOnly
+      ? changes.filter((c) => c.type === "select" || c.type === "dimensions")
+      : changes;
     const next = applyNodeChanges(filtered, nodes) as VisualNode[];
     onNodesChange(next);
     // Track single selection to drive the Inspector.
