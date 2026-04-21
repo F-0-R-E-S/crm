@@ -855,11 +855,13 @@ model AnalyticsPreset {
   userId     String
   name       String
   query      Json
+  isDefault  Boolean   @default(false)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 
   @@unique([userId, name])
   @@index([userId, createdAt])
+  @@index([userId, isDefault])
 }
 
 // --- EPIC-11 Telegram Ops Bot ---
