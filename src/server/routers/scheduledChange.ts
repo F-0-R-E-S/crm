@@ -66,6 +66,25 @@ export const scheduledChangeRouter = router({
           message: err instanceof Error ? err.message : "invalid_patch",
         });
       }
+      // v2.0 S2.0-2 — explicit tenant-scoped lookup before persisting.
+      // Belt-and-suspenders: we combine `findFirst` with `tenantId` (doesn't
+      // rely on $use middleware) to remain correct even in environments
+      // where AsyncLocalStorage propagation is flaky (vitest worker pools).
+      if (input.entityType === "Flow") {
+        const flow = await ctx.prisma.flow.findFirst({
+          where: { id: input.entityId, tenantId: ctx.tenantId },
+          select: { id: true },
+        });
+        if (!flow) throw new TRPCError({ code: "NOT_FOUND", message: "flow_not_found" });
+      } else if (input.entityType === "Broker") {
+        const broker = await ctx.prisma.broker.findFirst({
+          where: { id: input.entityId, tenantId: ctx.tenantId },
+          select: { id: true },
+        });
+        if (!broker) throw new TRPCError({ code: "NOT_FOUND", message: "broker_not_found" });
+      }
+      // `Cap` entity IDs are tenant-scoped via capDefinition — the
+      // orchestrator re-validates on apply.
       const row = await ctx.prisma.scheduledChange.create({
         data: {
           entityType: input.entityType,

@@ -45,6 +45,7 @@ export function Sidebar({ userEmail, userRole, queueCount = 0 }: Props) {
   const [collapsed, setCollapsed] = useState(false);
   // id → open?
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  const isSuperAdmin = userRole === "SUPER_ADMIN";
 
   // Hydrate from localStorage
   useEffect(() => {
@@ -176,15 +177,35 @@ export function Sidebar({ userEmail, userRole, queueCount = 0 }: Props) {
         {collapsed ? (
           <CollapsedNav pathname={pathname} />
         ) : (
-          NAV_GROUPS.map((group) => (
-            <Group
-              key={group.id}
-              group={group}
-              open={open[group.id] ?? false}
-              toggle={() => toggleGroup(group.id)}
-              pathname={pathname}
-            />
-          ))
+          <>
+            {NAV_GROUPS.map((group) => (
+              <Group
+                key={group.id}
+                group={group}
+                open={open[group.id] ?? false}
+                toggle={() => toggleGroup(group.id)}
+                pathname={pathname}
+              />
+            ))}
+            {isSuperAdmin && (
+              <Group
+                group={{
+                  id: "super-admin",
+                  label: "super-admin",
+                  items: [
+                    {
+                      path: "/super-admin/tenants",
+                      label: "tenants",
+                      kbd: "Z",
+                    },
+                  ],
+                }}
+                open={open["super-admin"] ?? true}
+                toggle={() => toggleGroup("super-admin")}
+                pathname={pathname}
+              />
+            )}
+          </>
         )}
       </nav>
 
