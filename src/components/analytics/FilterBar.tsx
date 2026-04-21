@@ -21,6 +21,7 @@ export interface FilterBarProps {
   onShare?: () => void;
   onSavePreset?: (name: string) => void;
   onLoadPreset?: (id: string) => void;
+  /** DEPRECATED: use `PresetManager` component instead. Kept for compat. */
   presets?: PresetRef[];
 }
 

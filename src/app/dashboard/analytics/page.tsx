@@ -1,11 +1,15 @@
 "use client";
 import { ConversionsWidget } from "@/components/analytics/ConversionsWidget";
-import { FilterBar, type FilterState, type PresetRef } from "@/components/analytics/FilterBar";
+import { DrillDownDrawer, type DrillDownQuery } from "@/components/analytics/DrillDownDrawer";
+import { FilterBar, type FilterState } from "@/components/analytics/FilterBar";
 import { LineChartCard } from "@/components/analytics/LineChartCard";
 import { MetricTile } from "@/components/analytics/MetricTile";
+import { PresetManager } from "@/components/analytics/PresetManager";
 import { RejectsWidget } from "@/components/analytics/RejectsWidget";
+import { RevenueWidget } from "@/components/analytics/RevenueWidget";
+import { ShareDialog } from "@/components/analytics/ShareDialog";
 import { trpc } from "@/lib/trpc";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 function defaultFilters(): FilterState {
   const to = new Date();
@@ -45,18 +49,31 @@ function coerceFilterState(raw: unknown): FilterState | null {
 
 export default function AnalyticsPage() {
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
-  const utils = trpc.useUtils();
+  const [drillDown, setDrillDown] = useState<DrillDownQuery | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
   const leads = trpc.analytics.metricSeries.useQuery({ ...filters, metric: "leads" });
   const ftds = trpc.analytics.metricSeries.useQuery({ ...filters, metric: "ftds" });
   const revenue = trpc.analytics.metricSeries.useQuery({ ...filters, metric: "revenue" });
   const acceptance = trpc.analytics.metricSeries.useQuery({ ...filters, metric: "acceptanceRate" });
   const conv = trpc.analytics.conversionBreakdown.useQuery(filters);
   const rej = trpc.analytics.rejectBreakdown.useQuery(filters);
-  const presetsQuery = trpc.analytics.listPresets.useQuery();
-  const savePreset = trpc.analytics.savePreset.useMutation({
-    onSuccess: () => utils.analytics.listPresets.invalidate(),
-  });
+  const rev = trpc.analytics.revenueBreakdown.useQuery(filters);
+  const defaultPreset = trpc.analytics.getDefaultPreset.useQuery();
 
+  // Auto-load default preset once on mount
+  const loadedDefaultRef = useRef(false);
+  useEffect(() => {
+    if (loadedDefaultRef.current) return;
+    if (defaultPreset.data && !defaultPreset.isLoading) {
+      loadedDefaultRef.current = true;
+      const next = coerceFilterState(defaultPreset.data.query);
+      if (next) setFilters(next);
+    } else if (defaultPreset.data === null && !defaultPreset.isLoading) {
+      loadedDefaultRef.current = true;
+    }
+  }, [defaultPreset.data, defaultPreset.isLoading]);
+
+  // Restore shared view ?share= token
   useEffect(() => {
     const token = new URLSearchParams(window.location.search).get("share");
     if (!token) return;
@@ -69,30 +86,19 @@ export default function AnalyticsPage() {
       .catch(() => {});
   }, []);
 
-  async function handleShare() {
+  async function createShare(ttlDays: number): Promise<string | null> {
     const res = await fetch("/api/v1/analytics/share", {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
         query: { proc: "metricSeries", ...filters, metric: "leads" },
+        ttlDays,
       }),
     });
-    if (!res.ok) return;
+    if (!res.ok) return null;
     const { token } = (await res.json()) as { token: string };
-    const url = `${window.location.origin}/dashboard/analytics?share=${token}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      alert(`Share URL copied:\n${url}`);
-    } catch {
-      alert(`Share URL:\n${url}`);
-    }
+    return token;
   }
-
-  const presets: PresetRef[] = (presetsQuery.data ?? []).map((p) => ({
-    id: p.id,
-    name: p.name,
-    query: p.query,
-  }));
 
   return (
     <div style={{ padding: "20px 28px", display: "flex", flexDirection: "column", gap: 18 }}>
@@ -100,34 +106,60 @@ export default function AnalyticsPage() {
         <h1 style={{ fontSize: 22, fontWeight: 500, letterSpacing: "-0.02em", margin: 0 }}>
           Analytics
         </h1>
-        <span style={{ fontSize: 11, fontFamily: "var(--mono)", color: "var(--fg-2)" }}>v1</span>
-      </header>
-      <FilterBar
-        value={filters}
-        onChange={setFilters}
-        onShare={handleShare}
-        onSavePreset={(name) => savePreset.mutateAsync({ name, query: filters })}
-        presets={presets}
-        onLoadPreset={(id) => {
-          const p = presets.find((x) => x.id === id);
-          if (p) {
-            const next = coerceFilterState(p.query);
+        <span style={{ fontSize: 11, fontFamily: "var(--mono)", color: "var(--fg-2)" }}>v1.5</span>
+        <div style={{ flex: 1 }} />
+        <PresetManager
+          currentQuery={filters}
+          onApply={(q) => {
+            const next = coerceFilterState(q);
             if (next) setFilters(next);
-          }
-        }}
-      />
+          }}
+        />
+        <button
+          type="button"
+          style={{
+            border: "1px solid var(--bd-1)",
+            borderRadius: 4,
+            padding: "4px 10px",
+            fontSize: 12,
+            background: "var(--accent, oklch(76% 0.12 220))",
+            color: "var(--bg-0, #000)",
+            cursor: "pointer",
+          }}
+          onClick={() => setShareOpen(true)}
+        >
+          share…
+        </button>
+      </header>
+      <FilterBar value={filters} onChange={setFilters} />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
         <MetricTile
           label="Leads"
           value={leads.data?.total ?? 0}
           deltaPct={leads.data?.deltaPct}
           series={leads.data?.series ?? []}
+          onClick={() =>
+            setDrillDown({
+              kind: "metric",
+              metric: "leads",
+              bucket: filters.from.toISOString(),
+              groupBy: filters.groupBy,
+            })
+          }
         />
         <MetricTile
           label="FTDs"
           value={ftds.data?.total ?? 0}
           deltaPct={ftds.data?.deltaPct}
           series={ftds.data?.series ?? []}
+          onClick={() =>
+            setDrillDown({
+              kind: "metric",
+              metric: "ftds",
+              bucket: filters.from.toISOString(),
+              groupBy: filters.groupBy,
+            })
+          }
         />
         <MetricTile
           label="Revenue"
@@ -135,6 +167,7 @@ export default function AnalyticsPage() {
           deltaPct={revenue.data?.deltaPct}
           series={revenue.data?.series ?? []}
           format="currency"
+          onClick={() => setDrillDown({ kind: "revenue" })}
         />
         <MetricTile
           label="Acceptance rate"
@@ -142,12 +175,26 @@ export default function AnalyticsPage() {
           deltaPct={acceptance.data?.deltaPct}
           series={acceptance.data?.series ?? []}
           format="percent"
+          onClick={() =>
+            setDrillDown({
+              kind: "conversion",
+              stage: "accepted",
+            })
+          }
         />
       </div>
       <LineChartCard
         title="Leads over time"
         current={leads.data?.series ?? []}
         compare={leads.data?.compare?.series ?? null}
+        onPointClick={(bucket) =>
+          setDrillDown({
+            kind: "metric",
+            metric: "leads",
+            bucket,
+            groupBy: filters.groupBy,
+          })
+        }
       />
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         <div>
@@ -156,16 +203,36 @@ export default function AnalyticsPage() {
             filters={filters}
             label="Download conversions CSV"
           />
-          <ConversionsWidget data={conv.data} />
+          <ConversionsWidget
+            data={conv.data}
+            onStageClick={(stage) => setDrillDown({ kind: "conversion", stage })}
+          />
         </div>
         <div>
           <ExportButton proc="rejectBreakdown" filters={filters} label="Download rejects CSV" />
-          <RejectsWidget data={rej.data} />
+          <RejectsWidget
+            data={rej.data}
+            onReasonClick={(reason) => setDrillDown({ kind: "reject", reason })}
+          />
         </div>
       </div>
+      <RevenueWidget
+        data={rev.data}
+        onBucketClick={(bucket) =>
+          setDrillDown({ kind: "revenue", bucket, groupBy: filters.groupBy })
+        }
+      />
       <div>
         <ExportButton proc="metricSeries" filters={filters} label="Download leads series CSV" />
       </div>
+      <DrillDownDrawer
+        query={drillDown}
+        filters={{ from: filters.from, to: filters.to, filters: filters.filters }}
+        onClose={() => setDrillDown(null)}
+      />
+      {shareOpen ? (
+        <ShareDialog onClose={() => setShareOpen(false)} onCreateShare={createShare} />
+      ) : null}
     </div>
   );
 }
