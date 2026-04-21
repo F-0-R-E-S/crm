@@ -2,6 +2,7 @@
 import { Pill, btnStyle, inputStyle } from "@/components/router-crm";
 import { useThemeCtx } from "@/components/shell/ThemeProvider";
 import { trpc } from "@/lib/trpc";
+import { newFlowGraph } from "@/server/routing/flow/seed";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -25,25 +26,6 @@ const COMMON_TZS = [
   "Asia/Singapore",
   "Asia/Tokyo",
 ];
-
-function newFlowGraph() {
-  return {
-    nodes: [
-      { id: "entry", kind: "Entry" as const, label: "Entry" },
-      {
-        id: "algo",
-        kind: "Algorithm" as const,
-        mode: "WEIGHTED_ROUND_ROBIN" as const,
-        label: "WRR",
-      },
-      { id: "exit", kind: "Exit" as const, label: "Exit" },
-    ],
-    edges: [
-      { from: "entry", to: "algo" },
-      { from: "algo", to: "exit" },
-    ],
-  };
-}
 
 export default function FlowsListPage() {
   const router = useRouter();
