@@ -2,6 +2,58 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v1.5.0 (2026-04-21)
+
+**v1.5 GA.** Five sprints over ~4 weeks — theme: analytics and operator productivity on top of the v1.0 core. No runtime routing changes. No breaking API changes. Comprehensive upgrade notes in `docs/release/v1-5-upgrade-notes.md`; sign-off in `docs/release/v1-5-sign-off.md`.
+
+### Highlights (by subsystem)
+
+- **EPIC-14 BI Report Builder polish (S1.5-1)** — preset CRUD (rename / duplicate / set-default / auto-load), full drill-down on 4 metric types with `DrillDownDrawer`, period-compare visual polish (delta badges + colored sparklines), tokenized share-link UX (TTL selector, public read-only viewer, expiry banner, purge-expired endpoint). Google Sheets export explicitly deferred to v2.0.
+- **EPIC-17 Visual Rule-Builder residuals (S1.5-2)** — deep filter-condition builder with op-aware value editor + AND/OR + live Zod validation, node-position persistence via `FlowNode.meta.pos`, draft-vs-publish state badge in the flow-editor breadcrumb. Diff-test proves 5 real v1.0 flows round-trip byte-equal (`src/server/routing/flow/graph-diff.test.ts`).
+- **Broker Clone (S1.5-3)** — `Broker.clonedFromId` self-relation, `cloneBroker` helper blanks secrets + starts paused, tRPC `broker.clone` + `broker.listClones`, UI clone dialog with copy/blank preview + attribution badges.
+- **Delayed Actions (S1.5-3)** — `ScheduledChange` table (entityType Flow/Broker/Cap, status PENDING/APPLIED/CANCELLED/FAILED, payload JSON patch, applyAt, latencyMs), patch allowlist (`patch.ts`), orchestrator with latency stamping + AuditLog + Telegram emit, `*/1` minute pg-boss cron, admin UI at `/dashboard/settings/scheduled-changes`. SLA: 95 % of changes apply within ±5 min (asserted by `scheduled-change-sla.test.ts`).
+- **EPIC-18 Status Groups (S1.5-4)** — `StatusCategory` enum, 20-row `CanonicalStatus` seed, `StatusMapping` per-broker table, `classifyLeadStatus` with 30s LRU cache, per-broker status-mapping admin page with coverage tiles + suggestions + backfill. `Lead.canonicalStatus` denormalized; `LeadDailyRoll.canonicalStatus` **now populated by rollup** (S5 close-out) with `'__none__'` sentinel and tuple-level uniqueness.
+- **Q-Leads v1.5 trend (S1.5-4)** — `computeQualityScoreWithTrend` layers a per-affiliate 7d moving-average adjustment on the v1.0 scorer (`down −5 / up +3 / flat 0`). Per-affiliate `QualityTrendWidget` (30d daily avg + 7d MA) on `/dashboard/affiliates/[id]`; 7d sparkline + avg column on `/dashboard/affiliates`.
+- **S1.5-5 release hardening** — `LeadDailyRoll.canonicalStatus` population (5-tuple unique + groupBy), `STATUS_MAPPING_BACKFILL_PROGRESS` Telegram event + template (emit at start / every 10k / finish), cross-sprint E2E smoke (`tests/e2e/v1-5-full-flow.test.ts`), perf baseline (`docs/perf/v1-5-baseline.md` — all scenarios within 5 % of v1.0 GA), parking-lot triage (12 items).
+
+### Schema changes (additive)
+
+- New enums: `StatusCategory`, `ScheduledChangeEntityType`, `ScheduledChangeStatus`.
+- New tables: `CanonicalStatus`, `StatusMapping`, `ScheduledChange`.
+- New columns: `Lead.canonicalStatus`, `LeadDailyRoll.canonicalStatus` (added to unique tuple), `Broker.clonedFromId`, `FlowNode.meta` (JSON, optional layout).
+- **Migration requires `prisma db push --accept-data-loss`** due to `LeadDailyRoll` unique tuple rewrite — no data destroyed, pre-existing rows get `'__none__'` sentinel.
+
+### API changes (additive)
+
+- New procs: `analytics.drillDown.canonical-status`, `analytics.canonicalStatusBreakdown`, `broker.clone`, `broker.listClones`, `scheduledChange.*`, `statusMapping.*`, `affiliate.qualityTrend`, `affiliate.qualitySparklines`.
+- `AnalyticsFilters` gains optional `canonicalStatuses: string[]`.
+- `/api/v1/health` now reports `"version":"1.5.0"`.
+- Telegram event catalog +3 admin-only: `SCHEDULED_CHANGE_APPLIED`, `SCHEDULED_CHANGE_FAILED`, `STATUS_MAPPING_BACKFILL_PROGRESS`.
+
+### Tests
+
+Total: 717 passing + 1 todo (up from 704 + 1 at the S1.5-4 release point, 558 + 1 at v1.5.0-s1). Major additions across sprints:
+
+- S1.5-1: 19 (preset polish, drill-down, delta-badge, share list/purge, public viewer SSR).
+- S1.5-2: 47 (filter-conditions, draft-publish-state, graph-meta-pos, graph-diff 5-flow round-trip).
+- S1.5-3: 30 (broker-clone helper + router, scheduled-change apply/cancel/failure/router/SLA/patch, telegram-templates).
+- S1.5-4: 30 (classify, quality-with-trend, status-mapping router, postback-canonical-status, analytics-canonical-status).
+- S1.5-5: +3 — `tests/e2e/v1-5-full-flow.test.ts` (5-assertion smoke), `rollup.test.ts` canonicalStatus bucketing, `status-mapping-router.test.ts` progress-emit case.
+
+### Perf
+
+All three intake scenarios within 5 % of v1.0 GA p95. Zero drops at 1k-rps burst. `docs/perf/v1-5-baseline.md`.
+
+### Upgrade / rollback
+
+- Upgrade: `pnpm prisma db push --accept-data-loss && pnpm db:seed` — zero downtime in practice.
+- Rollback: `git checkout v1.0.x` — v1.5 schema additions are inert for v1.0 code.
+- Full procedure: `docs/release/v1-5-upgrade-notes.md`.
+
+### Release
+
+Version `1.5.0` in `package.json`; tag `v1.5.0` on `main`.
+
 ## v1.5.0-s4 (2026-04-20)
 
 S1.5-4 — EPIC-18 Status Groups and Q-Leads v1.5 trend extension.

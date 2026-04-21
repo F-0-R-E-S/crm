@@ -174,6 +174,20 @@
 - **Release:** version `1.0.0` in `package.json`; `CHANGELOG.md` populated; tag `v1.0.0` on `main`.
 - **Known v1.0.1 follow-ups:** extend structured logging to onboarding wizard, health endpoint broker-health polling, self-host Scalar viewer, admin UI for AlertLog ack, batch AuditLog hash-chain lookups.
 
+## v1.5.0 (April 2026) — GA
+
+Five sprints, one tag. Theme: analytics + ops ergonomics on top of the v1.0 core. No runtime routing changes. Upgrade notes `docs/release/v1-5-upgrade-notes.md`; sign-off `docs/release/v1-5-sign-off.md`; parking lot `docs/v1-5-parking-lot.md`.
+
+- **BI Report Builder (EPIC-14):** preset CRUD polish (rename / duplicate / default), full drill-down on 4 metric types (`DrillDownDrawer`), period-compare delta badges + colored sparklines, tokenized share links with TTL + public viewer at `/share/analytics/:token`.
+- **Visual Rule-Builder (EPIC-17):** deep filter-condition builder, drag-position persistence via `FlowNode.meta.pos`, draft-vs-publish state badge. Proven round-trippable against 5 real v1.0 flows (`src/server/routing/flow/graph-diff.test.ts`).
+- **Broker Clone:** `Broker.clonedFromId` self-relation + `cloneBroker` helper (blanks secrets, starts paused) + tRPC `broker.clone` + `listClones` + clone dialog UI.
+- **Delayed Actions:** `ScheduledChange` table (Flow/Broker/Cap), patch allowlist, `applyScheduledChange` orchestrator with latency stamping, `*/1` minute cron, admin UI at `/dashboard/settings/scheduled-changes`. SLA: 95 % within ±5 min of target (`scheduled-change-sla.test.ts`).
+- **Status Groups (EPIC-18):** `CanonicalStatus` (20 seeded rows × 4 categories) + `StatusMapping` per-broker + `classifyLeadStatus` 30s LRU cache + status-mapping admin page + inline backfill with `STATUS_MAPPING_BACKFILL_PROGRESS` Telegram events. `Lead.canonicalStatus` + `LeadDailyRoll.canonicalStatus` (now part of unique tuple + populated by rollup).
+- **Q-Leads v1.5 trend:** `computeQualityScoreWithTrend` adds a per-affiliate 7d MA adjustment (`down −5 / up +3 / flat 0`). Per-affiliate `QualityTrendWidget` + table sparkline column.
+- **S1.5-5 close-outs:** `LeadDailyRoll.canonicalStatus` groupBy + unique-tuple change; `STATUS_MAPPING_BACKFILL_PROGRESS` event + template; cross-sprint E2E at `tests/e2e/v1-5-full-flow.test.ts`; perf baseline `docs/perf/v1-5-baseline.md`.
+- **Tests:** 717 passing + 1 todo (v1.0.0 shipped at 558). Three new since S1.5-4: rollup canonicalStatus bucketing, status-mapping backfill emit, v1.5 cross-sprint smoke.
+- **Release:** `package.json` → `1.5.0`; tag `v1.5.0` on `main`.
+
 ## v1.5 S1.5-4 — EPIC-18 Status Groups + Q-Leads v1.5 trend (April 2026)
 
 - **Schema:** `StatusCategory` enum (`NEW | QUALIFIED | REJECTED | CONVERTED`); `CanonicalStatus` model (20 seeded rows via `prisma/seeds/canonical-statuses.ts`); `StatusMapping` model (`@@unique([brokerId, rawStatus])`, `@@index([canonicalStatusId])`); `Lead.canonicalStatus String?` + `LeadDailyRoll.canonicalStatus String?` denormalized.
