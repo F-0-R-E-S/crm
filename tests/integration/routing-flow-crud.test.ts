@@ -77,7 +77,9 @@ describe("REST /api/v1/routing/flows", () => {
     );
     expect(r.status).toBe(200);
     const b = await r.json();
-    expect(b.versions.length).toBeGreaterThanOrEqual(2);
+    // Autosave updates the unpublished draft in place (see repository.ts).
+    expect(b.versions).toHaveLength(1);
+    expect(b.versions[0].versionNumber).toBe(1);
   });
 
   it("GET byId 404 на ghost", async () => {

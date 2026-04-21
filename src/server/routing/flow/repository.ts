@@ -43,17 +43,28 @@ export async function updateDraftGraph(flowId: string, graph: FlowGraph) {
   });
   if (!current) throw new Error("flow_not_found");
   if (current.status === "ARCHIVED") throw new Error("flow_archived");
-  const nextN = (current.versions[0]?.versionNumber ?? 0) + 1;
-  await prisma.flowVersion.create({
-    data: {
-      flowId,
-      versionNumber: nextN,
-      graph: graph as unknown as Prisma.InputJsonValue,
-      algorithm: {},
-      entryFilters: {},
-      fallbackPolicy: {},
-    },
-  });
+  const latest = current.versions[0];
+  // If the latest version is an unpublished draft, update it in place — every
+  // autosave otherwise creates a new FlowVersion row and the history gets
+  // littered. New versions are forked only on top of a published one.
+  if (latest && !latest.publishedAt) {
+    await prisma.flowVersion.update({
+      where: { id: latest.id },
+      data: { graph: graph as unknown as Prisma.InputJsonValue },
+    });
+  } else {
+    const nextN = (latest?.versionNumber ?? 0) + 1;
+    await prisma.flowVersion.create({
+      data: {
+        flowId,
+        versionNumber: nextN,
+        graph: graph as unknown as Prisma.InputJsonValue,
+        algorithm: {},
+        entryFilters: {},
+        fallbackPolicy: {},
+      },
+    });
+  }
   return prisma.flow.findUniqueOrThrow({
     where: { id: flowId },
     include: { versions: { orderBy: { versionNumber: "asc" } } },
