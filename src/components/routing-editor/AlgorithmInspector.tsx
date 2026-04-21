@@ -6,9 +6,12 @@
 //   Slots-Chance  → per-broker chance % (must sum to 100%); auto-normalize
 //                   button + reset.
 //
-// The component is controlled. Parent owns the `entries` array and is
-// responsible for persisting to the graph JSON (node.weight / node.chance).
+// v1.0.3: also exposes an "Add broker" section so the user can grow
+// the pool from inside the inspector, and a per-row "remove" button to
+// shrink it. Graph mutations happen via the parent's `onAddBroker` /
+// `onRemoveBroker` callbacks — keeps this component pure.
 import type { ReactNode } from "react";
+import { useState } from "react";
 
 export type AlgoMode = "WEIGHTED_ROUND_ROBIN" | "SLOTS_CHANCE";
 
@@ -23,11 +26,22 @@ export interface AlgoEntry {
   autologin?: boolean;
 }
 
+export interface AvailableBroker {
+  id: string;
+  name: string;
+  lastHealthStatus: string;
+  autologinEnabled?: boolean;
+  isActive?: boolean;
+}
+
 interface Props {
   mode: AlgoMode;
   entries: AlgoEntry[];
+  availableBrokers?: AvailableBroker[];
   readOnly?: boolean;
   onChange: (entries: AlgoEntry[]) => void;
+  onAddBroker?: (brokerId: string) => void;
+  onRemoveBroker?: (nodeId: string) => void;
 }
 
 function healthColor(s?: string) {
@@ -42,11 +56,13 @@ function WeightRow({
   totalWeight,
   readOnly,
   onUpdate,
+  onRemove,
 }: {
   e: AlgoEntry;
   totalWeight: number;
   readOnly?: boolean;
   onUpdate: (patch: Partial<AlgoEntry>) => void;
+  onRemove?: () => void;
 }) {
   const weight = e.weight ?? 1;
   const pct = totalWeight > 0 ? (weight / totalWeight) * 100 : 0;
@@ -54,7 +70,7 @@ function WeightRow({
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "1fr 70px 60px",
+        gridTemplateColumns: "1fr 70px 60px auto",
         gap: 8,
         alignItems: "center",
       }}
@@ -89,6 +105,25 @@ function WeightRow({
           ~{pct.toFixed(1)}%
         </div>
       </div>
+      {onRemove && !readOnly && (
+        <button
+          type="button"
+          onClick={onRemove}
+          title={`Remove ${e.name ?? e.brokerId}`}
+          aria-label={`Remove ${e.name ?? e.brokerId}`}
+          style={{
+            fontSize: 11,
+            padding: "2px 6px",
+            border: "1px solid var(--bd-1)",
+            background: "var(--bg-2)",
+            color: "var(--fg-0)",
+            borderRadius: 3,
+            cursor: "pointer",
+          }}
+        >
+          ×
+        </button>
+      )}
     </div>
   );
 }
@@ -97,17 +132,19 @@ function ChanceRow({
   e,
   readOnly,
   onUpdate,
+  onRemove,
 }: {
   e: AlgoEntry;
   readOnly?: boolean;
   onUpdate: (patch: Partial<AlgoEntry>) => void;
+  onRemove?: () => void;
 }) {
   const chance = e.chance ?? 0;
   return (
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "1fr 80px 40px",
+        gridTemplateColumns: "1fr 80px 40px auto",
         gap: 8,
         alignItems: "center",
       }}
@@ -146,14 +183,46 @@ function ChanceRow({
         }}
       />
       <span style={{ fontSize: 10, color: "var(--fg-2)" }}>%</span>
+      {onRemove && !readOnly && (
+        <button
+          type="button"
+          onClick={onRemove}
+          title={`Remove ${e.name ?? e.brokerId}`}
+          aria-label={`Remove ${e.name ?? e.brokerId}`}
+          style={{
+            fontSize: 11,
+            padding: "2px 6px",
+            border: "1px solid var(--bd-1)",
+            background: "var(--bg-2)",
+            color: "var(--fg-0)",
+            borderRadius: 3,
+            cursor: "pointer",
+          }}
+        >
+          ×
+        </button>
+      )}
     </div>
   );
 }
 
-export function AlgorithmInspector({ mode, entries, readOnly, onChange }: Props): ReactNode {
+export function AlgorithmInspector({
+  mode,
+  entries,
+  availableBrokers = [],
+  readOnly,
+  onChange,
+  onAddBroker,
+  onRemoveBroker,
+}: Props): ReactNode {
   const totalWeight = entries.reduce((a, e) => a + (e.weight ?? 1), 0);
   const totalChance = entries.reduce((a, e) => a + (e.chance ?? 0), 0);
   const chanceValid = Math.abs(totalChance - 100) < 0.01;
+
+  // IDs of brokers already bound to a BrokerTarget in the graph.
+  const usedBrokerIds = new Set(entries.map((e) => e.brokerId));
+  const pickable = availableBrokers.filter((b) => !usedBrokerIds.has(b.id));
+  const [pendingBrokerId, setPendingBrokerId] = useState<string>("");
 
   const updateEntry = (id: string, patch: Partial<AlgoEntry>) => {
     onChange(entries.map((e) => (e.id === id ? { ...e, ...patch } : e)));
@@ -206,11 +275,19 @@ export function AlgorithmInspector({ mode, entries, readOnly, onChange }: Props)
     }
   };
 
+  const handleAdd = () => {
+    if (!onAddBroker) return;
+    const id = pendingBrokerId || pickable[0]?.id;
+    if (!id) return;
+    onAddBroker(id);
+    setPendingBrokerId("");
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
         <span style={{ fontSize: 11, color: "var(--fg-2)", fontFamily: "var(--mono)" }}>
-          {mode === "WEIGHTED_ROUND_ROBIN" ? "weights (1-100)" : "chance %"}
+          broker targets
         </span>
         <span style={{ fontSize: 11, color: "var(--fg-2)", fontFamily: "var(--mono)" }}>
           {mode === "WEIGHTED_ROUND_ROBIN"
@@ -220,8 +297,17 @@ export function AlgorithmInspector({ mode, entries, readOnly, onChange }: Props)
       </div>
 
       {entries.length === 0 && (
-        <div style={{ fontSize: 12, color: "var(--fg-2)" }}>
-          No broker targets on this flow yet.
+        <div
+          style={{
+            fontSize: 11,
+            color: "oklch(82% 0.15 75)",
+            fontFamily: "var(--mono)",
+            border: "1px dashed oklch(50% 0.15 75)",
+            padding: "6px 8px",
+            borderRadius: 4,
+          }}
+        >
+          No broker targets on this flow yet. Add at least one before publishing.
         </div>
       )}
 
@@ -233,13 +319,75 @@ export function AlgorithmInspector({ mode, entries, readOnly, onChange }: Props)
             totalWeight={totalWeight}
             readOnly={readOnly}
             onUpdate={(p) => updateEntry(e.id, p)}
+            onRemove={onRemoveBroker ? () => onRemoveBroker(e.id) : undefined}
           />
         ))}
 
       {mode === "SLOTS_CHANCE" &&
         entries.map((e) => (
-          <ChanceRow key={e.id} e={e} readOnly={readOnly} onUpdate={(p) => updateEntry(e.id, p)} />
+          <ChanceRow
+            key={e.id}
+            e={e}
+            readOnly={readOnly}
+            onUpdate={(p) => updateEntry(e.id, p)}
+            onRemove={onRemoveBroker ? () => onRemoveBroker(e.id) : undefined}
+          />
         ))}
+
+      {!readOnly && onAddBroker && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr auto",
+            gap: 6,
+            marginTop: 4,
+            alignItems: "center",
+          }}
+        >
+          <select
+            value={pendingBrokerId}
+            onChange={(ev) => setPendingBrokerId(ev.target.value)}
+            disabled={pickable.length === 0}
+            aria-label="Broker to add to pool"
+            style={{
+              fontFamily: "var(--sans)",
+              fontSize: 12,
+              padding: "4px 8px",
+              border: "1px solid var(--bd-1)",
+              background: "var(--bg-1)",
+              color: "var(--fg-0)",
+              borderRadius: 3,
+              width: "100%",
+            }}
+          >
+            <option value="">
+              {pickable.length === 0 ? "— no brokers available —" : "— select broker —"}
+            </option>
+            {pickable.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.name} ({b.lastHealthStatus})
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={handleAdd}
+            disabled={pickable.length === 0}
+            style={{
+              fontSize: 11,
+              padding: "4px 10px",
+              border: "1px solid var(--bd-1)",
+              background: "var(--bg-3)",
+              color: "var(--fg-0)",
+              borderRadius: 3,
+              cursor: pickable.length === 0 ? "not-allowed" : "pointer",
+              opacity: pickable.length === 0 ? 0.5 : 1,
+            }}
+          >
+            + Add broker
+          </button>
+        </div>
+      )}
 
       {!readOnly && entries.length > 0 && (
         <div style={{ display: "flex", gap: 6, marginTop: 4 }}>

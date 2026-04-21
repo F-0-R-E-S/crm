@@ -6,7 +6,12 @@
 
 import { Pill } from "@/components/router-crm";
 import type { FlowNode } from "@/server/routing/flow/model";
-import { type AlgoEntry, type AlgoMode, AlgorithmInspector } from "./AlgorithmInspector";
+import {
+  type AlgoEntry,
+  type AlgoMode,
+  AlgorithmInspector,
+  type AvailableBroker,
+} from "./AlgorithmInspector";
 import { type CapDefRow, CapInspector, type LiveCap } from "./CapInspector";
 import { ScheduleGrid, type ScheduleValue, normalizeSchedule } from "./ScheduleGrid";
 
@@ -22,6 +27,12 @@ interface BrokerSummary {
 interface Props {
   node: FlowNode | null;
   readOnly: boolean;
+  /** Indicates graph-wide structural state the inspector nudges about. */
+  hasAnyBrokerTarget: boolean;
+  hasAlgorithmNode: boolean;
+  /** Called when the user hits the "take me to the Algorithm node" link
+   * from the empty-state nudge. */
+  onJumpToAlgorithm?: () => void;
   // Broker lookup — by id
   brokers: BrokerSummary[];
   // Algorithm config for the selected broker-pool node's parent algo
@@ -29,6 +40,10 @@ interface Props {
   algoEntries: AlgoEntry[];
   onAlgoChange: (entries: AlgoEntry[]) => void;
   onAlgoModeChange: (mode: AlgoMode) => void;
+  /** v1.0.3: add a BrokerTarget to the flow's algorithm pool. */
+  onAddBroker?: (brokerId: string) => void;
+  /** v1.0.3: remove a BrokerTarget (by visual node id). */
+  onRemoveBroker?: (nodeId: string) => void;
   // Caps
   capRows: CapDefRow[];
   liveCaps: LiveCap[];
@@ -63,14 +78,69 @@ export function Inspector(props: Props) {
   const { node, readOnly, brokers } = props;
 
   if (!node) {
+    // Empty-state panel: explain + nudge when the flow obviously lacks a
+    // broker target.
     return (
-      <div style={{ padding: 14, color: "var(--fg-2)", fontSize: 12 }}>
-        Select a node on the canvas to edit its configuration.
+      <div
+        style={{
+          padding: 14,
+          color: "var(--fg-2)",
+          fontSize: 12,
+          display: "flex",
+          flexDirection: "column",
+          gap: 10,
+        }}
+      >
+        <div>Select a node on the canvas to edit its configuration.</div>
+        {props.hasAlgorithmNode && !props.hasAnyBrokerTarget && !readOnly && (
+          <div
+            style={{
+              border: "1px solid oklch(50% 0.15 75)",
+              background: "oklch(22% 0.08 75)",
+              color: "oklch(90% 0.05 75)",
+              padding: "10px 12px",
+              borderRadius: 4,
+              fontSize: 12,
+              lineHeight: 1.4,
+            }}
+          >
+            Your flow has <b>no broker targets</b> — add at least one before publishing.
+            {props.onJumpToAlgorithm && (
+              <>
+                <br />
+                <button
+                  type="button"
+                  onClick={props.onJumpToAlgorithm}
+                  style={{
+                    marginTop: 6,
+                    fontSize: 11,
+                    padding: "4px 8px",
+                    border: "1px solid var(--bd-1)",
+                    background: "var(--bg-3)",
+                    color: "var(--fg-0)",
+                    borderRadius: 3,
+                    cursor: "pointer",
+                  }}
+                >
+                  Open Algorithm inspector →
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </div>
     );
   }
 
   const broker = node.kind === "BrokerTarget" ? brokers.find((b) => b.id === node.brokerId) : null;
+
+  const availableBrokers: AvailableBroker[] = brokers.map((b) => ({
+    id: b.id,
+    name: b.name,
+    lastHealthStatus: b.lastHealthStatus,
+    autologinEnabled: b.autologinEnabled,
+    isActive: b.isActive,
+  }));
 
   return (
     <div
@@ -134,8 +204,11 @@ export function Inspector(props: Props) {
             <AlgorithmInspector
               mode={props.algoMode}
               entries={props.algoEntries}
+              availableBrokers={availableBrokers}
               readOnly={readOnly}
               onChange={props.onAlgoChange}
+              onAddBroker={props.onAddBroker}
+              onRemoveBroker={props.onRemoveBroker}
             />
           </div>
         </>
@@ -194,6 +267,24 @@ export function Inspector(props: Props) {
                   </Pill>
                 )}
               </div>
+            )}
+            {props.onRemoveBroker && !readOnly && (
+              <button
+                type="button"
+                onClick={() => props.onRemoveBroker?.(node.id)}
+                style={{
+                  marginTop: 10,
+                  fontSize: 11,
+                  padding: "4px 8px",
+                  border: "1px solid oklch(60% 0.15 25)",
+                  background: "transparent",
+                  color: "oklch(75% 0.15 25)",
+                  borderRadius: 3,
+                  cursor: "pointer",
+                }}
+              >
+                Remove from pool
+              </button>
             )}
           </div>
           <div style={sectionStyle}>

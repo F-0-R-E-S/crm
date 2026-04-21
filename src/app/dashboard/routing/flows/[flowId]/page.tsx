@@ -5,21 +5,18 @@
 //   ┌───────────────────────────────────────────────────────────────────┐
 //   │  header: name + status + publish/archive + simulator link         │
 //   ├────────────┬───────────────────────────────────────┬──────────────┤
-//   │            │                                       │              │
-//   │  versions  │        reactflow canvas               │  inspector   │
-//   │            │                                       │              │
+//   │            │   toolbar  (+Filter +Fallback +Exit)  │              │
+//   │  versions  ├───────────────────────────────────────┤  inspector   │
+//   │            │        reactflow canvas               │              │
 //   ├────────────┴───────────────────────────────────────┴──────────────┤
 //   │  save draft · publish · cap counters footer                       │
 //   └───────────────────────────────────────────────────────────────────┘
 //
-// The canvas renders a FlowGraph using `flowToGraph`; the inspector edits
-// the selected node in-place. On save we call `graphToFlow` to strip
-// positions, update the draft version, optionally persist the algorithm
-// config (WRR weights / Slots-Chance %) via a separate tRPC call, and
-// upsert cap definitions.
-//
-// Publish uses the existing publish mutation — cycle-detection in
-// `publishFlow` is preserved end-to-end.
+// v1.0.3: structural graph edits (add/remove broker targets, add
+// filter/fallback/exit nodes, draw edges by dragging from handles,
+// delete with keyboard/context-menu) with a debounced auto-save, a
+// last-saved badge, an empty-state nudge in the inspector and a
+// client-side publish guard.
 
 import { Pill, btnStyle } from "@/components/router-crm";
 import {
@@ -29,12 +26,25 @@ import {
   Inspector,
   type LiveCap,
   type ScheduleValue,
+  Toolbar,
   VersionHistory,
+  type VisualEdge,
   type VisualNode,
   normalizeSchedule,
 } from "@/components/routing-editor";
 import { useThemeCtx } from "@/components/shell/ThemeProvider";
 import { trpc } from "@/lib/trpc";
+import {
+  addBrokerTarget,
+  addEdge as addEdgeToGraph,
+  addExitNode,
+  addFallbackNode,
+  addFilterNode,
+  deleteEdge as deleteEdgeFromGraph,
+  deleteNode as deleteNodeFromGraph,
+  findAlgorithmNodeId,
+  hasReachableBrokerTarget,
+} from "@/server/routing/flow/builder";
 import { extractPositions, flowToGraph, graphToFlow } from "@/server/routing/flow/graph";
 import type { FlowGraph, FlowNode } from "@/server/routing/flow/model";
 import Link from "next/link";
@@ -83,6 +93,41 @@ function capRowsFromServer(
   }));
 }
 
+/**
+ * Extract the current FlowGraph snapshot from the visual editor state.
+ * Centralised so the save path, publish path, and guard check all see
+ * the exact same shape.
+ */
+function snapshotGraph(visual: {
+  nodes: VisualNode[];
+  edges: VisualEdge[];
+}): FlowGraph {
+  return graphToFlow({
+    nodes: visual.nodes.map((n) => ({
+      id: n.id,
+      type: n.data.kind === "BrokerTarget" ? "brokerTarget" : (n.data.kind.toLowerCase() as never),
+      position: n.position,
+      data: n.data,
+    })),
+    edges: visual.edges.map((e) => ({
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      data: {
+        condition: (e.data.condition ?? "default") as "default" | "on_success" | "on_fail",
+      },
+    })),
+  });
+}
+
+function visualFromFlow(g: FlowGraph, positions?: Record<string, { x: number; y: number }>) {
+  const v = flowToGraph(g, positions);
+  return {
+    nodes: v.nodes as VisualNode[],
+    edges: v.edges as VisualEdge[],
+  };
+}
+
 export default function FlowVisualEditorPage({
   params,
 }: {
@@ -119,18 +164,22 @@ export default function FlowVisualEditorPage({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [visual, setVisual] = useState<{
     nodes: VisualNode[];
-    edges: Array<{
-      id: string;
-      source: string;
-      target: string;
-      label?: string;
-      data: { condition: string };
-    }>;
+    edges: VisualEdge[];
   } | null>(null);
   const [selectedVersionId, setSelectedVersionId] = useState<string | null>(null);
   const [capRows, setCapRows] = useState<CapDefRow[]>([]);
   const [saveErr, setSaveErr] = useState<string | null>(null);
-  const [saveOk, setSaveOk] = useState(false);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
+  const [ctxMenu, setCtxMenu] = useState<{ nodeId: string; x: number; y: number } | null>(null);
+  // Re-render tick so "saved 2s ago" updates every second without
+  // re-querying the server.
+  const [nowTick, setNowTick] = useState(0);
+  useEffect(() => {
+    const h = setInterval(() => setNowTick((t) => (t + 1) % 1_000_000), 1000);
+    return () => clearInterval(h);
+  }, []);
+  // Silence unused-variable lint; we just need React to re-render.
+  void nowTick;
 
   // ── version selection — default to active version, else latest ────────
   useEffect(() => {
@@ -167,8 +216,7 @@ export default function FlowVisualEditorPage({
       const positions = (
         selectedVersion.algorithm as { __positions?: Record<string, { x: number; y: number }> }
       )?.__positions;
-      const v = flowToGraph(g, positions);
-      setVisual({ nodes: v.nodes as VisualNode[], edges: v.edges });
+      setVisual(visualFromFlow(g, positions));
       hydratedFor.current = selectedVersion.id;
     } catch (e) {
       setSaveErr(`graph load failed: ${(e as Error).message}`);
@@ -212,9 +260,6 @@ export default function FlowVisualEditorPage({
   }, [flowId]);
 
   // ── algorithm config derived from server ─────────────────────────────
-  // Find the flow-scope config (we don't yet wire branch-scope overrides
-  // in this editor — the existing REST endpoint supports both; that's a
-  // follow-up iteration).
   const flowAlgoConfig = useMemo(
     () => algoConfigs?.find((c) => c.scope === "FLOW" && !c.scopeRefId) ?? null,
     [algoConfigs],
@@ -225,8 +270,10 @@ export default function FlowVisualEditorPage({
     return visual.nodes.find((n) => n.id === selectedId)?.data.raw ?? null;
   }, [visual, selectedId]);
 
-  // Algorithm entries — one per BrokerTarget node, merged with server's
-  // algorithm params + broker metadata.
+  const algoMode = (flowAlgoConfig?.mode ?? "WEIGHTED_ROUND_ROBIN") as
+    | "WEIGHTED_ROUND_ROBIN"
+    | "SLOTS_CHANCE";
+
   const algoEntries: AlgoEntry[] = useMemo(() => {
     if (!visual) return [];
     const brokerTargets = visual.nodes.filter((n) => n.data.kind === "BrokerTarget");
@@ -251,10 +298,6 @@ export default function FlowVisualEditorPage({
     });
   }, [visual, flowAlgoConfig, brokers]);
 
-  const algoMode = (flowAlgoConfig?.mode ?? "WEIGHTED_ROUND_ROBIN") as
-    | "WEIGHTED_ROUND_ROBIN"
-    | "SLOTS_CHANCE";
-
   // Schedule value (from entryFilters.schedule on the version)
   const [scheduleDraft, setScheduleDraft] = useState<ScheduleValue | null>(null);
   useEffect(() => {
@@ -263,7 +306,7 @@ export default function FlowVisualEditorPage({
     setScheduleDraft(normalizeSchedule(ef?.schedule));
   }, [selectedVersion]);
 
-  // ── handlers ─────────────────────────────────────────────────────────
+  // ── handlers: structural + inspector edits ───────────────────────────
   const handleNodePatch = useCallback(
     (patch: Record<string, unknown>) => {
       if (!visual || !selectedId || readOnly) return;
@@ -288,7 +331,6 @@ export default function FlowVisualEditorPage({
   const handleAlgoChange = useCallback(
     (entries: AlgoEntry[]) => {
       if (!visual || readOnly) return;
-      // Map updated weights/chance back onto the graph BrokerTarget nodes.
       setVisual({
         ...visual,
         nodes: visual.nodes.map((n) => {
@@ -312,6 +354,137 @@ export default function FlowVisualEditorPage({
     // Mode change is applied via handleNodePatch above; the upsert is
     // separate from the graph save.
   }, []);
+
+  const replaceGraph = useCallback(
+    (next: FlowGraph, selectId?: string | null) => {
+      const positions: Record<string, { x: number; y: number }> = {};
+      if (visual) {
+        for (const n of visual.nodes) positions[n.id] = n.position;
+      }
+      setVisual(visualFromFlow(next, positions));
+      if (selectId !== undefined) setSelectedId(selectId);
+    },
+    [visual],
+  );
+
+  const handleAddBroker = useCallback(
+    (brokerId: string) => {
+      if (!visual || readOnly) return;
+      try {
+        const g = snapshotGraph(visual);
+        const { graph, nodeId } = addBrokerTarget(g, brokerId, algoMode);
+        replaceGraph(graph, nodeId);
+      } catch (e) {
+        setSaveErr((e as Error).message);
+      }
+    },
+    [visual, readOnly, algoMode, replaceGraph],
+  );
+
+  const handleRemoveBroker = useCallback(
+    (nodeId: string) => {
+      if (!visual || readOnly) return;
+      try {
+        const g = snapshotGraph(visual);
+        // Use deleteNode (which also strips edges); for Slots-Chance we
+        // defer re-normalization to the user.
+        const graph = deleteNodeFromGraph(g, nodeId);
+        replaceGraph(graph, selectedId === nodeId ? null : selectedId);
+      } catch (e) {
+        setSaveErr((e as Error).message);
+      }
+    },
+    [visual, readOnly, replaceGraph, selectedId],
+  );
+
+  const handleAddFilter = useCallback(() => {
+    if (!visual || readOnly) return;
+    try {
+      const g = snapshotGraph(visual);
+      const { graph, nodeId } = addFilterNode(g);
+      replaceGraph(graph, nodeId);
+    } catch (e) {
+      setSaveErr((e as Error).message);
+    }
+  }, [visual, readOnly, replaceGraph]);
+
+  const handleAddFallback = useCallback(() => {
+    if (!visual || readOnly) return;
+    try {
+      const g = snapshotGraph(visual);
+      const { graph, nodeId } = addFallbackNode(g);
+      replaceGraph(graph, nodeId);
+    } catch (e) {
+      setSaveErr((e as Error).message);
+    }
+  }, [visual, readOnly, replaceGraph]);
+
+  const handleAddExit = useCallback(() => {
+    if (!visual || readOnly) return;
+    try {
+      const g = snapshotGraph(visual);
+      const { graph, nodeId } = addExitNode(g);
+      replaceGraph(graph, nodeId);
+    } catch (e) {
+      setSaveErr((e as Error).message);
+    }
+  }, [visual, readOnly, replaceGraph]);
+
+  const handleConnect = useCallback(
+    (conn: { from: string; to: string; condition: "default" | "on_success" | "on_fail" }) => {
+      if (!visual || readOnly) return;
+      try {
+        const g = snapshotGraph(visual);
+        const next = addEdgeToGraph(g, conn);
+        replaceGraph(next);
+      } catch (e) {
+        setSaveErr((e as Error).message);
+      }
+    },
+    [visual, readOnly, replaceGraph],
+  );
+
+  const handleDeleteNode = useCallback(
+    (nodeId: string) => {
+      if (!visual || readOnly) return;
+      try {
+        const g = snapshotGraph(visual);
+        const next = deleteNodeFromGraph(g, nodeId);
+        replaceGraph(next, selectedId === nodeId ? null : selectedId);
+      } catch (e) {
+        setSaveErr((e as Error).message);
+      }
+    },
+    [visual, readOnly, replaceGraph, selectedId],
+  );
+
+  const handleDeleteEdge = useCallback(
+    (edgeId: string) => {
+      if (!visual || readOnly) return;
+      const edge = visual.edges.find((e) => e.id === edgeId);
+      if (!edge) return;
+      try {
+        const g = snapshotGraph(visual);
+        const next = deleteEdgeFromGraph(g, {
+          from: edge.source,
+          to: edge.target,
+          condition: edge.data.condition as "default" | "on_success" | "on_fail",
+        });
+        replaceGraph(next);
+      } catch (e) {
+        setSaveErr((e as Error).message);
+      }
+    },
+    [visual, readOnly, replaceGraph],
+  );
+
+  const handleContextMenu = useCallback(
+    (nodeId: string, x: number, y: number) => {
+      if (readOnly) return;
+      setCtxMenu({ nodeId, x, y });
+    },
+    [readOnly],
+  );
 
   const handleAddCap = useCallback(
     (brokerId: string) => {
@@ -337,32 +510,14 @@ export default function FlowVisualEditorPage({
     setCapRows((prev) => prev.filter((r) => r._uid !== uid));
   }, []);
 
+  // ── save: graph + caps + algo params ─────────────────────────────────
   const handleSave = useCallback(async () => {
     if (!visual || !flow || !selectedVersion || readOnly) return;
     setSaveErr(null);
-    setSaveOk(false);
     try {
-      // 1. Persist graph (strip positions).
-      const baseGraph = graphToFlow({
-        nodes: visual.nodes.map((n) => ({
-          id: n.id,
-          type:
-            n.data.kind === "BrokerTarget" ? "brokerTarget" : (n.data.kind.toLowerCase() as never),
-          position: n.position,
-          data: n.data,
-        })),
-        edges: visual.edges.map((e) => ({
-          id: e.id,
-          source: e.source,
-          target: e.target,
-          data: {
-            condition: (e.data.condition ?? "default") as "default" | "on_success" | "on_fail",
-          },
-        })),
-      });
+      const baseGraph = snapshotGraph(visual);
       await updateDraft.mutateAsync({ id: flowId, graph: baseGraph });
 
-      // 2. Persist caps.
       const parsedCaps = capRows.map((r) => ({
         scope: r.scope,
         scopeRefId: r.scopeRefId,
@@ -377,8 +532,6 @@ export default function FlowVisualEditorPage({
       }));
       await updateCaps.mutateAsync({ flowId, caps: parsedCaps });
 
-      // 3. Persist algorithm params derived from the graph's BrokerTarget
-      //    nodes. Default mode matches current flow-scope config.
       const brokerTargets = visual.nodes.filter((n) => n.data.kind === "BrokerTarget");
       if (brokerTargets.length > 0) {
         const params: Record<string, Record<string, number>> = {};
@@ -403,8 +556,7 @@ export default function FlowVisualEditorPage({
         });
       }
 
-      setSaveOk(true);
-      setTimeout(() => setSaveOk(false), 2500);
+      setSavedAt(new Date());
       // Force re-hydrate on next data tick.
       hydratedFor.current = null;
     } catch (e) {
@@ -423,6 +575,39 @@ export default function FlowVisualEditorPage({
     upsertAlgo,
   ]);
 
+  // ── debounced auto-save on structural changes ────────────────────────
+  // We take a content-hash of the nodes/edges/capRows so that positional
+  // drags don't trigger saves — only shape changes do.
+  const saveSignature = useMemo(() => {
+    if (!visual) return "";
+    const n = visual.nodes.map((x) => ({
+      id: x.id,
+      kind: x.data.kind,
+      raw: x.data.raw,
+    }));
+    const e = visual.edges.map((x) => ({
+      from: x.source,
+      to: x.target,
+      cond: x.data.condition,
+    }));
+    return JSON.stringify({ n, e, capRows });
+  }, [visual, capRows]);
+  const firstSigRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!visual || readOnly) return;
+    if (firstSigRef.current === null) {
+      // Record the signature of the initially-loaded graph so we don't
+      // immediately save on hydration.
+      firstSigRef.current = saveSignature;
+      return;
+    }
+    if (firstSigRef.current === saveSignature) return;
+    const h = setTimeout(() => {
+      handleSave();
+    }, 500);
+    return () => clearTimeout(h);
+  }, [saveSignature, visual, readOnly, handleSave]);
+
   // Positions snapshot is held in visual state; extracted here purely to
   // keep biome happy that `extractPositions` stays imported for callers
   // who round-trip positions into the backend later.
@@ -434,6 +619,41 @@ export default function FlowVisualEditorPage({
     [visual],
   );
 
+  // ── publish guard: ensure at least one reachable BrokerTarget ────────
+  const publishBlocked = useMemo(() => {
+    if (!visual) return true;
+    const g = snapshotGraph(visual);
+    return !hasReachableBrokerTarget(g);
+  }, [visual]);
+
+  const publishBlockedReason = publishBlocked
+    ? "Flow must have at least one BrokerTarget reachable from Entry before publishing."
+    : null;
+
+  const hasExit = useMemo(() => {
+    if (!visual) return false;
+    return visual.nodes.some((n) => n.data.kind === "Exit");
+  }, [visual]);
+
+  const hasAlgorithmNode = useMemo(() => {
+    if (!visual) return false;
+    return visual.nodes.some((n) => n.data.kind === "Algorithm");
+  }, [visual]);
+
+  const hasAnyBrokerTarget = useMemo(() => {
+    if (!visual) return false;
+    return visual.nodes.some((n) => n.data.kind === "BrokerTarget");
+  }, [visual]);
+
+  const jumpToAlgorithm = useCallback(() => {
+    if (!visual) return;
+    const g = snapshotGraph(visual);
+    const algoId = findAlgorithmNodeId(g);
+    if (algoId) setSelectedId(algoId);
+  }, [visual]);
+
+  const saveInFlight = updateDraft.isPending || updateCaps.isPending || upsertAlgo.isPending;
+
   if (isLoading) return <div style={{ padding: 28 }}>Loading…</div>;
   if (!flow) return <div style={{ padding: 28 }}>Flow not found.</div>;
 
@@ -444,6 +664,7 @@ export default function FlowVisualEditorPage({
         flexDirection: "column",
         height: "calc(100vh - 46px)",
       }}
+      onClickCapture={() => setCtxMenu(null)}
     >
       {/* Header */}
       <div
@@ -479,10 +700,6 @@ export default function FlowVisualEditorPage({
           {liveErr && (
             <span style={{ fontSize: 10, color: "oklch(72% 0.15 25)" }}>caps: {liveErr}</span>
           )}
-          {saveErr && (
-            <span style={{ fontSize: 10, color: "oklch(72% 0.15 25)" }}>save: {saveErr}</span>
-          )}
-          {saveOk && <span style={{ fontSize: 10, color: "oklch(72% 0.15 130)" }}>saved</span>}
           <Link
             href={`/dashboard/routing/flows/${flowId}/simulator` as never}
             style={{ ...btnStyle(theme), textDecoration: "none" }}
@@ -494,18 +711,17 @@ export default function FlowVisualEditorPage({
               type="button"
               style={btnStyle(theme)}
               onClick={handleSave}
-              disabled={updateDraft.isPending || updateCaps.isPending || upsertAlgo.isPending}
+              disabled={saveInFlight}
             >
-              {updateDraft.isPending || updateCaps.isPending || upsertAlgo.isPending
-                ? "Saving…"
-                : "Save draft"}
+              {saveInFlight ? "Saving…" : "Save draft"}
             </button>
           )}
           {flow.status === "DRAFT" && (
             <button
               type="button"
               style={btnStyle(theme, "primary")}
-              disabled={publish.isPending}
+              disabled={publish.isPending || publishBlocked}
+              title={publishBlocked && publishBlockedReason ? publishBlockedReason : undefined}
               onClick={async () => {
                 await handleSave();
                 publish.mutate({ id: flowId });
@@ -580,37 +796,94 @@ export default function FlowVisualEditorPage({
             onSelect={(id) => {
               setSelectedVersionId(id);
               hydratedFor.current = null;
+              firstSigRef.current = null;
               setSelectedId(null);
             }}
           />
         </aside>
 
-        {/* Middle: canvas */}
-        <main style={{ minHeight: 0 }}>
-          {visual ? (
-            <Canvas
-              nodes={visual.nodes}
-              edges={visual.edges}
-              selectedId={selectedId}
-              brokers={brokers ?? []}
-              onSelect={setSelectedId}
-              onNodesChange={(next) => setVisual({ ...visual, nodes: next })}
-            />
-          ) : (
-            <div
-              style={{
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "var(--fg-2)",
-                border: "1px solid var(--bd-1)",
-                borderRadius: 6,
-              }}
-            >
-              Loading graph…
-            </div>
-          )}
+        {/* Middle: toolbar + canvas */}
+        <main style={{ minHeight: 0, display: "flex", flexDirection: "column" }}>
+          <Toolbar
+            readOnly={readOnly}
+            hasExit={hasExit}
+            savedAt={savedAt}
+            saving={saveInFlight}
+            saveErr={saveErr}
+            publishBlocked={publishBlocked}
+            publishBlockedReason={publishBlockedReason}
+            onAddFilter={handleAddFilter}
+            onAddFallback={handleAddFallback}
+            onAddExit={handleAddExit}
+          />
+          <div style={{ flex: 1, minHeight: 0, position: "relative" }}>
+            {visual ? (
+              <Canvas
+                nodes={visual.nodes}
+                edges={visual.edges}
+                selectedId={selectedId}
+                brokers={brokers ?? []}
+                readOnly={readOnly}
+                onSelect={setSelectedId}
+                onNodesChange={(next) => setVisual({ ...visual, nodes: next })}
+                onConnect={handleConnect}
+                onDeleteNode={handleDeleteNode}
+                onDeleteEdge={handleDeleteEdge}
+                onNodeContextMenu={handleContextMenu}
+              />
+            ) : (
+              <div
+                style={{
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "var(--fg-2)",
+                  border: "1px solid var(--bd-1)",
+                  borderRadius: 6,
+                }}
+              >
+                Loading graph…
+              </div>
+            )}
+            {ctxMenu && (
+              <div
+                style={{
+                  position: "fixed",
+                  top: ctxMenu.y,
+                  left: ctxMenu.x,
+                  zIndex: 40,
+                  background: "var(--bg-1)",
+                  border: "1px solid var(--bd-1)",
+                  borderRadius: 4,
+                  padding: 4,
+                  boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
+                  minWidth: 140,
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleDeleteNode(ctxMenu.nodeId);
+                    setCtxMenu(null);
+                  }}
+                  style={{
+                    width: "100%",
+                    textAlign: "left",
+                    fontSize: 12,
+                    padding: "6px 8px",
+                    background: "transparent",
+                    color: "var(--fg-0)",
+                    border: "none",
+                    borderRadius: 3,
+                    cursor: "pointer",
+                  }}
+                >
+                  Delete node
+                </button>
+              </div>
+            )}
+          </div>
         </main>
 
         {/* Right: inspector */}
@@ -640,20 +913,23 @@ export default function FlowVisualEditorPage({
             <Inspector
               node={selectedNode}
               readOnly={readOnly}
-              brokers={
-                (brokers ?? []).map((b) => ({
-                  id: b.id,
-                  name: b.name,
-                  isActive: b.isActive,
-                  dailyCap: b.dailyCap ?? null,
-                  lastHealthStatus: b.lastHealthStatus,
-                  autologinEnabled: b.autologinEnabled,
-                })) ?? []
-              }
+              hasAnyBrokerTarget={hasAnyBrokerTarget}
+              hasAlgorithmNode={hasAlgorithmNode}
+              onJumpToAlgorithm={jumpToAlgorithm}
+              brokers={(brokers ?? []).map((b) => ({
+                id: b.id,
+                name: b.name,
+                isActive: b.isActive,
+                dailyCap: b.dailyCap ?? null,
+                lastHealthStatus: b.lastHealthStatus,
+                autologinEnabled: b.autologinEnabled,
+              }))}
               algoMode={algoMode}
               algoEntries={algoEntries}
               onAlgoChange={handleAlgoChange}
               onAlgoModeChange={handleAlgoModeChange}
+              onAddBroker={handleAddBroker}
+              onRemoveBroker={handleRemoveBroker}
               capRows={capRows}
               liveCaps={liveCaps}
               onCapChange={setCapRows}
