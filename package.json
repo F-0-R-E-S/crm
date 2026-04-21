@@ -22,7 +22,10 @@
     "openapi:build": "tsx scripts/gen-openapi.ts",
     "db:reset": "prisma migrate reset --force --skip-seed && pnpm db:seed",
     "worker": "tsx worker.ts",
-    "test:e2e": "vitest run --config vitest.e2e.config.ts"
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
+    "docs:regen": "tsx scripts/docs-regen/index.ts --write",
+    "docs:regen:check": "tsx scripts/docs-regen/index.ts --check",
+    "docs:regen:dry": "tsx scripts/docs-regen/index.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
