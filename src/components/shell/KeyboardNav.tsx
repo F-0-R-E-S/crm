@@ -22,7 +22,7 @@ export function KeyboardNav({ onEscape }: Props) {
         onEscape?.();
         return;
       }
-      const item = NAV_ITEMS.find((n) => n.kbd.toLowerCase() === e.key.toLowerCase());
+      const item = NAV_ITEMS.find((n) => n.kbd && n.kbd.toLowerCase() === e.key.toLowerCase());
       if (item) router.push(item.path as never);
     };
     window.addEventListener("keydown", onKey);
