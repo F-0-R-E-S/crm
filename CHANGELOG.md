@@ -143,3 +143,18 @@ Hotfix sprint following the v1.0 launch checklist.
 ## [0.1.0] — 2026-03-15
 
 - Initial scaffold: Next.js 15 + tRPC v11 + Prisma 5 + NextAuth v5. Base models + admin dashboard shell.
+
+## v1.0.3 (2026-04-21)
+
+### Routing editor — structural editing from UI
+- Canvas toolbar with **+ Filter / Fallback / Exit** buttons.
+- **+ Add broker target** in Algorithm inspector (dropdown of active brokers, weight/chance slider, remove).
+- Edge drawing via reactflow `onConnect` (self-loop / Entry-target / Exit-source guards).
+- `Delete` / `Backspace` removes selected node + adjacent edges (Entry + last Exit protected).
+- Debounced draft save (500 ms) with "saved Ns ago" indicator.
+- Empty-state banner when flow has no broker targets.
+- Publish button disabled when no BrokerTarget reachable from Entry.
+
+### Tests
+- 25 new unit tests for pure graph builders (add/remove node, edge guards, reachability).
+- Total 557 passed + 1 todo; flaky telegram-events-wired test passes in isolation.
