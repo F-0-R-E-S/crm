@@ -106,6 +106,34 @@ async function main() {
   await backfillDefaultOrg();
   console.log("default org backfilled");
 
+  // --- v1.5-s3 scheduled changes — smoke visibility in /dashboard/settings/scheduled-changes ---
+  if ((await prisma.scheduledChange.count()) === 0) {
+    const inOneHour = new Date(Date.now() + 60 * 60 * 1000);
+    await prisma.scheduledChange.create({
+      data: {
+        entityType: "Broker",
+        entityId: broker.id,
+        payload: { dailyCap: 1000 },
+        applyAt: inOneHour,
+        createdBy: admin.id,
+      },
+    });
+    await prisma.scheduledChange.create({
+      data: {
+        entityType: "Broker",
+        entityId: broker.id,
+        payload: { isActive: true },
+        applyAt: new Date(Date.now() - 30 * 60 * 1000),
+        status: "APPLIED",
+        appliedAt: new Date(Date.now() - 29 * 60 * 1000),
+        appliedBy: admin.id,
+        latencyMs: 60_000,
+        createdBy: admin.id,
+      },
+    });
+    console.log("seeded 2 scheduled changes (1 pending, 1 applied)");
+  }
+
   if (process.env.SEED_PERF === "1") {
     await seedPerfFlow();
   }

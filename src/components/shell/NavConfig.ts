@@ -66,6 +66,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { path: "/dashboard/settings/audit", label: "audit log", kbd: "G" },
       { path: "/dashboard/settings/alerts", label: "alerts", kbd: "H" },
       { path: "/dashboard/settings/rbac-preview", label: "rbac preview", kbd: "Q" },
+      { path: "/dashboard/settings/scheduled-changes", label: "scheduled changes", kbd: "J" },
       { path: "/dashboard/settings/telegram", label: "telegram" },
       { path: "/dashboard/settings/telegram-admin", label: "telegram admin" },
     ],
