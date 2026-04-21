@@ -174,6 +174,15 @@
 - **Release:** version `1.0.0` in `package.json`; `CHANGELOG.md` populated; tag `v1.0.0` on `main`.
 - **Known v1.0.1 follow-ups:** extend structured logging to onboarding wizard, health endpoint broker-health polling, self-host Scalar viewer, admin UI for AlertLog ack, batch AuditLog hash-chain lookups.
 
+## v1.5 S1.5-2 — EPIC-17 Visual Rule-Builder residuals (April 2026)
+
+- **Deep filter-condition builder:** Inspector's Filter block replaced with a full rule-builder — field × op matrix (`legalOpsForField` — `matches` restricted to string fields, `timeOfDay` to set-like ops), op-aware value editor (single-input / chip list / time-range), AND/OR logic toggle, live Zod validation + row error highlight. `src/components/routing-editor/FilterConditionEditor.tsx` + `filter-conditions.ts` pure helper (21 tests).
+- **Node position persistence via `meta.pos`:** Zod node schemas now carry optional `NodeMetaSchema` (`{pos: {x, y}}` + passthrough). `flowToGraph` reads with precedence `explicit > meta.pos > auto-layout`; `graphToFlow` stamps reactflow position onto `meta.pos` (opt out via `{persistPositions: false}`). `Canvas.onNodeDragStop` writes into `node.data.raw.meta.pos` → save-signature drift → debounced save. Legacy `algorithm.__positions` channel preserved for backward compat.
+- **Draft-vs-Publish state badge:** pure `computeDraftPublishState` state machine → `dirty` / `ahead` / `published` / `saved` / `readonly`. `DraftPublishBadge` component drives the editor breadcrumb; replaces the plain flow-status Pill. `debouncePending` derived from `saveSignature !== lastSavedSigRef`.
+- **Diff-test: 5 v1.0 flows round-trip:** `src/server/routing/flow/graph-diff.test.ts` pins auto-migrate-single / WRR-four / Slots-Chance-three / two-hop fallback / parallel filter branches. Byte-equal with `{persistPositions: false}`; structural equality + meta.pos stamp otherwise.
+- **Deferred:** live preview widget (Task D) — the existing `/dashboard/routing/flows/:id/simulator` page is one click from the header; an embedded client-side N-lead sim would duplicate engine logic. Reassess if users request in-canvas distribution histograms.
+- **Release:** version `1.5.0-s2` in `package.json`; tag `v1.5.0-s2-visual-rule-builder`. 629 tests + 1 todo (up from 577).
+
 ## v1.5 S1.5-1 — EPIC-14 BI Report Builder polish (April 2026)
 
 - **Preset polish:** `AnalyticsPreset.isDefault` + `renamePreset` / `setDefaultPreset({id:null})` to clear / `getDefaultPreset` procs in `src/server/routers/analytics.ts`. UI: `src/components/analytics/PresetManager.tsx` (star-toggle / rename / delete). Default preset auto-loaded on analytics page mount.

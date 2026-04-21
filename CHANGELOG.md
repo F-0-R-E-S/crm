@@ -2,6 +2,69 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v1.5.0-s2 (2026-04-20)
+
+S1.5-2 — EPIC-17 Visual Rule-Builder residuals on top of the v1.0.2 /
+v1.0.3 structural editor. Core canvas, toolbar, inspector, add/remove,
+edge-draw and publish-guard already shipped in v1.0.3; this release
+closes the remaining gaps from the v1.5 plan.
+
+### Added
+
+- **Deep filter-condition builder** — Inspector's Filter block is now a
+  full rule-builder with an op-aware value editor, AND/OR logic toggle,
+  live Zod validation and inline error highlight.
+  `src/components/routing-editor/FilterConditionEditor.tsx` +
+  `filter-conditions.ts` (pure helpers: field/op matrix, value coercion,
+  chip parser). 21 unit tests in `filter-conditions.test.ts`.
+- **Node position persistence via `FlowNode.meta.pos`** — the Zod node
+  schemas now carry an optional `meta` field with a `{pos: {x, y}}`
+  layout hint. `flowToGraph` reads positions with precedence
+  (explicit > meta.pos > auto-layout); `graphToFlow` stamps the current
+  reactflow position back onto `meta.pos` so drag edits survive the
+  JSON round-trip. Canvas's `onNodeDragStop` writes into
+  `node.data.raw.meta.pos` which flows into the save signature and
+  triggers the debounced save. Legacy `algorithm.__positions` side
+  channel preserved for backward compat.
+- **Draft-vs-Publish state badge** in the flow-editor breadcrumb, driven
+  by a pure `computeDraftPublishState` state machine:
+  `DIRTY_UNSAVED` (red) / `DRAFT_AHEAD` (orange) / `PUBLISHED` (green) /
+  `DRAFT_SAVED_Ns_AGO` (neutral) / `READ_ONLY`. 14 unit tests in
+  `draft-publish-state.test.ts` covering every transition + the elapsed-
+  time formatter.
+
+### Tests
+
+- **Diff-test: 5 v1.0-shape flows round-trip** —
+  `src/server/routing/flow/graph-diff.test.ts`. 5 fixtures
+  (auto-migrate single, WRR four brokers, Slots-Chance three, two-hop
+  fallback chain, parallel filter branches). Each survives Zod, byte-
+  equal round-trip under `{persistPositions: false}`, and structural
+  equality (ignoring meta) under defaults.
+- **Meta-pos round-trip tests** —
+  `src/server/routing/flow/graph-meta-pos.test.ts` (6 cases).
+
+### Changed
+
+- `src/server/routing/flow/model.ts` — added `NodeMetaSchema` +
+  re-exported each node variant as a named TS type.
+- `src/server/routing/flow/graph.ts::flowToGraph` now preserves input
+  node order (no more bucket-sort reshuffling) for byte-stable
+  round-trips. Reactflow renders by absolute position, not list order,
+  so visual output is unchanged.
+- `src/app/dashboard/routing/flows/[flowId]/page.tsx` — wired
+  `DraftPublishBadge` into the header, exposed `debouncePending` derived
+  from `saveSignature !== lastSavedSigRef`.
+
+### Parking lot
+
+- **Live preview widget** (Task D) — deferred. The existing full
+  Simulator page at `/dashboard/routing/flows/:id/simulator` is one
+  click away from the editor header; embedding a client-side
+  synthetic-sim widget in the sidebar would duplicate engine logic for
+  marginal UX gain. Reassess in v1.5-s3 if usage data shows users would
+  benefit from an in-canvas N-lead distribution histogram.
+
 ## v1.5.0-s1 (2026-04-21)
 
 S1.5-1 — EPIC-14 BI Report Builder polish (descoped from the plan's full scope).
