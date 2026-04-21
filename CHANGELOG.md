@@ -2,6 +2,21 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v1.0.1 (2026-04-21)
+
+Hotfix sprint following the v1.0 launch checklist.
+
+### Fixed / Changed
+
+- **Self-host Scalar API viewer:** `/docs/api` now loads the locally bundled `@scalar/api-reference-react` package instead of pulling the standalone bundle from jsDelivr. Docs survive CDN outages. Spec source unchanged (`docs/api/v1/openapi.yaml` → `/api/v1/openapi`).
+- **AlertLog acknowledgements:** added `ackedAt` / `ackedBy` columns to `AlertLog` plus a `/dashboard/settings/alerts` admin page (shortcut `H`) with rule / ack-state / date-range filters and a one-click Ack button. Backed by a new `alertLog.list` + `alertLog.ack` tRPC router (admin-only).
+- **Zod-driven OpenAPI generation:** replaced the hand-authored `openapi.yaml` + passthrough script with a real generator (`@asteasolutions/zod-to-openapi` v7) that derives `/leads` POST, `/leads/bulk` POST, and `/health` GET from the schemas in `src/server/schema/registry.ts`. Routing / schema-discovery / ops paths remain hand-authored and are merged in — they expose internal runtime shapes that don't live in the intake registry. Run via `pnpm openapi:build` (also aliased at `pnpm gen:openapi`).
+- **Biome lint polish:** 28 warnings → 0 via per-line fixes and targeted `biome-ignore` with reasons (a11y labels / svg titles / keyboard handlers on clickable rows / positional array-index keys / one jsonpath-plus v10 type gap). No `biome.json` rule-level changes.
+
+### Ops
+
+- `scripts/purge-stale-queue.ts` — one-shot `pnpm tsx scripts/purge-stale-queue.ts` helper to delete `pgboss.job` rows stuck in `created` / `retry` for ≥ 30 minutes.
+
 ## [1.0.0] — 2026-09-10 — Core GA
 
 ### Sprint 1 — Wave1 merge + security hardening
