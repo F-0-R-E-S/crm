@@ -49,6 +49,13 @@ export default function InvoicesPage() {
               <tr
                 key={inv.id}
                 onClick={() => setOpenId(inv.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setOpenId(inv.id);
+                  }
+                }}
+                tabIndex={0}
                 style={{
                   cursor: "pointer",
                   borderBottom: "1px solid var(--bd-1)",

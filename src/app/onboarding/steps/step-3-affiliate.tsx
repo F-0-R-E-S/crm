@@ -70,8 +70,11 @@ export function Step3Affiliate({ value, onNext, onBack }: Props) {
             We'll generate an API key you can use to send test leads.
           </div>
         </div>
-        <label style={labelStyle}>Affiliate name</label>
+        <label htmlFor="onb-aff-name" style={labelStyle}>
+          Affiliate name
+        </label>
         <input
+          id="onb-aff-name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -79,8 +82,11 @@ export function Step3Affiliate({ value, onNext, onBack }: Props) {
           style={inputStyle}
           placeholder="Acme Affiliates"
         />
-        <label style={labelStyle}>Contact email</label>
+        <label htmlFor="onb-aff-email" style={labelStyle}>
+          Contact email
+        </label>
         <input
+          id="onb-aff-email"
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}

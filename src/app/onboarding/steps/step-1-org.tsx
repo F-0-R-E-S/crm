@@ -74,8 +74,11 @@ export function Step1Org({ value, onNext }: Props) {
         </div>
       </div>
 
-      <label style={labelStyle}>Organization name</label>
+      <label htmlFor="onb-org-name" style={labelStyle}>
+        Organization name
+      </label>
       <input
+        id="onb-org-name"
         type="text"
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -86,8 +89,15 @@ export function Step1Org({ value, onNext }: Props) {
         placeholder="Acme Corp"
       />
 
-      <label style={labelStyle}>Timezone</label>
-      <select value={timezone} onChange={(e) => setTimezone(e.target.value)} style={inputStyle}>
+      <label htmlFor="onb-org-tz" style={labelStyle}>
+        Timezone
+      </label>
+      <select
+        id="onb-org-tz"
+        value={timezone}
+        onChange={(e) => setTimezone(e.target.value)}
+        style={inputStyle}
+      >
         {tzList.map((tz) => (
           <option key={tz} value={tz}>
             {tz}
@@ -95,8 +105,15 @@ export function Step1Org({ value, onNext }: Props) {
         ))}
       </select>
 
-      <label style={labelStyle}>Reporting currency</label>
-      <select value={currency} onChange={(e) => setCurrency(e.target.value)} style={inputStyle}>
+      <label htmlFor="onb-org-currency" style={labelStyle}>
+        Reporting currency
+      </label>
+      <select
+        id="onb-org-currency"
+        value={currency}
+        onChange={(e) => setCurrency(e.target.value)}
+        style={inputStyle}
+      >
         {CURRENCIES.map((c) => (
           <option key={c} value={c}>
             {c}

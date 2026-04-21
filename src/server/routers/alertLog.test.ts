@@ -21,9 +21,7 @@ describe("buildAlertLogWhere", () => {
   it("combines date-range with ack + ruleKey", () => {
     const from = new Date("2026-04-01T00:00:00Z");
     const to = new Date("2026-04-20T00:00:00Z");
-    expect(
-      buildAlertLogWhere({ ruleKey: "push_fail_rate", ack: "unacked", from, to }),
-    ).toEqual({
+    expect(buildAlertLogWhere({ ruleKey: "push_fail_rate", ack: "unacked", from, to })).toEqual({
       ruleKey: "push_fail_rate",
       ackedAt: null,
       triggeredAt: { gte: from, lte: to },

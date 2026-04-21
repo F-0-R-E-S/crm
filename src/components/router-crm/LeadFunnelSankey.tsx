@@ -122,6 +122,7 @@ export function LeadFunnelSankey({ counts: c, width = 720, height = 240 }: Sanke
     const d = `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
     return (
       <path
+        // biome-ignore lint/suspicious/noArrayIndexKey: sankey flow path — derived from a stable flows array
         key={idx}
         d={d}
         stroke={f.color}
@@ -133,9 +134,17 @@ export function LeadFunnelSankey({ counts: c, width = 720, height = 240 }: Sanke
   });
 
   return (
-    <svg width={width} height={height} style={{ display: "block", overflow: "visible" }}>
+    <svg
+      width={width}
+      height={height}
+      style={{ display: "block", overflow: "visible" }}
+      role="img"
+      aria-label="lead funnel sankey"
+    >
+      <title>lead funnel sankey</title>
       {paths}
       {colsLaid.map((col, ci) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: sankey column — positional, not reorderable
         <g key={ci}>
           <text
             x={col.x}
@@ -148,6 +157,7 @@ export function LeadFunnelSankey({ counts: c, width = 720, height = 240 }: Sanke
             {col.label.toUpperCase()}
           </text>
           {col.items.map((item, ii) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: sankey node — positional within its column
             <g key={ii}>
               <rect
                 x={col.x}

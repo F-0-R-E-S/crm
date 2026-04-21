@@ -207,15 +207,21 @@ export function Step2Broker({ value, onNext, onBack }: Props) {
           <div style={{ fontSize: 12, color: "var(--fg-2)" }}>← select a template to continue</div>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-            <label style={labelStyle}>Broker name</label>
+            <label htmlFor="onb-broker-name" style={labelStyle}>
+              Broker name
+            </label>
             <input
+              id="onb-broker-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               style={inputStyle}
             />
-            <label style={labelStyle}>Endpoint URL</label>
+            <label htmlFor="onb-broker-endpoint" style={labelStyle}>
+              Endpoint URL
+            </label>
             <input
+              id="onb-broker-endpoint"
               type="url"
               value={endpointUrl}
               onChange={(e) => {
@@ -227,8 +233,11 @@ export function Step2Broker({ value, onNext, onBack }: Props) {
             />
             {authFieldDefs.map((f) => (
               <div key={f.key}>
-                <label style={labelStyle}>{f.label}</label>
+                <label htmlFor={`onb-broker-auth-${f.key}`} style={labelStyle}>
+                  {f.label}
+                </label>
                 <input
+                  id={`onb-broker-auth-${f.key}`}
                   type={f.key === "password" || f.key === "token" ? "password" : "text"}
                   value={authFields[f.key] ?? ""}
                   onChange={(e) => setAuthFields({ ...authFields, [f.key]: e.target.value })}

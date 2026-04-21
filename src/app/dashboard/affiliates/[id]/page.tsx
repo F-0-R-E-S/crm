@@ -34,6 +34,7 @@ function Sparkline({ series }: { series: SeriesPoint[] }) {
           const y = PAD.t + ((H - PAD.t - PAD.b) * i) / gridLines;
           const v = Math.round(max - (max * i) / gridLines);
           return (
+            // biome-ignore lint/suspicious/noArrayIndexKey: fixed-count grid line — positional
             <g key={i}>
               <line
                 x1={PAD.l}

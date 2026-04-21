@@ -144,8 +144,11 @@ export function Step4TestLead({ value, onNext, onBack }: Props) {
           ] as const
         ).map(([k, lbl]) => (
           <div key={k}>
-            <label style={labelStyle}>{lbl}</label>
+            <label htmlFor={`onb-lead-${k}`} style={labelStyle}>
+              {lbl}
+            </label>
             <input
+              id={`onb-lead-${k}`}
               type="text"
               value={form[k]}
               onChange={(e) => setForm({ ...form, [k]: e.target.value })}

@@ -50,7 +50,7 @@ export async function pushToBroker(opts: PushOpts): Promise<PushResult> {
         if (opts.responseIdPath && typeof raw === "object") {
           // preventEval: true disables JS eval in path strings (security hardening).
           // In jsonpath-plus v10, the types omit this legacy option but runtime still honors it.
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // biome-ignore lint/suspicious/noExplicitAny: preventEval is a runtime-only legacy option omitted from v10 types
           const matches = (JSONPath as any)({
             path: opts.responseIdPath,
             json: raw,

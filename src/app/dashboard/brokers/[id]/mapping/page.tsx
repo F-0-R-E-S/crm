@@ -39,9 +39,9 @@ export default function MappingPage({ params }: { params: Promise<{ id: string }
     setPreview(body.preview ?? null);
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `load` reads `id` via closure; deps list is the identity `[id]`
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   async function save() {

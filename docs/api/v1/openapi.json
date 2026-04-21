@@ -61,15 +61,10 @@
                 "type": "string"
               }
             },
-            "required": [
-              "code",
-              "message"
-            ]
+            "required": ["code", "message"]
           }
         },
-        "required": [
-          "error"
-        ]
+        "required": ["error"]
       },
       "LeadAcceptedResponse": {
         "type": "object",
@@ -85,11 +80,7 @@
             "example": "received"
           }
         },
-        "required": [
-          "trace_id",
-          "lead_id",
-          "status"
-        ]
+        "required": ["trace_id", "lead_id", "status"]
       },
       "LeadCreate": {
         "type": "object",
@@ -146,11 +137,7 @@
             "format": "date-time"
           }
         },
-        "required": [
-          "geo",
-          "ip",
-          "event_ts"
-        ],
+        "required": ["geo", "ip", "event_ts"],
         "description": "Single-lead intake payload (schema version 2026-01)."
       },
       "BulkLeadsRequest": {
@@ -163,9 +150,7 @@
             }
           }
         },
-        "required": [
-          "leads"
-        ]
+        "required": ["leads"]
       },
       "BulkJobStatus": {
         "type": "object",
@@ -183,22 +168,14 @@
             "type": "integer"
           }
         },
-        "required": [
-          "status",
-          "completed",
-          "failed",
-          "total"
-        ]
+        "required": ["status", "completed", "failed", "total"]
       },
       "Health": {
         "type": "object",
         "properties": {
           "status": {
             "type": "string",
-            "enum": [
-              "ok",
-              "degraded"
-            ]
+            "enum": ["ok", "degraded"]
           },
           "db": {
             "type": "string"
@@ -216,22 +193,13 @@
                 "type": "integer"
               }
             },
-            "required": [
-              "pending",
-              "failed_last_hour"
-            ]
+            "required": ["pending", "failed_last_hour"]
           },
           "version": {
             "type": "string"
           }
         },
-        "required": [
-          "status",
-          "db",
-          "redis",
-          "queue",
-          "version"
-        ]
+        "required": ["status", "db", "redis", "queue", "version"]
       }
     },
     "parameters": {}
@@ -239,9 +207,7 @@
   "paths": {
     "/api/v1/leads": {
       "post": {
-        "tags": [
-          "Intake"
-        ],
+        "tags": ["Intake"],
         "summary": "Submit a single lead",
         "security": [
           {
@@ -341,9 +307,7 @@
     },
     "/api/v1/leads/bulk": {
       "post": {
-        "tags": [
-          "Intake"
-        ],
+        "tags": ["Intake"],
         "summary": "Submit a batch of leads (sync ≤50, async >50)",
         "security": [
           {
@@ -382,9 +346,7 @@
     },
     "/api/v1/health": {
       "get": {
-        "tags": [
-          "Operations"
-        ],
+        "tags": ["Operations"],
         "summary": "Health check",
         "responses": {
           "200": {
@@ -405,9 +367,7 @@
     },
     "/api/v1/leads/bulk/{jobId}": {
       "get": {
-        "tags": [
-          "Intake"
-        ],
+        "tags": ["Intake"],
         "summary": "Get bulk job status",
         "security": [
           {
@@ -440,9 +400,7 @@
     },
     "/api/v1/routing/simulate": {
       "post": {
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "summary": "Dry-run the routing engine for a lead or batch",
         "security": [
           {
@@ -493,9 +451,7 @@
     },
     "/api/v1/routing/simulate/{jobId}": {
       "get": {
-        "tags": [
-          "Routing"
-        ],
+        "tags": ["Routing"],
         "summary": "Get routing simulate job result",
         "parameters": [
           {
@@ -516,9 +472,7 @@
     },
     "/api/v1/schema/leads": {
       "get": {
-        "tags": [
-          "Schema"
-        ],
+        "tags": ["Schema"],
         "summary": "Discover the JSON schema for a schema version",
         "parameters": [
           {
@@ -540,9 +494,7 @@
     },
     "/api/v1/errors": {
       "get": {
-        "tags": [
-          "Schema"
-        ],
+        "tags": ["Schema"],
         "summary": "Error + sandbox-outcome catalog",
         "responses": {
           "200": {
@@ -553,9 +505,7 @@
     },
     "/api/v1/metrics/summary": {
       "get": {
-        "tags": [
-          "Operations"
-        ],
+        "tags": ["Operations"],
         "summary": "60s rolling counters + queue depth (ADMIN session required)",
         "responses": {
           "200": {

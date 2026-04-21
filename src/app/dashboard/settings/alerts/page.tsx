@@ -35,8 +35,8 @@ export default function AlertsPage() {
         Alerts
       </h1>
       <p style={{ fontSize: 12, color: "var(--fg-2)", margin: "0 0 16px" }}>
-        Review and acknowledge alerts raised by the alert-evaluator cron. Acking stamps your user
-        id and timestamp; it does not resolve the underlying condition.
+        Review and acknowledge alerts raised by the alert-evaluator cron. Acking stamps your user id
+        and timestamp; it does not resolve the underlying condition.
       </p>
 
       <div
@@ -63,9 +63,7 @@ export default function AlertsPage() {
           />
         </label>
         <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-          <span style={{ fontSize: 10, color: "var(--fg-2)", fontFamily: "var(--mono)" }}>
-            ack
-          </span>
+          <span style={{ fontSize: 10, color: "var(--fg-2)", fontFamily: "var(--mono)" }}>ack</span>
           <select
             value={ack}
             onChange={(e) => {

@@ -1,7 +1,7 @@
-import { readFileSync, existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import YAML from "yaml";
 import { describe, expect, it } from "vitest";
+import YAML from "yaml";
 
 describe("docs/api/v1/openapi.yaml (zod-generated)", () => {
   const yamlPath = join(process.cwd(), "docs", "api", "v1", "openapi.yaml");

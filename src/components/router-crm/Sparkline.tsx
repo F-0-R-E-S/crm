@@ -25,7 +25,14 @@ export function Sparkline({
   const d = xs.map((x, i) => `${i === 0 ? "M" : "L"}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(" ");
   const area = `${d} L${width},${height} L0,${height} Z`;
   return (
-    <svg width={width} height={height} style={{ display: "block", overflow: "visible" }}>
+    <svg
+      width={width}
+      height={height}
+      style={{ display: "block", overflow: "visible" }}
+      role="img"
+      aria-label="sparkline"
+    >
+      <title>sparkline</title>
       {fill && <path d={area} fill={fill} />}
       <path
         d={d}

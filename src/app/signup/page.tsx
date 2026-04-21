@@ -62,8 +62,11 @@ export default function SignupPage() {
           </div>
         </div>
 
-        <label style={{ fontSize: 11, color: "var(--fg-2)" }}>Work email</label>
+        <label htmlFor="signup-email" style={{ fontSize: 11, color: "var(--fg-2)" }}>
+          Work email
+        </label>
         <input
+          id="signup-email"
           type="email"
           name="email"
           required
@@ -71,8 +74,11 @@ export default function SignupPage() {
           style={inputStyle}
         />
 
-        <label style={{ fontSize: 11, color: "var(--fg-2)" }}>Password (min 8)</label>
+        <label htmlFor="signup-password" style={{ fontSize: 11, color: "var(--fg-2)" }}>
+          Password (min 8)
+        </label>
         <input
+          id="signup-password"
           type="password"
           name="password"
           required
@@ -81,8 +87,11 @@ export default function SignupPage() {
           style={inputStyle}
         />
 
-        <label style={{ fontSize: 11, color: "var(--fg-2)" }}>Organization name</label>
+        <label htmlFor="signup-org" style={{ fontSize: 11, color: "var(--fg-2)" }}>
+          Organization name
+        </label>
         <input
+          id="signup-org"
           type="text"
           name="orgName"
           required

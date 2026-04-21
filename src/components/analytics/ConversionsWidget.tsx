@@ -55,8 +55,8 @@ export function ConversionsWidget({ data }: ConversionsWidgetProps) {
             <YAxis dataKey="name" type="category" width={80} fontSize={11} />
             <Tooltip />
             <Bar dataKey="value" isAnimationActive={false}>
-              {rows.map((_r, i) => (
-                <Cell key={`c-${i}`} fill={COLORS[i % COLORS.length]} />
+              {rows.map((r, i) => (
+                <Cell key={`cell-${r.name}`} fill={COLORS[i % COLORS.length]} />
               ))}
             </Bar>
           </BarChart>

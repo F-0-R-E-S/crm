@@ -179,13 +179,13 @@ const HAND_AUTHORED_PATHS: Record<string, any> = {
       tags: ["Intake"],
       summary: "Get bulk job status",
       security: [{ bearerAuth: [] }],
-      parameters: [
-        { in: "path", name: "jobId", required: true, schema: { type: "string" } },
-      ],
+      parameters: [{ in: "path", name: "jobId", required: true, schema: { type: "string" } }],
       responses: {
         "200": {
           description: "current status",
-          content: { "application/json": { schema: { $ref: "#/components/schemas/BulkJobStatus" } } },
+          content: {
+            "application/json": { schema: { $ref: "#/components/schemas/BulkJobStatus" } },
+          },
         },
       },
     },
@@ -226,9 +226,7 @@ const HAND_AUTHORED_PATHS: Record<string, any> = {
     get: {
       tags: ["Routing"],
       summary: "Get routing simulate job result",
-      parameters: [
-        { in: "path", name: "jobId", required: true, schema: { type: "string" } },
-      ],
+      parameters: [{ in: "path", name: "jobId", required: true, schema: { type: "string" } }],
       responses: { "200": { description: "results" } },
     },
   },

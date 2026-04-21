@@ -234,7 +234,11 @@ export default function PricingPage() {
         }}
       >
         Still deciding? See a 5-minute demo —{" "}
-        <a href="#" style={{ color: "var(--fg-0)" }}>
+        <a
+          href="/docs/api"
+          style={{ color: "var(--fg-0)" }}
+          aria-label="Watch demo — opens API docs"
+        >
           Watch demo
         </a>
       </section>

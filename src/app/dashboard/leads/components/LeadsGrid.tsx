@@ -75,6 +75,13 @@ export function LeadsGrid({ leads, selectedId, onSelect, newIds }: Props) {
               <tr
                 key={l.id}
                 onClick={() => onSelect(l)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onSelect(l);
+                  }
+                }}
+                tabIndex={0}
                 style={{
                   cursor: "pointer",
                   background: sel ? selectedBg : isNew ? "rgba(120,210,150,0.06)" : "transparent",
