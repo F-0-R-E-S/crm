@@ -9,22 +9,22 @@
 // it. Biome won't flag a CSS import since it's a side-effect module.
 
 import type { FlowEdge, FlowNode } from "@/server/routing/flow/model";
-import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Background,
   type Connection,
   Controls,
   MiniMap,
-  type Node as RFNode,
   type NodeTypes,
   type OnEdgesChange,
   type OnNodesChange,
+  type Node as RFNode,
   ReactFlow,
-  ReactFlowProvider,
   type ReactFlowInstance,
+  ReactFlowProvider,
   applyEdgeChanges,
   applyNodeChanges,
 } from "@xyflow/react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "@xyflow/react/dist/style.css";
 import {
   AlgorithmNode,
