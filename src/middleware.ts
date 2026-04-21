@@ -18,7 +18,9 @@ export default auth((req) => {
     pathname.startsWith("/api/v1/schema/") ||
     pathname.startsWith("/api/v1/openapi") ||
     pathname.startsWith("/docs/api") ||
-    pathname.startsWith("/api/telegram/");
+    pathname.startsWith("/api/telegram/") ||
+    pathname.startsWith("/share/analytics/") ||
+    pathname.startsWith("/api/v1/analytics/share/");
   if (!isLoggedIn && !isPublic) {
     const loginUrl = new URL("/login", req.nextUrl.origin);
     loginUrl.searchParams.set("callbackUrl", pathname);

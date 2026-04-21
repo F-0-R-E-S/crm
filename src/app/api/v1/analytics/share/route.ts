@@ -38,3 +38,41 @@ export async function POST(req: Request) {
   });
   return NextResponse.json({ token, expiresAt: expiresAt.toISOString() });
 }
+
+/**
+ * GET — list the caller's share links with expiry metadata.
+ * Expired links stay in the result set so the UI can show a "delete expired"
+ * shortcut next to them.
+ */
+export async function GET(_req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const rows = await prisma.analyticsShareLink.findMany({
+    where: { createdBy: session.user.id },
+    orderBy: { createdAt: "desc" },
+  });
+  const now = Date.now();
+  const links = rows.map((r) => ({
+    token: r.token,
+    query: r.query,
+    createdAt: r.createdAt.toISOString(),
+    expiresAt: r.expiresAt.toISOString(),
+    expired: r.expiresAt.getTime() < now,
+  }));
+  return NextResponse.json({ links });
+}
+
+/**
+ * DELETE — purge all expired links owned by the caller. Returns count.
+ */
+export async function DELETE(_req: Request) {
+  const session = await auth();
+  if (!session?.user?.id) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  const res = await prisma.analyticsShareLink.deleteMany({
+    where: {
+      createdBy: session.user.id,
+      expiresAt: { lt: new Date() },
+    },
+  });
+  return NextResponse.json({ deleted: res.count });
+}
