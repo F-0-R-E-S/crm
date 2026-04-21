@@ -16,6 +16,8 @@ import { render as renderFailed } from "./failed";
 import { render as renderFraudHit } from "./fraud-hit";
 import { render as renderFraudPolicyChanged } from "./fraud-policy-changed";
 import { render as renderFtd } from "./ftd";
+import { render as renderInvoiceFailed } from "./invoice-failed";
+import { render as renderInvoicePaid } from "./invoice-paid";
 import { render as renderManualReviewQueued } from "./manual-review-queued";
 import { render as renderNewLead } from "./new-lead";
 import { render as renderPendingHoldReleased } from "./pending-hold-released";
@@ -26,6 +28,9 @@ import { render as renderScheduledChangeApplied } from "./scheduled-change-appli
 import { render as renderScheduledChangeFailed } from "./scheduled-change-failed";
 import { render as renderShaveSuspected } from "./shave-suspected";
 import { render as renderStatusMappingBackfillProgress } from "./status-mapping-backfill-progress";
+import { render as renderSubscriptionCanceled } from "./subscription-canceled";
+import { render as renderSubscriptionCreated } from "./subscription-created";
+import { render as renderSubscriptionRenewed } from "./subscription-renewed";
 
 export type Renderer = (p: Record<string, unknown>) => string;
 
@@ -57,6 +62,11 @@ export const TEMPLATES: Partial<Record<TelegramEventType, Renderer>> = {
   SCHEDULED_CHANGE_APPLIED: renderScheduledChangeApplied,
   SCHEDULED_CHANGE_FAILED: renderScheduledChangeFailed,
   STATUS_MAPPING_BACKFILL_PROGRESS: renderStatusMappingBackfillProgress,
+  SUBSCRIPTION_CREATED: renderSubscriptionCreated,
+  SUBSCRIPTION_RENEWED: renderSubscriptionRenewed,
+  SUBSCRIPTION_CANCELED: renderSubscriptionCanceled,
+  INVOICE_PAID: renderInvoicePaid,
+  INVOICE_FAILED: renderInvoiceFailed,
 };
 
 export function fallbackRender(p: Record<string, unknown>): string {

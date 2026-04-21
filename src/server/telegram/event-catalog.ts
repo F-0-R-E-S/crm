@@ -26,6 +26,12 @@ export const TELEGRAM_EVENT_TYPES = [
   "SCHEDULED_CHANGE_APPLIED",
   "SCHEDULED_CHANGE_FAILED",
   "STATUS_MAPPING_BACKFILL_PROGRESS",
+  // v2.0 S2.0-3 Stripe billing
+  "SUBSCRIPTION_CREATED",
+  "SUBSCRIPTION_RENEWED",
+  "SUBSCRIPTION_CANCELED",
+  "INVOICE_PAID",
+  "INVOICE_FAILED",
 ] as const;
 
 export type TelegramEventType = (typeof TELEGRAM_EVENT_TYPES)[number];
@@ -39,6 +45,11 @@ export const ADMIN_ONLY_EVENTS: ReadonlySet<TelegramEventType> = new Set<Telegra
   "SCHEDULED_CHANGE_APPLIED",
   "SCHEDULED_CHANGE_FAILED",
   "STATUS_MAPPING_BACKFILL_PROGRESS",
+  "SUBSCRIPTION_CREATED",
+  "SUBSCRIPTION_RENEWED",
+  "SUBSCRIPTION_CANCELED",
+  "INVOICE_PAID",
+  "INVOICE_FAILED",
 ]);
 
 export function isTelegramEventType(v: string): v is TelegramEventType {

@@ -1,6 +1,6 @@
 {
   "name": "crm-prd",
-  "version": "2.0.0-s2",
+  "version": "2.0.0-s3",
   "private": true,
   "packageManager": "pnpm@9.15.0",
   "scripts": {
@@ -58,6 +58,7 @@
     "react-dom": "^19.0.0",
     "reactflow": "^11.11.4",
     "recharts": "^3.8.1",
+    "stripe": "^22.0.2",
     "superjson": "^2.2.2",
     "tailwind-merge": "^2.5.5",
     "undici": "^6.25.0",

@@ -54,6 +54,10 @@ export async function resetDb() {
     prisma.user.deleteMany(),
     prisma.onboardingProgress.deleteMany(),
     prisma.org.deleteMany(),
+    // v2.0 S2.0-3 — platform subscription billing (distinct from v1.0 finance invoices).
+    prisma.invoice.deleteMany(),
+    prisma.paymentMethod.deleteMany(),
+    prisma.subscription.deleteMany(),
     prisma.tenant.deleteMany(),
   ]);
   // Always seed default tenant so subsequent fixtures can FK-reference it.

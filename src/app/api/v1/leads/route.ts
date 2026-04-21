@@ -4,6 +4,7 @@ import { checkBlacklists } from "@/server/antifraud/blacklist";
 import { detectDuplicate } from "@/server/antifraud/dedup";
 import { normalizeIntake } from "@/server/antifraud/normalization";
 import { verifyApiKey } from "@/server/auth-api-key";
+import { enforceQuota } from "@/server/billing/plan-gates";
 import { prisma } from "@/server/db";
 import { withTenant } from "@/server/db-tenant";
 import { clientIpAllowed, extractClientIp } from "@/server/intake/check-ip";
@@ -106,6 +107,27 @@ export async function POST(req: Request) {
         const r = err("rate_limited", "too many requests", 429, trace_id);
         r.headers.set("Retry-After", String(rl.retryAfterSec));
         return r;
+      }
+
+      // v2.0 S2.0-3 plan-quota gate — block intake when the tenant is over
+      // its monthly lead quota (enforceQuota fails-open on DB errors).
+      const quota = await enforceQuota(ctx.tenantId, 1);
+      if (!quota.allowed) {
+        logger.warn({
+          event: "intake.response",
+          status: 429,
+          outcome: "quota_exceeded",
+          tenant_id: ctx.tenantId,
+          plan: quota.plan,
+          used: quota.used,
+          limit: quota.limit,
+        });
+        return err(
+          quota.errorCode ?? "plan_quota_exceeded",
+          "monthly lead quota exceeded",
+          429,
+          trace_id,
+        );
       }
 
       const contentLength = Number(req.headers.get("content-length") ?? "0");

@@ -40,6 +40,14 @@ const BaseSchema = z.object({
   // tenant-scoped subdomains. Empty string = no custom tenant subdomains
   // (every host resolves to `tenant_default`). Example: `gambchamp.io`.
   ROOT_DOMAIN: z.string().optional().default(""),
+  // v2.0 S2.0-3 — Stripe subscription billing (all optional; missing keys →
+  // app runs in "trial-only" mode with admin actions disabled).
+  STRIPE_SECRET_KEY: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
+  STRIPE_PRICE_STARTER: z.string().optional(),
+  STRIPE_PRICE_GROWTH: z.string().optional(),
+  STRIPE_PRICE_PRO: z.string().optional(),
+  STRIPE_BILLING_RETURN_URL: z.string().optional(),
 });
 
 export type Env = z.infer<typeof BaseSchema> & { authSecret: string };

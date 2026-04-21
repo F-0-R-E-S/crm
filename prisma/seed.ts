@@ -29,6 +29,25 @@ async function main() {
   console.log(`tenant: ${tenant.slug} (${tenant.id})`);
   const TENANT_ID = tenant.id;
 
+  // --- v2.0 S2.0-3 default trial subscription ---
+  const now = new Date();
+  const trialEnd = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+  await prisma.subscription.upsert({
+    where: { tenantId: TENANT_ID },
+    update: {},
+    create: {
+      tenantId: TENANT_ID,
+      plan: "trial",
+      status: "TRIALING",
+      currentPeriodStart: now,
+      currentPeriodEnd: trialEnd,
+      trialEndsAt: trialEnd,
+    },
+  });
+  console.log(
+    `subscription: TRIAL for ${TENANT_ID} (expires ${trialEnd.toISOString().slice(0, 10)})`,
+  );
+
   // --- Admin user ---
   const adminHash = await bcrypt.hash("changeme", 10);
   const admin = await prisma.user.upsert({

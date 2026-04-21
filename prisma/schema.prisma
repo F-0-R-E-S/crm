@@ -20,7 +20,79 @@ model Tenant {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
+  // v2.0 S2.0-3 Stripe billing
+  subscription    Subscription?
+  paymentMethods  PaymentMethod[]
+  invoices        Invoice[]
+
   @@index([isActive])
+}
+
+// --- v2.0 S2.0-3 Stripe Subscription Billing ---
+// NOTE: This `Invoice` is DISTINCT from `BrokerInvoice` / `AffiliateInvoice`
+// (the v1.0 S6 finance invoices) — those are internal payout accounting;
+// this is platform-subscription billing (Stripe). Do not confuse the two.
+
+enum SubscriptionStatus {
+  ACTIVE
+  TRIALING
+  PAST_DUE
+  CANCELED
+  UNPAID
+  INCOMPLETE
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  tenantId             String             @unique
+  stripeCustomerId     String?
+  stripeSubscriptionId String?            @unique
+  plan                 String // "starter"|"growth"|"pro"|"trial"
+  status               SubscriptionStatus
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean            @default(false)
+  trialEndsAt          DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  tenant               Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([stripeCustomerId])
+}
+
+model PaymentMethod {
+  id                    String   @id @default(cuid())
+  tenantId              String
+  stripePaymentMethodId String   @unique
+  brand                 String // "visa"|"mastercard"|...
+  last4                 String
+  expMonth              Int
+  expYear               Int
+  isDefault             Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  tenant                Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, isDefault])
+}
+
+model Invoice {
+  id               String    @id @default(cuid())
+  tenantId         String
+  stripeInvoiceId  String    @unique
+  amountCents      Int
+  currency         String    @default("usd")
+  status           String // draft|open|paid|uncollectible|void
+  periodStart      DateTime
+  periodEnd        DateTime
+  hostedInvoiceUrl String?
+  pdfUrl           String?
+  paidAt           DateTime?
+  createdAt        DateTime  @default(now())
+  tenant           Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt])
+  @@index([status])
 }
 
 model User {

@@ -89,6 +89,7 @@ export default auth((req) => {
     pathname.startsWith("/api/v1/openapi") ||
     pathname.startsWith("/docs/api") ||
     pathname.startsWith("/api/telegram/") ||
+    pathname.startsWith("/api/stripe/webhook") ||
     pathname.startsWith("/share/analytics/") ||
     pathname.startsWith("/api/v1/analytics/share/");
 

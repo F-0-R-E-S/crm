@@ -2,6 +2,31 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v2.0.0-s3 (2026-04-23)
+
+**v2.0 Sprint 3 — EPIC-21 Stripe Subscription Billing.**
+
+- **Schema.** New `Subscription` / `PaymentMethod` / `Invoice` tables, plus `SubscriptionStatus` enum (`ACTIVE | TRIALING | PAST_DUE | CANCELED | UNPAID | INCOMPLETE`). Migration `20260423120000_v2_s3_subscription_billing`. **The new `Invoice` is the platform-subscription invoice from Stripe — distinct from `BrokerInvoice` / `AffiliateInvoice` (v1.0 S6 internal payout accounting).** `resetDb()` teardown order updated.
+- **Env.** All Stripe env vars are optional — missing `STRIPE_SECRET_KEY` puts the app in "trial-only" mode (admin billing mutations throw `stripe_not_configured`, UI shows a banner). Added `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_{STARTER,GROWTH,PRO}`, `STRIPE_BILLING_RETURN_URL` in `src/lib/env.ts`.
+- **Service layer.** `src/server/billing/stripe.ts` — lazy singleton + `createOrRetrieveCustomer` / `createCheckoutSession` / `createBillingPortalSession` / `cancelSubscription` / `reactivateSubscription`. `src/server/billing/plans.ts` — `PlanTier` metadata + Stripe price-id round-trip. `src/server/billing/plan-gates.ts` — `enforceQuota(tenantId, delta)` gate; pure `decideQuota(plan, used, delta)` helper. Fail-open on DB errors (won't block paid traffic on transient issues).
+- **Webhook.** Public `POST /api/stripe/webhook` (whitelisted in `src/middleware.ts`) verifies the Stripe signature via `STRIPE_WEBHOOK_SECRET`, then dispatches to `handleStripeEvent` in `src/server/billing/webhook.ts`. Handles `customer.subscription.{created,updated,deleted}` + `invoice.{paid,payment_failed}`. Emits Telegram `SUBSCRIPTION_CREATED / RENEWED / CANCELED / INVOICE_PAID / INVOICE_FAILED` (all added to event catalog + `ADMIN_ONLY_EVENTS` + templates under `src/server/telegram/templates/`).
+- **tRPC router.** New `billing` router in `src/server/routers/billing.ts`. Read-ops (`getSubscription` / `getUsage` / `listInvoices`) on `protectedProcedure`; mutations (`startCheckout` / `openPortal` / `cancel` / `reactivate`) on `adminProcedure`. Registered in `_app.ts`.
+- **Intake gate.** `src/app/api/v1/leads/route.ts` now calls `enforceQuota(ctx.tenantId, 1)` right after the rate limiter; over-quota tenants receive HTTP 429 `plan_quota_exceeded`.
+- **Seed.** `prisma/seed.ts` upserts a 14-day `TRIAL` `Subscription` for `tenant_default` so the default tenant always has a plan row (UI, usage gate, etc. all have something to read).
+- **UI.** New `/dashboard/settings/billing` page — current-plan card (status pill + renewal + trial-ends copy), Stripe portal button, cancel-at-period-end / reactivate, usage bar with 90 % warn + over-quota red state, 3-tier plan-change grid (Starter $399 / Growth $599 / Pro $899), invoice table with PDF + hosted-URL links. Nav shortcut `O` under the settings group (per spec; `$` can't bind as a hotkey). "Stripe is not configured" banner shown when the secret is missing.
+- **Tests added (22):**
+  - `tests/unit/billing-plan-gates.test.ts` — 7 (decideQuota matrix: trial/starter/growth/pro boundaries + batch overflow).
+  - `tests/integration/billing-webhook.test.ts` — 7 (handleStripeEvent upsert / delete / invoice paid / invoice failed → PAST_DUE / no_tenant skip — telegram emit stubbed).
+  - `tests/integration/billing-router.test.ts` — 8 (getSubscription trial fallback + persisted plan, listInvoices empty + cross-tenant isolation, getUsage, startCheckout / openPortal `stripe_not_configured` guard, non-admin role blocked).
+- **Totals:** 807 passed | 10 skipped | 1 todo (from a 786-pass S2 baseline — +22 new tests, minus 1 known-flaky `telegram-events-wired.test.ts` that passes in isolation).
+
+### Known gaps going into S2.0-4
+
+- Custom payment-method card on the billing UI is stubbed ("Update via portal" only) — listing `PaymentMethod` rows end-to-end is deferred (Stripe portal covers the user flow).
+- `enforceQuota` does not yet gate `/api/v1/leads/bulk` — bulk ingest currently only gates via rate-limit.
+- Webhook signature-verification test uses a live Stripe SDK constructor — a standalone unit test with raw signature math would improve CI isolation.
+- Usage bar reads from `LeadDailyRoll` (15-min lag). For <5 min quotas an `updateCounter` on the hot path would be tighter.
+
 ## v2.0.0-s2 (2026-04-21)
 
 **v2.0 Sprint 2 — Tenant Routing + Branding + Data Isolation.**

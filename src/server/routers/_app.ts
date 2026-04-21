@@ -4,6 +4,7 @@ import { affiliateRouter } from "./affiliate";
 import { alertLogRouter } from "./alertLog";
 import { analyticsRouter } from "./analytics";
 import { auditRouter } from "./audit";
+import { billingRouter } from "./billing";
 import { blacklistRouter } from "./blacklist";
 import { brokerRouter } from "./broker";
 import { brokerTemplateRouter } from "./brokerTemplate";
@@ -39,5 +40,6 @@ export const appRouter = router({
   scheduledChange: scheduledChangeRouter,
   statusMapping: statusMappingRouter,
   tenant: tenantRouter,
+  billing: billingRouter,
 });
 export type AppRouter = typeof appRouter;
