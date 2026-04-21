@@ -2,6 +2,59 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v1.5.0-s1 (2026-04-21)
+
+S1.5-1 — EPIC-14 BI Report Builder polish (descoped from the plan's full scope).
+
+### Added
+
+- **Preset CRUD polish** — `AnalyticsPreset.isDefault` column + new tRPC
+  procs `renamePreset`, `setDefaultPreset`, `getDefaultPreset`. UI in
+  `PresetManager` component (star-toggle default, rename, delete,
+  click-to-apply). Default preset auto-loads once on page mount.
+- **Full drill-down on 4 metric types** — click any metric tile, line
+  point, funnel bar, reject bar or revenue row to open the
+  `DrillDownDrawer` — a read-only list of the underlying leads with
+  links back to `/dashboard/leads/:id`. Backed by new
+  `analytics.drillDown` discriminated-union tRPC procedure +
+  `src/server/analytics/drilldown.ts` (`bucketToRange` +
+  `buildLeadWhere`).
+- **Period-compare visual polish** — new `DeltaBadge` with
+  `classifyDelta(deltaPct, epsilon)` yielding `up` / `flat` / `down` /
+  `unknown` tones. Metric-tile sparklines now color-match the tone
+  (green/amber/red/neutral).
+- **Shareable link polish** — new `GET /api/v1/analytics/share` (list
+  caller's links with expiry metadata) + `DELETE /api/v1/analytics/share`
+  (purge expired). `ShareDialog` client component adds copy-URL-
+  to-clipboard with a 2-sec toast, TTL selector (1/7/30/90 days),
+  "expires in N days" indicator + one-click purge-expired.
+- **Public viewer page** `/share/analytics/:token` — unauthenticated
+  read-only dashboard rendering the saved query live. Expired tokens
+  show a friendly banner (no 404); unknown tokens `notFound()`. Route
+  whitelisted in `src/middleware.ts`. "Powered by GambChamp CRM" footer.
+
+### Changed
+
+- `src/app/dashboard/analytics/page.tsx` — header now uses
+  `PresetManager` + dedicated share button (replacing the old inline
+  share/save-preset controls in `FilterBar`); version stamp bumped to
+  `v1.5`. Revenue tile + line chart + conversions/rejects widgets all
+  dispatch click events into the drill-down drawer.
+- `src/components/analytics/FilterBar.tsx` — `presets` prop marked
+  DEPRECATED (kept for compat; new code uses `PresetManager`).
+
+### Ops
+
+- `package.json` → `1.5.0-s1`. Tag `v1.5.0-s1-bi-polish`.
+- 19 new tests (6 preset polish + 4 drill-down + 4 delta-badge + 2
+  share list/purge + 3 public viewer SSR). Total 577 + 1 todo (558 → 577).
+
+### Deferred
+
+- Google Sheets export — per plan "first-drop candidate". Requires
+  `googleapis` (~3 MB) + OAuth service-account flow; out of scope for
+  S1.5-1 as written. Parked for S1.5-polish or v2.0.
+
 ## v1.0.2 (2026-04-21)
 
 Routing UI rebuild — pulls v1.5 EPIC-17 "Visual Rule-Builder" forward.

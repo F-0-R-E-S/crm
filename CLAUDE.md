@@ -174,6 +174,15 @@
 - **Release:** version `1.0.0` in `package.json`; `CHANGELOG.md` populated; tag `v1.0.0` on `main`.
 - **Known v1.0.1 follow-ups:** extend structured logging to onboarding wizard, health endpoint broker-health polling, self-host Scalar viewer, admin UI for AlertLog ack, batch AuditLog hash-chain lookups.
 
+## v1.5 S1.5-1 — EPIC-14 BI Report Builder polish (April 2026)
+
+- **Preset polish:** `AnalyticsPreset.isDefault` + `renamePreset` / `setDefaultPreset({id:null})` to clear / `getDefaultPreset` procs in `src/server/routers/analytics.ts`. UI: `src/components/analytics/PresetManager.tsx` (star-toggle / rename / delete). Default preset auto-loaded on analytics page mount.
+- **Drill-down:** `analytics.drillDown` discriminated-union proc (`metric|conversion|reject|revenue`) + `src/server/analytics/drilldown.ts` (`bucketToRange` translates date_trunc bucket + groupBy back to [from,to) window; `buildLeadWhere` assembles the Lead filter). `DrillDownDrawer` slide-over lists matching leads; each chart/tile wires a click handler.
+- **Period-compare polish:** `src/components/analytics/DeltaBadge.tsx` with pure `classifyDelta(deltaPct, epsilon=0.5)` → `up|flat|down|unknown`. `MetricTile` sparkline stroke color matches tone.
+- **Share-link polish:** `GET /api/v1/analytics/share` (list caller's links w/ `{token,createdAt,expiresAt,expired}`) + `DELETE /api/v1/analytics/share` (purge expired). `ShareDialog` component: copy-to-clipboard w/ 2-sec toast + TTL selector + "expires in Nd" + purge-expired shortcut. Public read-only page `/share/analytics/:token` (SSR), whitelisted in `src/middleware.ts`. Expired → in-page banner (not 404); unknown → `notFound()`.
+- **Deferred:** Google Sheets export — `googleapis` is ~3 MB + OAuth service-account flow; per plan "first-drop candidate". Parked for S1.5 polish or v2.0.
+- **Tests:** 19 new (6 preset polish, 4 drill-down, 4 delta-badge, 2 share list/purge, 3 public viewer SSR). Total 577 + 1 todo.
+
 ## v1.0.1 hotfix (April 2026)
 
 - **Self-hosted Scalar docs viewer:** `/docs/api` is split into an RSC shell (`src/app/docs/api/page.tsx`) + a client component (`src/app/docs/api/ApiDocsClient.tsx`) rendering `@scalar/api-reference-react` with locally bundled JS/CSS. No more jsDelivr dependency. Spec source unchanged (`docs/api/v1/openapi.yaml` → `/api/v1/openapi`).

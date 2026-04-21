@@ -1,6 +1,6 @@
 {
   "name": "crm-prd",
-  "version": "1.0.3",
+  "version": "1.5.0-s1",
   "private": true,
   "packageManager": "pnpm@9.15.0",
   "scripts": {
