@@ -1,5 +1,6 @@
 "use client";
 import { Line, LineChart, ResponsiveContainer } from "recharts";
+import { DeltaBadge, classifyDelta } from "./DeltaBadge";
 
 export interface MetricTileProps {
   label: string;
@@ -7,6 +8,7 @@ export interface MetricTileProps {
   deltaPct?: number | null;
   series: Array<{ bucket: string; value: number }>;
   format?: "number" | "currency" | "percent";
+  onClick?: () => void;
 }
 
 function formatValue(v: number, fmt: MetricTileProps["format"] = "number"): string {
@@ -15,11 +17,36 @@ function formatValue(v: number, fmt: MetricTileProps["format"] = "number"): stri
   return v.toLocaleString();
 }
 
-export function MetricTile({ label, value, deltaPct, series, format = "number" }: MetricTileProps) {
-  const deltaColor =
-    deltaPct == null ? "var(--fg-2)" : deltaPct >= 0 ? "oklch(72% 0.17 145)" : "oklch(63% 0.22 25)";
+const SPARK_COLOR: Record<ReturnType<typeof classifyDelta>, string> = {
+  up: "oklch(72% 0.17 145)",
+  flat: "oklch(78% 0.11 85)",
+  down: "oklch(63% 0.22 25)",
+  unknown: "currentColor",
+};
+
+export function MetricTile({
+  label,
+  value,
+  deltaPct,
+  series,
+  format = "number",
+  onClick,
+}: MetricTileProps) {
+  const tone = classifyDelta(deltaPct);
+  const sparkStroke = SPARK_COLOR[tone];
+  const clickable = typeof onClick === "function";
   return (
     <div
+      onClick={onClick}
+      onKeyDown={
+        clickable
+          ? (e) => {
+              if (e.key === "Enter" || e.key === " ") onClick?.();
+            }
+          : undefined
+      }
+      role={clickable ? "button" : undefined}
+      tabIndex={clickable ? 0 : undefined}
       style={{
         border: "1px solid var(--bd-1)",
         borderRadius: 4,
@@ -28,6 +55,7 @@ export function MetricTile({ label, value, deltaPct, series, format = "number" }
         flexDirection: "column",
         gap: 4,
         background: "var(--bg-2)",
+        cursor: clickable ? "pointer" : undefined,
       }}
     >
       <div
@@ -45,25 +73,14 @@ export function MetricTile({ label, value, deltaPct, series, format = "number" }
         <span style={{ fontSize: 22, fontWeight: 600, fontVariantNumeric: "tabular-nums" }}>
           {formatValue(value, format)}
         </span>
-        {deltaPct != null ? (
-          <span
-            style={{
-              fontSize: 11,
-              fontFamily: "var(--mono)",
-              color: deltaColor,
-            }}
-          >
-            {deltaPct >= 0 ? "+" : ""}
-            {deltaPct.toFixed(1)}%
-          </span>
-        ) : null}
+        <DeltaBadge deltaPct={deltaPct} />
       </div>
       <div style={{ height: 40 }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={series}>
             <Line
               dataKey="value"
-              stroke="currentColor"
+              stroke={sparkStroke}
               strokeWidth={1.5}
               dot={false}
               isAnimationActive={false}
