@@ -35,6 +35,7 @@ export const JOB_NAMES = {
   dailySummary: "daily-summary",
   crgCohortSettle: "crg-cohort-settle",
   alertsEvaluator: "alerts-evaluator",
+  applyScheduledChanges: "apply-scheduled-changes",
 } as const;
 
 const globalForBossStarted = globalThis as unknown as { bossStarted?: boolean };

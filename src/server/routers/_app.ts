@@ -13,6 +13,7 @@ import { manualReviewRouter } from "./manualReview";
 import { onboardingRouter } from "./onboarding";
 import { rotationRouter } from "./rotation";
 import { routingRouter } from "./routing";
+import { scheduledChangeRouter } from "./scheduledChange";
 import { telegramRouter } from "./telegram";
 import { userRouter } from "./user";
 
@@ -33,5 +34,6 @@ export const appRouter = router({
   telegram: telegramRouter,
   finance: financeRouter,
   onboarding: onboardingRouter,
+  scheduledChange: scheduledChangeRouter,
 });
 export type AppRouter = typeof appRouter;

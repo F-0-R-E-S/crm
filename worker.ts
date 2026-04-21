@@ -6,6 +6,7 @@ import {
 } from "./src/server/jobs/analytics-roll-daily";
 import { handleAnalyticsRollHourly } from "./src/server/jobs/analytics-roll-hourly";
 import { detectAnomalies } from "./src/server/jobs/anomaly-detect";
+import { runApplyScheduledChanges } from "./src/server/jobs/apply-scheduled-changes";
 import {
   type AutologinAttemptPayload,
   handleAutologinAttempt,
@@ -99,6 +100,10 @@ async function main() {
     await evaluateAlerts();
   });
 
+  await boss.work(JOB_NAMES.applyScheduledChanges, async () => {
+    await runApplyScheduledChanges();
+  });
+
   // Schedules — pg-boss uses cron syntax
   await boss.schedule(JOB_NAMES.analyticsRollDaily, "*/15 * * * *", {});
   await boss.schedule(JOB_NAMES.analyticsRollHourly, "*/5 * * * *", {});
@@ -108,6 +113,7 @@ async function main() {
   await boss.schedule(JOB_NAMES.crgCohortSettle, "0 * * * *", {});
   await boss.schedule(JOB_NAMES.alertsEvaluator, "*/1 * * * *", {});
   await boss.schedule(JOB_NAMES.proxyHealth, "*/10 * * * *", {});
+  await boss.schedule(JOB_NAMES.applyScheduledChanges, "*/1 * * * *", {});
 
   // Every hour, sweep expired idempotency rows
   setInterval(async () => {

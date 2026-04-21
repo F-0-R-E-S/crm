@@ -22,6 +22,8 @@ import { render as renderPendingHoldReleased } from "./pending-hold-released";
 import { render as renderPendingHoldStart } from "./pending-hold-start";
 import { render as renderProxyPoolDegraded } from "./proxy-pool-degraded";
 import { render as renderPushed } from "./pushed";
+import { render as renderScheduledChangeApplied } from "./scheduled-change-applied";
+import { render as renderScheduledChangeFailed } from "./scheduled-change-failed";
 import { render as renderShaveSuspected } from "./shave-suspected";
 
 export type Renderer = (p: Record<string, unknown>) => string;
@@ -51,6 +53,8 @@ export const TEMPLATES: Partial<Record<TelegramEventType, Renderer>> = {
   AFFILIATE_DAILY_SUMMARY: renderAffiliateDailySummary,
   AFFILIATE_FTD: renderAffiliateFtd,
   ALERT_TRIGGERED: renderAlertTriggered,
+  SCHEDULED_CHANGE_APPLIED: renderScheduledChangeApplied,
+  SCHEDULED_CHANGE_FAILED: renderScheduledChangeFailed,
 };
 
 export function fallbackRender(p: Record<string, unknown>): string {

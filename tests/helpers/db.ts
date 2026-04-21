@@ -5,6 +5,7 @@ export async function resetDb() {
   // Flow.activeVersionId → FlowVersion: null it out before deleting FlowVersion.
   await prisma.flow.updateMany({ data: { activeVersionId: null } });
   await prisma.$transaction([
+    prisma.scheduledChange.deleteMany(),
     prisma.capCounter.deleteMany(),
     prisma.capDefinition.deleteMany(),
     prisma.fallbackStep.deleteMany(),
