@@ -1,5 +1,7 @@
 import { cn } from "@/lib/utils";
 import type { ComponentPropsWithoutRef } from "react";
+import { Callout } from "./Callout";
+import { DeepRefCard } from "./DeepRefCard";
 
 type HProps = ComponentPropsWithoutRef<"h1">;
 type PProps = ComponentPropsWithoutRef<"p">;
@@ -62,4 +64,6 @@ export const docsMdxComponents: Record<string, any> = {
     <th {...props} className={cn("border-b p-2 text-left font-medium", props.className)} />
   ),
   td: (props: TdProps) => <td {...props} className={cn("border-b p-2", props.className)} />,
+  Callout: Callout as any,
+  DeepRefCard: DeepRefCard as any,
 };
