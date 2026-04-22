@@ -1,0 +1,143 @@
+---
+audience: human
+block: architecture
+source: hand
+title: "System architecture — 7-minute tour"
+description: "End-to-end tour of the GambChamp CRM monolith: data flow diagram, storage, runtime, multi-tenancy, auth, observability, fan-out, and billing."
+order: 1
+slugOverride: "architecture"
+---
+
+# System architecture — 7-minute tour
+
+GambChamp CRM is a **monolith**: Next.js 15 App Router + tRPC 11 + Prisma 5 + Postgres + Redis + pg-boss on the same Postgres instance.
+
+## Data flow
+
+The diagram below traces a lead from intake through to revenue recognition:
+
+```
+Affiliate ──► POST /api/v1/leads ──► [intake pipeline]
+                                          │
+                              ┌───────────┴───────────┐
+                              │                       │
+                        [fraud score]           [quality score]
+                              │                       │
+                              └───────────┬───────────┘
+                                          ▼
+                                   persist Lead
+                                          │
+                                          ▼
+                                [routing engine]
+                                 (Flow + WRR/Slots)
+                                          │
+                                          ▼
+                                 [push-lead job]
+                                  (pg-boss retry)
+                                          │
+                    ┌─────────────────────┴─────────────────────┐
+                    ▼                                           ▼
+             broker HTTP                                 manual review queue
+                    │
+                    ▼
+             [postback]
+            (raw status → canonical)
+                    │
+                    ▼
+             [conversion]
+             (REG / FTD / RED)
+                    │
+                    ▼
+          CRG cohort + P&L + invoice
+```
+
+Key stages:
+
+1. **Intake** — the REST endpoint `/api/v1/leads` authenticates the API key, rate-limits, deduplicates, runs fraud and quality scoring, then persists the `Lead` row.
+2. **Routing engine** — a pure decision function evaluates `Flow` + `FlowVersion` graphs (Filter nodes, SmartPool, ComparingSplit, BrokerTarget) using WRR or Slots-Chance algorithms, GEO constraints, schedule constraints, and cap constraints.
+3. **push-lead job** — a pg-boss job attempts the HTTP POST to the selected broker, retries on failure via a configurable ladder (default `10s, 60s, 300s, 900s, 3600s`), and falls back to manual review when all retries are exhausted.
+4. **Postback** — brokers POST their status back to `/api/v1/postbacks/:brokerId`; the raw status is mapped through `StatusMapping` to a `CanonicalStatus` and the `Lead.state` machine advances.
+5. **Conversion** — postback handler emits `Conversion` rows (REG / FTD / REDEPOSIT) that feed P&L computation and CRG cohort settlement.
+
+## Storage {#storage}
+
+| Store | Role |
+|-------|------|
+| **PostgreSQL** | Primary datastore — 54 Prisma models. Also hosts the pg-boss job queue on the same connection pool. |
+| **Redis** | Rate limits (sliding window), intake deduplication cache, rolling counters (metrics/summary), analytics LRU cache (60 s), rollup fingerprinting. |
+
+All Postgres writes go through Prisma 5. The pg-boss queue and the application tables share the same database and benefit from the same backup schedule.
+
+## Runtime {#runtime}
+
+The platform runs as two processes on Fly.io (`crm-node.fly.dev`):
+
+- **`pnpm dev` / `pnpm start`** — Next.js monolith (App Router). Handles all HTTP: dashboard UI (RSC + tRPC), REST `/api/v1/*`, Stripe webhook, Telegram webhook, analytics share viewer.
+- **`pnpm worker`** — a separate `tsx worker.ts` process that consumes pg-boss jobs. Runs: `push-lead`, `autologin-attempt`, `analytics-roll-daily`, `analytics-roll-hourly`, `crg-cohort-settle`, `telegram-send`, `alerts-evaluator`, `manual-queue-depth-check`, `apply-scheduled-changes`, `proxy-health`, `anomaly-detect`, `daily-summary`.
+
+<Callout type="info">
+The worker process must run alongside the web process in production. On Fly.io both are declared in `fly.toml` as separate processes. In local dev, run `pnpm worker` in a second terminal.
+</Callout>
+
+## Multi-tenancy {#multi-tenancy}
+
+Every tenant-scoped Prisma model carries a `tenantId` column. Isolation is enforced at two layers:
+
+1. **AsyncLocalStorage** — `withTenant(tenantId, fn)` in `src/server/db-tenant.ts` sets a context value for the duration of a request.
+2. **Prisma `$use` middleware** — `attachTenantMiddleware` reads the AsyncLocalStorage value and automatically appends `WHERE tenantId = ?` to all reads, updates, and deletes on models listed in `TENANT_SCOPED_MODELS`. Creates without an explicit `tenantId` default to the current context value.
+
+Hostname routing maps a request to a tenant via the three-domain pattern:
+
+```
+<role>.<slug>.<root-domain>
+```
+
+Roles: `network` (dashboard), `autologin`, `api`. The middleware in `src/middleware.ts` parses `x-forwarded-host` (populated by Fly's proxy), resolves the tenant slug to a `tenantId` via a 60-second LRU cache, and propagates the identity via the `x-tenant-slug` header.
+
+`localhost` and `crm-node.fly.dev` (the bare domain) always resolve to `tenant_default`.
+
+## Auth {#auth}
+
+Authentication uses **NextAuth v5 Credentials** with JWT sessions. The `UserRole` enum controls access:
+
+| Role | Capabilities |
+|------|-------------|
+| `SUPER_ADMIN` | Cross-tenant CRUD, tenant management |
+| `ADMIN` | Full tenant-scoped access, billing, settings |
+| `OPERATOR` | Lead management, routing, brokers, affiliates |
+| `AFFILIATE_VIEWER` | Read-only lead columns (affiliate-safe subset) |
+| `BROKER_VIEWER` | Read-only lead columns (broker-safe subset) |
+
+All tRPC procedures that require a session use `protectedProcedure`, which:
+- Verifies the JWT session.
+- Rejects requests where `sessionTenantId !== hostTenantId` (unless `SUPER_ADMIN`).
+- Runs the handler inside `withTenant(ctx.tenantId, …)` so every database call is automatically scoped.
+
+## Observability {#observability}
+
+- **Structured logs** — pino with redact paths (`authorization`, `cookie`, `body.email`, `body.phone`, `body.password`, `*.apiKey`). Key events: `intake.request`, `intake.response`, `routing.decision`, `broker.push`, `fraud.score`, `telegram.emit`.
+- **Health endpoint** — `GET /api/v1/health` returns `{status, db, redis, queue, version}`. Used by Fly's health checks and uptime monitors.
+- **Metrics endpoint** — `GET /api/v1/metrics/summary` (admin-auth) returns 60-second rolling counters (`leads_received`, `leads_pushed`, `fraud_hit`, `broker_down_count`, `manual_queue_depth`) backed by Redis sorted sets.
+- **Alerts engine** — 6 rules in `src/server/alerts/rules.ts` (`intake_failure_rate`, `routing_p95`, `autologin_sla_breach`, `manual_queue_depth`, `broker_down_prolonged`, `ftd_dropoff`). The evaluator runs every minute via pg-boss, deduplicates within a window, auto-resolves when the measurement clears, and emits Telegram `ALERT_TRIGGERED`. Ops staff ack alerts via the UI at `/dashboard/settings/alerts`.
+
+## Fan-out {#fan-out}
+
+Two fan-out channels run after a lead state change:
+
+1. **Telegram ops bot** — `emitTelegramEvent(type, payload)` enqueues `telegram-send` pg-boss jobs. 28+ event types (lead lifecycle, broker health, finance, system). Subscribers filter by event type, broker, or affiliate. Commands: `/stats`, `/sub`, `/unsub`, `/mutebroker`, and admin-only `/ack`, `/pause_broker`, `/resume_broker`.
+2. **Outbound affiliate webhooks** — `AffiliateIntakeWebhook` rows define URLs + event types + HMAC secrets. `WebhookDelivery` rows track per-attempt state. A pg-boss job retries 5 times (`10s, 60s, 300s, 900s, 3600s`) and auto-pauses the webhook on HTTP 410.
+
+## Billing {#billing}
+
+Stripe subscription billing gates intake throughput:
+
+- **Models:** `Subscription` (1:1 on `Tenant`), `PaymentMethod`, `Invoice` + `SubscriptionStatus` enum (`ACTIVE | TRIALING | PAST_DUE | CANCELED | UNPAID | INCOMPLETE`).
+- **Quota gate:** `enforceQuota(tenantId, delta)` in `src/server/billing/plan-gates.ts` aggregates current-month `LeadDailyRoll.totalReceived` and compares it to `PLAN_LIMITS[plan].maxLeadsPerMonth`. Over-quota intake returns `429 plan_quota_exceeded`.
+- **Stripe webhook:** `POST /api/stripe/webhook` handles subscription lifecycle events and emits Telegram notifications to admins.
+- **Trial mode:** when `STRIPE_SECRET_KEY` is unset the app runs in trial-only mode and billing mutations return `stripe_not_configured`.
+
+---
+
+<DeepRefCard label="Prisma models" items={["Tenant"]} block="architecture" />
+<DeepRefCard label="tRPC router" items={["tenant"]} block="architecture" />
+<DeepRefCard label="REST endpoints" items={["/api/v1/health"]} block="architecture" />
