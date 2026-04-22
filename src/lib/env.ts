@@ -48,6 +48,14 @@ const BaseSchema = z.object({
   STRIPE_PRICE_GROWTH: z.string().optional(),
   STRIPE_PRICE_PRO: z.string().optional(),
   STRIPE_BILLING_RETURN_URL: z.string().optional(),
+  // v2.0 plan #6 — Ollama / docs-subsite LLM assistant
+  OLLAMA_BASE_URL: z.string().url().optional(),
+  OLLAMA_EMBEDDING_MODEL: z.string().default("bge-m3"),
+  OLLAMA_AUTH_TOKEN: z.string().optional(),
+  DOCS_LLM_MODEL: z.string().default("qwen3:8b-instruct-q5_K_M"),
+  DOCS_LLM_MAX_TOKENS: z.coerce.number().int().default(1024),
+  DOCS_LLM_TEMPERATURE: z.coerce.number().default(0.1),
+  DOCS_LLM_SYSTEM_PROMPT_VERSION: z.string().default("v1"),
 });
 
 export type Env = z.infer<typeof BaseSchema> & { authSecret: string };
