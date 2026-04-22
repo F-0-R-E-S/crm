@@ -37,6 +37,7 @@ export const JOB_NAMES = {
   alertsEvaluator: "alerts-evaluator",
   applyScheduledChanges: "apply-scheduled-changes",
   docsReindex: "docs-reindex",
+  docsStalenessReport: "docs-staleness-report",
 } as const;
 
 const globalForBossStarted = globalThis as unknown as { bossStarted?: boolean };

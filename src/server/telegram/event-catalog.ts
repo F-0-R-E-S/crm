@@ -34,6 +34,8 @@ export const TELEGRAM_EVENT_TYPES = [
   "INVOICE_FAILED",
   // v2.0 S3.1 iREV parity — rejection-streak auto-pause
   "BROKER_REJECTION_STREAK_PAUSED",
+  // docs wave 2 — plan #7 maintenance
+  "DOCS_STALENESS_REPORT",
 ] as const;
 
 export type TelegramEventType = (typeof TELEGRAM_EVENT_TYPES)[number];
@@ -53,6 +55,7 @@ export const ADMIN_ONLY_EVENTS: ReadonlySet<TelegramEventType> = new Set<Telegra
   "INVOICE_PAID",
   "INVOICE_FAILED",
   "BROKER_REJECTION_STREAK_PAUSED",
+  "DOCS_STALENESS_REPORT",
 ]);
 
 export function isTelegramEventType(v: string): v is TelegramEventType {

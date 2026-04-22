@@ -1,5 +1,6 @@
 import type { TelegramEventType } from "../event-catalog";
 import { render as renderAccepted } from "./accepted";
+import { render as renderDocsStalenessReport } from "./docs-staleness-report";
 import { render as renderAffiliateDailySummary } from "./affiliate-daily-summary";
 import { render as renderAffiliateFtd } from "./affiliate-ftd";
 import { render as renderAlertTriggered } from "./alert-triggered";
@@ -69,6 +70,7 @@ export const TEMPLATES: Partial<Record<TelegramEventType, Renderer>> = {
   INVOICE_PAID: renderInvoicePaid,
   INVOICE_FAILED: renderInvoiceFailed,
   BROKER_REJECTION_STREAK_PAUSED: renderBrokerRejectionStreakPaused,
+  DOCS_STALENESS_REPORT: renderDocsStalenessReport,
 };
 
 export function fallbackRender(p: Record<string, unknown>): string {
