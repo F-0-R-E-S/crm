@@ -1,0 +1,62 @@
+---
+audience: human
+block: getting-started
+source: hand
+title: "Push your first lead"
+description: "End-to-end recipe: get an API key, push a lead, watch the broker postback settle."
+order: 2
+---
+
+# Push your first lead
+
+This recipe takes you from zero to a live lead + a confirmed broker acknowledgment in under 5 minutes. It assumes you've already signed up via `/signup`.
+
+## 1. Mint an API key
+
+1. Open **Dashboard → Affiliates → [your affiliate] → API keys**.
+2. Click **New key**. Copy the value; it's shown only once.
+3. (Optional) Scope it: IP whitelist + `expiresAt` date.
+
+<Callout type="warning" title="Sandbox first">
+Flip **Is sandbox** on the key. Sandbox leads never hit real brokers; outcomes are deterministic by `external_lead_id` prefix. Read [Sandbox behaviour](/docs/intake/concepts#sandbox) to learn the prefix contract.
+</Callout>
+
+## 2. Push the lead
+
+```bash
+curl -X POST https://api.your-tenant.gambchamp.com/api/v1/leads \
+  -H "Authorization: Bearer ak_live_••••••••" \
+  -H "X-API-Version: 2026-01" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "external_lead_id": "sandbox-accept-001",
+    "email":  "jane.doe@example.com",
+    "phone":  "+14155551234",
+    "first_name": "Jane",
+    "last_name":  "Doe",
+    "geo": "US",
+    "source": "landing-page-a"
+  }'
+```
+
+Response on success:
+
+```json
+{ "status": "accepted", "lead_id": "ld_••••", "routed_to": "broker-alpha" }
+```
+
+## 3. Watch the route
+
+Open **Dashboard → Leads**, filter by your affiliate id, and the lead appears within a second. Click the row — the drawer shows `LeadEvent` history end-to-end: `NEW → FRAUD_SCORED → ROUTED → PUSHED → ACCEPTED`.
+
+## 4. Simulate a postback
+
+Because you're in sandbox, the broker responds within ~1s. The canonical status is mapped via [Status Groups](/docs/postback-status-groups). For live keys, the broker pushes to `POST /api/v1/postbacks/<brokerId>` — format is per-broker (see that broker's integration page).
+
+## Common pitfalls
+
+- **400 `rate_limited`** — your signup is rate-limited to 5/hour/IP. Production API keys have per-tenant quotas; see [Billing & subscription](/docs/billing-subscription).
+- **409 `duplicate_lead`** — the email+phone combination already exists today. Read [Dedup strategies](/docs/intake/concepts#dedup).
+- **422 `needs_review`** — fraud score is borderline. The lead is accepted but flagged; see [Manual review](/docs/intake/concepts#borderline).
+
+<DeepRefCard block="intake" kind="rest" title="POST /api/v1/leads — every field, every response" />
