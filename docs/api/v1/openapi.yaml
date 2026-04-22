@@ -181,6 +181,137 @@ components:
         - redis
         - queue
         - version
+    RoutingSimulateRequest:
+      type: object
+      properties:
+        flow_id:
+          type: string
+        lead:
+          type: object
+          properties:
+            geo:
+              type: string
+              minLength: 2
+              maxLength: 2
+              example: UA
+            affiliate_id:
+              type: string
+              minLength: 1
+            email:
+              type: string
+              format: email
+            phone:
+              type: string
+            sub_id:
+              type: string
+            utm:
+              type: object
+              additionalProperties:
+                nullable: true
+          required:
+            - geo
+            - affiliate_id
+      required:
+        - flow_id
+        - lead
+    RoutingSimulateResponse:
+      type: object
+      properties:
+        selected_target:
+          type: string
+          nullable: true
+        selected_broker_id:
+          type: string
+          nullable: true
+        algorithm_used:
+          type: string
+          nullable: true
+        algorithm_source:
+          type: string
+          nullable: true
+        filters_applied:
+          type: array
+          items:
+            type: object
+            properties:
+              step:
+                type: string
+              node_id:
+                type: string
+              ok:
+                type: boolean
+              detail:
+                nullable: true
+            required:
+              - step
+              - ok
+        fallback_path:
+          type: array
+          items:
+            type: object
+            properties:
+              from:
+                type: string
+              to:
+                type: string
+              reason:
+                type: string
+            required:
+              - from
+              - to
+              - reason
+        outcome:
+          type: string
+        reason:
+          type: string
+          nullable: true
+        decision_time_ms:
+          type: number
+        trace_token:
+          type: string
+          nullable: true
+        flow_version_id:
+          type: string
+      required:
+        - selected_target
+        - selected_broker_id
+        - algorithm_used
+        - algorithm_source
+        - filters_applied
+        - fallback_path
+        - outcome
+        - reason
+        - decision_time_ms
+        - trace_token
+        - flow_version_id
+    ErrorsCatalogResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              error_code:
+                type: string
+                example: validation_error
+              http_status:
+                type: integer
+                example: 422
+              description:
+                type: string
+              fix_hint:
+                type: string
+            required:
+              - error_code
+              - http_status
+              - description
+              - fix_hint
+        count:
+          type: integer
+      required:
+        - errors
+        - count
   parameters: {}
 paths:
   /api/v1/leads:
@@ -282,6 +413,52 @@ paths:
                 $ref: "#/components/schemas/Health"
         "503":
           description: degraded
+  /api/v1/routing/simulate:
+    post:
+      tags:
+        - Routing
+      summary: Simulate routing without persisting
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoutingSimulateRequest"
+      responses:
+        "200":
+          description: Sync simulation result (single lead)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoutingSimulateResponse"
+        "202":
+          description: Queued async batch — returns job_id
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /api/v1/errors:
+    get:
+      tags:
+        - Schema
+      summary: List all documented error codes and sandbox outcomes
+      responses:
+        "200":
+          description: Error + sandbox-outcome catalog
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorsCatalogResponse"
   /api/v1/leads/bulk/{jobId}:
     get:
       tags:
@@ -302,38 +479,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BulkJobStatus"
-  /api/v1/routing/simulate:
-    post:
-      tags:
-        - Routing
-      summary: Dry-run the routing engine for a lead or batch
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                flow_id:
-                  type: string
-                lead:
-                  type: object
-                  properties:
-                    affiliate_id:
-                      type: string
-                    geo:
-                      type: string
-                leads:
-                  type: array
-                  items:
-                    type: object
-      responses:
-        "200":
-          description: sync decision (single or small batch)
-        "202":
-          description: queued async batch — returns job_id
   /api/v1/routing/simulate/{jobId}:
     get:
       tags:
@@ -363,14 +508,6 @@ paths:
       responses:
         "200":
           description: schema document
-  /api/v1/errors:
-    get:
-      tags:
-        - Schema
-      summary: Error + sandbox-outcome catalog
-      responses:
-        "200":
-          description: catalog
   /api/v1/metrics/summary:
     get:
       tags:

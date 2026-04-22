@@ -31,6 +31,30 @@ describe("docs/api/v1/openapi.yaml (zod-generated)", () => {
     expect(doc.paths["/api/v1/metrics/summary"]).toBeDefined();
   });
 
+  it("includes the zod-generated POST /api/v1/routing/simulate path", () => {
+    const doc = YAML.parse(readFileSync(yamlPath, "utf8")) as {
+      paths: Record<string, { post?: { requestBody?: unknown } }>;
+    };
+    expect(doc.paths["/api/v1/routing/simulate"]?.post).toBeDefined();
+    expect(doc.paths["/api/v1/routing/simulate"]?.post?.requestBody).toBeDefined();
+  });
+
+  it("includes the zod-generated GET /api/v1/errors path", () => {
+    const doc = YAML.parse(readFileSync(yamlPath, "utf8")) as {
+      paths: Record<string, { get?: unknown }>;
+    };
+    expect(doc.paths["/api/v1/errors"]?.get).toBeDefined();
+  });
+
+  it("registers RoutingSimulateRequest and ErrorsCatalogResponse as components", () => {
+    const doc = YAML.parse(readFileSync(yamlPath, "utf8")) as {
+      components: { schemas: Record<string, unknown> };
+    };
+    expect(doc.components.schemas.RoutingSimulateRequest).toBeDefined();
+    expect(doc.components.schemas.RoutingSimulateResponse).toBeDefined();
+    expect(doc.components.schemas.ErrorsCatalogResponse).toBeDefined();
+  });
+
   it("registers LeadCreate (derived from the zod intake schema) as a component", () => {
     const doc = YAML.parse(readFileSync(yamlPath, "utf8")) as {
       components: { schemas: Record<string, { properties?: Record<string, unknown> }> };

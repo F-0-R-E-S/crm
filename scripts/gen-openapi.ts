@@ -168,6 +168,118 @@ registry.registerPath({
   },
 });
 
+// ---- Simulate request / response (Zod-generated; matches route.ts shapes) ----
+
+const SimulateLeadPayload = z.object({
+  geo: z.string().length(2).openapi({ example: "UA" }),
+  affiliate_id: z.string().min(1),
+  email: z.string().email().optional(),
+  phone: z.string().optional(),
+  sub_id: z.string().optional(),
+  utm: z.record(z.string(), z.unknown()).optional(),
+});
+
+// Single-lead variant — flow_id + lead
+const SimulateSingleRequest = z.object({
+  flow_id: z.string(),
+  lead: SimulateLeadPayload,
+});
+
+// Batch variant — flow_id + leads array; the route dispatches on which key is present
+const SimulateBatchRequest = z.object({
+  flow_id: z.string(),
+  leads: z.array(SimulateLeadPayload),
+});
+
+// The request body accepts either shape; we expose the single-lead variant as
+// the primary documented schema (the batch form has an identical wrapper).
+const SimulateRequestSchema = SimulateSingleRequest.openapi("RoutingSimulateRequest");
+registry.register("RoutingSimulateRequest", SimulateRequestSchema);
+
+// Mirrors SimulateExplain from src/server/routing/simulator.ts
+const SimulateResponseSchema = z
+  .object({
+    selected_target: z.string().nullable(),
+    selected_broker_id: z.string().nullable(),
+    algorithm_used: z.string().nullable(),
+    algorithm_source: z.string().nullable(),
+    filters_applied: z.array(
+      z.object({
+        step: z.string(),
+        node_id: z.string().optional(),
+        ok: z.boolean(),
+        detail: z.unknown().optional(),
+      }),
+    ),
+    fallback_path: z.array(z.object({ from: z.string(), to: z.string(), reason: z.string() })),
+    outcome: z.string(),
+    reason: z.string().nullable(),
+    decision_time_ms: z.number(),
+    trace_token: z.string().nullable(),
+    flow_version_id: z.string(),
+  })
+  .openapi("RoutingSimulateResponse");
+registry.register("RoutingSimulateResponse", SimulateResponseSchema);
+
+// ---- Errors catalog response (Zod-generated; matches route.ts shape) ----
+
+// Each entry uses the field names from src/app/api/v1/errors/route.ts CATALOG
+const ErrorCatalogEntry = z.object({
+  error_code: z.string().openapi({ example: "validation_error" }),
+  http_status: z.number().int().openapi({ example: 422 }),
+  description: z.string(),
+  fix_hint: z.string(),
+});
+
+const ErrorsCatalogResponseSchema = z
+  .object({
+    errors: z.array(ErrorCatalogEntry),
+    count: z.number().int(),
+  })
+  .openapi("ErrorsCatalogResponse");
+registry.register("ErrorsCatalogResponse", ErrorsCatalogResponseSchema);
+
+// ---- Zod-generated paths: simulate + errors ----
+
+registry.registerPath({
+  method: "post",
+  path: "/api/v1/routing/simulate",
+  tags: ["Routing"],
+  summary: "Simulate routing without persisting",
+  security: [{ bearerAuth: [] }],
+  request: {
+    body: {
+      required: true,
+      content: { "application/json": { schema: SimulateRequestSchema } },
+    },
+  },
+  responses: {
+    200: {
+      description: "Sync simulation result (single lead)",
+      content: { "application/json": { schema: SimulateResponseSchema } },
+    },
+    202: { description: "Queued async batch — returns job_id" },
+    401: { description: "Unauthorized", content: { "application/json": { schema: ErrorBody } } },
+    422: {
+      description: "Validation error",
+      content: { "application/json": { schema: ErrorBody } },
+    },
+  },
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/v1/errors",
+  tags: ["Schema"],
+  summary: "List all documented error codes and sandbox outcomes",
+  responses: {
+    200: {
+      description: "Error + sandbox-outcome catalog",
+      content: { "application/json": { schema: ErrorsCatalogResponseSchema } },
+    },
+  },
+});
+
 // ---- Hand-authored paths (kept verbatim until the rest of the surface is Zod-ified) ----
 // Cast as `any` — zod-to-openapi's runtime PathsObject is looser than the
 // strict openapi3-ts typings it exports; we validate the merged output in
@@ -187,38 +299,6 @@ const HAND_AUTHORED_PATHS: Record<string, any> = {
             "application/json": { schema: { $ref: "#/components/schemas/BulkJobStatus" } },
           },
         },
-      },
-    },
-  },
-  "/api/v1/routing/simulate": {
-    post: {
-      tags: ["Routing"],
-      summary: "Dry-run the routing engine for a lead or batch",
-      security: [{ bearerAuth: [] }],
-      requestBody: {
-        required: true,
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                flow_id: { type: "string" },
-                lead: {
-                  type: "object",
-                  properties: {
-                    affiliate_id: { type: "string" },
-                    geo: { type: "string" },
-                  },
-                },
-                leads: { type: "array", items: { type: "object" } },
-              },
-            },
-          },
-        },
-      },
-      responses: {
-        "200": { description: "sync decision (single or small batch)" },
-        "202": { description: "queued async batch — returns job_id" },
       },
     },
   },
@@ -243,13 +323,6 @@ const HAND_AUTHORED_PATHS: Record<string, any> = {
         },
       ],
       responses: { "200": { description: "schema document" } },
-    },
-  },
-  "/api/v1/errors": {
-    get: {
-      tags: ["Schema"],
-      summary: "Error + sandbox-outcome catalog",
-      responses: { "200": { description: "catalog" } },
     },
   },
   "/api/v1/metrics/summary": {
