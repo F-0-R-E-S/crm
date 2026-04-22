@@ -288,6 +288,137 @@ export function Inspector(props: Props) {
                 Remove from pool
               </button>
             )}
+            <div style={{ marginTop: 10 }}>
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontSize: 11,
+                  color: "var(--fg-1)",
+                  cursor: readOnly ? "not-allowed" : "pointer",
+                  userSelect: "none",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  disabled={readOnly}
+                  checked={node.active !== false}
+                  onChange={(e) =>
+                    props.onNodePatch({ active: e.target.checked } as Partial<FlowNode>)
+                  }
+                />
+                active (accepting traffic)
+              </label>
+            </div>
+            <div style={{ marginTop: 8 }}>
+              <label
+                htmlFor="broker-target-description"
+                style={{ fontSize: 10, color: "var(--fg-2)", letterSpacing: "0.08em" }}
+              >
+                DESCRIPTION
+              </label>
+              <input
+                id="broker-target-description"
+                disabled={readOnly}
+                placeholder="optional note surfaced in tree-list + inspectors"
+                value={node.description ?? ""}
+                onChange={(e) =>
+                  props.onNodePatch({ description: e.target.value } as Partial<FlowNode>)
+                }
+                style={{ ...inp, marginTop: 3 }}
+              />
+            </div>
+          </div>
+          <div style={sectionStyle}>
+            <div style={{ fontSize: 11, color: "var(--fg-2)", marginBottom: 6 }}>
+              PQL gate (optional)
+            </div>
+            <div style={{ fontSize: 10, color: "var(--fg-2)", marginBottom: 8 }}>
+              Only this target will accept leads matching the gate. Evaluated
+              after cap check so misses don't consume slots.
+            </div>
+            {node.pqlGate && node.pqlGate.rules.length > 0 ? (
+              <>
+                <FilterConditionEditor
+                  node={{
+                    conditions: node.pqlGate.rules.map((r) => ({
+                      field: r.field as FilterCondition["field"],
+                      op: r.sign as FilterCondition["op"],
+                      value: r.value,
+                      caseSensitive: r.caseSensitive ?? false,
+                    })),
+                    logic: node.pqlGate.logic,
+                  }}
+                  readOnly={readOnly}
+                  onChange={(patch) =>
+                    props.onNodePatch({
+                      pqlGate: {
+                        rules: patch.conditions.map((c) => ({
+                          field: c.field,
+                          sign: c.op,
+                          value: c.value,
+                          caseSensitive: c.caseSensitive ?? false,
+                        })),
+                        logic: patch.logic,
+                      },
+                    } as Partial<FlowNode>)
+                  }
+                />
+                {!readOnly && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      props.onNodePatch({ pqlGate: undefined } as Partial<FlowNode>)
+                    }
+                    style={{
+                      marginTop: 8,
+                      fontSize: 11,
+                      padding: "4px 8px",
+                      border: "1px solid var(--bd-1)",
+                      background: "transparent",
+                      color: "var(--fg-2)",
+                      borderRadius: 3,
+                      cursor: "pointer",
+                    }}
+                  >
+                    Remove gate
+                  </button>
+                )}
+              </>
+            ) : (
+              !readOnly && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    props.onNodePatch({
+                      pqlGate: {
+                        rules: [
+                          {
+                            field: "geo",
+                            sign: "eq",
+                            value: "",
+                            caseSensitive: false,
+                          },
+                        ],
+                        logic: "AND",
+                      },
+                    } as Partial<FlowNode>)
+                  }
+                  style={{
+                    fontSize: 11,
+                    padding: "4px 8px",
+                    border: "1px solid var(--bd-1)",
+                    background: "var(--bg-2)",
+                    color: "var(--fg-0)",
+                    borderRadius: 3,
+                    cursor: "pointer",
+                  }}
+                >
+                  + Add PQL gate
+                </button>
+              )
+            )}
           </div>
           <div style={sectionStyle}>
             <div style={{ fontSize: 11, color: "var(--fg-2)", marginBottom: 6 }}>caps</div>
