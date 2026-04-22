@@ -38,10 +38,12 @@ import { useThemeCtx } from "@/components/shell/ThemeProvider";
 import { trpc } from "@/lib/trpc";
 import {
   addBrokerTarget,
+  addComparingSplitNode,
   addEdge as addEdgeToGraph,
   addExitNode,
   addFallbackNode,
   addFilterNode,
+  addSmartPoolNode,
   deleteEdge as deleteEdgeFromGraph,
   deleteNode as deleteNodeFromGraph,
   findAlgorithmNodeId,
@@ -414,6 +416,28 @@ export default function FlowVisualEditorPage({
     try {
       const g = snapshotGraph(visual);
       const { graph, nodeId } = addFallbackNode(g);
+      replaceGraph(graph, nodeId);
+    } catch (e) {
+      setSaveErr((e as Error).message);
+    }
+  }, [visual, readOnly, replaceGraph]);
+
+  const handleAddSmartPool = useCallback(() => {
+    if (!visual || readOnly) return;
+    try {
+      const g = snapshotGraph(visual);
+      const { graph, nodeId } = addSmartPoolNode(g);
+      replaceGraph(graph, nodeId);
+    } catch (e) {
+      setSaveErr((e as Error).message);
+    }
+  }, [visual, readOnly, replaceGraph]);
+
+  const handleAddComparingSplit = useCallback(() => {
+    if (!visual || readOnly) return;
+    try {
+      const g = snapshotGraph(visual);
+      const { graph, nodeId } = addComparingSplitNode(g);
       replaceGraph(graph, nodeId);
     } catch (e) {
       setSaveErr((e as Error).message);
@@ -839,6 +863,8 @@ export default function FlowVisualEditorPage({
             publishBlockedReason={publishBlockedReason}
             onAddFilter={handleAddFilter}
             onAddFallback={handleAddFallback}
+            onAddSmartPool={handleAddSmartPool}
+            onAddComparingSplit={handleAddComparingSplit}
             onAddExit={handleAddExit}
           />
           <div style={{ flex: 1, minHeight: 0, position: "relative" }}>

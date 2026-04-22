@@ -19,6 +19,8 @@ interface Props {
   publishBlockedReason: string | null;
   onAddFilter: () => void;
   onAddFallback: () => void;
+  onAddSmartPool: () => void;
+  onAddComparingSplit: () => void;
   onAddExit: () => void;
 }
 
@@ -40,6 +42,8 @@ export function Toolbar({
   publishBlockedReason,
   onAddFilter,
   onAddFallback,
+  onAddSmartPool,
+  onAddComparingSplit,
   onAddExit,
 }: Props) {
   const { theme } = useThemeCtx();
@@ -78,10 +82,31 @@ export function Toolbar({
       </button>
       <button
         type="button"
+        onClick={onAddSmartPool}
+        disabled={disabled}
+        style={{ ...btnStyle(theme), fontSize: 11, opacity: disabled ? 0.5 : 1 }}
+        aria-label="Add SmartPool node"
+        title="Priority-ordered failover: children tried in rank order"
+      >
+        + SmartPool
+      </button>
+      <button
+        type="button"
+        onClick={onAddComparingSplit}
+        disabled={disabled}
+        style={{ ...btnStyle(theme), fontSize: 11, opacity: disabled ? 0.5 : 1 }}
+        aria-label="Add ComparingSplit node"
+        title="A/B split with per-branch comparative metrics"
+      >
+        + Compare
+      </button>
+      <button
+        type="button"
         onClick={onAddFallback}
         disabled={disabled}
         style={{ ...btnStyle(theme), fontSize: 11, opacity: disabled ? 0.5 : 1 }}
         aria-label="Add fallback node"
+        title="Deprecated: use SmartPool for new flows"
       >
         + Fallback
       </button>

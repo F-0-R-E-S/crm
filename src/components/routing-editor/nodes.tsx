@@ -257,6 +257,64 @@ export function FallbackNode({ data }: { data: NodeData }) {
   );
 }
 
+export function SmartPoolNode({ data }: { data: NodeData }) {
+  const node = data.raw as Extract<FlowNode, { kind: "SmartPool" }>;
+  return (
+    <div style={BASE_STYLE}>
+      <Header kind="SmartPool" sub={`≤${node.maxHop} hops`} />
+      <div style={{ fontWeight: 500, marginBottom: 4 }}>
+        {data.label ?? "Sequential pool"}
+      </div>
+      <div style={{ fontSize: 10, color: "var(--fg-2)", marginBottom: 6 }}>
+        Ask each child in rank order; the first that accepts wins.
+      </div>
+      <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+        <Pill tone="warn" size="xs">
+          priority-failover
+        </Pill>
+        <Pill tone="info" size="xs">
+          timeout={node.triggers.timeoutMs}ms
+        </Pill>
+      </div>
+      <Handle type="target" position={Position.Left} style={{ background: "var(--fg-2)" }} />
+      <Handle
+        type="source"
+        position={Position.Right}
+        style={{ background: KIND_ACCENT.SmartPool }}
+      />
+    </div>
+  );
+}
+
+export function ComparingSplitNode({ data }: { data: NodeData }) {
+  const node = data.raw as Extract<FlowNode, { kind: "ComparingSplit" }>;
+  return (
+    <div style={BASE_STYLE}>
+      <Header kind="ComparingSplit" sub={`n=${node.sampleSize}`} />
+      <div style={{ fontWeight: 500, marginBottom: 4 }}>
+        {data.label ?? "A/B Compare"}
+      </div>
+      <div style={{ fontSize: 10, color: "var(--fg-2)", marginBottom: 6 }}>
+        Split traffic; track {node.compareMetric} per branch.
+      </div>
+      <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+        <Pill tone="accent" size="xs">
+          {node.compareMetric}
+        </Pill>
+        <Pill tone="info" size="xs">
+          min sample {node.sampleSize}
+        </Pill>
+      </div>
+      <Handle type="target" position={Position.Left} style={{ background: "var(--fg-2)" }} />
+      <Handle
+        type="source"
+        position={Position.Right}
+        style={{ background: KIND_ACCENT.ComparingSplit }}
+      />
+    </div>
+  );
+}
+
 export function ExitNode({ data }: { data: NodeData }) {
   return (
     <div style={BASE_STYLE}>

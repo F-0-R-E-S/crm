@@ -30,9 +30,11 @@ import {
   AlgorithmNode,
   BranchNode,
   BrokerPoolNode,
+  ComparingSplitNode,
   EntryNode,
   ExitNode,
   FallbackNode,
+  SmartPoolNode,
 } from "./nodes";
 
 interface BrokerSummary {
@@ -149,6 +151,8 @@ export function Canvas({
       filter: BranchNode,
       branch: BranchNode,
       algorithm: AlgorithmNode,
+      smartPool: SmartPoolNode,
+      comparingSplit: ComparingSplitNode,
       brokerTarget: BrokerPoolWithHealth,
       fallback: FallbackNode,
       exit: ExitNode,
