@@ -1,0 +1,67 @@
+---
+audience: human
+block: intake
+source: hand
+title: "Concepts: dedup, fraud, borderline, sandbox"
+description: "How the intake pipeline decides accept / reject / needs-review."
+order: 3
+---
+
+# Intake concepts
+
+## Dedup
+
+The pipeline runs several dedup strategies in order. Each strategy is togglable per affiliate via `IntakeSettings`:
+
+1. **`email_phone_daily`** — same `(email, phone)` seen today → `duplicate_lead`.
+2. **`external_lead_id_forever`** — same `external_lead_id` ever seen for this affiliate → `duplicate_lead`.
+3. **`phone_daily`** — same normalized phone seen today → `duplicate_lead`.
+4. **`email_daily`** — same email seen today → `duplicate_lead`.
+
+<Callout type="warning" title="Phone normalization">
+Phones are normalized to E.164 before comparing. Clients sending `(415) 555-1234` and `+14155551234` hit the same record.
+</Callout>
+
+<a id="dedup" />
+
+## Fraud
+
+Each lead gets a 0–100 `fraudScore` from a policy-weighted sum of **signals**:
+
+| Signal             | Meaning                                                | Default weight |
+|:-------------------|:-------------------------------------------------------|---------------:|
+| `blacklist_hit`    | Email/phone/IP on platform blacklist                   | 100            |
+| `dedup_strong`     | Same email+phone seen today                            | 70             |
+| `voip_phone`       | Phone is a VoIP carrier                                | 40             |
+| `phone_geo_mismatch`| E.164 country code ≠ provided `geo`                   | 30             |
+| `dedup_weak`       | Same email OR phone seen today                         | 20             |
+
+If `score >= autoRejectThreshold` (default 80) → lead is rejected with `state=REJECTED_FRAUD`. If `borderlineMin ≤ score < autoRejectThreshold` → `state=NEW` + `needsReview=true` → the lead routes but is flagged for human review.
+
+<Callout type="info" title="We never expose weights">
+API responses include `reason_codes: [<signal.kind>, …]` only — never the numeric score or weights. That's by policy: affiliates shouldn't game the model.
+</Callout>
+
+<a id="fraud" />
+
+## Borderline
+
+Borderline leads look like normal leads on the wire (they still route), but the `LeadDrawer` UI shows a yellow warning badge. Operators can override via the Manual review queue. If the borderline lead later converts to FTD, the affiliate's 7-day quality trend adjusts upward.
+
+<a id="borderline" />
+
+## Sandbox
+
+Sandbox API keys never reach real brokers. Outcomes are deterministic by `external_lead_id` prefix:
+
+| Prefix               | Outcome                                    |
+|:---------------------|:-------------------------------------------|
+| `sandbox-accept-*`   | Accepted; broker replies with ACCEPTED    |
+| `sandbox-decline-*`  | Accepted; broker replies with DECLINED    |
+| `sandbox-ftd-*`      | Accepted; broker replies with FTD         |
+| `sandbox-fraud-*`    | Auto-rejected as fraud                    |
+| `sandbox-dupe-*`     | Dedup short-circuit                        |
+
+<a id="sandbox" />
+
+<DeepRefCard block="intake" kind="invariants" title="Invariants — hidden rules you should know" />

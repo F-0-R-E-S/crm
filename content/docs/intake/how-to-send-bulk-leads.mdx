@@ -1,0 +1,59 @@
+---
+audience: human
+block: intake
+source: hand
+title: "How to send bulk leads safely"
+description: "Batching, idempotency, sync vs async, partial-failure handling."
+order: 2
+---
+
+# How to send bulk leads safely
+
+Bulk pushes are for **daily batch reconciliation** (e.g. overnight feeds) or **campaign bursts**. For trickle traffic, use single `/api/v1/leads`.
+
+## Size limits
+
+| Batch size | Behavior                      | Response                          |
+|-----------:|:------------------------------|:----------------------------------|
+|  1 – 50    | Sync — processed inline       | `207 Multi-Status` with per-lead outcomes |
+| 51 – 1000  | Async — enqueued              | `202 Accepted` with `job_id`      |
+| >1000      | Rejected                      | `413 Payload Too Large`           |
+
+Async batches: poll `GET /api/v1/leads/bulk/:jobId` for progress until `status=done`.
+
+## Idempotency
+
+Always send an `x-idempotency-key` header. If you retry with the same key + same payload → cached response. Same key + different payload → `409 idempotency_conflict`. Keys live 24h.
+
+```bash
+curl -X POST https://api.your-tenant.gambchamp.com/api/v1/leads/bulk \
+  -H "Authorization: Bearer ak_live_••••••••" \
+  -H "X-API-Version: 2026-01" \
+  -H "X-Idempotency-Key: batch-2026-04-22-morning-feed" \
+  -H "Content-Type: application/json" \
+  -d @leads.json
+```
+
+## Partial failures
+
+A `207` response always has shape:
+
+```json
+{
+  "results": [
+    { "index": 0, "status": "accepted", "lead_id": "ld_..." },
+    { "index": 1, "status": "rejected", "reason": "duplicate_lead" },
+    { "index": 2, "status": "needs_review", "lead_id": "ld_...", "reason_codes": ["phone_country_mismatch"] }
+  ]
+}
+```
+
+**Never** retry a 207 whole-batch on any error — process `results[]` and retry only `rejected` rows with a **different** idempotency key.
+
+## Tuning throughput
+
+- Use keep-alive (`Connection: keep-alive`).
+- Batch at 50 for maximum sync throughput.
+- Use the schema registry to pin — async clients break if we release a new default version.
+
+<DeepRefCard block="intake" kind="errors" title="Every rejection reason" />

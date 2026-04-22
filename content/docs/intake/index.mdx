@@ -2,24 +2,49 @@
 audience: human
 block: intake
 source: hand
-title: "Lead Intake — overview"
-description: "Public placeholder page; replaced in docs plan #3."
+title: "Lead intake — overview"
+description: "Single lead push, bulk push, dedup, idempotency, sandbox."
 order: 1
 slugOverride: "intake"
 ---
 
-# Lead Intake
+# Lead intake
 
-_Coming soon: overview of the block._
+The intake pipeline is the **only** ingress for affiliate traffic. It validates, scores, and hands off to the [routing engine](/docs/routing-engine).
 
-## Overview
+## What happens on a push
 
-The intake pipeline handles external lead submissions via the REST API.
+```
+Affiliate → POST /api/v1/leads (or /bulk)
+         ↓ verifyApiKey (IP + expiry + sandbox)
+         ↓ rate-limit (Redis sliding-window)
+         ↓ quota (billing plan)
+         ↓ Zod validation (+ schema registry version)
+         ↓ dedup (multi-strategy)
+         ↓ idempotency (x-idempotency-key + payload hash)
+         ↓ fraud score
+         ↓ quality score
+         ↓ persist Lead + LeadEvent.NEW
+         ↓ enqueue push-lead job (unless auto-rejected)
+```
 
-## Key concepts
+## The three intake endpoints
 
-Leads are submitted via `POST /api/v1/leads` with a valid API key.
+- **`POST /api/v1/leads`** — single lead, synchronous response with routed-to or rejection.
+- **`POST /api/v1/leads/bulk`** — up to 50 leads synchronously (207 multi-status), larger batches async via `POST /api/v1/leads/bulk/:jobId`.
+- **`GET /api/v1/schema/leads?version=2026-01`** — discover the Zod schema for a given version.
 
-### Validation
+<Callout type="info" title="Versioning">
+We use date-based schema versions (`X-API-Version: 2026-01`). New fields are additive; breaking changes mint a new version. Clients can pin and upgrade at their own pace.
+</Callout>
 
-All leads go through schema validation, fraud scoring, and quality scoring before routing.
+## Recipes
+
+- [Push a single lead](/docs/getting-started/push-your-first-lead)
+- [Push a bulk batch safely](/docs/intake/how-to-send-bulk-leads)
+
+## Deep reference
+
+<DeepRefCard block="intake" kind="rest" title="REST surface" description="Every endpoint, every field, every response." />
+<DeepRefCard block="intake" kind="prisma" title="Database schema" description="Lead, LeadEvent, IntakeSettings, IdempotencyKey, ApiKey, Affiliate models." />
+<DeepRefCard block="intake" kind="errors" title="Error catalog" description="Every rejection code with trigger conditions." />
