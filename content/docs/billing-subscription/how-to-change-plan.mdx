@@ -1,0 +1,54 @@
+---
+audience: human
+block: billing-subscription
+source: hand
+title: "How to change your subscription plan"
+description: "Upgrade, downgrade, or cancel a GambChamp platform subscription through Stripe Checkout and Portal."
+order: 2
+---
+
+# How to change your subscription plan
+
+## Step 1 — Open the Billing page
+
+Navigate to **Dashboard → Settings → Billing** (keyboard shortcut `O`).
+
+The page shows your current plan, status pill, renewal date, and a three-tier plan grid (Starter / Growth / Pro).
+
+## Step 2 — Choose a new plan
+
+Click **Change** on the plan card you want to move to. This launches a **Stripe Checkout** session in a new tab.
+
+Complete payment in Stripe's hosted flow. When the session succeeds, Stripe fires a `customer.subscription.updated` webhook, and GambChamp updates your `Subscription` record within seconds.
+
+<Callout type="info" title="Prorations are handled by Stripe">
+If you upgrade mid-cycle, Stripe calculates the prorated credit for unused days on your current plan and charges only the difference. If you downgrade mid-cycle, Stripe applies a credit to your next invoice. You do not need to do anything manually.
+</Callout>
+
+## Cancelling
+
+Click **Cancel subscription** on the Billing page. Your subscription moves to `CANCELED` state but **remains active until the end of the current billing period**. No further charges are made. Leads continue to be accepted until the period ends.
+
+To reactivate before the period ends, click **Reactivate** — the subscription resumes as if it had never been cancelled.
+
+## Downgrading when over quota
+
+If you downgrade to a lower tier and your current-period lead count already exceeds the new plan's monthly limit:
+
+- **Existing lead rows are unaffected.** All data is preserved.
+- **New intake is blocked** with `HTTP 429 plan_quota_exceeded` until the next billing period starts.
+- The Billing page shows a usage bar in the **over-quota red state** to make this visible.
+
+The block lifts automatically at the start of the next billing period, when the monthly counter resets to zero.
+
+## Managing payment methods and invoice history
+
+Click **Manage billing** to open the **Stripe Billing Portal**. From there you can:
+
+- Add or replace a payment method.
+- Download PDF invoices for past billing periods.
+- View upcoming invoice amounts.
+
+<Callout type="warning" title="If Stripe is not configured">
+If the `STRIPE_SECRET_KEY` environment variable is not set, GambChamp runs in trial-only mode. The Billing page displays a "Stripe is not configured" banner and all admin billing actions (upgrade, cancel, portal) are disabled. Contact your platform administrator to configure Stripe credentials.
+</Callout>

@@ -2,12 +2,54 @@
 audience: human
 block: billing-subscription
 source: hand
-title: "Billing & Stripe Subscription — overview"
-description: "Public placeholder page; replaced in docs plan #3."
+title: "Billing + Subscription — overview"
+description: "Platform subscription plans, Stripe Checkout and Portal, quota enforcement, and billing lifecycle."
 order: 1
 slugOverride: "billing-subscription"
 ---
 
-# Billing & Stripe Subscription
+# Billing + Subscription
 
-_Coming soon: overview of the block._
+GambChamp charges tenants a platform subscription fee. This is **separate** from the internal broker and affiliate invoices that track payout accounting — see [Concepts: platform vs internal invoices](/docs/billing-subscription/concepts#platform-vs-internal-invoices).
+
+## Plans
+
+Four tiers are available:
+
+| Plan | Price | Leads / month | Max brokers |
+|------|-------|--------------|-------------|
+| Trial | Free (14 days) | 100 | Unlimited |
+| Starter | $399 / mo | 5,000 | 10 |
+| Growth | $599 / mo | 25,000 | 50 |
+| Pro | $899 / mo | 100,000 | Unlimited |
+
+Trial subscriptions are created automatically when a tenant is provisioned (via seed or onboarding signup). The 14-day clock starts from `Subscription.trialEnd`.
+
+## Stripe Checkout and Portal
+
+Upgrading from Trial or changing plans launches a **Stripe Checkout** session. The user is redirected to Stripe's hosted payment page, completes payment, and is returned to `STRIPE_BILLING_RETURN_URL`.
+
+Plan downgrades, payment method changes, and invoice history are managed through the **Stripe Billing Portal**. Tenant admins access both flows from **Dashboard → Settings → Billing**.
+
+Subscription state is kept in sync via Stripe webhooks — GambChamp processes `customer.subscription.{created,updated,deleted}` and `invoice.{paid,payment_failed}` events at `POST /api/stripe/webhook`.
+
+## Quota enforcement
+
+On each lead intake request, `enforceQuota(tenantId, delta)` compares the current-month lead count (from `LeadDailyRoll`) against the plan limit. If the limit is reached or exceeded, the intake route returns:
+
+```
+HTTP 429  plan_quota_exceeded
+```
+
+Existing lead rows are not modified. Only **new intake** is blocked until the next billing period begins.
+
+## Where to go next
+
+- [Change your plan](/docs/billing-subscription/how-to-change-plan) — step-by-step upgrade, downgrade, and cancellation.
+- [Concepts: subscription states, Stripe-not-configured, platform vs internal invoices](/docs/billing-subscription/concepts) — state machine and edge cases.
+
+## Deep reference
+
+<DeepRefCard block="billing-subscription" kind="prisma" title="Database schema" description="Subscription (SubscriptionStatus enum: ACTIVE | TRIALING | PAST_DUE | CANCELED | UNPAID | INCOMPLETE), PaymentMethod, Invoice (platform subscription invoice from Stripe — distinct from BrokerInvoice / AffiliateInvoice)." />
+<DeepRefCard block="billing-subscription" kind="trpc" title="tRPC router" description="billing — getSubscription, getUsage, listInvoices (tenant-scoped); startCheckout, openPortal, cancel, reactivate (admin-only)." />
+<DeepRefCard block="billing-subscription" kind="env" title="Environment variables" description="STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, STRIPE_PRICE_STARTER, STRIPE_PRICE_GROWTH, STRIPE_PRICE_PRO, STRIPE_BILLING_RETURN_URL — all optional; when STRIPE_SECRET_KEY is unset the app runs in trial-only mode." />

@@ -1,0 +1,69 @@
+---
+audience: human
+block: billing-subscription
+source: hand
+title: "Concepts: subscription states, Stripe config, platform vs internal invoices"
+description: "Subscription state machine, trial-only mode, and the distinction between platform invoices and payout accounting."
+order: 3
+---
+
+# Billing concepts
+
+## Subscription states
+
+<a id="subscription-states" />
+
+Every tenant has exactly one `Subscription` row. Its `status` field is a `SubscriptionStatus` enum driven entirely by Stripe webhook events — GambChamp never updates it directly.
+
+| Status | Meaning |
+|--------|---------|
+| `TRIALING` | Within the 14-day free trial window |
+| `ACTIVE` | Paid and current |
+| `PAST_DUE` | Payment failed; Stripe will retry according to its dunning schedule |
+| `CANCELED` | Explicitly cancelled; remains accessible until `currentPeriodEnd` |
+| `UNPAID` | Stripe exhausted all retries; access is suspended |
+| `INCOMPLETE` | Checkout session started but payment not yet confirmed |
+
+State transitions happen via the Stripe webhook handler at `src/server/billing/webhook.ts::handleStripeEvent`. The handler is pure and unit-tested independently of the HTTP layer.
+
+Intake quota enforcement (`enforceQuota`) reads `Subscription.status` and `Subscription.plan`. A `PAST_DUE` or `CANCELED` subscription that is still within its current period continues to accept leads — only `UNPAID` and expired `CANCELED` are fully blocked.
+
+## Stripe not configured
+
+<a id="stripe-not-configured" />
+
+When `STRIPE_SECRET_KEY` is not set in the environment, `isStripeConfigured()` returns `false` and the app enters **trial-only mode**:
+
+- The seed creates a `TRIALING` subscription for `tenant_default` automatically.
+- All admin billing mutations (`startCheckout`, `openPortal`, `cancel`, `reactivate`) throw a `stripe_not_configured` tRPC error.
+- The Billing UI shows a yellow banner: _"Stripe is not configured. Contact your administrator."_ All plan-change buttons are disabled.
+- Quota enforcement still operates — the trial plan's 100-lead monthly limit is enforced regardless of Stripe configuration.
+
+This mode is intentional for local development and self-hosted deployments that do not need Stripe.
+
+## Platform vs internal invoices
+
+<a id="platform-vs-internal-invoices" />
+
+GambChamp has two distinct invoicing systems that are **not related** to each other:
+
+**Platform `Invoice`** (this block)
+
+- Sourced from Stripe.
+- Represents what GambChamp charges the **tenant** for using the platform.
+- Created and updated by Stripe webhook events.
+- Viewable in the Stripe Billing Portal or via `billing.listInvoices`.
+- Stored in the `Invoice` table with a Stripe `invoiceId`.
+
+**`BrokerInvoice` + `AffiliateInvoice`** (see [conversions-crg](/docs/conversions-crg))
+
+- Internal payout accounting.
+- `BrokerInvoice` — what GambChamp invoices the **broker** for leads delivered.
+- `AffiliateInvoice` — what GambChamp pays the **affiliate** for leads generated.
+- Driven by conversion postbacks and CRG settlement, not by Stripe.
+- Managed at `/dashboard/finance/invoices`.
+
+The two systems share no schema relations. Confusing them leads to incorrect P&L analysis — always verify which invoice type a query or UI page is referring to.
+
+<DeepRefCard block="billing-subscription" kind="errors" title="Error codes" description="stripe_not_configured — thrown by admin billing mutations when STRIPE_SECRET_KEY is unset. plan_quota_exceeded — returned as HTTP 429 by the intake route when monthly lead limit is reached." />
+<DeepRefCard block="billing-subscription" kind="invariants" title="Invariants" description="One Subscription per tenant. SubscriptionStatus is Stripe-driven only — never updated by application code directly. Trial is 14 days. Quota check reads LeadDailyRoll (not Lead count) for performance." />
