@@ -9,8 +9,8 @@
 | Field | Value |
 |---|---|
 | **Last updated** | 2026-04-22 |
-| **Prod version** | `2.0.0-s3` (https://crm-node.fly.dev) |
-| **Local HEAD** | `a4a70d5 feat(routing): tRPC treeView proc + tree-list read-only page (S3.3 T2+T3)` |
+| **Prod version** | `2.0.0-s3.3` (https://crm-node.fly.dev — health confirmed) |
+| **Local HEAD** | `f356c1c chore(routing): iREV-parity manual-test seed scripts` |
 | **Tests** | ~969 passed / 10 skipped / 1 todo (213 test files) |
 | **Prisma models** | 55 (added `ComparingBucketStat`) |
 | **tRPC routers** | 22 (routing gains `treeView`) |
@@ -22,7 +22,7 @@
 
 - **v1.0 core** — ✅ **100%** (released `v1.0.0`, hardened via `v1.0.1` + `v1.0.2` + `v1.0.3`)
 - **v1.5** — ✅ **100%** (released `v1.5.0`, all 5 sprints shipped)
-- **v2.0** — ⚠️ **67%** (4 of 6 sprints shipped: S1/S2/S3 billing + **S3-routing iREV parity** complete locally)
+- **v2.0** — ⚠️ **67%** (4 of 6 sprints shipped to prod: S1/S2/S3 billing + **S3-routing iREV parity** live on `crm-node.fly.dev`)
 - **v2.5** — ⏳ **0%** (not started)
 - **Post-v2.0 residual parking lot** — 10 items, all documented below
 
