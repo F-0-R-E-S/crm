@@ -10,7 +10,7 @@
 |---|---|
 | **Last updated** | 2026-04-22 |
 | **Prod version** | `2.0.0-s3` (https://crm-node.fly.dev) |
-| **Local HEAD** | `b9709b0 fix(routing): updateDraftGraph in-place` |
+| **Local HEAD** | `b383464 feat(routing): PQL + SmartPool + ComparingSplit Zod schemas (S3.1 T2)` |
 | **Tests** | 809 passed / 10 skipped / 1 todo (191 test files) |
 | **Prisma models** | 54 |
 | **tRPC routers** | 22 |
