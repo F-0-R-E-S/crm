@@ -1,4 +1,5 @@
 import { Breadcrumbs } from "@/components/docs/Breadcrumbs";
+import { PrevNext } from "@/components/docs/PrevNext";
 import { Toc, extractToc } from "@/components/docs/Toc";
 import { docsMdxComponents } from "@/components/docs/mdx";
 import { findDoc, loadDocsTree } from "@/lib/docs-content";
@@ -61,6 +62,7 @@ export default async function DocsPage({
       <article className="prose prose-neutral min-w-0 flex-1 dark:prose-invert">
         <Breadcrumbs trail={trail} />
         {content}
+        <PrevNext tree={tree} currentSlug={joined} />
       </article>
       <Toc entries={toc} />
     </div>
