@@ -4,10 +4,12 @@ import { runDocsRegen } from "@/../scripts/docs-regen";
 import { beforeAll, describe, expect, it } from "vitest";
 
 const CONTENT_ROOT = resolve(process.cwd(), "content/docs");
+const INVENTORY_FILE = resolve(process.cwd(), "docs/feature-inventory.md");
 
 describe("docs-regen orchestrator (write mode)", () => {
   beforeAll(async () => {
     await rm(CONTENT_ROOT, { recursive: true, force: true });
+    await rm(INVENTORY_FILE, { force: true });
   });
 
   it("writes _deep files for every block with extracted content", async () => {

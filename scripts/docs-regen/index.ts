@@ -8,6 +8,7 @@ import { extractPrisma } from "./extractors/prisma";
 import { extractRest } from "./extractors/rest";
 import { extractTelegram } from "./extractors/telegram";
 import { extractTrpc } from "./extractors/trpc";
+import { renderInventory } from "./inventory";
 import { renderDeepFile } from "./render";
 import type { BlockId, BlockOutput, RegenManifest, RegenOptions, Section } from "./types";
 
@@ -84,6 +85,20 @@ export async function runDocsRegen(
     blocksOut.push({ id: b.id, title: b.title, sections: sectionsAll });
   }
 
+  const inventoryMd = renderInventory(
+    blocksOut.map((bo) => ({
+      id: bo.id,
+      title: BLOCK_CATALOG.find((b) => b.id === bo.id)!.title,
+      counts: tallyCounts(bo.sections),
+    })),
+  );
+  if (opts.mode === "write") {
+    await writeFile(resolve(cwd, "docs/feature-inventory.md"), inventoryMd, "utf8");
+  } else if (opts.mode === "check") {
+    const existing = await readFileSafe(resolve(cwd, "docs/feature-inventory.md"));
+    if (existing !== inventoryMd) drift.push("docs/feature-inventory.md");
+  }
+
   return {
     generatedAt: new Date().toISOString(),
     blocks: blocksOut,
@@ -109,6 +124,12 @@ async function readFileSafe(p: string): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+function tallyCounts(sections: Section[]): Record<string, number> {
+  const r: Record<string, number> = {};
+  for (const s of sections) r[s.source] = (r[s.source] ?? 0) + 1;
+  return r;
 }
 
 // CLI entry
