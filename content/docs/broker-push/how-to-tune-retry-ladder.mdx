@@ -1,0 +1,101 @@
+---
+audience: human
+block: broker-push
+source: hand
+title: "How to tune the retry ladder"
+description: "Adjust Broker.retrySchedule to tighten or loosen push retry timing."
+order: 2
+---
+
+# How to tune the retry ladder
+
+`Broker.retrySchedule` is a comma-separated string of delay values (in seconds). Each value is the number of seconds to wait after the **previous** failed attempt before retrying. The number of values in the string equals the maximum number of retry attempts before the lead is sent to `ManualReviewQueue`.
+
+## Step-by-step
+
+### 1. Open the broker settings page
+
+Navigate to **Brokers** in the left sidebar, then click the broker you want to adjust. On the broker detail page, click **Edit**.
+
+### 2. Find the "Retry schedule" field
+
+The field is labelled **Retry schedule** and shows the current value, for example:
+
+```
+10,60,300,900,3600
+```
+
+This is the default: 5 attempts over ~68 minutes total.
+
+### 3. Choose a preset or enter a custom schedule
+
+**Tight (fast fail-over)** — for brokers that respond quickly and where stale leads are worse than a short queue backup:
+
+```
+10,30,60,300
+```
+
+4 attempts over ~6.5 minutes. Leads fail to `ManualReviewQueue` faster, which increases queue depth but reduces staleness.
+
+**Relaxed (default)** — for brokers with known slow windows (overnight batches, weekend processing):
+
+```
+10,60,300,900,3600
+```
+
+5 attempts over ~68 minutes. Leads wait longer before manual escalation but tolerate broker downtime windows gracefully.
+
+**Minimal (emergency bypass)** — when you want to immediately route failures to manual review without waiting:
+
+```
+10
+```
+
+Single attempt. Any failure lands in `ManualReviewQueue` within seconds.
+
+### 4. Save and verify
+
+Click **Save**. The new schedule is applied immediately to all future `push-lead` jobs for this broker. Leads already in-flight will complete on their original schedule.
+
+### Alternative: SQL update
+
+For batch updates across many brokers, or for scripted deployments:
+
+```sql
+UPDATE "Broker"
+SET "retrySchedule" = '10,30,60,300'
+WHERE id = '<broker-id>';
+```
+
+Or via tRPC from a server script or admin tool:
+
+```ts
+await trpc.broker.update.mutate({
+  id: "<broker-id>",
+  retrySchedule: "10,30,60,300",
+});
+```
+
+## When to tighten
+
+- The broker has a fast, reliable endpoint (p95 < 2 s) and consistently responds in under 5 s.
+- You have sufficient operator capacity to process `ManualReviewQueue` items quickly.
+- Lead freshness SLA is strict — the affiliate expects near-real-time confirmation.
+
+## When to loosen
+
+- The broker has known batch-processing windows (e.g. processes leads every 30 minutes overnight).
+- `ManualReviewQueue` depth is already high and you want to reduce new inflow.
+- The broker's team has communicated a maintenance window that will resolve soon.
+
+## Operational impact
+
+| Schedule | Total wait before MRQ | MRQ inflow | Lead staleness |
+|----------|----------------------|------------|----------------|
+| `10`     | ~10 s                | High       | Minimal        |
+| `10,30,60,300` | ~6.5 min       | Medium     | Low            |
+| `10,60,300,900,3600` | ~68 min   | Low        | High (normal)  |
+
+<Callout type="warning" title="Cascading cap load from tight retries">
+When many brokers are configured with tight retry schedules and a shared downstream broker is temporarily slow, all retries may fire simultaneously and consume that broker's hourly cap within minutes. Before tightening across multiple brokers that share cap definitions, verify that the combined retry burst cannot exhaust a cap bucket — otherwise healthy leads will be incorrectly rejected with `cap_exhausted` during the retry storm.
+</Callout>

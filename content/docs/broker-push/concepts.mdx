@@ -1,0 +1,88 @@
+---
+audience: human
+block: broker-push
+source: hand
+title: "Concepts: broker pool selection, anti-shave, PENDING_HOLD"
+description: "How the engine picks the push target, detects shave, and manages the anti-shave hold window."
+order: 3
+---
+
+# Broker push concepts
+
+## Broker pool selection
+
+<a id="broker-pool-selection" />
+
+The routing engine does not push to a broker directly — it selects a **target** from the eligible pool and hands off a `push-lead` job. The selection follows these steps:
+
+1. **Constraint filtering.** GEO, schedule, caps, PQL gate, and `active` flag reduce the full broker pool to an `available` set. Any broker that fails a constraint is excluded and a step is traced with the reason (`geo_mismatch`, `schedule_inactive`, `cap_exhausted`, `pql_gate`, `inactive`).
+
+2. **Algorithm pick.** From `available`, the configured algorithm (WRR or Slots-Chance) selects a single target. If a SmartPool applies, the highest-rank available pool child is chosen instead — no algorithm call.
+
+3. **Push result classification.** `classifyPushResult` examines the broker's HTTP response:
+   - `2xx` + accepted body → `PUSHED` — lead advances to the next lifecycle state.
+   - `4xx` / `5xx` / network error / timeout → `FAILED` — retry ladder kicks in.
+   - `2xx` + declined body → `DECLINED` — treated as a soft rejection; the fallback orchestrator walks the `FallbackStep` chain (SmartPool next-rank, if any).
+
+4. **Next-hop on failure.** If a `FallbackStep` row exists for the failed broker target (compiled at publish time from SmartPool children), the engine walks to the next hop without re-running the full constraint/algorithm pass. If no fallback exists, the lead either retries the same broker (retry ladder) or escalates to `ManualReviewQueue`.
+
+## Anti-shave
+
+<a id="anti-shave" />
+
+**Shaving** is a broker-side fraud pattern: a broker fraudulently declines real converted leads to avoid paying out CPA fees. The push pipeline detects shave via the PENDING_HOLD window.
+
+Detection criteria: a lead that was **successfully pushed** (broker accepted it) subsequently receives a `DECLINED` postback **while still inside the PENDING_HOLD window**. This pattern — accept-then-quickly-decline — is a strong shave signal.
+
+When detected:
+
+- `Lead.shaveSuspected = true` is written.
+- A `SHAVE_SUSPECTED` LeadEvent is emitted and persisted.
+- The lead remains in `PENDING_HOLD` state for operator review.
+
+`shaveSuspected` is exposed on the LeadsGrid and in the LeadDrawer so operators can investigate and, if confirmed, escalate to the broker contact (see `docs/runbooks/broker-contacts.md`).
+
+<Callout type="info" title="Shave detection requires opt-in">
+Anti-shave is off by default. Set `Broker.pendingHoldMinutes` to a positive integer to enable it for a specific broker. A value of `0` or `null` disables the feature — the lead transitions directly to ACCEPTED after a successful push.
+</Callout>
+
+## PENDING_HOLD
+
+<a id="pending-hold" />
+
+The PENDING_HOLD window is a time-bounded observation period after a successful push. It provides a gap for the broker to send a postback before GambChamp marks the lead as accepted.
+
+**Lifecycle:**
+
+```
+push-lead succeeds (PUSHED)
+  ↓
+Broker.pendingHoldMinutes > 0?
+  Yes → Lead.state = PENDING_HOLD
+         Lead.pendingHoldUntil = now() + holdMin
+         LeadEvent: PENDING_HOLD_STARTED
+         pg-boss: resolve-pending-hold scheduled at pendingHoldUntil
+  No  → Lead.state = ACCEPTED
+```
+
+**During the window:**
+
+- If a `DECLINED` postback arrives → `shaveSuspected = true` + `SHAVE_SUSPECTED` LeadEvent (see [anti-shave](#anti-shave)).
+- If an `ACCEPTED` or `FTD` postback arrives → `pendingHoldUntil` cleared, Lead transitions to `ACCEPTED` / `FTD`, `PENDING_HOLD_RELEASED` emitted.
+
+**At window expiry:**
+
+- `resolve-pending-hold` job fires.
+- If the lead is still in `PENDING_HOLD` (no postback resolved it) → Lead transitions to `ACCEPTED`, `PENDING_HOLD_RELEASED` emitted.
+- If the lead is no longer in `PENDING_HOLD` (postback already resolved it) → job is a no-op.
+
+**Configuration guidance:**
+
+| Broker type | Recommended `pendingHoldMinutes` |
+|-------------|----------------------------------|
+| Real-time acceptance (responds in seconds) | `5` – `15` |
+| Batch processing (hourly batches) | `90` – `180` |
+| Unknown / new broker | `30` (observe for 2 weeks, then tune) |
+
+<DeepRefCard block="broker-push" kind="errors" title="Error catalog" description="BROKER_FAILED, CAP_EXHAUSTED, NO_BROKER_MATCH, SHAVE_SUSPECTED error and event types." />
+<DeepRefCard block="broker-push" kind="invariants" title="Invariants" description="push-lead atomicity, PENDING_HOLD idempotency, shaveSuspected write-once semantics." />

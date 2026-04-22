@@ -2,12 +2,77 @@
 audience: human
 block: broker-push
 source: hand
-title: "Broker Push — overview"
-description: "Public placeholder page; replaced in docs plan #3."
+title: "Broker push — overview"
+description: "push-lead job, retry ladder, PENDING_HOLD anti-shave, ManualReviewQueue."
 order: 1
 slugOverride: "broker-push"
 ---
 
-# Broker Push
+# Broker push
 
-_Coming soon: overview of the block._
+After the routing engine selects a broker, the **`push-lead` pg-boss job** executes the actual HTTP delivery. It is the bridge between the routing decision and the broker's intake endpoint.
+
+## How push-lead works
+
+```
+Routing decision → push-lead job enqueued
+  ↓
+HTTP POST to Broker.endpointUrl (HTTP adapter)
+  ↓
+Sync response received
+  ↓
+classifyPushResult → PUSHED or FAILED
+  ↓
+LeadEvent emitted (PUSHED / FAILED)
+  ↓
+If PUSHED + autologinEnabled → autologin-attempt job enqueued
+If PUSHED + pendingHoldMinutes → lead enters PENDING_HOLD window
+```
+
+The HTTP adapter sends the lead payload to the broker's configured endpoint and waits for a synchronous response. A 2xx response with an accepted body maps to `PUSHED`; any network error, timeout, or rejection body maps to `FAILED`.
+
+## Retry ladder
+
+On `FAILED`, the lead does not immediately move to `ManualReviewQueue`. Instead, it re-enters the retry ladder defined by `Broker.retrySchedule`.
+
+`retrySchedule` is a comma-separated string of delay seconds (default: `"10,60,300,900,3600"`):
+
+| Attempt | Delay after previous failure |
+|---------|------------------------------|
+| 1       | 10 s                        |
+| 2       | 60 s (1 min)                |
+| 3       | 300 s (5 min)               |
+| 4       | 900 s (15 min)              |
+| 5       | 3 600 s (1 hour)            |
+
+Each retry re-enqueues the same `push-lead` job via pg-boss with `startAfter = nthRetryDelay(schedule, attemptN)`. The attempt index `PushLeadPayload.attemptN` threads through each re-enqueue so the ladder advances correctly.
+
+When the schedule is exhausted — all attempts have fired and failed — the lead's state transitions to `FAILED` and it is placed in the **ManualReviewQueue** with reason `BROKER_FAILED`.
+
+## ManualReviewQueue on exhaustion
+
+Exhausted leads appear on `/dashboard/manual-review` (shortcut `M`). The `manual-queue-depth-check` cron (every 5 minutes) monitors queue depth and emits a `manual_queue_depth_exceeded` alert when open items exceed the threshold (default 25, env `MANUAL_QUEUE_ALERT_THRESHOLD`).
+
+Operators can **accept**, **reject**, or **requeue** any item from the review page.
+
+## PENDING_HOLD anti-shave (v1 W1.2)
+
+When `Broker.pendingHoldMinutes` is set, a successfully pushed lead does not immediately move to `ACCEPTED`. Instead:
+
+1. Lead state → `PENDING_HOLD`; `Lead.pendingHoldUntil` is stamped.
+2. A `resolve-pending-hold` job is scheduled to fire when the window expires.
+3. If a `DECLINED` postback arrives while the lead is still in `PENDING_HOLD`, `Lead.shaveSuspected = true` and a `SHAVE_SUSPECTED` LeadEvent is emitted.
+4. If the window expires with no `DECLINED` postback, `resolve-pending-hold` transitions the lead to `ACCEPTED` and emits `PENDING_HOLD_RELEASED`.
+
+See [concepts](/docs/broker-push/concepts#pending-hold) for the full anti-shave model.
+
+## Where to go next
+
+- [Tune the retry ladder](/docs/broker-push/how-to-tune-retry-ladder) — tighten or loosen retry timing per broker.
+- [Concepts: broker pool selection, anti-shave, PENDING_HOLD](/docs/broker-push/concepts) — algorithmic details.
+
+## Deep reference
+
+<DeepRefCard block="broker-push" kind="prisma" title="Database schema" description="Broker (retrySchedule, pendingHoldMinutes, autologinEnabled), Lead (state, pendingHoldUntil, shaveSuspected), ManualReviewQueue models." />
+<DeepRefCard block="broker-push" kind="trpc" title="tRPC router" description="broker.* procedures — list, byId, create, update, delete, pause, resume." />
+<DeepRefCard block="broker-push" kind="jobs" title="pg-boss jobs" description="push-lead (HTTP delivery + retry ladder), resolve-pending-hold (anti-shave timer), autologin-attempt (post-push session flow)." />
