@@ -61,6 +61,13 @@ Plain Error: `edges cannot target the Entry node` at `src/server/routing/flow/bu
 
 ---
 
+# Error: expected filter
+<a id="err-plain-expected-filter"></a>
+
+Plain Error: `expected filter` at `src/server/routing/flow/model.test.ts:132`.
+
+---
+
 # Error: flow_archived
 <a id="err-plain-flow-archived"></a>
 
@@ -170,6 +177,13 @@ Plain Error: `self-loops are not allowed` at `src/server/routing/flow/builder.ts
 <a id="err-plain-unknown-kind----string-exhaustive--"></a>
 
 Plain Error: `unknown kind: ${String(exhaustive)}` at `src/server/routing/flow/graph.ts:92`.
+
+---
+
+# Error: unknown PQL field: ${key}
+<a id="err-plain-unknown-pql-field----key-"></a>
+
+Plain Error: `unknown PQL field: ${key}` at `src/server/routing/pql/fields.ts:113`.
 
 ---
 
