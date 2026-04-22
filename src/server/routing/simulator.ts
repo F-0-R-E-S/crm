@@ -1,7 +1,7 @@
 import { prisma } from "@/server/db";
+import type { FallbackStep } from "@prisma/client";
 import { type EngineDecision, type LeadSnapshot, executeFlow } from "./engine";
 import { rankedBrokerChildren, smartPoolNodes } from "./flow/graph-walker";
-import type { FallbackStep } from "@prisma/client";
 import type { FlowGraph } from "./flow/model";
 
 export interface SimulateInput {
@@ -241,8 +241,10 @@ export async function simulateBatch(input: BatchSimulateInput): Promise<BatchSim
       sampleTraces.push({
         leadIndex: i,
         attempts,
-        landedBrokerId: landed && attempts.length > 0 ? attempts[attempts.length - 1]?.brokerId ?? null : null,
-        landedNodeId: landed && attempts.length > 0 ? attempts[attempts.length - 1]?.nodeId ?? null : null,
+        landedBrokerId:
+          landed && attempts.length > 0 ? (attempts[attempts.length - 1]?.brokerId ?? null) : null,
+        landedNodeId:
+          landed && attempts.length > 0 ? (attempts[attempts.length - 1]?.nodeId ?? null) : null,
         outcome: landed ? "accepted" : "exhausted",
       });
     }

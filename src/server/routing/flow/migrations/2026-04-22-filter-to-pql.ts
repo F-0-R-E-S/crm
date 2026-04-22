@@ -30,8 +30,7 @@ export function migrateFilterNodes(graph: FlowGraph): {
   const nodes: FlowNode[] = graph.nodes.map((n) => {
     if (n.kind !== "Filter") return n;
     const asRecord = n as unknown as Record<string, unknown>;
-    const hasLegacy =
-      Array.isArray(asRecord.conditions) && asRecord.conditions.length > 0;
+    const hasLegacy = Array.isArray(asRecord.conditions) && asRecord.conditions.length > 0;
     const hasNew = Array.isArray(asRecord.rules) && (asRecord.rules as unknown[]).length > 0;
     if (!hasLegacy || hasNew) return n;
     const legacy = asRecord.conditions as Array<{

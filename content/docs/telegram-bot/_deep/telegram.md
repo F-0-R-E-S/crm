@@ -115,6 +115,17 @@ Defined in `src/server/telegram/event-catalog.ts`. Emit site: grep the codebase 
 
 ---
 
+# BROKER_REJECTION_STREAK_PAUSED
+<a id="tg-broker-rejection-streak-paused"></a>
+
+Telegram event `BROKER_REJECTION_STREAK_PAUSED`.
+
+Template: `src/server/telegram/templates/broker-rejection-streak-paused.ts`.
+
+Defined in `src/server/telegram/event-catalog.ts`. Emit site: grep the codebase for `emitTelegramEvent("BROKER_REJECTION_STREAK_PAUSED"`.
+
+---
+
 # CAP_REACHED
 <a id="tg-cap-reached"></a>
 

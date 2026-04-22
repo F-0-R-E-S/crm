@@ -45,7 +45,7 @@
 | trpc | 12 | [trpc-surface.md](../content/docs/routing-engine/_deep/trpc-surface.md) |
 | rest | 11 | [rest-surface.md](../content/docs/routing-engine/_deep/rest-surface.md) |
 | env | 18 | [env-vars.md](../content/docs/routing-engine/_deep/env-vars.md) |
-| errors | 28 | [error-catalog.md](../content/docs/routing-engine/_deep/error-catalog.md) |
+| errors | 31 | [error-catalog.md](../content/docs/routing-engine/_deep/error-catalog.md) |
 
 ## Routing UI
 - **Block id:** `routing-ui`
@@ -176,7 +176,7 @@
 | trpc | 9 | [trpc-surface.md](../content/docs/telegram-bot/_deep/trpc-surface.md) |
 | rest | 1 | [rest-surface.md](../content/docs/telegram-bot/_deep/rest-surface.md) |
 | env | 20 | [env-vars.md](../content/docs/telegram-bot/_deep/env-vars.md) |
-| telegram | 32 | [telegram-events.md](../content/docs/telegram-bot/_deep/telegram-events.md) |
+| telegram | 33 | [telegram-events.md](../content/docs/telegram-bot/_deep/telegram-events.md) |
 | jobs | 3 | [jobs.md](../content/docs/telegram-bot/_deep/jobs.md) |
 
 ## Outbound Webhooks

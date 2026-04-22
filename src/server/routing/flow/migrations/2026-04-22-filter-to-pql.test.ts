@@ -22,9 +22,7 @@ describe("migrateFilterNodes", () => {
     expect(rewrittenCount).toBe(1);
     const filter = graph.nodes.find((n) => n.kind === "Filter");
     if (!filter || filter.kind !== "Filter") throw new Error("expected filter");
-    expect(filter.rules).toEqual([
-      { field: "geo", sign: "eq", value: "UA", caseSensitive: false },
-    ]);
+    expect(filter.rules).toEqual([{ field: "geo", sign: "eq", value: "UA", caseSensitive: false }]);
     // Legacy `conditions` key dropped.
     expect((filter as unknown as { conditions?: unknown }).conditions).toBeUndefined();
   });

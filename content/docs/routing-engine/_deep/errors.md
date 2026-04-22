@@ -8,14 +8,14 @@ title: "Error Catalog — routing-engine"
 # Error: algorithm_no_pick
 <a id="err-plain-algorithm-no-pick"></a>
 
-Plain Error: `algorithm_no_pick` at `src/server/routing/engine.ts:247`.
+Plain Error: `algorithm_no_pick` at `src/server/routing/engine.ts:334`.
 
 ---
 
 # Error: algorithm_no_pick
 <a id="err-plain-algorithm-no-pick"></a>
 
-Plain Error: `algorithm_no_pick` at `src/server/routing/engine.ts:287`.
+Plain Error: `algorithm_no_pick` at `src/server/routing/engine.ts:375`.
 
 ---
 
@@ -29,7 +29,7 @@ Plain Error: `algorithm_not_configured` at `src/server/routing/algorithm/selecto
 # Error: archive_conflict
 <a id="err-plain-archive-conflict"></a>
 
-Plain Error: `archive_conflict` at `src/server/routing/flow/publish.ts:60`.
+Plain Error: `archive_conflict` at `src/server/routing/flow/publish.ts:122`.
 
 ---
 
@@ -65,6 +65,20 @@ Plain Error: `edges cannot target the Entry node` at `src/server/routing/flow/bu
 <a id="err-plain-expected-filter"></a>
 
 Plain Error: `expected filter` at `src/server/routing/flow/model.test.ts:128`.
+
+---
+
+# Error: expected filter
+<a id="err-plain-expected-filter"></a>
+
+Plain Error: `expected filter` at `src/server/routing/flow/migrations/2026-04-22-filter-to-pql.test.ts:24`.
+
+---
+
+# Error: expected filter
+<a id="err-plain-expected-filter"></a>
+
+Plain Error: `expected filter` at `src/server/routing/flow/migrations/2026-04-22-filter-to-pql.test.ts:85`.
 
 ---
 
@@ -162,7 +176,14 @@ Plain Error: `node ${nodeId} is not a BrokerTarget` at `src/server/routing/flow/
 # Error: publish_conflict
 <a id="err-plain-publish-conflict"></a>
 
-Plain Error: `publish_conflict` at `src/server/routing/flow/publish.ts:36`.
+Plain Error: `publish_conflict` at `src/server/routing/flow/publish.ts:74`.
+
+---
+
+# Error: redis never became ready
+<a id="err-plain-redis-never-became-ready"></a>
+
+Plain Error: `redis never became ready` at `src/server/routing/constraints/rejection-streak.test.ts:22`.
 
 ---
 
