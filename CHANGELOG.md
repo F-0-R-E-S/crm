@@ -594,6 +594,12 @@ Hotfix sprint following the v1.0 launch checklist.
 - **pg-boss worker runner:** `worker.ts` now boots all S2–S8 crons (analytics rollups, CRG settle, manual-queue-depth-check, anomaly-detect, daily-summary, proxy-health, alerts-evaluator).
 - **Version bump to `1.0.0`** + tag `v1.0.0`.
 
+## Unreleased — Docs assistant scaffolding (partial)
+
+- **Plan #4 (hybrid search) — partial.** Landing: `chunkMarkdown` (audience-aware splitter) + Ollama `embed`/`embedBatch` client (BGE-M3, 1024-dim). `DocChunk` Prisma model + pgvector migration + indexer + hybrid search not yet shipped — pending live Postgres+pgvector.
+- **Plan #5 (API reference) — partial.** `/docs/api` moved into shared `(docs)` layout (sidebar + breadcrumbs). zod-to-openapi coverage extended to `POST /api/v1/routing/simulate` + `GET /api/v1/errors` (previously hand-authored).
+- **Plan #6 (local LLM Q&A) — partial.** Env vars (`OLLAMA_*`, `DOCS_LLM_*`) + `streamChat` Ollama chat client + `buildRagPrompt` context builder + `useAskStream` SSE consumer hook. 20-pair eval harness under `tests/eval/` (gated by `RUN_EVAL=1`). SSE route `/api/docs/ask`, ChatWidget, `/docs/ai` full-chat page, Fly GPU deploy — pending.
+
 ## [0.2.0] — 2026-04-20
 
 - Wave0 + pre-wave1 merge. EPIC-01 Lead Intake, EPIC-02 Routing engine, EPIC-03 Broker integration, EPIC-04 Affiliate settings, EPIC-05 Lead UI, EPIC-06 RBAC.

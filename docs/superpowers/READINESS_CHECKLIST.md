@@ -286,3 +286,6 @@ Target: Q4 2027. Full plan at `plans/2027-07-01-v2-5-intelligence-and-platform.m
 - [x] Docs maintenance + evolution mechanism (audit + scaffold + update-prompt + playbook) — #2026-04-22-docs-07
 - [x] /docs subsite skeleton + two-tier content loader + sitemap — #2026-04-22-docs-02
 - [x] Docs content — top 10 user-facing blocks (+ cross-cutting pages) — #2026-04-22-docs-03
+- [~] Docs hybrid search — plan #4 pure-function scaffolding only (DocChunk + indexer + hybrid search pending live DB) — #2026-04-22-docs-04
+- [~] Docs API reference integration — `/docs/api` in shared layout + zod-to-openapi expanded; OpenAPI search indexing pending plan #4 — #2026-04-22-docs-05
+- [~] Docs local LLM Q&A — env + chat client + rag builder + SSE hook + eval harness; SSE route + widget + Fly GPU pending — #2026-04-22-docs-06
