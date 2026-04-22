@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { detectFallbackCycle } from "../fallback/orchestrator";
-import type { SmartPoolNode } from "./model";
 import { smartPoolToFallbackSteps } from "./compile-smartpool";
+import type { SmartPoolNode } from "./model";
 
 const mkPool = (maxHop = 5): SmartPoolNode => ({
   id: "sp_1",

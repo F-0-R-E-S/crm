@@ -32,9 +32,9 @@ describe("PQL evaluate — geo", () => {
     expect(gate([{ field: "geo", sign: "neq", value: "PL", caseSensitive: false }]).ok).toBe(true);
   });
   it("in", () => {
-    expect(
-      gate([{ field: "geo", sign: "in", value: ["UA", "PL"], caseSensitive: false }]).ok,
-    ).toBe(true);
+    expect(gate([{ field: "geo", sign: "in", value: ["UA", "PL"], caseSensitive: false }]).ok).toBe(
+      true,
+    );
   });
   it("not_in", () => {
     expect(
@@ -50,53 +50,49 @@ describe("PQL evaluate — geo", () => {
 
 describe("PQL evaluate — case sensitivity", () => {
   it("case-insensitive eq hits mixed case", () => {
-    expect(
-      gate([{ field: "geo", sign: "eq", value: "ua", caseSensitive: false }]).ok,
-    ).toBe(true);
+    expect(gate([{ field: "geo", sign: "eq", value: "ua", caseSensitive: false }]).ok).toBe(true);
   });
   it("case-sensitive eq misses mixed case", () => {
-    expect(gate([{ field: "geo", sign: "eq", value: "ua", caseSensitive: true }]).ok).toBe(
-      false,
-    );
+    expect(gate([{ field: "geo", sign: "eq", value: "ua", caseSensitive: true }]).ok).toBe(false);
   });
   it("case-sensitive matches uses the i flag only when false", () => {
-    expect(
-      gate([{ field: "geo", sign: "matches", value: "ua", caseSensitive: true }]).ok,
-    ).toBe(false);
-    expect(
-      gate([{ field: "geo", sign: "matches", value: "ua", caseSensitive: false }]).ok,
-    ).toBe(true);
+    expect(gate([{ field: "geo", sign: "matches", value: "ua", caseSensitive: true }]).ok).toBe(
+      false,
+    );
+    expect(gate([{ field: "geo", sign: "matches", value: "ua", caseSensitive: false }]).ok).toBe(
+      true,
+    );
   });
 });
 
 describe("PQL evaluate — numeric hourOfDay", () => {
   it("gte true", () => {
-    expect(
-      gate([{ field: "hourOfDay", sign: "gte", value: 10, caseSensitive: false }]).ok,
-    ).toBe(true);
+    expect(gate([{ field: "hourOfDay", sign: "gte", value: 10, caseSensitive: false }]).ok).toBe(
+      true,
+    );
   });
   it("gte false", () => {
-    expect(
-      gate([{ field: "hourOfDay", sign: "gte", value: 20, caseSensitive: false }]).ok,
-    ).toBe(false);
+    expect(gate([{ field: "hourOfDay", sign: "gte", value: 20, caseSensitive: false }]).ok).toBe(
+      false,
+    );
   });
   it("lte true", () => {
-    expect(
-      gate([{ field: "hourOfDay", sign: "lte", value: 15, caseSensitive: false }]).ok,
-    ).toBe(true);
+    expect(gate([{ field: "hourOfDay", sign: "lte", value: 15, caseSensitive: false }]).ok).toBe(
+      true,
+    );
   });
   it("lte false", () => {
-    expect(
-      gate([{ field: "hourOfDay", sign: "lte", value: 10, caseSensitive: false }]).ok,
-    ).toBe(false);
+    expect(gate([{ field: "hourOfDay", sign: "lte", value: 10, caseSensitive: false }]).ok).toBe(
+      false,
+    );
   });
   it("eq / neq", () => {
-    expect(
-      gate([{ field: "hourOfDay", sign: "eq", value: 14, caseSensitive: false }]).ok,
-    ).toBe(true);
-    expect(
-      gate([{ field: "hourOfDay", sign: "neq", value: 14, caseSensitive: false }]).ok,
-    ).toBe(false);
+    expect(gate([{ field: "hourOfDay", sign: "eq", value: 14, caseSensitive: false }]).ok).toBe(
+      true,
+    );
+    expect(gate([{ field: "hourOfDay", sign: "neq", value: 14, caseSensitive: false }]).ok).toBe(
+      false,
+    );
   });
   it("in / not_in (numeric as string array)", () => {
     expect(

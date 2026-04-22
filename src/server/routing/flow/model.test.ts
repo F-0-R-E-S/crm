@@ -98,15 +98,11 @@ describe("PqlRuleSchema", () => {
   });
 
   it("rejects an unknown sign", () => {
-    expect(() =>
-      PqlRuleSchema.parse({ field: "geo", sign: "sometimes", value: "UA" }),
-    ).toThrow();
+    expect(() => PqlRuleSchema.parse({ field: "geo", sign: "sometimes", value: "UA" })).toThrow();
   });
 
   it("rejects an unknown field", () => {
-    expect(() =>
-      PqlRuleSchema.parse({ field: "mysteryField", sign: "eq", value: "UA" }),
-    ).toThrow();
+    expect(() => PqlRuleSchema.parse({ field: "mysteryField", sign: "eq", value: "UA" })).toThrow();
   });
 });
 

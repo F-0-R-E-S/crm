@@ -1,6 +1,7 @@
 import { readFile, rm } from "node:fs/promises";
 import { resolve } from "node:path";
 import { runDocsRegen } from "@/../scripts/docs-regen";
+import { scaffoldInvariantStubs } from "@/../scripts/docs-regen/invariant-stubs";
 import { beforeAll, describe, expect, it } from "vitest";
 
 const CONTENT_ROOT = resolve(process.cwd(), "content/docs");
@@ -10,6 +11,7 @@ describe("docs-regen orchestrator (write mode)", () => {
   beforeAll(async () => {
     await rm(CONTENT_ROOT, { recursive: true, force: true });
     await rm(INVENTORY_FILE, { force: true });
+    await scaffoldInvariantStubs(process.cwd());
   });
 
   it("writes _deep files for every block with extracted content", async () => {

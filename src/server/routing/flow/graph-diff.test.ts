@@ -89,9 +89,7 @@ const FIX_SLOTS_CHANCE_THREE: FlowGraph = {
     {
       id: "f",
       kind: "Filter",
-      rules: [
-        { field: "geo", sign: "in", value: ["UA", "PL", "CZ"], caseSensitive: false },
-      ],
+      rules: [{ field: "geo", sign: "in", value: ["UA", "PL", "CZ"], caseSensitive: false }],
       logic: "AND",
     },
     { id: "a", kind: "Algorithm", mode: "SLOTS_CHANCE" },

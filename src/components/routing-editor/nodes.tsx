@@ -121,14 +121,11 @@ export function BranchNode({ data }: { data: NodeData }) {
               color: "var(--fg-1)",
             }}
           >
-            {c.field} {c.sign}{" "}
-            {Array.isArray(c.value) ? `[${c.value.join(",")}]` : String(c.value)}
+            {c.field} {c.sign} {Array.isArray(c.value) ? `[${c.value.join(",")}]` : String(c.value)}
           </span>
         ))}
         {node.rules.length > 3 && (
-          <span style={{ fontSize: 10, color: "var(--fg-2)" }}>
-            +{node.rules.length - 3} more
-          </span>
+          <span style={{ fontSize: 10, color: "var(--fg-2)" }}>+{node.rules.length - 3} more</span>
         )}
       </div>
       <Handle type="target" position={Position.Left} style={{ background: "var(--fg-2)" }} />
