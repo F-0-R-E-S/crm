@@ -205,7 +205,7 @@ function FilterRow({ index, row, readOnly, hasError, canRemove, onPatch, onRemov
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "1fr 88px 1fr auto",
+        gridTemplateColumns: "1fr 110px 1fr auto auto",
         gap: 4,
         alignItems: "start",
         padding: 6,
@@ -275,6 +275,27 @@ function FilterRow({ index, row, readOnly, hasError, canRemove, onPatch, onRemov
           />
         )}
       </div>
+      <label
+        title="case-sensitive match"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 3,
+          fontSize: 10,
+          color: "var(--fg-2)",
+          cursor: readOnly ? "not-allowed" : "pointer",
+          userSelect: "none",
+        }}
+      >
+        <input
+          type="checkbox"
+          aria-label={`condition ${index + 1} case-sensitive`}
+          disabled={readOnly}
+          checked={row.caseSensitive ?? false}
+          onChange={(e) => onPatch({ ...row, caseSensitive: e.target.checked } as FilterCondition)}
+        />
+        Aa
+      </label>
       <button
         type="button"
         aria-label={`remove condition ${index + 1}`}

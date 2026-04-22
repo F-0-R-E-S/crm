@@ -10,9 +10,27 @@ import {
 } from "./filter-conditions";
 
 describe("filter-conditions matrix", () => {
-  it("exposes every op for free-text fields", () => {
-    expect(legalOpsForField("subId")).toEqual(["eq", "neq", "in", "not_in", "matches"]);
-    expect(legalOpsForField("utm_source")).toEqual(["eq", "neq", "in", "not_in", "matches"]);
+  it("exposes the full string op vocabulary for free-text fields", () => {
+    expect(legalOpsForField("subId")).toEqual([
+      "eq",
+      "neq",
+      "in",
+      "not_in",
+      "contains",
+      "starts_with",
+      "ends_with",
+      "matches",
+    ]);
+    expect(legalOpsForField("utm_source")).toEqual([
+      "eq",
+      "neq",
+      "in",
+      "not_in",
+      "contains",
+      "starts_with",
+      "ends_with",
+      "matches",
+    ]);
   });
 
   it("restricts timeOfDay to set-like ops", () => {
