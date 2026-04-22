@@ -1,0 +1,98 @@
+---
+audience: human
+block: webhooks-outbound
+source: hand
+title: "Concepts: delivery lifecycle, retry ladder, replay protection, auto-pause"
+description: "Internals of outbound webhook delivery — how deliveries are created, retried, protected against replay, and paused."
+order: 3
+---
+
+# Outbound webhook concepts
+
+## Delivery lifecycle
+
+<a id="delivery-lifecycle" />
+
+Outbound webhook delivery follows a two-table model:
+
+**`AffiliateIntakeWebhook`** — the configuration record. One row per URL registered by an affiliate. Contains:
+- `url` — the endpoint to POST to.
+- `secret` — the HMAC signing key (affiliate-scoped; never transmitted in delivery).
+- `eventTypes` — array of event types this subscription covers.
+- `pausedAt` — null when active; set to a timestamp when paused (see [#auto-pause](#auto-pause)).
+
+**`WebhookDelivery`** — one row per delivery attempt. Created when a matching lead state change fires. Contains:
+- `status` — `PENDING | DELIVERED | FAILED`.
+- `attempt` — current attempt number (1-indexed).
+- `responseStatus` — HTTP status code received (null if the request failed at the network layer).
+- `responseBody` — first 1 KB of the response body for debugging.
+- `deliveredAt` — timestamp when a 2xx was received.
+
+**Flow:**
+
+```
+Lead state change
+  ↓
+AffiliateIntakeWebhook rows matching the event type are queried
+  ↓
+One WebhookDelivery row created per matching webhook (status=PENDING)
+  ↓
+pg-boss job intake-webhook-delivery enqueued
+  ↓
+HTTP POST to url with signed body
+  ↓
+2xx response → status=DELIVERED, deliveredAt=now()
+non-2xx → re-enqueue with backoff (up to 5 retries)
+final failure → status=FAILED
+```
+
+## Retry ladder
+
+<a id="retry-ladder" />
+
+The retry schedule is fixed:
+
+| Retry | Delay after failure |
+|-------|---------------------|
+| 1st retry | 10 seconds |
+| 2nd retry | 60 seconds |
+| 3rd retry | 5 minutes |
+| 4th retry | 15 minutes |
+| 5th (final) retry | 1 hour |
+
+Each delay is **jittered ±10%** — a 60-second delay becomes a random value between 54 s and 66 s. Jitter prevents many simultaneous deliveries (e.g. after a platform restart) from hammering affiliate endpoints in a synchronised wave.
+
+After the 5th retry fails, `WebhookDelivery.status` is set to `FAILED` permanently. No further attempts are made.
+
+## Replay protection
+
+<a id="replay-protection" />
+
+The `X-GambChamp-Timestamp` header carries the Unix timestamp (seconds) at the time the delivery job runs. The HMAC is computed over the concatenation:
+
+```
+<timestamp>.<rawBody>
+```
+
+This means the timestamp is cryptographically bound to the payload. An attacker who captures a valid delivery cannot replay it after 5 minutes because the timestamp in the header will be more than 300 seconds old by the time they replay it.
+
+**Receiver responsibility:** check `|now − X-GambChamp-Timestamp| ≤ 300` before accepting the delivery. If the window has expired, return HTTP 400. GambChamp will re-sign the next retry attempt with the current timestamp — the signature changes on each attempt.
+
+## Auto-pause
+
+<a id="auto-pause" />
+
+**HTTP 410 Gone** is the signal that an endpoint URL is permanently decommissioned. When the delivery worker receives a 410 response, it:
+
+1. Sets `AffiliateIntakeWebhook.pausedAt = now()`.
+2. Cancels any pending retries for that webhook's in-flight deliveries.
+3. Skips future delivery creation — new lead state changes matching the webhook's event types will not create `WebhookDelivery` rows while the webhook is paused.
+
+**Unpausing** requires a platform admin action (via the affiliate's webhook settings page or the `affiliateWebhook.unpause` tRPC mutation). There is no automatic recovery.
+
+<Callout type="info" title="Use 200, not 410, when rotating URLs">
+If you are migrating to a new endpoint URL, register the new URL as a second webhook, verify deliveries are arriving, then delete the old webhook record via the admin UI. Returning 410 from the old URL will pause the webhook silently before the new one is active — deliveries will be lost.
+</Callout>
+
+<DeepRefCard block="webhooks-outbound" kind="errors" title="Error codes" description="HTTP 410 triggers auto-pause. Non-2xx triggers retry up to 5 times. Network errors (connect timeout, DNS failure) count as non-2xx for retry purposes." />
+<DeepRefCard block="webhooks-outbound" kind="invariants" title="Invariants" description="Timestamp is re-generated on each retry — the signature changes per attempt. Jitter is ±10% of the nominal delay. pausedAt is set on first 410 response, not after retries. A paused webhook requires admin action to unpause." />

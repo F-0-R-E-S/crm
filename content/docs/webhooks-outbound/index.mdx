@@ -3,11 +3,63 @@ audience: human
 block: webhooks-outbound
 source: hand
 title: "Outbound Webhooks — overview"
-description: "Public placeholder page; replaced in docs plan #3."
+description: "HMAC-signed affiliate postbacks, 5-retry delivery ladder, auto-pause on HTTP 410, and delivery management."
 order: 1
 slugOverride: "webhooks-outbound"
 ---
 
 # Outbound Webhooks
 
-_Coming soon: overview of the block._
+GambChamp notifies affiliates of lead state changes by sending signed HTTP POST requests to URLs they register. These are called **outbound webhooks** (or **affiliate postbacks**) to distinguish them from the inbound broker postbacks that flow in the opposite direction.
+
+## What triggers a webhook
+
+A webhook delivery is created whenever a lead's state changes to a subscribed event. Common events:
+
+| Event | Lead state | Typical cause |
+|-------|-----------|--------------|
+| `ACCEPTED` | Lead accepted by broker | Broker postback with an ACCEPTED-mapped status |
+| `FTD` | First deposit confirmed | Broker postback with an FTD-mapped status |
+| `REJECTED` | Lead declined | Broker postback with a REJECTED-mapped status or routing failure |
+
+Each `AffiliateIntakeWebhook` row specifies an `eventTypes` array — deliveries are only created for events in that array.
+
+## HMAC signing
+
+Every outbound request carries two headers:
+
+```
+X-GambChamp-Signature: sha256=<hmac-hex>
+X-GambChamp-Timestamp: <unix-seconds>
+```
+
+The signature covers both the timestamp and the raw request body, making replayed requests detectable. See [How to verify HMAC](/docs/webhooks-outbound/how-to-verify-hmac) for language-specific verification code.
+
+## Delivery and retry ladder
+
+Each `WebhookDelivery` row starts with `status = PENDING`. A pg-boss job attempts the HTTP POST and records the response. On failure, the delivery is re-queued with an exponential backoff:
+
+| Attempt | Delay after previous failure |
+|---------|------------------------------|
+| 1 (initial) | Immediate |
+| 2 | 10 seconds |
+| 3 | 60 seconds |
+| 4 | 5 minutes |
+| 5 | 15 minutes |
+| 6 (final) | 1 hour |
+
+Delays are jittered ±10% to prevent thundering-herd effects when many deliveries fail simultaneously. After the final attempt fails, `WebhookDelivery.status` is set to `FAILED`.
+
+## Auto-pause on HTTP 410
+
+When GambChamp receives an **HTTP 410 Gone** response from an affiliate's endpoint, it interprets this as a permanent signal that the URL is no longer valid. The `AffiliateIntakeWebhook` is immediately paused (`pausedAt = now()`), and no further deliveries are attempted for that webhook. A paused webhook must be explicitly unpaused by a platform admin.
+
+## Where to go next
+
+- [Verify the HMAC signature](/docs/webhooks-outbound/how-to-verify-hmac) — Node.js, Python, and Go verification snippets with replay protection.
+- [Concepts: delivery lifecycle, retry ladder, replay protection, auto-pause](/docs/webhooks-outbound/concepts) — internals and data model.
+
+## Deep reference
+
+<DeepRefCard block="webhooks-outbound" kind="prisma" title="Database schema" description="AffiliateIntakeWebhook (url, secret, eventTypes, pausedAt), WebhookDelivery (status, attempt, responseStatus, responseBody, deliveredAt) models." />
+<DeepRefCard block="webhooks-outbound" kind="jobs" title="pg-boss jobs" description="intake-webhook-delivery — HMAC-signed HTTP POST with 5-retry ladder (10s, 60s, 5m, 15m, 1h). Auto-pause on HTTP 410 response." />

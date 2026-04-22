@@ -1,0 +1,94 @@
+---
+audience: human
+block: webhooks-outbound
+source: hand
+title: "How to verify the HMAC signature"
+description: "Node.js, Python, and Go code snippets for verifying GambChamp outbound webhook signatures with replay protection."
+order: 2
+---
+
+# How to verify the HMAC signature
+
+Every outbound webhook from GambChamp carries two headers:
+
+```
+X-GambChamp-Signature: sha256=<hmac-hex>
+X-GambChamp-Timestamp: <unix-seconds>
+```
+
+The HMAC is computed over `<timestamp>.<rawBody>` using the `AffiliateIntakeWebhook.secret` as the key. Both the timestamp and the raw body are included in the signed payload — this allows you to detect replayed requests.
+
+**Replay protection:** reject any request where `|now − timestamp| > 300` seconds (5 minutes).
+
+## Node.js / TypeScript
+
+```ts
+import crypto from "node:crypto";
+
+function verify(rawBody: string, signature: string, timestamp: string, secret: string): boolean {
+  const sig = signature.replace(/^sha256=/, "");
+  const now = Math.floor(Date.now() / 1000);
+  if (Math.abs(now - Number(timestamp)) > 300) return false;
+  const payload = `${timestamp}.${rawBody}`;
+  const expected = crypto.createHmac("sha256", secret).update(payload).digest("hex");
+  return crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected));
+}
+```
+
+Call this before processing the event body. Always read the raw body bytes — JSON parsing before verification will fail if the body is re-serialised with different whitespace.
+
+## Python
+
+```python
+import hmac, hashlib, time
+
+def verify(raw_body: bytes, signature: str, timestamp: str, secret: str) -> bool:
+    sig = signature.removeprefix("sha256=")
+    if abs(int(time.time()) - int(timestamp)) > 300:
+        return False
+    payload = f"{timestamp}.{raw_body.decode()}".encode()
+    expected = hmac.new(secret.encode(), payload, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(sig, expected)
+```
+
+`hmac.compare_digest` performs a constant-time comparison to prevent timing attacks.
+
+## Go
+
+```go
+package main
+
+import (
+    "crypto/hmac"
+    "crypto/sha256"
+    "encoding/hex"
+    "strconv"
+    "strings"
+    "time"
+)
+
+func Verify(rawBody []byte, signature, timestamp, secret string) bool {
+    sig := strings.TrimPrefix(signature, "sha256=")
+    tsInt, _ := strconv.ParseInt(timestamp, 10, 64)
+    if abs(time.Now().Unix()-tsInt) > 300 {
+        return false
+    }
+    payload := timestamp + "." + string(rawBody)
+    mac := hmac.New(sha256.New, []byte(secret))
+    mac.Write([]byte(payload))
+    expected := hex.EncodeToString(mac.Sum(nil))
+    return hmac.Equal([]byte(sig), []byte(expected))
+}
+
+func abs(n int64) int64 { if n < 0 { return -n }; return n }
+```
+
+`hmac.Equal` is the constant-time comparison function in Go's standard library.
+
+## Responding to the webhook
+
+Return **HTTP 200** after successful verification and processing. Any 2xx response is treated as successful delivery. A non-2xx response triggers a retry according to the 5-step ladder.
+
+<Callout type="warning" title="HTTP 410 silently pauses all future deliveries">
+If your endpoint returns HTTP 410, GambChamp immediately sets `AffiliateIntakeWebhook.pausedAt` and stops delivering events to that URL — permanently, until a platform admin unpauses the webhook. If you are rotating endpoint URLs, decommission the old URL gracefully (return 200 until traffic stops) rather than returning 410. Log your retry counts to catch this situation early.
+</Callout>
