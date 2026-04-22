@@ -21,3 +21,4 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: docs-regen drift check
         run: pnpm docs:regen:check
+      - run: pnpm docs:links

@@ -1,0 +1,64 @@
+---
+audience: human
+block: glossary
+source: hand
+title: "Glossary — key concepts"
+description: "Definitions of the core terms used throughout GambChamp CRM: affiliate, broker, flow, cap, shave, postback, canonical status, and more."
+order: 1
+slugOverride: "glossary"
+---
+
+# Glossary
+
+A quick reference for the terms used throughout the GambChamp CRM documentation and UI.
+
+## Affiliate
+
+A traffic source (network, media buyer, or publisher) that submits leads to GambChamp via the REST intake API (`POST /api/v1/leads`). Each affiliate is identified by an **API key**. Affiliates receive postbacks (outbound webhooks) when their leads change state.
+
+## Broker
+
+A financial-services trading platform that receives leads from GambChamp and reports back their outcome (registered, FTD, declined). Each broker has an `endpointUrl` where leads are pushed and a `postbackSecret` for authenticating inbound postbacks.
+
+## Flow / Flow version
+
+A **Flow** is a routing configuration composed of a directed graph of nodes: Filter, SmartPool, ComparingSplit, BrokerTarget, and Exit. A flow is edited as a **draft** and then **published** as a `FlowVersion`. Only the published version is used by the routing engine.
+
+## Routing engine
+
+The pure decision function (`src/server/routing/engine.ts`) that selects a broker for a given lead by evaluating the active `FlowVersion` graph, applying GEO constraints, schedule constraints, and cap constraints.
+
+## Cap
+
+A limit on how many leads (pushed or rejected) a broker or broker target can receive in a given time window (hourly / daily / weekly). Caps are defined as `CapDefinition` rows and enforced atomically via Redis counters backed by Postgres `CapCounter` rows.
+
+## WRR / Slots-Chance
+
+The two routing algorithms available on a flow's Algorithm node:
+
+- **WRR (Weighted Round-Robin)** — smooth Nginx-style round-robin; each broker gets weight-proportional traffic.
+- **Slots-Chance** — CSPRNG random selection; each broker gets a `chance` percentage of traffic sampled independently on each lead.
+
+## Postback
+
+An HTTP POST from a broker back to GambChamp (`/api/v1/postbacks/:brokerId`) reporting the outcome of a pushed lead. The raw status string is mapped to a `CanonicalStatus` (via `StatusMapping`) and the lead's state machine advances.
+
+## Canonical status
+
+A normalised status category (e.g. `QUALIFIED`, `CONVERTED`, `REJECTED`) that a raw broker status is mapped to via the Status Groups feature. Enables cross-broker analytics breakdowns.
+
+## Shave
+
+An anti-fraud practice where a broker under-reports conversions. GambChamp detects potential shave via the **pending-hold** mechanism: if a broker postbacks `DECLINED` while a lead is in `PENDING_HOLD`, the lead is flagged with `shaveSuspected = true`.
+
+## CRG (Conversion Rate Guarantee)
+
+A commercial arrangement where a broker guarantees a minimum conversion rate over a cohort period. GambChamp settles CRG cohorts weekly and appends shortfall line items to broker invoices.
+
+## Tenant
+
+A white-label customer of GambChamp that operates its own branded instance. Each tenant has its own set of affiliates, brokers, leads, and users. All tenant-scoped data is isolated via the `tenantId` column and `withTenant` middleware.
+
+## pg-boss
+
+The job queue library used by GambChamp, backed by a `pgboss` schema on the same Postgres instance as the application. All async jobs (push-lead, autologin, analytics rollups, Telegram send, CRG settle, etc.) run through pg-boss.

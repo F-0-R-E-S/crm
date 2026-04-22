@@ -28,7 +28,8 @@
     "docs:regen:dry": "tsx scripts/docs-regen/index.ts",
     "docs:audit": "tsx scripts/docs-maintenance/audit.ts",
     "docs:scaffold": "tsx scripts/docs-maintenance/scaffold.ts",
-    "docs:update-prompt": "tsx scripts/docs-maintenance/update-prompt.ts"
+    "docs:update-prompt": "tsx scripts/docs-maintenance/update-prompt.ts",
+    "docs:links": "tsx scripts/docs-regen/check-links.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
