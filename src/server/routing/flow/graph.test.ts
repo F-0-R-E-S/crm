@@ -42,7 +42,7 @@ describe("flowToGraph / graphToFlow round-trip", () => {
         {
           id: "f1",
           kind: "Filter",
-          conditions: [{ field: "geo", op: "in", value: ["UA", "PL"] }],
+          rules: [{ field: "geo", sign: "in", value: ["UA", "PL"], caseSensitive: false }],
           logic: "AND",
         },
         { id: "alg", kind: "Algorithm", mode: "SLOTS_CHANCE" },
@@ -108,13 +108,13 @@ describe("flowToGraph / graphToFlow round-trip", () => {
         {
           id: "fa",
           kind: "Filter",
-          conditions: [{ field: "geo", op: "eq", value: "UA" }],
+          rules: [{ field: "geo", sign: "eq", value: "UA", caseSensitive: false }],
           logic: "AND",
         },
         {
           id: "fb",
           kind: "Filter",
-          conditions: [{ field: "geo", op: "eq", value: "PL" }],
+          rules: [{ field: "geo", sign: "eq", value: "PL", caseSensitive: false }],
           logic: "AND",
         },
         { id: "alg_ua", kind: "Algorithm", mode: "WEIGHTED_ROUND_ROBIN" },

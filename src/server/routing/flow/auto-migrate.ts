@@ -32,7 +32,7 @@ export async function ensureDefaultFlowsFromRotationRules(): Promise<number> {
         {
           id: "f",
           kind: "Filter",
-          conditions: [{ field: "geo", op: "eq", value: geo }],
+          rules: [{ field: "geo", sign: "eq", value: geo, caseSensitive: false }],
           logic: "AND",
         },
         { id: "a", kind: "Algorithm", mode: "WEIGHTED_ROUND_ROBIN" },

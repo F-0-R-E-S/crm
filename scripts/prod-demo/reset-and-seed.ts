@@ -541,10 +541,10 @@ async function seed(): Promise<SeedResult> {
         id: "filter_eu",
         kind: "Filter" as const,
         label: "EU",
-        conditions: [
+        rules: [
           {
             field: "geo" as const,
-            op: "in" as const,
+            sign: "in" as const,
             value: ["DE", "FR", "IT", "ES", "PL", "AT", "UK"],
           },
         ],
@@ -575,7 +575,7 @@ async function seed(): Promise<SeedResult> {
         id: "filter_us",
         kind: "Filter" as const,
         label: "US/CA",
-        conditions: [{ field: "geo" as const, op: "in" as const, value: ["US", "CA"] }],
+        rules: [{ field: "geo" as const, sign: "in" as const, value: ["US", "CA"] }],
         logic: "AND" as const,
       },
       {
@@ -596,8 +596,8 @@ async function seed(): Promise<SeedResult> {
         id: "filter_latam",
         kind: "Filter" as const,
         label: "LATAM",
-        conditions: [
-          { field: "geo" as const, op: "in" as const, value: ["BR", "MX", "AR", "CL", "CO"] },
+        rules: [
+          { field: "geo" as const, sign: "in" as const, value: ["BR", "MX", "AR", "CL", "CO"] },
         ],
         logic: "AND" as const,
       },
@@ -619,8 +619,8 @@ async function seed(): Promise<SeedResult> {
         id: "filter_asia",
         kind: "Filter" as const,
         label: "ASIA",
-        conditions: [
-          { field: "geo" as const, op: "in" as const, value: ["JP", "KR", "HK", "SG", "AU"] },
+        rules: [
+          { field: "geo" as const, sign: "in" as const, value: ["JP", "KR", "HK", "SG", "AU"] },
         ],
         logic: "AND" as const,
       },

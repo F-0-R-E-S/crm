@@ -39,6 +39,8 @@ const KIND_ACCENT: Record<FlowNode["kind"], string> = {
   Algorithm: "oklch(82% 0.14 150)",
   BrokerTarget: "oklch(82% 0.15 75)",
   Fallback: "oklch(75% 0.15 25)",
+  SmartPool: "oklch(78% 0.14 40)",
+  ComparingSplit: "oklch(80% 0.13 320)",
   Exit: "oklch(70% 0.05 230)",
 };
 
@@ -110,7 +112,7 @@ export function BranchNode({ data }: { data: NodeData }) {
       <Header kind="Filter" sub={node.logic} />
       <div style={{ fontWeight: 500, marginBottom: 6 }}>{data.label}</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-        {node.conditions.slice(0, 3).map((c, i) => (
+        {node.rules.slice(0, 3).map((c, i) => (
           <span
             key={`${c.field}-${i}`}
             style={{
@@ -119,12 +121,13 @@ export function BranchNode({ data }: { data: NodeData }) {
               color: "var(--fg-1)",
             }}
           >
-            {c.field} {c.op} {Array.isArray(c.value) ? `[${c.value.join(",")}]` : String(c.value)}
+            {c.field} {c.sign}{" "}
+            {Array.isArray(c.value) ? `[${c.value.join(",")}]` : String(c.value)}
           </span>
         ))}
-        {node.conditions.length > 3 && (
+        {node.rules.length > 3 && (
           <span style={{ fontSize: 10, color: "var(--fg-2)" }}>
-            +{node.conditions.length - 3} more
+            +{node.rules.length - 3} more
           </span>
         )}
       </div>

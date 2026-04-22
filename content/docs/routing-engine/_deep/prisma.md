@@ -16,11 +16,12 @@ Database-backed model. Source: `prisma/schema.prisma`.
 - **window** `CapWindow`
 - **bucketKey** `String`
 - **country** `String` default=""
+- **kind** `CapCounterKind` default="PUSHED"
 - **count** `Int` default=0
 - **resetsAt** `DateTime`
 
 **Unique indexes:**
-- (scope, scopeId, window, bucketKey, country)
+- (scope, scopeId, window, bucketKey, country, kind)
 
 ---
 
@@ -53,6 +54,11 @@ Database-backed model. Source: `prisma/schema.prisma`.
 - **limit** `Int`
 - **timezone** `String` default="UTC"
 - **perCountry** `Boolean` default=false
+- **rejectedLimit** `Int?`
+- **rejectedLimitAsPercent** `Boolean` default=false
+- **rejectionsInARow** `Int?`
+- **pqlScope** `Json?`
+- **behaviorPattern** `CapBehaviorPattern` default="REGULAR"
 - **flowVersion** `FlowVersion` relation→CapDefinitionToFlowVersion
 - **countryLimits** `CapCountryLimit[]` relation→CapCountryLimitToCapDefinition
 
@@ -78,6 +84,25 @@ Enum referenced by one or more models.
 
 - FLOW
 - BRANCH
+
+---
+
+# enum CapBehaviorPattern
+<a id="db-enum-capbehaviorpattern"></a>
+
+Enum referenced by one or more models.
+
+- REGULAR
+
+---
+
+# enum CapCounterKind
+<a id="db-enum-capcounterkind"></a>
+
+Enum referenced by one or more models.
+
+- PUSHED
+- REJECTED
 
 ---
 
@@ -200,6 +225,7 @@ Database-backed model. Source: `prisma/schema.prisma`.
 - **fallbackSteps** `FallbackStep[]` relation→FallbackStepToFlowVersion
 - **capDefs** `CapDefinition[]` relation→CapDefinitionToFlowVersion
 - **algoConfigs** `FlowAlgorithmConfig[]` relation→FlowAlgorithmConfigToFlowVersion
+- **comparingBuckets** `ComparingBucketStat[]` relation→ComparingBucketStatToFlowVersion
 
 **Unique indexes:**
 - (flowId, versionNumber)

@@ -8,14 +8,14 @@ title: "Error Catalog — routing-engine"
 # Error: algorithm_no_pick
 <a id="err-plain-algorithm-no-pick"></a>
 
-Plain Error: `algorithm_no_pick` at `src/server/routing/engine.ts:245`.
+Plain Error: `algorithm_no_pick` at `src/server/routing/engine.ts:247`.
 
 ---
 
 # Error: algorithm_no_pick
 <a id="err-plain-algorithm-no-pick"></a>
 
-Plain Error: `algorithm_no_pick` at `src/server/routing/engine.ts:285`.
+Plain Error: `algorithm_no_pick` at `src/server/routing/engine.ts:287`.
 
 ---
 
@@ -36,28 +36,28 @@ Plain Error: `archive_conflict` at `src/server/routing/flow/publish.ts:60`.
 # Error: cannot delete Entry node
 <a id="err-plain-cannot-delete-entry-node"></a>
 
-Plain Error: `cannot delete Entry node` at `src/server/routing/flow/builder.ts:182`.
+Plain Error: `cannot delete Entry node` at `src/server/routing/flow/builder.ts:211`.
 
 ---
 
 # Error: cannot delete the last Exit node
 <a id="err-plain-cannot-delete-the-last-exit-node"></a>
 
-Plain Error: `cannot delete the last Exit node` at `src/server/routing/flow/builder.ts:185`.
+Plain Error: `cannot delete the last Exit node` at `src/server/routing/flow/builder.ts:214`.
 
 ---
 
 # Error: edges cannot originate from an Exit node
 <a id="err-plain-edges-cannot-originate-from-an-exit-node"></a>
 
-Plain Error: `edges cannot originate from an Exit node` at `src/server/routing/flow/builder.ts:210`.
+Plain Error: `edges cannot originate from an Exit node` at `src/server/routing/flow/builder.ts:239`.
 
 ---
 
 # Error: edges cannot target the Entry node
 <a id="err-plain-edges-cannot-target-the-entry-node"></a>
 
-Plain Error: `edges cannot target the Entry node` at `src/server/routing/flow/builder.ts:209`.
+Plain Error: `edges cannot target the Entry node` at `src/server/routing/flow/builder.ts:238`.
 
 ---
 
@@ -162,26 +162,26 @@ Plain Error: `publish_conflict` at `src/server/routing/flow/publish.ts:36`.
 # Error: self-loops are not allowed
 <a id="err-plain-self-loops-are-not-allowed"></a>
 
-Plain Error: `self-loops are not allowed` at `src/server/routing/flow/builder.ts:204`.
+Plain Error: `self-loops are not allowed` at `src/server/routing/flow/builder.ts:233`.
 
 ---
 
 # Error: unknown kind: ${String(exhaustive)}
 <a id="err-plain-unknown-kind----string-exhaustive--"></a>
 
-Plain Error: `unknown kind: ${String(exhaustive)}` at `src/server/routing/flow/graph.ts:84`.
+Plain Error: `unknown kind: ${String(exhaustive)}` at `src/server/routing/flow/graph.ts:92`.
 
 ---
 
 # Error: unknown source node: ${edge.from}
 <a id="err-plain-unknown-source-node----edge-from-"></a>
 
-Plain Error: `unknown source node: ${edge.from}` at `src/server/routing/flow/builder.ts:207`.
+Plain Error: `unknown source node: ${edge.from}` at `src/server/routing/flow/builder.ts:236`.
 
 ---
 
 # Error: unknown target node: ${edge.to}
 <a id="err-plain-unknown-target-node----edge-to-"></a>
 
-Plain Error: `unknown target node: ${edge.to}` at `src/server/routing/flow/builder.ts:208`.
+Plain Error: `unknown target node: ${edge.to}` at `src/server/routing/flow/builder.ts:237`.
 

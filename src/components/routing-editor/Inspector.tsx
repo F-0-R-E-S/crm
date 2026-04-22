@@ -316,10 +316,28 @@ export function Inspector(props: Props) {
             conditions
           </div>
           <FilterConditionEditor
-            node={node as FilterNode}
+            // S3.1: FilterNode now carries `rules` (PqlRule[]) instead of
+            // `conditions`. The legacy editor still expects the old shape, so
+            // we adapt bidirectionally until PqlRuleEditor replaces it (S3.2 T1).
+            node={{
+              conditions: ((node as FilterNode).rules ?? []).map((r) => ({
+                field: r.field as FilterCondition["field"],
+                op: r.sign as FilterCondition["op"],
+                value: r.value,
+              })),
+              logic: (node as FilterNode).logic,
+            }}
             readOnly={readOnly}
             onChange={(patch: { conditions: FilterCondition[]; logic: FilterLogic }) =>
-              props.onNodePatch(patch as Partial<FlowNode>)
+              props.onNodePatch({
+                rules: patch.conditions.map((c) => ({
+                  field: c.field,
+                  sign: c.op,
+                  value: c.value,
+                  caseSensitive: false,
+                })),
+                logic: patch.logic,
+              } as Partial<FlowNode>)
             }
           />
         </div>

@@ -41,7 +41,7 @@
 
 | Source | Count | Link |
 |---|---:|---|
-| prisma | 13 | [db-schema.md](../content/docs/routing-engine/_deep/db-schema.md) |
+| prisma | 15 | [db-schema.md](../content/docs/routing-engine/_deep/db-schema.md) |
 | trpc | 12 | [trpc-surface.md](../content/docs/routing-engine/_deep/trpc-surface.md) |
 | rest | 11 | [rest-surface.md](../content/docs/routing-engine/_deep/rest-surface.md) |
 | env | 18 | [env-vars.md](../content/docs/routing-engine/_deep/env-vars.md) |

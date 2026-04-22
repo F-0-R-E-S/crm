@@ -13,7 +13,6 @@
 // surfaces a small inline error when a row would fail the Zod schema; the
 // publish-guard still re-validates at save time.
 
-import type { FilterNode } from "@/server/routing/flow/model";
 import { useId } from "react";
 import {
   FILTER_FIELDS,
@@ -22,7 +21,6 @@ import {
   type FilterLogic,
   type FilterOp,
   coerceValue,
-  defaultValueFor,
   legalOpsForField,
   parseChips,
   validateConditions,
@@ -52,7 +50,7 @@ const btn = (active?: boolean) =>
   }) as const;
 
 interface Props {
-  node: Pick<FilterNode, "conditions" | "logic">;
+  node: { conditions: FilterCondition[]; logic: FilterLogic };
   readOnly: boolean;
   onChange: (patch: { conditions: FilterCondition[]; logic: FilterLogic }) => void;
 }

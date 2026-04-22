@@ -25,6 +25,8 @@ export type VisualNodeType =
   | "algorithm"
   | "brokerTarget"
   | "fallback"
+  | "smartPool"
+  | "comparingSplit"
   | "exit";
 
 export interface VisualNode {
@@ -57,6 +59,8 @@ const COLUMN_X: Record<VisualNodeType, number> = {
   filter: 260,
   branch: 260,
   algorithm: 540,
+  smartPool: 540,
+  comparingSplit: 540,
   brokerTarget: 820,
   fallback: 1100,
   exit: 1380,
@@ -76,6 +80,10 @@ function visualTypeFor(kind: FlowNode["kind"]): VisualNodeType {
       return "brokerTarget";
     case "Fallback":
       return "fallback";
+    case "SmartPool":
+      return "smartPool";
+    case "ComparingSplit":
+      return "comparingSplit";
     case "Exit":
       return "exit";
     default: {
@@ -92,13 +100,17 @@ function labelFor(node: FlowNode): string {
     case "Entry":
       return "Entry";
     case "Filter":
-      return `Filter · ${node.conditions.length} cond`;
+      return `Filter · ${node.rules.length} rule${node.rules.length === 1 ? "" : "s"}`;
     case "Algorithm":
       return `Algorithm · ${node.mode === "WEIGHTED_ROUND_ROBIN" ? "WRR" : "Slots-Chance"}`;
     case "BrokerTarget":
       return `Broker · ${node.brokerId.slice(0, 10)}`;
     case "Fallback":
       return `Fallback · ${node.maxHop} hop${node.maxHop === 1 ? "" : "s"}`;
+    case "SmartPool":
+      return `SmartPool · ≤${node.maxHop} hops`;
+    case "ComparingSplit":
+      return `Comparing · ${node.compareMetric}`;
     case "Exit":
       return "Exit";
   }
@@ -129,6 +141,8 @@ export function flowToGraph(
     filter: 0,
     branch: 0,
     algorithm: 0,
+    smartPool: 0,
+    comparingSplit: 0,
     brokerTarget: 0,
     fallback: 0,
     exit: 0,

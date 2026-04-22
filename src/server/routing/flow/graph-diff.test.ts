@@ -43,7 +43,7 @@ const FIX_AUTO_MIGRATE_SINGLE: FlowGraph = {
     {
       id: "f",
       kind: "Filter",
-      conditions: [{ field: "geo", op: "eq", value: "UA" }],
+      rules: [{ field: "geo", sign: "eq", value: "UA", caseSensitive: false }],
       logic: "AND",
     },
     { id: "a", kind: "Algorithm", mode: "WEIGHTED_ROUND_ROBIN" },
@@ -89,7 +89,9 @@ const FIX_SLOTS_CHANCE_THREE: FlowGraph = {
     {
       id: "f",
       kind: "Filter",
-      conditions: [{ field: "geo", op: "in", value: ["UA", "PL", "CZ"] }],
+      rules: [
+        { field: "geo", sign: "in", value: ["UA", "PL", "CZ"], caseSensitive: false },
+      ],
       logic: "AND",
     },
     { id: "a", kind: "Algorithm", mode: "SLOTS_CHANCE" },
@@ -163,16 +165,16 @@ const FIX_PARALLEL_BRANCHES: FlowGraph = {
     {
       id: "f_ua",
       kind: "Filter",
-      conditions: [
-        { field: "geo", op: "eq", value: "UA" },
-        { field: "utm_source", op: "matches", value: "^google" },
+      rules: [
+        { field: "geo", sign: "eq", value: "UA", caseSensitive: false },
+        { field: "utm_source", sign: "matches", value: "^google", caseSensitive: false },
       ],
       logic: "AND",
     },
     {
       id: "f_pl",
       kind: "Filter",
-      conditions: [{ field: "geo", op: "in", value: ["PL", "CZ"] }],
+      rules: [{ field: "geo", sign: "in", value: ["PL", "CZ"], caseSensitive: false }],
       logic: "OR",
     },
     { id: "a_ua", kind: "Algorithm", mode: "WEIGHTED_ROUND_ROBIN" },

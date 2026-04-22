@@ -140,9 +140,38 @@ export function addFilterNode(g: FlowGraph): { graph: FlowGraph; nodeId: string 
     id,
     kind: "Filter",
     // Start with a harmless placeholder predicate — the Zod schema
-    // requires `conditions.length >= 1`, so we seed one sensible row.
-    conditions: [{ field: "geo", op: "in", value: [] }],
+    // requires `rules.length >= 1`, so we seed one sensible row.
+    rules: [{ field: "geo", sign: "in", value: [], caseSensitive: false }],
     logic: "AND",
+  };
+  return { graph: { nodes: [...g.nodes, node], edges: g.edges }, nodeId: id };
+}
+
+/** Add a SmartPool node with sane default triggers. */
+export function addSmartPoolNode(g: FlowGraph): { graph: FlowGraph; nodeId: string } {
+  const id = nextId("sp", g);
+  const node: FlowNode = {
+    id,
+    kind: "SmartPool",
+    maxHop: 5,
+    triggers: {
+      timeoutMs: 2000,
+      httpStatusCodes: [500, 502, 503, 504],
+      connectionError: true,
+      explicitReject: true,
+    },
+  };
+  return { graph: { nodes: [...g.nodes, node], edges: g.edges }, nodeId: id };
+}
+
+/** Add a ComparingSplit node with sane defaults. */
+export function addComparingSplitNode(g: FlowGraph): { graph: FlowGraph; nodeId: string } {
+  const id = nextId("co", g);
+  const node: FlowNode = {
+    id,
+    kind: "ComparingSplit",
+    compareMetric: "push_rate",
+    sampleSize: 500,
   };
   return { graph: { nodes: [...g.nodes, node], edges: g.edges }, nodeId: id };
 }

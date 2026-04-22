@@ -236,3 +236,7 @@ Target: Q4 2027. Full plan at `plans/2027-07-01-v2-5-intelligence-and-platform.m
 4. Commit this file in the same PR as the release commit.
 
 **Claude Code note:** `CLAUDE.md` references this file — keep it synchronized with CHANGELOG + what's actually in prod. If Claude finishes a sprint, it must update the relevant `- [ ]` → `- [x]` in the same commit and record the release tag.
+
+## Docs infra
+
+- [x] Feature inventory generator + `pnpm docs:regen` + CI drift guard — #2026-04-22-docs-01

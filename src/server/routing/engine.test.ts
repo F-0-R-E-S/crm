@@ -25,7 +25,14 @@ const baseGraph = (b1Id: string, b2Id: string) => ({
     {
       id: "f",
       kind: "Filter" as const,
-      conditions: [{ field: "geo" as const, op: "eq" as const, value: "UA" }],
+      rules: [
+        {
+          field: "geo" as const,
+          sign: "eq" as const,
+          value: "UA",
+          caseSensitive: false,
+        },
+      ],
       logic: "AND" as const,
     },
     { id: "a", kind: "Algorithm" as const, mode: "WEIGHTED_ROUND_ROBIN" as const },

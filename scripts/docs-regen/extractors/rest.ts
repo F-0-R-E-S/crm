@@ -54,7 +54,9 @@ export async function extractRest(opts: RestExtractOpts): Promise<Map<BlockId, S
       if (openapiOp?.summary) bodyParts.push(openapiOp.summary as string);
       if (openapiOp?.description) bodyParts.push(openapiOp.description as string);
       if (openapiOp?.requestBody) {
-        bodyParts.push(`\n**Request body**\n\`\`\`yaml\n${yaml.stringify(openapiOp.requestBody)}\`\`\``);
+        bodyParts.push(
+          `\n**Request body**\n\`\`\`yaml\n${yaml.stringify(openapiOp.requestBody)}\`\`\``,
+        );
       }
       if (openapiOp?.responses) {
         bodyParts.push(`\n**Responses**\n\`\`\`yaml\n${yaml.stringify(openapiOp.responses)}\`\`\``);

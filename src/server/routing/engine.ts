@@ -52,7 +52,7 @@ interface ExecuteInput {
 }
 
 function matchCondition(
-  cond: { field: string; op: string; value: unknown },
+  cond: { field: string; sign?: string; op?: string; value: unknown; caseSensitive?: boolean },
   lead: LeadSnapshot,
 ): boolean {
   const field = cond.field as keyof LeadSnapshot;
@@ -61,7 +61,9 @@ function matchCondition(
   else if (cond.field === "utm_medium") left = lead.utm?.medium;
   else left = (lead as unknown as Record<string, unknown>)[field];
   const v = cond.value;
-  switch (cond.op) {
+  // Accept either new `sign` or legacy `op` for in-place call sites.
+  const sign = cond.sign ?? cond.op ?? "eq";
+  switch (sign) {
     case "eq":
       return String(left) === String(v);
     case "neq":
@@ -107,7 +109,7 @@ export async function executeFlow(input: ExecuteInput): Promise<EngineDecision> 
   const filterNode = graph.nodes.find((n) => n.kind === "Filter");
   if (filterNode && filterNode.kind === "Filter") {
     const logic = filterNode.logic;
-    const results = filterNode.conditions.map((c) => matchCondition(c, input.lead));
+    const results = filterNode.rules.map((c) => matchCondition(c, input.lead));
     const passed = logic === "AND" ? results.every(Boolean) : results.some(Boolean);
     steps.push({ step: "entry_filter", nodeId: filterNode.id, ok: passed });
     if (!passed) {

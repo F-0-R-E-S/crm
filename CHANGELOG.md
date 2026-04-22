@@ -2,6 +2,12 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## Unreleased — Docs infrastructure wave 1
+
+- **Feature inventory generator.** `pnpm docs:regen` auto-extracts DB schema (Prisma DMMF), tRPC procedures (ts-morph), REST routes (walk `src/app/api/**/route.ts` + merge OpenAPI), env vars (`src/lib/env.ts`), TRPCError/plain throws, Telegram event catalog, and pg-boss jobs into `content/docs/<block>/_deep/*.md`. Canonical inventory at `docs/feature-inventory.md`. CI guard `pnpm docs:regen:check` fails PRs on drift.
+- **Block catalog.** 24 logical blocks declared in `scripts/docs-regen/block-catalog.ts` — single source of truth mapping Prisma models / routers / REST paths / server dirs / job names → block id.
+- **Invariants stubs.** One `content/docs/<block>/_deep/invariants.md` per block (hand-written, audience=ai-deep).
+
 ## v2.0.0-s3 (2026-04-23)
 
 **v2.0 Sprint 3 — EPIC-21 Stripe Subscription Billing.**
