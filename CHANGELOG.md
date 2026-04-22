@@ -2,6 +2,26 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## v2.0.0-s3.3 (2026-04-22) — Routing iREV Parity
+
+Tags: `v2.0.0-s3.1-routing-backend`, `v2.0.0-s3.2-routing-canvas`, `v2.0.0-s3.3-routing-tree`.
+
+**Goal:** bring the rotation/flow subsystem to iREV feature parity while keeping the graph canvas as the source of truth. User's canonical scenario — "UA traffic → 3 brokers, whoever accepts takes it; otherwise poll them in turn" — is authorable in three clicks and verifiable end-to-end in the simulator.
+
+- **PQL vocabulary.** 8 fields (`geo, subId, utm_source, utm_medium, affiliateId, timeOfDay, phone, hourOfDay`) × 10 signs (`eq, neq, in, not_in, contains, starts_with, ends_with, gte, lte, matches`) + per-rule `caseSensitive` toggle. Registry-driven in `src/server/routing/pql/fields.ts`. Pure evaluator at `src/server/routing/pql/evaluate.ts` (29 tests).
+- **New node kinds.** `SmartPool` (priority-ordered failover) compiles at publish time to the existing `FallbackStep` chain; `ComparingSplit` (A/B metric) compiles to `Algorithm(WRR)` + `FlowAlgorithmConfig`. `BrokerTarget` gains `active`, `description`, `pqlGate`. Zod back-compat preprocess keeps all existing flows loading unchanged.
+- **Richer caps.** `CapDefinition.{rejectedLimit, rejectedLimitAsPercent, rejectionsInARow, pqlScope, behaviorPattern}`. `CapCounter.kind` (`PUSHED | REJECTED`) separates counters; `pqlScope` salts the bucket key so multiple PQL-scoped caps on one target don't collide.
+- **Rejection streak auto-pause.** Redis counter + `shouldAutoPause` pure helper. Postback handler bumps/resets; on hitting the strictest `rejectionsInARow` threshold among the broker's caps, flip `Broker.isActive=false` and emit `BROKER_REJECTION_STREAK_PAUSED` (admin-only Telegram event) + AuditLog.
+- **Engine.** SmartPool bias picks the first-rank available child over WRR/Slots-Chance; `BrokerTarget.pqlGate` evaluated pre-cap so a miss doesn't consume a cap slot; decision tags `selectedSmartPoolId` + `selectedComparingSplitId`.
+- **Canvas editor.** `+ SmartPool` + `+ Compare` toolbar buttons (Fallback deprecated); new node renderers; BrokerTarget inspector gains active/description/PQL-gate editors; CapInspector gains rejected-capacity + streak inputs; FilterConditionEditor accepts the full PQL vocabulary with per-row `Aa` case-sensitive checkbox.
+- **Simulator.** New `pool` tab + `/api/v1/routing/simulate-pool` endpoint. Given `{flow_id, count, broker_accept_probabilities, lead_template}`, rolls per-broker acceptance, walks FallbackStep chains on reject, returns per-broker tallies + sample traces.
+- **Tree-list surface.** `flowToTree(graph)` projection + tRPC `routing.treeView`; read-only `/dashboard/routing/flows/:flowId/tree` with iREV-style compact hierarchy (AD / FLT / ALG / SM / CO / FB Pills).
+- **Migrations.** Prisma `20260424120000_v2_s3_1_routing_irev_parity` (additive + index swap). Data script `scripts/migrate-filter-to-pql.ts` rewrites stored graphs (idempotent; `--dry-run`).
+- **E2E gate.** `tests/e2e/routing-irev-scenario.test.ts` — 100-lead batch with probs `[0,0,1]` MUST land every lead on broker 3 via the exact 3-hop trace `b1✗ → b2✗ → b3✓`.
+- **Canonical docs** at `docs/superpowers/specs/2026-04-22-routing-irev-parity-design.md` and `docs/superpowers/plans/2026-04-22-routing-irev-parity-plan.md`.
+- **Tests.** ~65 net-new routing tests. 969 total.
+- **Parking lot.** Tree-list inline edit + create; `ComparingBucketStat` writer + winner UI; auto-migrate legacy `Fallback` → `SmartPool`.
+
 ## Unreleased — Docs maintenance + evolution
 
 - **`pnpm docs:audit`.** Per-PR enforcement: code changed under `src/` but `content/docs/<block>/*.mdx` not updated → audit fails. `NO_DOC_UPDATE_BLOCKS=<list>` escape hatch for pure internal refactors.

@@ -10,21 +10,21 @@
 |---|---|
 | **Last updated** | 2026-04-22 |
 | **Prod version** | `2.0.0-s3` (https://crm-node.fly.dev) |
-| **Local HEAD** | `b383464 feat(routing): PQL + SmartPool + ComparingSplit Zod schemas (S3.1 T2)` |
-| **Tests** | 809 passed / 10 skipped / 1 todo (191 test files) |
-| **Prisma models** | 54 |
-| **tRPC routers** | 22 |
-| **Page + API endpoints** | 68 |
-| **Prisma migrations** | 12 (drift migration `20260421095551_v1_0_post_wave1` is the big one) |
-| **v1.0 → v2.0-s3 commits** | ~135 (from `pre-wave1-merge`) |
+| **Local HEAD** | `a4a70d5 feat(routing): tRPC treeView proc + tree-list read-only page (S3.3 T2+T3)` |
+| **Tests** | ~969 passed / 10 skipped / 1 todo (213 test files) |
+| **Prisma models** | 55 (added `ComparingBucketStat`) |
+| **tRPC routers** | 22 (routing gains `treeView`) |
+| **Page + API endpoints** | 70 (added `/routing/simulate-pool` + tree page) |
+| **Prisma migrations** | 13 (latest: `20260424120000_v2_s3_1_routing_irev_parity`) |
+| **v1.0 → v2.0-s3 commits** | ~170 (from `pre-wave1-merge`) |
 
 ## Overall readiness
 
 - **v1.0 core** — ✅ **100%** (released `v1.0.0`, hardened via `v1.0.1` + `v1.0.2` + `v1.0.3`)
 - **v1.5** — ✅ **100%** (released `v1.5.0`, all 5 sprints shipped)
-- **v2.0** — ⚠️ **50%** (3 of 6 sprints shipped: S1 foundation, S2 routing/branding/isolation, S3 Stripe billing)
+- **v2.0** — ⚠️ **67%** (4 of 6 sprints shipped: S1/S2/S3 billing + **S3-routing iREV parity** complete locally)
 - **v2.5** — ⏳ **0%** (not started)
-- **Post-v2.0 residual parking lot** — 9 items, all documented below
+- **Post-v2.0 residual parking lot** — 10 items, all documented below
 
 ---
 
@@ -148,7 +148,47 @@ Target GA: Q2 2027 per spec. Currently shipped: S1..S3.
 - [ ] **Stripe secrets not configured in prod** — app runs in trial-only mode; set `STRIPE_SECRET_KEY` + price IDs to activate
 - [ ] **Webhook signature-verification standalone unit test** — covered E2E only
 
-### S2.0-4 — CRG Full + Back-to-back Polish (pending)
+### S2.0-3.1 — Routing iREV Parity (local; tagged `v2.0.0-s3.1..s3.3`)
+
+Canonical spec: [`specs/2026-04-22-routing-irev-parity-design.md`](specs/2026-04-22-routing-irev-parity-design.md).
+Plan: [`plans/2026-04-22-routing-irev-parity-plan.md`](plans/2026-04-22-routing-irev-parity-plan.md).
+
+#### S3.1 backend — `v2.0.0-s3.1-routing-backend`
+
+- [x] Prisma schema additions: `CapDefinition.{rejectedLimit,rejectedLimitAsPercent,rejectionsInARow,pqlScope,behaviorPattern}`, `CapCounter.kind`, `ComparingBucketStat` table + `CapBehaviorPattern` / `CapCounterKind` enums (migration `20260424120000_v2_s3_1_routing_irev_parity`)
+- [x] PQL Zod vocabulary (8 fields × 10 signs + `caseSensitive` toggle) — `PqlRuleSchema`, `PqlGateSchema`
+- [x] New FlowNode kinds: `SmartPool` (priority-failover) + `ComparingSplit` (A/B) + `BrokerTarget.{active,description,pqlGate}` extension
+- [x] Legacy Filter `{conditions, op}` → `{rules, sign, caseSensitive}` shape rewritten by `FlowGraphSchema` preprocess + one-shot data migration (`scripts/migrate-filter-to-pql.ts`)
+- [x] PQL field registry + pure evaluator (`src/server/routing/pql/`) — 29 tests
+- [x] SmartPool → FallbackStep compiler — 8 tests
+- [x] ComparingSplit → Algorithm(WRR) compiler — 9 tests
+- [x] `publishFlow` compiles SmartPool chains at publish time; cycle detector runs on merged set
+- [x] Engine: SmartPool bias (first-rank child wins over WRR/Slots-Chance); `BrokerTarget.pqlGate` evaluated pre-cap so a gate miss doesn't consume cap slots; per-target `active` toggle; decision tags `selectedSmartPoolId` + `selectedComparingSplitId`
+- [x] Cap engine: `kind` (PUSHED/REJECTED) threaded through `consumeCap`/`releaseCap`/`remainingCap`; `pqlScope` gates consumption + salts bucket key via sha256; `effectiveRejectedLimit` helper
+- [x] Rejection streak counter (Redis, 24h TTL) + `shouldAutoPause` pure helper
+- [x] Postback handler bumps/resets streak and auto-pauses broker on threshold — emits `BROKER_REJECTION_STREAK_PAUSED` Telegram event + AuditLog
+- [x] Simulator batch mode with per-broker accept-probability rolling + SmartPool chain-walk — 2 new tests
+
+#### S3.2 canvas + simulator — `v2.0.0-s3.2-routing-canvas`
+
+- [x] Filter / PQL editor vocabulary extended to full 8 fields × 10 signs with per-row case-sensitive toggle (`Aa` checkbox)
+- [x] `SmartPoolNode` + `ComparingSplitNode` reactflow renderers with handles + kind-tinted accents
+- [x] Canvas toolbar: `+ SmartPool` + `+ Compare` entries; Fallback button gets a "deprecated" tooltip
+- [x] BrokerTarget inspector: `active`, `description`, optional PQL gate editor (add/remove)
+- [x] CapInspector gains `rejectedLimit`, `rejectedLimitAsPercent`, `rejectionsInARow` controls
+- [x] Simulator page `pool` tab: N + per-broker accept-probability JSON + result panel with per-broker bars + first-10 sequential traces
+- [x] New REST `/api/v1/routing/simulate-pool` (synchronous batch with probs)
+
+#### S3.3 tree surface + sign-off — `v2.0.0-s3.3-routing-tree`
+
+- [x] `flowToTree(graph)` pure projection + `summarizeTree` helper — 6 unit tests
+- [x] tRPC `routing.treeView` query
+- [x] `/dashboard/routing/flows/:flowId/tree` read-only compact iREV-style view with per-kind Pills (AD/FLT/ALG/SM/CO/FB) + expand-collapse + child counts
+- [x] Canvas editor header gains a "Tree" quick-switch button
+- [x] Scenario E2E test: 100 leads through SmartPool `[b1:0, b2:0, b3:1]` → every lead lands on broker 3 via 3-hop trace; companion `[1,0,0]` single-hop test
+- [ ] **Tree-list inline edit + create** — deferred to a follow-up (parking lot entry)
+- [ ] **ComparingSplit bucket ingestion** — `ComparingBucketStat` writer hook in engine; UI widget rendering per-branch winners (parking lot)
+- [ ] **Auto-migrate legacy `Fallback` nodes → `SmartPool`** — deprecation tooltip only for now
 
 - [ ] Multi-currency (`Currency` enum + `FxRate` + daily FX rate ingest)
 - [ ] Partial payment handling on `BrokerInvoice` / `AffiliateInvoice`
@@ -225,6 +265,9 @@ Target: Q4 2027. Full plan at `plans/2027-07-01-v2-5-intelligence-and-platform.m
 | Tenant logo upload (BYO URL only today) | v2.0-s2 | v2.0-s6 | low |
 | Tenant-registry cache invalidation across multi-machine deploys | v2.0-s2 | when scaled past 1 app machine | medium |
 | Flaky `tests/integration/telegram-events-wired.test.ts` (module-cache; passes in isolation) | v1.0-s5 | v2.0.1 cleanup | low |
+| Tree-list inline edit + create (currently read-only) | v2.0-s3.3 | v2.0.x | medium |
+| `ComparingBucketStat` writer + comparison winner UI | v2.0-s3.1 | v2.0.x | medium |
+| Auto-migrate legacy `Fallback` nodes → `SmartPool` | v2.0-s3.3 | v2.1 | low |
 
 ---
 
