@@ -176,7 +176,7 @@ export const BLOCK_CATALOG: BlockDef[] = [
     prismaModels: ["Subscription", "PaymentMethod", "Invoice"],
     trpcRouters: ["billing"],
     restPathPrefixes: ["/api/stripe/webhook"],
-    serverDirs: ["src/server/billing"],
+    serverDirs: ["src/server/billing", "src/server/routers/billing.ts"],
     jobNames: [],
   },
   {
