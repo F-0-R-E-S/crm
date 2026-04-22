@@ -1,6 +1,7 @@
 import { rbacPreviewRouter } from "../rbac/preview";
 import { router } from "../trpc";
 import { affiliateRouter } from "./affiliate";
+import { docsRouter } from "./docs";
 import { alertLogRouter } from "./alertLog";
 import { analyticsRouter } from "./analytics";
 import { auditRouter } from "./audit";
@@ -41,5 +42,6 @@ export const appRouter = router({
   statusMapping: statusMappingRouter,
   tenant: tenantRouter,
   billing: billingRouter,
+  docs: docsRouter,
 });
 export type AppRouter = typeof appRouter;
