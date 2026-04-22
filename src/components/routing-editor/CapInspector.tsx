@@ -30,6 +30,12 @@ export interface CapDefRow {
   timezone: string;
   perCountry: boolean;
   countryLimits: CountryLimitRow[];
+  /** S3.1: optional cap of rejected (DECLINED) leads. */
+  rejectedLimit?: string;
+  /** When true, treat rejectedLimit as a % of pushed limit. */
+  rejectedLimitAsPercent?: boolean;
+  /** Auto-pause the broker after N consecutive DECLINED postbacks. */
+  rejectionsInARow?: string;
 }
 
 export interface LiveCap {
@@ -290,6 +296,79 @@ export function CapInspector({
                     ×
                   </button>
                 )}
+              </div>
+              <div
+                style={{
+                  marginTop: 8,
+                  borderTop: "1px solid var(--bd-1)",
+                  paddingTop: 6,
+                  display: "grid",
+                  gridTemplateColumns: "1fr 1fr",
+                  gap: 8,
+                }}
+              >
+                <label
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    fontSize: 10,
+                    color: "var(--fg-2)",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  REJECTED LIMIT
+                  <input
+                    type="number"
+                    min={0}
+                    disabled={readOnly}
+                    placeholder="(off)"
+                    value={r.rejectedLimit ?? ""}
+                    onChange={(e) => update(r._uid, { rejectedLimit: e.target.value })}
+                    style={inp}
+                  />
+                </label>
+                <label
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 2,
+                    fontSize: 10,
+                    color: "var(--fg-2)",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  REJECTIONS IN A ROW
+                  <input
+                    type="number"
+                    min={0}
+                    disabled={readOnly}
+                    placeholder="(off)"
+                    value={r.rejectionsInARow ?? ""}
+                    onChange={(e) => update(r._uid, { rejectionsInARow: e.target.value })}
+                    style={inp}
+                  />
+                </label>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 4,
+                    fontSize: 11,
+                    color: "var(--fg-2)",
+                    gridColumn: "span 2",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    disabled={readOnly}
+                    checked={r.rejectedLimitAsPercent ?? false}
+                    onChange={(e) =>
+                      update(r._uid, { rejectedLimitAsPercent: e.target.checked })
+                    }
+                  />
+                  treat rejected limit as % of pushed cap
+                </label>
               </div>
               {r.perCountry && (
                 <div style={{ marginTop: 8, borderTop: "1px solid var(--bd-1)", paddingTop: 6 }}>
