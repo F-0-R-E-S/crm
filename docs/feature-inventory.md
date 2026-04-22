@@ -42,10 +42,10 @@
 | Source | Count | Link |
 |---|---:|---|
 | prisma | 15 | [db-schema.md](../content/docs/routing-engine/_deep/db-schema.md) |
-| trpc | 12 | [trpc-surface.md](../content/docs/routing-engine/_deep/trpc-surface.md) |
+| trpc | 13 | [trpc-surface.md](../content/docs/routing-engine/_deep/trpc-surface.md) |
 | rest | 12 | [rest-surface.md](../content/docs/routing-engine/_deep/rest-surface.md) |
 | env | 18 | [env-vars.md](../content/docs/routing-engine/_deep/env-vars.md) |
-| errors | 31 | [error-catalog.md](../content/docs/routing-engine/_deep/error-catalog.md) |
+| errors | 32 | [error-catalog.md](../content/docs/routing-engine/_deep/error-catalog.md) |
 
 ## Routing UI
 - **Block id:** `routing-ui`

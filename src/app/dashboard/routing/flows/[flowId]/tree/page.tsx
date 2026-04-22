@@ -7,11 +7,7 @@
 import { Pill, btnStyle } from "@/components/router-crm";
 import { useThemeCtx } from "@/components/shell/ThemeProvider";
 import { trpc } from "@/lib/trpc";
-import type {
-  TreeBrokerLeaf,
-  TreeFolder,
-  TreeRoot,
-} from "@/server/routing/flow/tree";
+import type { TreeBrokerLeaf, TreeFolder, TreeRoot } from "@/server/routing/flow/tree";
 import Link from "next/link";
 import { use, useState } from "react";
 
@@ -213,12 +209,15 @@ function RowContent({ node }: { node: TreeFolder | TreeBrokerLeaf }) {
       >
         {kindShort}
       </Pill>
-      <span style={{ fontFamily: "var(--mono)", fontSize: 12 }}>
-        {node.label ?? node.nodeId}
-      </span>
+      <span style={{ fontFamily: "var(--mono)", fontSize: 12 }}>{node.label ?? node.nodeId}</span>
       <span style={{ fontSize: 11, color: "var(--fg-2)" }}>{sub}</span>
       <span
-        style={{ marginLeft: "auto", fontSize: 11, color: "var(--fg-2)", fontFamily: "var(--mono)" }}
+        style={{
+          marginLeft: "auto",
+          fontSize: 11,
+          color: "var(--fg-2)",
+          fontFamily: "var(--mono)",
+        }}
       >
         {childCount} child{childCount === 1 ? "" : "ren"}
       </span>

@@ -82,6 +82,13 @@ Plain Error: `expected filter` at `src/server/routing/flow/migrations/2026-04-22
 
 ---
 
+# Error: expected smartPool
+<a id="err-plain-expected-smartpool"></a>
+
+Plain Error: `expected smartPool` at `src/server/routing/flow/tree.test.ts:72`.
+
+---
+
 # Error: flow_archived
 <a id="err-plain-flow-archived"></a>
 

@@ -103,7 +103,6 @@ export function Canvas({
   // drops them entirely. Keep a local edge state synced from props; apply
   // reactflow's changes locally so the renderer is happy.
   const [localEdges, setLocalEdges] = useState(edges);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: sync on prop identity change, not on every re-render
   useEffect(() => {
     setLocalEdges(edges);
   }, [edges]);

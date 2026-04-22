@@ -104,6 +104,17 @@ Source: `src/server/routers/routing.ts`
 
 ---
 
+# routing.treeView
+<a id="trpc-routing-treeview"></a>
+
+Procedure `routing.treeView` — authn: protected, kind: query.
+
+input: z.object({ flowId: z.string().min(1) })
+
+Source: `src/server/routers/routing.ts`
+
+---
+
 # routing.update
 <a id="trpc-routing-update"></a>
 

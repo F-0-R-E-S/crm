@@ -72,9 +72,7 @@ describe("flowToTree", () => {
     if (f?.kind !== "smartPool") throw new Error("expected smartPool");
     expect(f.children).toHaveLength(3);
     expect(countLeaves(f)).toBe(3);
-    expect(summarizeTree(tree)).toBe(
-      "(smartPool:[bt:brk1],[bt:brk2],[bt:brk3])",
-    );
+    expect(summarizeTree(tree)).toBe("(smartPool:[bt:brk1],[bt:brk2],[bt:brk3])");
   });
 
   it("Filter → SmartPool → 3 brokers nests correctly", () => {
@@ -84,9 +82,7 @@ describe("flowToTree", () => {
         {
           id: "f",
           kind: "Filter",
-          rules: [
-            { field: "geo", sign: "eq", value: "UA", caseSensitive: false },
-          ],
+          rules: [{ field: "geo", sign: "eq", value: "UA", caseSensitive: false }],
           logic: "AND",
         },
         {
@@ -114,9 +110,7 @@ describe("flowToTree", () => {
       ],
     };
     const tree = flowToTree(g);
-    expect(summarizeTree(tree)).toBe(
-      "(filter:(smartPool:[bt:brkA],[bt:brkB]))",
-    );
+    expect(summarizeTree(tree)).toBe("(filter:(smartPool:[bt:brkA],[bt:brkB]))");
   });
 
   it("ComparingSplit surfaces with compareMetric + sampleSize", () => {
