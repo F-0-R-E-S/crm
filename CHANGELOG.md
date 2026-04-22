@@ -2,6 +2,25 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## Unreleased — Docs wave 2 (final — plans #4/#5/#6/#7 complete)
+
+- **Plan #4 — Hybrid search.** `DocChunk` + `DocSearchEvent` + `DocAskEvent` Prisma models w/ pgvector (`vector(1024)`) + `tsvector` GIN + ivfflat cosine indexes. Migration `20260425000000_docs_chunks`. Docker image pinned to `pgvector/pgvector:pg16`.
+  - `pnpm docs:index` chunks (audience-aware) + embeds via Ollama BGE-M3 + upserts with sha256-hash diff. Idempotent.
+  - `searchDocs()` — hybrid vector + BM25 via Reciprocal Rank Fusion (k=60), optional ai-deep boost (1.15×), `ts_headline` snippets.
+  - tRPC `docs.search` with `rateLimit(20/min)` + `DocSearchEvent` telemetry.
+  - Cmd+K palette (`cmdk` lib) in `/docs` layout queries human + OpenAPI hits.
+  - `docs-reindex` pg-boss job on `*/30 min`.
+- **Plan #5 — API reference.** `/docs/api` moved into `(docs)` shared layout. OpenAPI paths indexed into `DocChunk` with `kind=openapi, audience=ai-deep`. Cmd+K surfaces them with a green "API" badge + deep-links to `/docs/api#operation-<id>`. zod-to-openapi coverage extended to `POST /api/v1/routing/simulate` + `GET /api/v1/errors`.
+- **Plan #6 — Local LLM Q&A.** `POST /api/docs/ask` SSE endpoint: retrieves via `searchDocs(audiences: ["human","ai-deep"], boostAiDeep: true)`, builds grounded RAG prompt (v1 system prompt forces citations + refusal), streams via `streamChat()` to Ollama. Persists every ask to `DocAskEvent` (question/answer/hits/latency/refusal/prompt-ver/model). Rate-limited 10/min/IP.
+  - `ChatWidget` (Alt+K) mounted on every `/docs/*` page. Full-chat at `/docs/ai`. `AnswerMarkdown` renders with inline `[n]` citation links + source list.
+  - 20-pair eval harness under `tests/eval/` (gated by `RUN_EVAL=1`). Oncall runbook at `docs/runbooks/docs-qa-oncall.md`.
+  - **Not shipped in this wave:** Fly GPU deploy (pending explicit budget/auth approval). Configure `OLLAMA_BASE_URL` + `OLLAMA_AUTH_TOKEN` when the GPU box comes online.
+- **Plan #7 — Maintenance.** `DOCS_STALENESS_REPORT` weekly Telegram digest (Mon 09:00 UTC) lists top refused questions from `DocAskEvent` to surface under-documented topics.
+
+New env vars (all optional, safe defaults):
+- `OLLAMA_BASE_URL`, `OLLAMA_AUTH_TOKEN`, `OLLAMA_EMBEDDING_MODEL` (default `bge-m3`)
+- `DOCS_LLM_MODEL` (default `qwen3:8b-instruct-q5_K_M`), `DOCS_LLM_MAX_TOKENS` (1024), `DOCS_LLM_TEMPERATURE` (0.1), `DOCS_LLM_SYSTEM_PROMPT_VERSION` (v1)
+
 ## Unreleased — Docs content wave 1
 
 - **User-facing content for top 10 blocks.** `index.mdx` + `how-to-*.mdx` + `concepts.mdx` for intake, routing-engine, broker-push, postback-status-groups, autologin, conversions-crg, billing-subscription, multi-tenancy, webhooks-outbound, analytics. Cross-cutting getting-started + glossary + architecture tour.
