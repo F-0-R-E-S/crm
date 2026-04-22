@@ -1,0 +1,22 @@
+[
+  { "q": "What HTTP method do I use to push a lead?", "mustInclude": ["POST", "/api/v1/leads"] },
+  { "q": "What is the default fraud auto-reject threshold?", "mustInclude": ["80"] },
+  { "q": "How do I set a per-country cap?", "mustInclude": ["CapCountryLimit", "perCountry"] },
+  { "q": "Which algorithm uses CSPRNG?", "mustInclude": ["Slots-Chance"] },
+  { "q": "What does PENDING_HOLD protect against?", "mustInclude": ["shave"] },
+  { "q": "Where do I configure the retry ladder?", "mustInclude": ["Broker.retrySchedule"] },
+  { "q": "Which env var disables the 3-domain pattern?", "mustInclude": ["ROOT_DOMAIN"] },
+  { "q": "What Telegram event fires when a lead is first received?", "mustInclude": ["NEW_LEAD"] },
+  { "q": "What is the CRG cohort window?", "mustInclude": ["Monday", "weekly"] },
+  { "q": "What plan tiers exist?", "mustInclude": ["Starter", "Growth", "Pro"] },
+  { "q": "How many retries does the outbound webhook ladder have?", "mustInclude": ["5"] },
+  { "q": "What does borderline mean for a lead?", "mustInclude": ["needsReview"] },
+  { "q": "Which Prisma model stores conversions?", "mustInclude": ["Conversion"] },
+  { "q": "Which status-mapping categories exist?", "mustInclude": ["QUALIFIED", "CONVERTED", "REJECTED"] },
+  { "q": "Which HTTP status signals over-quota?", "mustInclude": ["429", "plan_quota_exceeded"] },
+  { "q": "What is the default manual-queue depth alert threshold?", "mustInclude": ["25"] },
+  { "q": "How is a lead deduped?", "mustInclude": ["email", "phone"] },
+  { "q": "Which environment must OLLAMA_BASE_URL point to?", "mustInclude": ["Ollama"] },
+  { "q": "Which route serves the sitemap?", "mustInclude": ["/sitemap.xml"] },
+  { "q": "Tell me about quantum entanglement", "mustInclude": ["don't have enough"] }
+]
