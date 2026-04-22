@@ -48,6 +48,17 @@ export function Sidebar({ tree }: { tree: DocsNode[] }) {
               API Reference (OpenAPI)
             </Link>
           </li>
+          <li>
+            <Link
+              href={"/docs/ai" as Route}
+              className={cn(
+                "block rounded px-2 py-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+                pathname === "/docs/ai" && "bg-muted font-medium text-foreground",
+              )}
+            >
+              Ask the AI
+            </Link>
+          </li>
         </ul>
       </div>
     </nav>
