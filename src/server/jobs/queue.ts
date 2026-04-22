@@ -36,6 +36,7 @@ export const JOB_NAMES = {
   crgCohortSettle: "crg-cohort-settle",
   alertsEvaluator: "alerts-evaluator",
   applyScheduledChanges: "apply-scheduled-changes",
+  docsReindex: "docs-reindex",
 } as const;
 
 const globalForBossStarted = globalThis as unknown as { bossStarted?: boolean };

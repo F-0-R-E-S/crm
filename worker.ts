@@ -14,6 +14,7 @@ import {
 import { cleanupExpiredIdempotency } from "./src/server/jobs/cleanup-idempotency";
 import { runCrgCohortSettle } from "./src/server/jobs/crg-cohort-settle";
 import { sendDailySummaries } from "./src/server/jobs/daily-summary";
+import { handleDocsReindex } from "./src/server/jobs/docs-reindex";
 import { checkManualQueueDepth } from "./src/server/jobs/manual-queue-depth-check";
 import {
   type NotifyAffiliatePayload,
@@ -104,6 +105,10 @@ async function main() {
     await runApplyScheduledChanges();
   });
 
+  await boss.work(JOB_NAMES.docsReindex, async () => {
+    await handleDocsReindex();
+  });
+
   // Schedules — pg-boss uses cron syntax
   await boss.schedule(JOB_NAMES.analyticsRollDaily, "*/15 * * * *", {});
   await boss.schedule(JOB_NAMES.analyticsRollHourly, "*/5 * * * *", {});
@@ -114,6 +119,7 @@ async function main() {
   await boss.schedule(JOB_NAMES.alertsEvaluator, "*/1 * * * *", {});
   await boss.schedule(JOB_NAMES.proxyHealth, "*/10 * * * *", {});
   await boss.schedule(JOB_NAMES.applyScheduledChanges, "*/1 * * * *", {});
+  await boss.schedule(JOB_NAMES.docsReindex, "*/30 * * * *", {});
 
   // Every hour, sweep expired idempotency rows
   setInterval(async () => {
