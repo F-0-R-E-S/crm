@@ -1,7 +1,9 @@
 import { redis } from "@/server/redis";
 import { beforeEach, describe, expect, it } from "vitest";
 import { resetDb } from "../../../../tests/helpers/db";
-import { consumeCap, releaseCap, remainingCap } from "./caps";
+import type { LeadSnapshot } from "../engine";
+import type { PqlGate } from "../flow/model";
+import { consumeCap, effectiveRejectedLimit, releaseCap, remainingCap } from "./caps";
 
 describe("caps v2", () => {
   beforeEach(async () => {
@@ -132,5 +134,101 @@ describe("caps v2", () => {
     const c = await consumeCap({ ...base, now: at });
     expect(a.ok && b.ok).toBe(true);
     expect(c.ok).toBe(false);
+  });
+
+  it("kind: PUSHED and REJECTED counters are isolated per bucket", async () => {
+    const base = {
+      scope: "BROKER" as const,
+      scopeId: "bKind",
+      window: "DAILY" as const,
+      tz: "UTC",
+      limit: 1,
+    };
+    const at = new Date("2026-04-20T10:00:00Z");
+    const p = await consumeCap({ ...base, kind: "PUSHED", now: at });
+    expect(p.ok).toBe(true);
+    // Even though PUSHED is at its limit, REJECTED starts at 0 so it
+    // can still count its own rejection.
+    const r = await consumeCap({ ...base, kind: "REJECTED", now: at });
+    expect(r.ok).toBe(true);
+  });
+
+  it("pqlScope: lead that misses the scope bypasses the cap (skipped)", async () => {
+    const scope: PqlGate = {
+      rules: [{ field: "geo", sign: "eq", value: "UA", caseSensitive: false }],
+      logic: "AND",
+    };
+    const lead: LeadSnapshot = { id: "L1", affiliateId: "A1", geo: "PL" };
+    const r = await consumeCap({
+      scope: "BROKER",
+      scopeId: "bScope",
+      window: "DAILY",
+      tz: "UTC",
+      limit: 1,
+      pqlScope: scope,
+      lead,
+      now: new Date("2026-04-20T10:00:00Z"),
+    });
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.skipped).toBe(true);
+    // A subsequent matching lead should be counted normally and the
+    // scoped bucket should be at 1/1.
+    const hit = await consumeCap({
+      scope: "BROKER",
+      scopeId: "bScope",
+      window: "DAILY",
+      tz: "UTC",
+      limit: 1,
+      pqlScope: scope,
+      lead: { id: "L2", affiliateId: "A1", geo: "UA" },
+      now: new Date("2026-04-20T10:01:00Z"),
+    });
+    expect(hit.ok).toBe(true);
+    if (hit.ok) expect(hit.skipped).toBeFalsy();
+  });
+
+  it("pqlScope: different scopes salt into separate buckets", async () => {
+    const scopeA: PqlGate = {
+      rules: [{ field: "geo", sign: "eq", value: "UA", caseSensitive: false }],
+      logic: "AND",
+    };
+    const scopeB: PqlGate = {
+      rules: [{ field: "geo", sign: "eq", value: "PL", caseSensitive: false }],
+      logic: "AND",
+    };
+    const at = new Date("2026-04-20T10:00:00Z");
+    const ua = await consumeCap({
+      scope: "BROKER",
+      scopeId: "bSalt",
+      window: "DAILY",
+      tz: "UTC",
+      limit: 1,
+      pqlScope: scopeA,
+      lead: { id: "L1", affiliateId: "A1", geo: "UA" },
+      now: at,
+    });
+    expect(ua.ok).toBe(true);
+    // Same bare bucket key but different pqlScope → different salt →
+    // PL cap is independent.
+    const pl = await consumeCap({
+      scope: "BROKER",
+      scopeId: "bSalt",
+      window: "DAILY",
+      tz: "UTC",
+      limit: 1,
+      pqlScope: scopeB,
+      lead: { id: "L2", affiliateId: "A1", geo: "PL" },
+      now: at,
+    });
+    expect(pl.ok).toBe(true);
+  });
+
+  it("effectiveRejectedLimit handles absolute and percent forms", () => {
+    expect(effectiveRejectedLimit(100, 20, false)).toBe(20);
+    expect(effectiveRejectedLimit(100, 20, true)).toBe(20);
+    expect(effectiveRejectedLimit(100, 25, true)).toBe(25);
+    expect(effectiveRejectedLimit(200, 30, true)).toBe(60);
+    expect(effectiveRejectedLimit(100, null, false)).toBeNull();
+    expect(effectiveRejectedLimit(100, undefined, false)).toBeNull();
   });
 });
