@@ -1,0 +1,99 @@
+---
+audience: human
+block: conversions-crg
+source: hand
+title: "Concepts: payout kinds, CRG shortfall, invoicing"
+description: "Data model and formula details for payout rule kinds, CRG cohort shortfall calculation, and monthly invoice structure."
+order: 3
+---
+
+# Conversions + CRG concepts
+
+## Payout kinds
+
+<a id="payout-kinds" />
+
+The `PayoutRuleKind` enum has four values. Both `BrokerPayoutRule` and `AffiliatePayoutRule` use the same enum.
+
+**`CPA_FIXED`** — flat fee per FTD.
+
+```
+revenue = cpaAmount   (USD, per FTD)
+```
+
+The simplest model. Broker pays a fixed dollar amount for every FTD the platform delivers.
+
+**`CPA_CRG`** — flat CPA plus a weekly conversion rate guarantee.
+
+```
+revenue per FTD = cpaAmount
+guarantee check = weekly cohort (see #crg-shortfall)
+```
+
+The CPA amount is the same as `CPA_FIXED`. The difference is that the broker also guarantees a minimum FTD rate over each weekly cohort. If actual performance falls short, the broker owes a shortfall calculated at settlement.
+
+**`REV_SHARE`** — percentage of broker-reported revenue.
+
+```
+revenue = brokerRevenue × revenueShareRate
+```
+
+The platform receives a share of the total deposit volume (or revenue) the broker reports for the affiliate's leads. `revenueShareRate` is stored as `Decimal(5,4)` — for example `0.2500` = 25%.
+
+**`HYBRID`** — CPA component plus a smaller REV_SHARE component.
+
+```
+revenue = cpaAmount + (brokerRevenue × revenueShareRate)
+```
+
+Common when a broker wants to pay a reduced upfront CPA while sharing a percentage of long-term revenue. The `cpaAmount` is typically lower than a pure `CPA_FIXED` deal.
+
+## CRG shortfall
+
+<a id="crg-shortfall" />
+
+A `CRGCohort` accumulates performance data for a single broker over one calendar week (Monday 00:00 UTC → next Monday 00:00 UTC). Settlement occurs 30 days after `cohortEnd`.
+
+**Shortfall formula:**
+
+```
+shortfall = (guaranteedRate − actualRate) × cohortSize × cpaAmount
+```
+
+Where:
+- `guaranteedRate` — the rate committed by the broker (e.g. `0.10`).
+- `actualRate` — `ftdCount / cohortSize` at settlement time.
+- `cohortSize` — total leads pushed to the broker in the cohort window.
+- `cpaAmount` — from the active `BrokerPayoutRule` at cohort close.
+
+**`CRGCohortStatus` values:**
+
+| Status | Condition | Shortfall |
+|--------|-----------|-----------|
+| `MET` | `actualRate >= guaranteedRate` | `null` |
+| `SHORTFALL` | `actualRate < guaranteedRate` | calculated amount |
+| `EMPTY` | `cohortSize = 0` | `null` — no leads pushed, guarantee does not apply |
+
+Empty cohorts are marked `MET` with a `null` shortfall. A broker cannot owe a shortfall for a week in which no leads were sent to them.
+
+The 30-day settlement window intentionally absorbs postback lag. FTDs that arrive after `cohortEnd` but before settlement are still counted, increasing `ftdCount` and potentially avoiding a shortfall.
+
+## Invoicing
+
+<a id="invoicing" />
+
+Invoices are monthly and cover all conversions whose timestamps fall within `[periodStart, periodEnd)`.
+
+**Broker invoice (`BrokerInvoice`)** — summarises revenue owed to GambChamp from the broker. Line items correspond to conversion events, one per `ConversionKind` (REGISTRATION / FTD / REDEPOSIT) where the active payout rule produces non-zero revenue.
+
+**Affiliate invoice (`AffiliateInvoice`)** — summarises payout owed by GambChamp to the affiliate. Line items correspond to the same conversions, priced against the active `AffiliatePayoutRule`.
+
+**1:1 broker↔affiliate linkage** (`AffiliateInvoice.brokerInvoiceId`): set only when all conversions in the billing period for a given affiliate originate from exactly one broker, and that broker's `BrokerInvoice` is not yet linked to another affiliate invoice. Multi-broker periods leave `brokerInvoiceId` null.
+
+**CRG shortfall line items:** if a `CRGCohort` with status `SHORTFALL` has a `cohortEnd` that falls within the billing period, its shortfall amount is appended to the `BrokerInvoice` as a line item keyed `crg-cohort-<cohortId>`. This means broker invoices for a period may include both CPA revenue and CRG shortfall recovery in the same document.
+
+**PDF export (v1):** the `exportInvoicePdf` tRPC call returns a JSON representation of the invoice structure. A real PDF renderer (using a template engine or a headless browser) is planned for v2.
+
+**Currency:** all amounts are USD in v1. Multi-currency support is deferred.
+
+<DeepRefCard block="conversions-crg" kind="invariants" title="Invariants" description="REGISTRATION + FTD idempotent per lead. REDEPOSIT can repeat. Shortfall = null when cohortSize = 0. 1:1 linkage only when conversions span exactly one broker. All amounts in USD (v1)." />

@@ -1,0 +1,76 @@
+---
+audience: human
+block: conversions-crg
+source: hand
+title: "How to set up CRG for a broker"
+description: "Configure a CPA_CRG payout rule, understand cohort windows, and track shortfall settlement."
+order: 2
+---
+
+# How to set up CRG for a broker
+
+This guide walks through creating a CRG payout rule and explains how the weekly cohort tracks performance against the guarantee.
+
+## Step 1 — Open the broker's payout rules
+
+Navigate to **Dashboard → Brokers → [broker name] → Payout rules**.
+
+The payout rules page lists all active `BrokerPayoutRule` rows for this broker. Rules are evaluated in reverse-creation order — the most recently created rule wins.
+
+## Step 2 — Create a CRG rule
+
+Click **Add rule** and fill in the form:
+
+| Field | Example value | Notes |
+|-------|--------------|-------|
+| Kind | `CPA_CRG` | Enables the guarantee mechanism |
+| CPA amount | `500` | USD per FTD (revenue to GambChamp) |
+| Guaranteed rate | `0.10` | 10% — broker guarantees 10 FTDs per 100 pushed leads |
+| Effective from | today | ISO date; leave blank to apply immediately |
+
+Save the rule. It takes effect on the next postback that resolves against this broker.
+
+## Step 3 — Understand the cohort window
+
+GambChamp opens a new `CRGCohort` row for this broker every **Monday at 00:00 UTC**. As leads are pushed and FTDs arrive via postback, the cohort counters update:
+
+- `cohortSize` — total leads routed to this broker in the window.
+- `ftdCount` — FTDs received from this broker in the window.
+- `actualRate` — `ftdCount / cohortSize`, updated on each qualifying postback.
+
+A cohort runs from its `cohortStart` (Monday 00:00 UTC) to its `cohortEnd` (next Monday 00:00 UTC).
+
+## Step 4 — Settlement
+
+Settlement is **not immediate**. The `crg-cohort-settle` cron job runs nightly and processes cohorts whose `cohortEnd` was at least **30 days ago**. This window exists to accommodate late postback delivery from brokers.
+
+When a cohort is settled:
+
+1. `actualRate` is compared against `guaranteedRate`.
+2. If `actualRate >= guaranteedRate` — cohort status is set to **`MET`**, shortfall is `null`.
+3. If `actualRate < guaranteedRate` — cohort status is set to **`SHORTFALL`**, and the shortfall amount is calculated (see formula below).
+4. If `cohortSize = 0` — cohort status is set to **`EMPTY`**, shortfall is `null` (no leads were pushed; guarantee does not apply).
+
+**Shortfall formula:**
+
+```
+shortfall = (guaranteedRate − actualRate) × cohortSize × cpaAmount
+```
+
+**Example:** guaranteed 10%, actual 6%, 200 leads pushed, $500 CPA.
+
+```
+shortfall = (0.10 − 0.06) × 200 × 500 = $4,000
+```
+
+The broker owes GambChamp $4,000 to compensate for the under-delivery.
+
+## Step 5 — Track cohort progress
+
+Navigate to **Dashboard → Finance → CRG Cohorts** (`/dashboard/finance/crg-cohorts`) to see all open and settled cohorts.
+
+The page shows per-cohort `cohortSize`, `ftdCount`, `actualRate`, `guaranteedRate`, status, and shortfall amount once settled.
+
+<Callout type="info" title="Shortfall line items appear on broker invoices">
+When a cohort settles with a `SHORTFALL` status and its `cohortEnd` falls within a monthly billing period, the shortfall amount is appended as a `crg-cohort-<cohortId>` line item on the broker's `BrokerInvoice` for that period.
+</Callout>

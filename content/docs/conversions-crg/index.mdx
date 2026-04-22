@@ -3,11 +3,74 @@ audience: human
 block: conversions-crg
 source: hand
 title: "Conversions + CRG + Finance — overview"
-description: "Public placeholder page; replaced in docs plan #3."
+description: "Conversion ingest from postbacks, payout rules, CRG weekly cohorts, and monthly invoicing."
 order: 1
 slugOverride: "conversions-crg"
 ---
 
 # Conversions + CRG + Finance
 
-_Coming soon: overview of the block._
+GambChamp tracks every monetisation event from broker postbacks and turns them into structured payout accounting for both brokers and affiliates.
+
+## Conversion ingest
+
+Broker postbacks carry a `status` field that maps to one of three conversion kinds:
+
+| Kind | Idempotent? | Trigger |
+|------|-------------|---------|
+| `REGISTRATION` | Yes — once per lead | Lead submits personal data on the broker platform |
+| `FTD` | Yes — once per lead | Lead makes their first deposit |
+| `REDEPOSIT` | No — can repeat | Lead makes any subsequent deposit |
+
+`REGISTRATION` and `FTD` are written at most once per lead. Duplicate postbacks for these kinds are silently discarded. `REDEPOSIT` creates a new `Conversion` row each time, allowing the platform to track lifetime deposit volume.
+
+The postback handler emits conversions via `src/server/finance/emit-conversion.ts`. Raw broker status strings such as `"REDEPOSIT"` and `"REGISTRATION"` are mapped to `ConversionKind` before the `Conversion` row is inserted.
+
+## Payout rules
+
+Payout rules define how money flows between the platform, brokers, and affiliates.
+
+**Broker payout rules** (`BrokerPayoutRule`) determine the **revenue** GambChamp earns from a broker per conversion. **Affiliate payout rules** (`AffiliatePayoutRule`) determine the **payout** GambChamp owes an affiliate. Margin = revenue − payout.
+
+Rules are resolved at the time of reporting. The most-recently-created matching rule wins (`resolveRuleAt`). Affiliate rules can be scoped to a specific broker, or set globally and applied when no broker-scoped rule exists.
+
+The four rule kinds are described in [Concepts: payout kinds](/docs/conversions-crg/concepts#payout-kinds).
+
+## CRG weekly cohorts
+
+**CRG (Conversion Rate Guarantee)** is a contractual commitment from a broker to achieve a minimum FTD rate. GambChamp tracks this weekly:
+
+- Cohort window: **Monday 00:00 UTC → next Monday 00:00 UTC**.
+- Each `CRGCohort` row accumulates `cohortSize` (leads pushed) and `ftdCount` (FTDs received) over the week.
+- Settlement runs **30 days after `cohortEnd`** to allow postback delivery lag. The `crg-cohort-settle` cron job processes all eligible cohorts nightly.
+- If the broker's actual FTD rate falls below their guaranteed rate, a shortfall is calculated and recorded on the cohort. See [Concepts: CRG shortfall](/docs/conversions-crg/concepts#crg-shortfall).
+
+## Invoicing
+
+Invoices are generated monthly. Two invoice types exist:
+
+- **`BrokerInvoice`** — what GambChamp invoices the broker (revenue).
+- **`AffiliateInvoice`** — what GambChamp pays the affiliate (payout).
+
+When all conversions in a billing period originate from exactly one broker, the `AffiliateInvoice` is linked 1:1 to the `BrokerInvoice` via `AffiliateInvoice.brokerInvoiceId`. Multi-broker periods do not carry this link.
+
+CRG shortfall amounts settled within a period are appended as `crg-cohort-<id>` line items on the broker invoice.
+
+All monetary amounts are in **USD only** (v1).
+
+**PDF export** returns a JSON placeholder in v1. Real PDF rendering is planned for v2.
+
+## P&L dashboard
+
+The P&L summary page at `/dashboard/finance/pnl` aggregates revenue, payout, and margin across a configurable date range with filters for affiliate, broker, and GEO.
+
+## Where to go next
+
+- [Set up CRG for a broker](/docs/conversions-crg/how-to-set-up-crg) — step-by-step payout rule and cohort configuration.
+- [Concepts: payout kinds, CRG shortfall, invoicing](/docs/conversions-crg/concepts) — data model and formula details.
+
+## Deep reference
+
+<DeepRefCard block="conversions-crg" kind="prisma" title="Database schema" description="Conversion (ConversionKind enum), CRGCohort (CRGCohortStatus enum), BrokerPayoutRule, AffiliatePayoutRule (PayoutRuleKind enum), BrokerInvoice, AffiliateInvoice (InvoiceStatus enum) models. Money fields Decimal(12,2); rate fields Decimal(5,4)." />
+<DeepRefCard block="conversions-crg" kind="trpc" title="tRPC router" description="finance — pnl, list/upsertBrokerPayoutRule, list/upsertAffiliatePayoutRule, listInvoices, markInvoicePaid, exportInvoicePdf, generateBrokerInvoice, generateAffiliateInvoice, listCrgCohorts." />
+<DeepRefCard block="conversions-crg" kind="jobs" title="pg-boss jobs" description="crg-cohort-settle — runs nightly, settles cohorts whose cohortEnd is ≥ 30 days in the past. Calculates shortfall and stamps CRGCohortStatus (MET / SHORTFALL / EMPTY)." />
