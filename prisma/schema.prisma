@@ -617,10 +617,11 @@ model FlowVersion {
   createdAt      DateTime              @default(now())
   flow           Flow                  @relation("FlowVersions", fields: [flowId], references: [id], onDelete: Cascade)
   activeFor      Flow?                 @relation("FlowActiveVersion")
-  branches       FlowBranch[]
-  fallbackSteps  FallbackStep[]
-  capDefs        CapDefinition[]
-  algoConfigs    FlowAlgorithmConfig[]
+  branches         FlowBranch[]
+  fallbackSteps    FallbackStep[]
+  capDefs          CapDefinition[]
+  algoConfigs      FlowAlgorithmConfig[]
+  comparingBuckets ComparingBucketStat[]
 
   @@unique([flowId, versionNumber])
   @@index([flowId, createdAt])
@@ -677,19 +678,28 @@ model FallbackStep {
 }
 
 model CapDefinition {
-  id            String      @id @default(cuid())
-  flowVersionId String
-  scope         CapScope
-  scopeRefId    String
-  window        CapWindow
-  limit         Int
-  timezone      String      @default("UTC")
-  perCountry    Boolean     @default(false)
-  flowVersion   FlowVersion @relation(fields: [flowVersionId], references: [id], onDelete: Cascade)
-  countryLimits CapCountryLimit[]
+  id                     String             @id @default(cuid())
+  flowVersionId          String
+  scope                  CapScope
+  scopeRefId             String
+  window                 CapWindow
+  limit                  Int
+  timezone               String             @default("UTC")
+  perCountry             Boolean            @default(false)
+  rejectedLimit          Int?
+  rejectedLimitAsPercent Boolean            @default(false)
+  rejectionsInARow       Int?
+  pqlScope               Json?
+  behaviorPattern        CapBehaviorPattern @default(REGULAR)
+  flowVersion            FlowVersion        @relation(fields: [flowVersionId], references: [id], onDelete: Cascade)
+  countryLimits          CapCountryLimit[]
 
   @@unique([flowVersionId, scope, scopeRefId, window])
   @@index([flowVersionId, scope])
+}
+
+enum CapBehaviorPattern {
+  REGULAR
 }
 
 model CapCountryLimit {
@@ -710,17 +720,40 @@ enum CapWindow {
 }
 
 model CapCounter {
-  id        String    @id @default(cuid())
+  id        String         @id @default(cuid())
   scope     CapScope
   scopeId   String
   window    CapWindow
   bucketKey String
-  country   String    @default("")
-  count     Int       @default(0)
+  country   String         @default("")
+  kind      CapCounterKind @default(PUSHED)
+  count     Int            @default(0)
   resetsAt  DateTime
 
-  @@unique([scope, scopeId, window, bucketKey, country])
+  @@unique([scope, scopeId, window, bucketKey, country, kind])
   @@index([resetsAt])
+}
+
+enum CapCounterKind {
+  PUSHED
+  REJECTED
+}
+
+model ComparingBucketStat {
+  id            String      @id @default(cuid())
+  flowVersionId String
+  nodeId        String
+  branchNodeId  String
+  bucketStart   DateTime
+  sampleN       Int         @default(0)
+  pushed        Int         @default(0)
+  accepted      Int         @default(0)
+  ftds          Int         @default(0)
+  revenueCents  Int         @default(0)
+  flowVersion   FlowVersion @relation(fields: [flowVersionId], references: [id], onDelete: Cascade)
+
+  @@unique([flowVersionId, nodeId, branchNodeId, bucketStart])
+  @@index([flowVersionId, nodeId])
 }
 
 // --- EPIC-03 Broker Integration ---
