@@ -50,9 +50,32 @@ function outcomeTone(o: string) {
   return "danger" as const;
 }
 
-type Mode = "single" | "batch";
+type Mode = "single" | "batch" | "pool";
 
 type BatchRow = { index: number; ok: boolean; result?: SimulateResult; error?: string };
+
+type PoolAttempt = {
+  hopOrder: number;
+  brokerId: string;
+  nodeId: string;
+  accepted: boolean;
+};
+type PoolSampleTrace = {
+  leadIndex: number;
+  attempts: PoolAttempt[];
+  landedBrokerId: string | null;
+  landedNodeId: string | null;
+  outcome: "accepted" | "exhausted" | "no_route";
+};
+type PoolResult = {
+  count: number;
+  perBrokerAccepts: Record<string, number>;
+  perBrokerRejects: Record<string, number>;
+  noRoute: number;
+  exhausted: number;
+  meanDecisionMs: number;
+  sampleTraces: PoolSampleTrace[];
+};
 
 export default function SimulatorPage({ params }: { params: Promise<{ flowId: string }> }) {
   const { flowId } = use(params);
@@ -78,6 +101,49 @@ export default function SimulatorPage({ params }: { params: Promise<{ flowId: st
   const [batchRows, setBatchRows] = useState<BatchRow[]>([]);
   const [batchErr, setBatchErr] = useState<string | null>(null);
   const [batchRunning, setBatchRunning] = useState(false);
+
+  // Pool-mode state (SmartPool sequential-accept verification)
+  const [poolCount, setPoolCount] = useState<number>(50);
+  const [poolGeo, setPoolGeo] = useState<string>("UA");
+  const [poolAffiliate, setPoolAffiliate] = useState<string>("aff-sim-1");
+  const [poolProbsJson, setPoolProbsJson] = useState<string>(
+    `{\n  "<broker-id-1>": 0,\n  "<broker-id-2>": 0,\n  "<broker-id-3>": 1\n}`,
+  );
+  const [poolResult, setPoolResult] = useState<PoolResult | null>(null);
+  const [poolErr, setPoolErr] = useState<string | null>(null);
+  const [poolRunning, setPoolRunning] = useState(false);
+
+  async function runPool() {
+    setPoolRunning(true);
+    setPoolErr(null);
+    setPoolResult(null);
+    try {
+      let probs: Record<string, number> = {};
+      try {
+        const parsed = JSON.parse(poolProbsJson);
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) probs = parsed;
+      } catch {
+        throw new Error("broker accept probabilities must be a JSON object");
+      }
+      const r = await fetch("/api/v1/routing/simulate-pool", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          flow_id: flowId,
+          count: poolCount,
+          broker_accept_probabilities: probs,
+          lead_template: { geo: poolGeo, affiliate_id: poolAffiliate },
+        }),
+      });
+      const body = await r.json();
+      if (!r.ok) throw new Error(body.error?.message ?? body.error?.code ?? `http_${r.status}`);
+      setPoolResult(body as PoolResult);
+    } catch (e) {
+      setPoolErr((e as Error).message);
+    } finally {
+      setPoolRunning(false);
+    }
+  }
 
   async function runOne(lead: Record<string, unknown>) {
     const r = await fetch("/api/v1/routing/simulate", {
@@ -152,12 +218,17 @@ export default function SimulatorPage({ params }: { params: Promise<{ flowId: st
 
       {/* Mode tabs */}
       <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
-        {(["single", "batch"] as const).map((m) => (
+        {(["single", "batch", "pool"] as const).map((m) => (
           <button
             key={m}
             type="button"
             onClick={() => setMode(m)}
             style={{ ...btnStyle(theme, mode === m ? "primary" : undefined), fontSize: 12 }}
+            title={
+              m === "pool"
+                ? "SmartPool sequential-accept scenario: N leads × per-broker probabilities"
+                : undefined
+            }
           >
             {m}
           </button>
@@ -362,6 +433,226 @@ export default function SimulatorPage({ params }: { params: Promise<{ flowId: st
                 </table>
               )}
             </div>
+          </section>
+        </div>
+      )}
+
+      {mode === "pool" && (
+        <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: 16 }}>
+          <section
+            style={{ border: "1px solid var(--bd-1)", borderRadius: 6, overflow: "hidden" }}
+          >
+            <div
+              style={{
+                padding: "10px 14px",
+                borderBottom: "1px solid var(--bd-1)",
+                background: "var(--bg-2)",
+                fontSize: 13,
+                fontWeight: 500,
+              }}
+            >
+              SmartPool simulation
+            </div>
+            <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ fontSize: 11, color: "var(--fg-2)" }}>
+                Feeds N synthetic leads through the flow; each broker rolls a
+                Math.random() against its configured accept probability.
+                On reject inside a SmartPool, the simulator walks the compiled
+                FallbackStep chain until accept or exhaustion.
+              </div>
+              <LabeledInput
+                label="N (leads to simulate)"
+                value={String(poolCount)}
+                onChange={(v) => setPoolCount(Math.max(1, Math.min(10_000, Number(v) || 0)))}
+              />
+              <LabeledInput
+                label="GEO"
+                value={poolGeo}
+                onChange={(v) => setPoolGeo(v.toUpperCase().slice(0, 2))}
+              />
+              <LabeledInput
+                label="Affiliate id"
+                value={poolAffiliate}
+                onChange={(v) => setPoolAffiliate(v)}
+              />
+              <div>
+                <label
+                  htmlFor="pool-probs"
+                  style={{ fontSize: 10, color: "var(--fg-2)", letterSpacing: "0.08em" }}
+                >
+                  BROKER ACCEPT PROBABILITIES (JSON)
+                </label>
+                <textarea
+                  id="pool-probs"
+                  value={poolProbsJson}
+                  onChange={(e) => setPoolProbsJson(e.target.value)}
+                  rows={7}
+                  style={{
+                    width: "100%",
+                    marginTop: 3,
+                    fontFamily: "var(--mono)",
+                    fontSize: 11,
+                    padding: 6,
+                    border: "1px solid var(--bd-1)",
+                    background: "var(--bg-1)",
+                    color: "var(--fg-0)",
+                    borderRadius: 3,
+                  }}
+                />
+              </div>
+              <button
+                type="button"
+                style={btnStyle(theme, "primary")}
+                disabled={poolRunning}
+                onClick={runPool}
+              >
+                {poolRunning ? "Simulating…" : "Run pool simulation"}
+              </button>
+              {poolErr && (
+                <div style={{ color: "oklch(72% 0.15 25)", fontSize: 12 }}>error: {poolErr}</div>
+              )}
+            </div>
+          </section>
+
+          <section
+            style={{ border: "1px solid var(--bd-1)", borderRadius: 6, overflow: "hidden" }}
+          >
+            <div
+              style={{
+                padding: "10px 14px",
+                borderBottom: "1px solid var(--bd-1)",
+                background: "var(--bg-2)",
+                fontSize: 13,
+                fontWeight: 500,
+              }}
+            >
+              Pool results
+            </div>
+            {!poolResult ? (
+              <div style={{ padding: 14, color: "var(--fg-2)", fontSize: 12 }}>
+                Configure accept probabilities and run — you'll see per-broker
+                counts plus sequential attempt traces for the first 10 leads.
+              </div>
+            ) : (
+              <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 14 }}>
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                  <Pill size="xs">count: {poolResult.count}</Pill>
+                  <Pill size="xs" tone="success">
+                    accepts: {Object.values(poolResult.perBrokerAccepts).reduce((a, b) => a + b, 0)}
+                  </Pill>
+                  <Pill size="xs" tone="warn">
+                    exhausted: {poolResult.exhausted}
+                  </Pill>
+                  <Pill size="xs" tone="danger">
+                    no_route: {poolResult.noRoute}
+                  </Pill>
+                  <Pill size="xs">mean: {poolResult.meanDecisionMs.toFixed(2)}ms</Pill>
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      color: "var(--fg-2)",
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      marginBottom: 4,
+                    }}
+                  >
+                    per-broker tallies
+                  </div>
+                  <table style={{ width: "100%", fontSize: 12, fontFamily: "var(--mono)" }}>
+                    <thead>
+                      <tr style={{ color: "var(--fg-2)", fontSize: 10 }}>
+                        <th style={{ textAlign: "left", padding: "4px 0" }}>broker</th>
+                        <th style={{ textAlign: "right" }}>accepts</th>
+                        <th style={{ textAlign: "right" }}>rejects</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.from(
+                        new Set([
+                          ...Object.keys(poolResult.perBrokerAccepts),
+                          ...Object.keys(poolResult.perBrokerRejects),
+                        ]),
+                      ).map((b) => (
+                        <tr key={b} style={{ borderTop: "1px solid var(--bd-1)" }}>
+                          <td style={{ padding: "4px 0" }}>{b.slice(0, 14)}</td>
+                          <td style={{ textAlign: "right", color: "oklch(72% 0.16 150)" }}>
+                            {poolResult.perBrokerAccepts[b] ?? 0}
+                          </td>
+                          <td style={{ textAlign: "right", color: "oklch(72% 0.15 25)" }}>
+                            {poolResult.perBrokerRejects[b] ?? 0}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div>
+                  <div
+                    style={{
+                      fontSize: 10,
+                      color: "var(--fg-2)",
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      marginBottom: 6,
+                    }}
+                  >
+                    first {poolResult.sampleTraces.length} sequential traces
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                    {poolResult.sampleTraces.map((t) => (
+                      <div
+                        key={t.leadIndex}
+                        style={{
+                          border: "1px solid var(--bd-1)",
+                          borderRadius: 4,
+                          padding: 6,
+                          fontFamily: "var(--mono)",
+                          fontSize: 11,
+                          display: "flex",
+                          gap: 6,
+                          alignItems: "center",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <span style={{ color: "var(--fg-2)" }}>#{t.leadIndex}</span>
+                        {t.attempts.length === 0 ? (
+                          <span style={{ color: "oklch(72% 0.15 25)" }}>no_route</span>
+                        ) : (
+                          t.attempts.map((a, i) => (
+                            <span
+                              key={`${t.leadIndex}-${i}-${a.nodeId}`}
+                              style={{
+                                color: a.accepted
+                                  ? "oklch(72% 0.16 150)"
+                                  : "oklch(72% 0.15 25)",
+                              }}
+                            >
+                              {a.brokerId.slice(0, 10)}
+                              {a.accepted ? "✓" : "✗"}
+                              {i < t.attempts.length - 1 ? " → " : ""}
+                            </span>
+                          ))
+                        )}
+                        <Pill
+                          size="xs"
+                          tone={
+                            t.outcome === "accepted"
+                              ? "success"
+                              : t.outcome === "exhausted"
+                                ? "warn"
+                                : "danger"
+                          }
+                        >
+                          {t.outcome}
+                        </Pill>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
         </div>
       )}
