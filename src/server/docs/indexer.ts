@@ -3,6 +3,7 @@ import { loadDeepOnly, loadDocsTree } from "@/lib/docs-content";
 import { prisma } from "@/server/db";
 import { type Chunk, chunkMarkdown } from "./chunker";
 import { EMBEDDING_DIM, embedBatch } from "./embeddings";
+import { openapiChunks } from "./openapi-indexer";
 
 export interface IndexManifest {
   chunkCount: number;
@@ -30,6 +31,15 @@ export async function indexDocs(opts: { root: string; cwd?: string }): Promise<I
         title: p.frontmatter.title,
       }),
     );
+  }
+
+  // Append OpenAPI chunks (one per path × method).
+  try {
+    const openapi = await openapiChunks({ openapiYamlPath: "docs/api/v1/openapi.yaml", cwd });
+    allChunks.push(...openapi);
+  } catch (e) {
+    // OpenAPI file may be missing in some CI contexts; log and proceed.
+    console.warn("[docs-index] openapi not available:", (e as Error).message);
   }
 
   const wantedIds = allChunks.map((c) => c.id);
