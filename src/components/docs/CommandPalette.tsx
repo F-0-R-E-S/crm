@@ -35,10 +35,18 @@ export function CommandPalette() {
   }, []);
 
   const hitsQuery = trpc.docs.search.useQuery(
-    { q: debouncedQ, audiences: ["human"], k: 10, mode: "cmdk" },
+    {
+      q: debouncedQ,
+      audiences: ["human", "ai-deep"],
+      k: 15,
+      mode: "cmdk",
+    },
     // biome-ignore lint/suspicious/noExplicitAny: keepPreviousData is a valid TanStack Query v4 option not in the narrow type
     { enabled: debouncedQ.length >= 2, keepPreviousData: true } as any,
   );
+
+  // Post-filter: keep human + OpenAPI only (exclude other ai-deep kinds from user-facing Cmd+K).
+  const filtered = hitsQuery.data?.filter((h) => h.audience === "human" || h.kind === "openapi");
 
   return (
     <>
@@ -71,23 +79,34 @@ export function CommandPalette() {
             />
             <Command.List className="max-h-96 overflow-y-auto p-2 text-sm">
               {hitsQuery.isLoading && <div className="p-4 text-muted-foreground">Searching…</div>}
-              {!hitsQuery.isLoading && hitsQuery.data?.length === 0 && (
+              {!hitsQuery.isLoading && filtered?.length === 0 && (
                 <div className="p-4 text-muted-foreground">No matches.</div>
               )}
-              {hitsQuery.data?.map((hit) => (
+              {filtered?.map((hit) => (
                 <Command.Item
                   key={hit.id}
                   value={hit.title + hit.slug}
                   onSelect={() => {
                     setOpen(false);
-                    router.push(`/docs/${hit.slug}${hit.anchor ? `#${hit.anchor}` : ""}`);
+                    const url =
+                      hit.kind === "openapi"
+                        ? `/docs/api#${hit.anchor ?? ""}`
+                        : `/docs/${hit.slug}${hit.anchor ? `#${hit.anchor}` : ""}`;
+                    router.push(url as never);
                   }}
                   className={cn(
                     "cursor-pointer rounded px-3 py-2",
                     "data-[selected=true]:bg-muted",
                   )}
                 >
-                  <div className="font-medium">{hit.title}</div>
+                  <div className="flex items-center gap-2 font-medium">
+                    {hit.kind === "openapi" && (
+                      <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                        API
+                      </span>
+                    )}
+                    {hit.title}
+                  </div>
                   <div className="text-xs text-muted-foreground">
                     {hit.block} / {hit.slug}
                   </div>
