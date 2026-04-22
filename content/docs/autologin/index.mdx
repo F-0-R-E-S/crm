@@ -3,11 +3,78 @@ audience: human
 block: autologin
 source: hand
 title: "Autologin — overview"
-description: "Public placeholder page; replaced in docs plan #3."
+description: "Playwright-based broker session automation: proxy pool, captcha, SLA tile."
 order: 1
 slugOverride: "autologin"
 ---
 
 # Autologin
 
-_Coming soon: overview of the block._
+Autologin lets an affiliate deep-link a lead directly into a broker's logged-in trading platform — without the lead needing to enter their credentials manually. GambChamp automates the broker login on the lead's behalf and returns a ready session URL.
+
+## How the pipeline works
+
+```
+Broker push succeeds + Broker.autologinEnabled = true
+  ↓
+autologin-attempt pg-boss job enqueued
+  ↓
+Proxy pool → pick healthy proxy endpoint (round-robin)
+  ↓
+Playwright headless Chromium → proxy → broker login page
+  ↓
+Captcha solve (stub v1 / 2captcha v1.5)
+  ↓
+Credentials submitted → session cookie extracted
+  ↓
+Session URL returned to affiliate frontend
+```
+
+The full sequence runs inside the `autologin-attempt` job, driven by the state machine in `run-attempt.ts`. Each attempt is recorded as an `AutologinAttempt` row with its final status, stage-of-failure (if any), and duration.
+
+## Configuration per broker
+
+Autologin is opt-in and configured at the broker level:
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `autologinEnabled` | Boolean | Master toggle — off by default |
+| `autologinLoginUrl` | String? | The broker's login POST endpoint |
+| adapter type | Registry key | Which automation adapter to use (mock / branded-vendor-X) |
+
+Real adapters are added opportunistically per broker integration. The `mock` adapter is available for sandbox testing without a live broker endpoint.
+
+## Captcha handling
+
+- **v1 (current):** a stub solver returns `"test-captcha-token"`. Suitable for brokers whose login page does not have active captcha, or for sandbox testing.
+- **v1.5 (planned):** 2captcha service integration. The solver will submit the captcha challenge to the 2captcha API and poll for the solution token.
+
+## Proxy pool
+
+Autologin requests are routed through a pool of `ProxyEndpoint` rows. The pool uses round-robin selection and a 3-strike health threshold. Unhealthy proxies are automatically skipped until a health probe passes. See [concepts: proxy pool](/docs/autologin/concepts#proxy-pool) for details.
+
+## SLA tile
+
+The autologin SLA dashboard at `/dashboard/autologin` shows:
+
+| Metric | Description |
+|--------|-------------|
+| `total` | Attempts in the selected window |
+| `success` | Attempts that reached `SESSION_READY` |
+| `failed` | Attempts that terminated in any failure stage |
+| `uptime_pct` | `success / total × 100` |
+| `p50_ms` | Median attempt duration |
+| `p95_ms` | 95th-percentile attempt duration |
+| `by_stage_failed` | Failure count broken down by stage |
+
+The SLA API endpoint is `GET /api/v1/autologin/sla?from=&to=` (default 7 days, max 31).
+
+## Where to go next
+
+- [Configure broker autologin](/docs/autologin/how-to-configure-broker-autologin) — enable autologin, set up the adapter, and verify a sandbox attempt.
+- [Concepts: proxy pool, state machine, captcha, failure modes](/docs/autologin/concepts) — internals of the automation pipeline.
+
+## Deep reference
+
+<DeepRefCard block="autologin" kind="prisma" title="Database schema" description="ProxyEndpoint, AutologinAttempt (AutologinStage, AutologinStatus enums), Broker.autologinEnabled, Broker.autologinLoginUrl models." />
+<DeepRefCard block="autologin" kind="jobs" title="pg-boss jobs" description="autologin-attempt (Playwright session automation), proxy-health (round-trip probe, 3-strike down threshold, 10-min cron)." />

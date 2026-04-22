@@ -1,0 +1,94 @@
+---
+audience: human
+block: autologin
+source: hand
+title: "Concepts: proxy pool, state machine, captcha, failure modes"
+description: "Internals of the autologin automation pipeline — proxy health, state transitions, captcha, and failure taxonomy."
+order: 3
+---
+
+# Autologin concepts
+
+## Proxy pool
+
+<a id="proxy-pool" />
+
+All Playwright browser sessions are routed through a proxy from the `ProxyEndpoint` pool. Direct outbound connections are not used — proxies mask GambChamp's server IP, which is required to avoid broker-side IP allowlists that would block datacenter traffic.
+
+**Selection:** The pool uses **round-robin** selection. On each `autologin-attempt` job start, the pool picks the next proxy in the rotation order, skipping any endpoint whose `status` is `DOWN`.
+
+**Health probing:** The `proxy-health` pg-boss cron runs **every 10 minutes**. For each `ProxyEndpoint`, it sends a `GET https://api.ipify.org` request via undici `ProxyAgent` (configured with the endpoint's URL and credentials). A successful response (2xx + IP string body) sets `status = UP` and resets `strikeCount = 0`. A failed response (network error, timeout, non-2xx) increments `strikeCount`. When `strikeCount` reaches **3**, `status` flips to `DOWN`.
+
+**Recovery:** A DOWN proxy can recover. On the next successful health probe, `status` returns to `UP` and `strikeCount` resets. There is no manual unblock required.
+
+**Failure behaviour:** If all proxies in the pool are `DOWN` when an `autologin-attempt` job runs, the attempt fails immediately at the `INITIATING` stage with reason `no_healthy_proxy`. The attempt is recorded in `AutologinAttempt` and counted in the SLA `by_stage_failed.INITIATING` metric.
+
+## State machine
+
+<a id="state-machine" />
+
+Each `autologin-attempt` job drives the lead's autologin session through a linear state machine. The current stage is recorded in `AutologinAttempt.stage` so failures can be attributed precisely.
+
+```
+INITIATING
+  → proxy selected + Playwright browser launched
+  → navigate to autologinLoginUrl
+
+CAPTCHA
+  → captcha challenge detected on the login page
+  → captcha solver invoked
+  → solution token injected into the form
+
+AUTHENTICATING
+  → credentials (from Broker config) submitted to the login form
+  → response evaluated: accepted or rejected
+
+SESSION_READY
+  → session cookie extracted
+  → session URL constructed and returned to the affiliate frontend
+```
+
+A failure at any stage terminates the attempt at that stage. `AutologinAttempt.status` is set to `FAILED` and `AutologinAttempt.stage` records the last stage reached before failure. `AutologinAttempt.errorMessage` captures the underlying error string for debugging.
+
+Successful completion sets `AutologinAttempt.status = SUCCESS` and `stage = SESSION_READY`.
+
+## Captcha
+
+<a id="captcha" />
+
+**v1 — stub solver (current):**
+
+The captcha solver in `src/server/autologin/captcha-solver.ts` is a stub. It detects the captcha challenge type (currently only reCAPTCHA v2 sitekey) and returns the hardcoded token `"test-captcha-token"`.
+
+This is intentional for v1. Brokers whose login pages do not have active captcha (common in operator-restricted CRMs) work correctly. Brokers with active captcha will fail at the `CAPTCHA` stage — the stub token will be rejected by the captcha validation service. This is expected and acceptable for v1.
+
+**v1.5 — 2captcha integration (planned):**
+
+The captcha solver will be upgraded to submit the challenge to the [2captcha](https://2captcha.com) API:
+
+1. Extract the reCAPTCHA sitekey from the login page DOM.
+2. POST to `https://2captcha.com/in.php` with the sitekey and page URL.
+3. Poll `https://2captcha.com/res.php` with the returned job ID until the solution is ready.
+4. Inject the solution token into the form's `g-recaptcha-response` field.
+
+The 2captcha API key will be stored in `Broker.autologinConfig` (JSON field). No env variable is used — different brokers may use different solver accounts.
+
+## Failure modes
+
+<a id="failure-modes" />
+
+The following failure modes are observed in production and appear in the `by_stage_failed` SLA breakdown:
+
+| Failure mode | Stage | Root cause | Resolution |
+|-------------|-------|-----------|------------|
+| No healthy proxy | `INITIATING` | All `ProxyEndpoint` rows are `DOWN` | Add more proxy endpoints; investigate why existing proxies failed health probes |
+| Network timeout | `INITIATING` / `CAPTCHA` | Proxy or broker endpoint unreachable within Playwright's default 30 s timeout | Check proxy connectivity; verify `autologinLoginUrl` is reachable from the proxy's egress IP |
+| Captcha unsolvable | `CAPTCHA` | Active captcha + stub solver (v1); or 2captcha API error (v1.5) | Upgrade to 2captcha (v1.5); check 2captcha account balance and API key validity |
+| Credential rejection | `AUTHENTICATING` | Broker rotated password; broker account locked; login URL changed | Verify credentials in broker settings; contact broker technical contact |
+| Proxy banned | `INITIATING` | Broker's CRM has blocked the proxy's egress IP | Rotate to a fresh proxy endpoint; contact proxy provider for a new IP |
+
+<Callout type="warning" title="Playwright failures produce verbose stack traces">
+When a Playwright step fails (navigation timeout, element not found, etc.), the full stack trace is stored in `AutologinAttempt.errorMessage`. This field can be several kilobytes. When querying attempts for debugging, use the `GET /api/v1/autologin/attempts` endpoint which truncates `errorMessage` to 500 characters. Retrieve the full message via the attempt detail page.
+</Callout>
+
+<DeepRefCard block="autologin" kind="invariants" title="Invariants" description="autologin-attempt idempotency (one attempt per push-lead job), proxy round-robin ordering, SESSION_READY write-once semantics." />

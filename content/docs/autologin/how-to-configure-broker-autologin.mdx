@@ -1,0 +1,93 @@
+---
+audience: human
+block: autologin
+source: hand
+title: "How to configure broker autologin"
+description: "Enable autologin for a broker, configure the adapter and proxy pool, and verify with a sandbox lead."
+order: 2
+---
+
+# How to configure broker autologin
+
+This recipe walks through enabling autologin for a specific broker, verifying the proxy pool, and running a test lead to confirm the pipeline is healthy.
+
+## Step 1 — Enable autologin in broker settings
+
+Navigate to **Brokers** → select the broker → click **Edit**.
+
+Toggle **Autologin enabled** to on. This sets `Broker.autologinEnabled = true`. From this point, every successful `push-lead` result for this broker will enqueue an `autologin-attempt` job.
+
+<Callout type="info" title="Autologin requires a successful push first">
+Autologin is only triggered after a lead is successfully pushed to the broker (state → `PUSHED`). Leads that fail during push, or leads in `PENDING_HOLD`, do not trigger autologin until the push outcome is resolved.
+</Callout>
+
+## Step 2 — Set the login URL
+
+In the same edit form, fill in **Autologin login URL** with the broker's login POST endpoint. This is the URL the Playwright adapter will navigate to and submit credentials against.
+
+Example:
+
+```
+https://crm.broker-example.com/auth/login
+```
+
+If the broker uses a branded CRM, consult the broker's technical contact for the exact endpoint. Some brokers require a specific `User-Agent` header or a pre-authenticated cookie — these are handled at the adapter level.
+
+## Step 3 — Select the adapter type
+
+In the **Adapter** dropdown, choose the automation adapter to use:
+
+| Adapter | Use when |
+|---------|----------|
+| `mock` | Sandbox testing — no real browser launched, always returns `SESSION_READY` |
+| `branded-vendor-X` | Broker uses a known CRM vendor with a pre-built adapter |
+| (other) | Real adapters ship opportunistically per broker integration request |
+
+If no adapter is listed for the broker's CRM, contact the GambChamp team to request a new adapter. In the meantime, use `mock` to verify the rest of the pipeline (proxy health, job enqueueing, SLA tile).
+
+## Step 4 — Ensure a healthy proxy pool
+
+Autologin requests are routed through the `ProxyEndpoint` pool. At least one healthy proxy must be available for any attempt to succeed.
+
+Navigate to **Settings → Proxy Pool** (or query `GET /api/v1/autologin/proxies`) to view the current pool status. Each endpoint shows:
+
+- `status` — `UP` or `DOWN`
+- `strikeCount` — consecutive failed probes (3 = down)
+- `lastProbeAt` — timestamp of the most recent health check
+
+If no healthy proxies are shown, add a proxy endpoint via **Settings → Proxy Pool → Add proxy** and wait for the `proxy-health` cron to run (every 10 minutes). You can also trigger an immediate probe from the admin page.
+
+## Step 5 — Test with a sandbox lead
+
+Use the sandbox API key for your tenant to submit a test lead with `external_lead_id` prefixed `sandbox_autologin_`:
+
+```bash
+curl -X POST https://api.<slug>.<root>/api/v1/leads \
+  -H "Authorization: Bearer <sandbox-api-key>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "external_lead_id": "sandbox_autologin_001",
+    "first_name": "Test",
+    "last_name": "Lead",
+    "email": "test@example.com",
+    "phone": "+1234567890",
+    "geo": "DE"
+  }'
+```
+
+After the lead is pushed, navigate to `/dashboard/autologin` and check the **Attempts** grid. The most recent attempt should appear. If the adapter is `mock`, it will show `SESSION_READY` within seconds.
+
+## Troubleshooting stage failures
+
+The `by_stage_failed` breakdown on the SLA tile identifies where attempts are failing:
+
+| Stage | Common causes |
+|-------|--------------|
+| `INITIATING` | No healthy proxy available; Playwright failed to launch |
+| `CAPTCHA` | Captcha challenge appeared but stub solver returned invalid token (v1 limitation) |
+| `AUTHENTICATING` | Login credentials rejected by broker; login URL changed; session cookie not set |
+| `SESSION_READY` | Session established but redirect URL could not be extracted |
+
+For `CAPTCHA` failures: this is expected in v1 if the broker's login page has active captcha. The 2captcha integration (v1.5) is required for production use with captcha-protected brokers.
+
+For `AUTHENTICATING` failures: verify that `autologinLoginUrl` is correct and that the broker has not rotated their login endpoint. Check the raw `AutologinAttempt.errorMessage` field for the exact HTTP error returned.
