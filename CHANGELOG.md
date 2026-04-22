@@ -2,6 +2,13 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## Unreleased — Docs subsite skeleton
+
+- **/docs route.** Public Next.js App Router pages at `/docs`. MDX pipeline via `next-mdx-remote` v5 RSC mode with `remark-gfm`, `rehype-slug`, `rehype-autolink-headings`, `rehype-pretty-code`.
+- **Two-tier content.** Frontmatter Zod schema (`audience: human | ai-deep`). Content loader walks `content/docs/` excluding `_deep/` for the human-facing tree.
+- **Nav.** Sidebar auto-generated from block catalog (24 blocks), breadcrumbs, TOC from H2/H3, prev/next across blocks.
+- **SEO.** Sitemap + robots.txt with `_deep` Disallow.
+
 ## v2.0.0-s3.3 (2026-04-22) — Routing iREV Parity
 
 Tags: `v2.0.0-s3.1-routing-backend`, `v2.0.0-s3.2-routing-canvas`, `v2.0.0-s3.3-routing-tree`.
