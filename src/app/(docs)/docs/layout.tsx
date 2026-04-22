@@ -1,3 +1,4 @@
+import { ChatWidget } from "@/components/docs/ChatWidget";
 import { Sidebar } from "@/components/docs/Sidebar";
 import { loadDocsTree } from "@/lib/docs-content";
 
@@ -12,6 +13,7 @@ export default async function DocsLayout({ children }: { children: React.ReactNo
         <Sidebar tree={tree} />
       </aside>
       <main className="min-w-0 flex-1">{children}</main>
+      <ChatWidget />
     </div>
   );
 }
