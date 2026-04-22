@@ -450,12 +450,30 @@ export function Inspector(props: Props) {
             // internally; we adapt bidirectionally and thread
             // `caseSensitive` through.
             node={{
-              conditions: ((node as FilterNode).rules ?? []).map((r) => ({
-                field: r.field as FilterCondition["field"],
-                op: r.sign as FilterCondition["op"],
-                value: r.value,
-                caseSensitive: r.caseSensitive ?? false,
-              })),
+              // Defensive: accept the canonical `rules` shape OR a
+              // pre-migration legacy `conditions` shape that slipped
+              // through to the client raw.
+              conditions: (() => {
+                type Legacy = {
+                  conditions?: Array<{ field: string; op: string; value: unknown }>;
+                };
+                const fn = node as FilterNode;
+                if (Array.isArray(fn.rules) && fn.rules.length > 0) {
+                  return fn.rules.map((r) => ({
+                    field: r.field as FilterCondition["field"],
+                    op: r.sign as FilterCondition["op"],
+                    value: r.value,
+                    caseSensitive: r.caseSensitive ?? false,
+                  }));
+                }
+                const legacy = (node as unknown as Legacy).conditions ?? [];
+                return legacy.map((c) => ({
+                  field: c.field as FilterCondition["field"],
+                  op: c.op as FilterCondition["op"],
+                  value: c.value as FilterCondition["value"],
+                  caseSensitive: false,
+                }));
+              })(),
               logic: (node as FilterNode).logic,
             }}
             readOnly={readOnly}

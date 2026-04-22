@@ -107,12 +107,27 @@ export function EntryNode({ data }: { data: NodeData }) {
 
 export function BranchNode({ data }: { data: NodeData }) {
   const node = data.raw as Extract<FlowNode, { kind: "Filter" }>;
+  // Defensive: older FlowVersion rows may still carry the legacy
+  // `conditions` + `op` shape if they were persisted before the S3.1
+  // Filter→PQL migration ran. `FlowGraphSchema.preprocess` rewrites on
+  // parse, but `loadFlowById` returns the raw JSON to the client so we
+  // normalize here rather than crashing on `node.rules.slice(...)`.
+  type LegacyFilter = { conditions?: Array<{ field: string; op: string; value: unknown }> };
+  const raw = node as unknown as LegacyFilter;
+  const rules =
+    node.rules ??
+    (raw.conditions ?? []).map((c) => ({
+      field: c.field as "geo",
+      sign: c.op as "eq",
+      value: c.value as string,
+      caseSensitive: false,
+    }));
   return (
     <div style={BASE_STYLE}>
       <Header kind="Filter" sub={node.logic} />
       <div style={{ fontWeight: 500, marginBottom: 6 }}>{data.label}</div>
       <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-        {node.rules.slice(0, 3).map((c, i) => (
+        {rules.slice(0, 3).map((c, i) => (
           <span
             key={`${c.field}-${i}`}
             style={{
@@ -124,8 +139,8 @@ export function BranchNode({ data }: { data: NodeData }) {
             {c.field} {c.sign} {Array.isArray(c.value) ? `[${c.value.join(",")}]` : String(c.value)}
           </span>
         ))}
-        {node.rules.length > 3 && (
-          <span style={{ fontSize: 10, color: "var(--fg-2)" }}>+{node.rules.length - 3} more</span>
+        {rules.length > 3 && (
+          <span style={{ fontSize: 10, color: "var(--fg-2)" }}>+{rules.length - 3} more</span>
         )}
       </div>
       <Handle type="target" position={Position.Left} style={{ background: "var(--fg-2)" }} />
