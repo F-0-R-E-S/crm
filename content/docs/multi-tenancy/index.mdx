@@ -3,11 +3,65 @@ audience: human
 block: multi-tenancy
 source: hand
 title: "Multi-Tenancy — overview"
-description: "Public placeholder page; replaced in docs plan #3."
+description: "White-label isolation model, 3-domain hostname pattern, per-tenant branding, and super-admin cross-tenant access."
 order: 1
 slugOverride: "multi-tenancy"
 ---
 
 # Multi-Tenancy
 
-_Coming soon: overview of the block._
+GambChamp is a multi-tenant platform. Each tenant is a fully isolated white-label instance with its own affiliates, brokers, leads, flows, and branding. Tenants cannot see or affect each other's data.
+
+## Tenant identity
+
+Every tenant has a unique **slug** (e.g. `acme`). All tenant-scoped Prisma models carry a `tenantId` field that maps to the `Tenant` table. The application enforces isolation at the database middleware layer — see [Concepts: withTenant](/docs/multi-tenancy/concepts#withtenant).
+
+## 3-domain hostname pattern
+
+GambChamp uses a three-part hostname structure to route requests to the correct tenant and expose the correct surface:
+
+```
+<role>.<slug>.<ROOT_DOMAIN>
+```
+
+| Role prefix | Hostname example | Surface |
+|-------------|-----------------|---------|
+| `network` | `network.acme.example.com` | Dashboard, super-admin, docs, tRPC, auth |
+| `autologin` | `autologin.acme.example.com` | Autologin deep-link pages + `/api/v1/autologin/*` |
+| `api` | `api.acme.example.com` | REST intake only — `/api/v1/*` |
+
+`src/middleware.ts` parses the `x-forwarded-host` header, resolves the tenant slug to a `tenantId` via `resolveTenantFromHost`, and propagates the tenant context via an `x-tenant-slug` header throughout the request.
+
+**Path mismatches** return 404. For example, a request to `api.acme.example.com/dashboard` is rejected because the `api` role does not expose the dashboard surface.
+
+### Disabling the 3-domain pattern
+
+When `ROOT_DOMAIN` is empty or unset, every hostname maps to `tenant_default` with the `network` role. This is the default for local development and single-tenant self-hosted deployments.
+
+## Tenant branding
+
+Each tenant can configure its brand identity via `Tenant.theme`:
+
+| Field | Purpose |
+|-------|---------|
+| `brandName` | Display name in the dashboard header and emails |
+| `logoUrl` | URL of the tenant's logo image |
+| `primaryColor` | Main brand colour (hex) |
+| `accentColor` | Secondary / highlight colour (hex) |
+| `legalLinks` | Footer links for privacy policy, terms, etc. |
+
+The `TenantBrandingStyle` RSC injects `--brand` and `--accent` CSS variables into the dashboard layout. Tenants edit their branding at **Dashboard → Settings → Branding** (shortcut `V`).
+
+## Super-admin cross-tenant access
+
+The `SUPER_ADMIN` role can perform CRUD operations across all tenants. Super-admin pages live at `/super-admin/tenants` and use the `superAdminProcedure` tRPC procedure, which skips `withTenant` scoping. Regular admin users are confined to their own tenant.
+
+## Where to go next
+
+- [Concepts: withTenant, middleware, super-admin](/docs/multi-tenancy/concepts) — isolation internals and the AsyncLocalStorage scoping mechanism.
+
+## Deep reference
+
+<DeepRefCard block="multi-tenancy" kind="prisma" title="Database schema" description="Tenant (theme: TenantThemeSchema Zod-validated JSON, slug unique). All tenant-scoped models carry tenantId with DB DEFAULT 'tenant_default'. TENANT_SCOPED_MODELS list in src/server/db-tenant.ts." />
+<DeepRefCard block="multi-tenancy" kind="trpc" title="tRPC router" description="tenant — list, byId, create, update, delete (SUPER_ADMIN only via superAdminProcedure). myBranding, updateMyBranding (tenant admin, protectedProcedure)." />
+<DeepRefCard block="multi-tenancy" kind="env" title="Environment variables" description="ROOT_DOMAIN — when empty, all hosts resolve to tenant_default / network role. Set to your registered root domain to enable the 3-domain pattern." />

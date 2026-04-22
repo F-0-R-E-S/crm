@@ -1,0 +1,67 @@
+---
+audience: human
+block: multi-tenancy
+source: hand
+title: "Concepts: withTenant, middleware, super-admin"
+description: "AsyncLocalStorage tenant scoping, hostname resolution middleware, and cross-tenant super-admin access."
+order: 2
+---
+
+# Multi-tenancy concepts
+
+## withTenant
+
+<a id="withtenant" />
+
+`withTenant(tenantId, fn)` is the core isolation primitive. It sets a tenant context in an `AsyncLocalStorage` store and runs `fn` within that context.
+
+**How Prisma scoping works:**
+
+A Prisma `$use` middleware (`attachTenantMiddleware`) intercepts every query on models listed in `TENANT_SCOPED_MODELS` (defined in `src/server/db-tenant.ts`). The middleware:
+
+- **Reads / finds:** appends `WHERE tenantId = <current>` to every query. `findUnique` results are post-filtered — if the returned row belongs to a different tenant, it is treated as not found.
+- **Updates / deletes:** appends `AND tenantId = <current>` to prevent cross-tenant mutations.
+- **Creates:** injects `tenantId = <current>` when no explicit `tenantId` is provided on the data object.
+
+**Default-deny semantics:** if a query on a scoped model runs outside a `withTenant` context (i.e. the `AsyncLocalStorage` store is empty), the middleware throws rather than silently returning data from all tenants. This is the "default-deny" behaviour — a missing context is always an error, not a bypass.
+
+**Adding a new tenant-scoped model:** add the model name to `TENANT_SCOPED_MODELS` in `src/server/db-tenant.ts` AND add a probe to `tests/e2e/tenant-isolation-pentest.test.ts` to verify the isolation.
+
+## Middleware
+
+<a id="middleware" />
+
+`src/middleware.ts` runs on every request before it reaches any route handler. Its responsibilities:
+
+1. **Hostname parsing:** reads `x-forwarded-host` (set by Fly.io's proxy) and passes it to `resolveTenantFromHost` in `src/server/tenant/domain-role.ts`. The function parses `<role>.<slug>.<ROOT_DOMAIN>` and returns `{ tenantSlug, domainRole }`.
+
+2. **Tenant resolution:** the slug is resolved to a `tenantId` via `src/server/tenant-registry.ts`, which maintains a 60-second LRU cache. Cache is flushed on tenant CRUD.
+
+3. **Path gating:** each domain role exposes a defined set of path prefixes. A request to a path not in the role's allowed list (e.g. `/api/v1/*` on a `network` host) receives a 404 before the route handler runs.
+
+4. **Header propagation:** `x-tenant-slug` is set on the request for downstream server components and route handlers to read.
+
+**Auth route whitelisting:** `/api/auth/*` is allowed on all domain roles so NextAuth callbacks function regardless of which host a session is established on.
+
+**`tenant_default` fallback:** when `ROOT_DOMAIN` is unset, or when the hostname does not match the 3-domain pattern (e.g. `localhost`, `crm-node.fly.dev`), the middleware resolves to `tenant_default` with the `network` role.
+
+## super-admin
+
+<a id="super-admin" />
+
+`UserRole.SUPER_ADMIN` is the only role that can perform cross-tenant operations. It bypasses the `withTenant` scoping mechanism entirely.
+
+**`superAdminProcedure`** is a tRPC procedure builder that:
+
+1. Verifies `ctx.user.role === "SUPER_ADMIN"`.
+2. Does **not** wrap the handler in `withTenant` — the handler runs against an unscoped Prisma client and can query any tenant's data.
+
+Super-admin pages are served at `/super-admin/tenants/*` and are accessible only on the `network` domain role. The middleware enforces this — requests to `/super-admin/*` on an `api` or `autologin` host are 404'd.
+
+**Audit log:** every write via `superAdminProcedure` must emit an `AuditLog` entry with `via: "super-admin"`. This is enforced by code review convention, not by a middleware hook.
+
+<Callout type="warning" title="Super-admin credentials must be tightly controlled">
+A SUPER_ADMIN user can read and mutate every tenant's data. Limit SUPER_ADMIN accounts to platform operators only. Do not create SUPER_ADMIN accounts for individual tenant administrators — use the ADMIN role instead, which is confined to their own tenant via withTenant.
+</Callout>
+
+<DeepRefCard block="multi-tenancy" kind="invariants" title="Invariants" description="withTenant is always required for tenant-scoped queries — missing context throws, never bypasses. x-forwarded-host is the authoritative hostname source (not Host). SUPER_ADMIN skips withTenant entirely. Adding a new scoped model requires a pentest probe." />
