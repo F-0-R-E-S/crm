@@ -6,7 +6,9 @@ import { selectWeighted } from "./algorithm/wrr";
 import { consumeCap } from "./constraints/caps";
 import { evaluateGeo } from "./constraints/geo";
 import { type Schedule, evaluateSchedule } from "./constraints/schedule";
+import { brokerToComparingSplit, rankedBrokerChildren } from "./flow/graph-walker";
 import type { FlowGraph } from "./flow/model";
+import { evaluatePqlGate } from "./pql/evaluate";
 
 export type ExecutionMode = "execute" | "dryRun";
 
@@ -22,15 +24,23 @@ export interface EngineDecision {
   outcome: "selected" | "no_route" | "error";
   selectedBrokerId?: string;
   selectedNodeId?: string;
+  /** Set when the selected node is a SmartPool child — identifies the
+   *  pool so push-lead knows the chain was selected via sequential
+   *  ranking (vs. an algorithm pick). */
+  selectedSmartPoolId?: string;
+  /** Set when the selected node is a ComparingSplit branch — used by
+   *  the post-decision hook to attribute the decision to a bucket. */
+  selectedComparingSplitId?: string;
   reason?:
     | "entry_filter"
     | "branch_filter"
     | "cap_exhausted"
     | "outside_hours"
     | "no_targets"
-    | "algorithm_error";
-  algorithmUsed?: "weighted_round_robin" | "slots_chance";
-  algorithmSource?: "flow" | "branch";
+    | "algorithm_error"
+    | "pql_gate";
+  algorithmUsed?: "weighted_round_robin" | "slots_chance" | "smart_pool";
+  algorithmSource?: "flow" | "branch" | "pool";
   trace: {
     flowVersionId: string;
     stepsApplied: Array<{
@@ -162,10 +172,40 @@ export async function executeFlow(input: ExecuteInput): Promise<EngineDecision> 
     };
   }
 
+  // Precompute a lookup of BrokerTarget id → its parent ComparingSplit
+  // (if any) — used to tag the decision with a branch identity for
+  // post-decision metric attribution. SmartPool membership is rebuilt
+  // from `rankedBrokerChildren` in the selection block below.
+  const compareByBrokerId = brokerToComparingSplit(graph);
+
   const now = input.now ?? new Date();
   const available: typeof targetNodes = [];
   for (const t of targetNodes) {
     if (t.kind !== "BrokerTarget") continue;
+    // Honor per-target `active` toggle — skip inactive targets up-front.
+    if (t.active === false) {
+      steps.push({ step: "active_check", nodeId: t.id, ok: false });
+      continue;
+    }
+    // Per-target PQL gate. Evaluated BEFORE cap check so a PQL miss
+    // doesn't consume cap slots.
+    if (t.pqlGate) {
+      const verdict = evaluatePqlGate(t.pqlGate.rules, t.pqlGate.logic, input.lead, now);
+      if (!verdict.ok) {
+        steps.push({
+          step: "pql_gate",
+          nodeId: t.id,
+          ok: false,
+          detail: {
+            failed_rule_index: verdict.failedRuleIndex,
+            field: verdict.failedField,
+            sign: verdict.failedSign,
+          },
+        });
+        continue;
+      }
+      steps.push({ step: "pql_gate", nodeId: t.id, ok: true });
+    }
     const brokerCapDef = fv.capDefs.find(
       (d) => d.scope === "BROKER" && d.scopeRefId === t.brokerId,
     );
@@ -231,6 +271,53 @@ export async function executeFlow(input: ExecuteInput): Promise<EngineDecision> 
     };
   }
 
+  // SmartPool bias: if any AVAILABLE target is a SmartPool child, pick
+  // the HIGHEST-RANKED child of that pool (i.e. the first in the pool's
+  // outgoing-edge order that survived cap+gate checks). FallbackStep
+  // rows compiled at publish time handle downstream retries to the
+  // remaining siblings. If multiple pools are present, we pick the
+  // first pool encountered in node order; nested pools are rejected at
+  // publish time.
+  for (const pool of graph.nodes.filter((n) => n.kind === "SmartPool")) {
+    const ranked = rankedBrokerChildren(graph, pool.id);
+    const availableIds = new Set(available.map((a) => a.id));
+    const firstAvailable = ranked.find((id) => availableIds.has(id));
+    if (firstAvailable) {
+      const chosen = available.find((a) => a.id === firstAvailable);
+      if (chosen && chosen.kind === "BrokerTarget") {
+        steps.push({
+          step: "smart_pool",
+          nodeId: chosen.id,
+          ok: true,
+          detail: { pool_id: pool.id, rank: ranked.indexOf(firstAvailable) },
+        });
+        const decidedInMs = performance.now() - startedAt;
+        logger.info({
+          event: "routing.decision",
+          flow_id: input.flowId,
+          flow_version_id: fv.id,
+          branch_id: chosen.id,
+          algorithm: "smart_pool",
+          algorithm_source: "pool",
+          broker_id: chosen.brokerId,
+          decided_in_ms: decidedInMs,
+          pool_id: pool.id,
+        });
+        return {
+          outcome: "selected",
+          selectedBrokerId: chosen.brokerId,
+          selectedNodeId: chosen.id,
+          selectedSmartPoolId: pool.id,
+          selectedComparingSplitId: compareByBrokerId.get(chosen.id)?.id,
+          algorithmUsed: "smart_pool",
+          algorithmSource: "pool",
+          trace: { flowVersionId: fv.id, stepsApplied: steps },
+          decisionTimeMs: decidedInMs,
+        };
+      }
+    }
+  }
+
   try {
     if (resolved.mode === "WEIGHTED_ROUND_ROBIN") {
       const targets = available.map((t) => {
@@ -265,6 +352,7 @@ export async function executeFlow(input: ExecuteInput): Promise<EngineDecision> 
         outcome: "selected",
         selectedBrokerId: chosen.brokerId,
         selectedNodeId: chosen.id,
+        selectedComparingSplitId: compareByBrokerId.get(chosen.id)?.id,
         algorithmUsed: "weighted_round_robin",
         algorithmSource: resolved.source,
         trace: { flowVersionId: fv.id, stepsApplied: steps, traceToken: pick.traceToken },
@@ -305,6 +393,7 @@ export async function executeFlow(input: ExecuteInput): Promise<EngineDecision> 
       outcome: "selected",
       selectedBrokerId: chosen.brokerId,
       selectedNodeId: chosen.id,
+      selectedComparingSplitId: compareByBrokerId.get(chosen.id)?.id,
       algorithmUsed: "slots_chance",
       algorithmSource: resolved.source,
       trace: { flowVersionId: fv.id, stepsApplied: steps, traceToken: pick.traceToken },

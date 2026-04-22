@@ -66,6 +66,47 @@ describe("publishFlow", () => {
     expect(arch.activeVersionId).toBeNull();
   });
 
+  it("compiles SmartPool to FallbackStep chain at publish time", async () => {
+    const smartGraph: FlowGraph = {
+      nodes: [
+        { id: "e", kind: "Entry" },
+        {
+          id: "sp",
+          kind: "SmartPool",
+          maxHop: 5,
+          triggers: {
+            timeoutMs: 2000,
+            httpStatusCodes: [500, 502, 503, 504],
+            connectionError: true,
+            explicitReject: true,
+          },
+        },
+        { id: "b1", kind: "BrokerTarget", brokerId: "b1", weight: 100 },
+        { id: "b2", kind: "BrokerTarget", brokerId: "b2", weight: 100 },
+        { id: "b3", kind: "BrokerTarget", brokerId: "b3", weight: 100 },
+        { id: "x", kind: "Exit" },
+      ],
+      edges: [
+        { from: "e", to: "sp", condition: "default" },
+        { from: "sp", to: "b1", condition: "default" },
+        { from: "sp", to: "b2", condition: "default" },
+        { from: "sp", to: "b3", condition: "default" },
+        { from: "b1", to: "x", condition: "default" },
+        { from: "b2", to: "x", condition: "default" },
+        { from: "b3", to: "x", condition: "default" },
+      ],
+    };
+    const flow = await createDraftFlow({ name: "SP", timezone: "UTC", graph: smartGraph });
+    await publishFlow(flow.id, "u1");
+    const steps = await prisma.fallbackStep.findMany({
+      where: { flowVersionId: flow.versions[0].id },
+      orderBy: [{ fromNodeId: "asc" }, { hopOrder: "asc" }],
+    });
+    expect(steps).toHaveLength(2);
+    expect(steps[0]).toMatchObject({ fromNodeId: "b1", toNodeId: "b2" });
+    expect(steps[1]).toMatchObject({ fromNodeId: "b2", toNodeId: "b3" });
+  });
+
   it("publish с fallback-циклом → fallback_cycle_detected 422", async () => {
     const flow = await createDraftFlow({ name: "C", timezone: "UTC", graph });
     const latest = flow.versions[0];

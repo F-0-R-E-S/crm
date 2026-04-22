@@ -42,13 +42,10 @@ describe("comparingSplitToAlgoConfig", () => {
   });
 
   it("config payload carries metric + sampleSize + source id + branches", () => {
-    const r = comparingSplitToAlgoConfig(
-      mkNode({ compareMetric: "ftd_rate", sampleSize: 1000 }),
-      [
-        { nodeId: "a", share: 0.5 },
-        { nodeId: "b", share: 0.5 },
-      ],
-    );
+    const r = comparingSplitToAlgoConfig(mkNode({ compareMetric: "ftd_rate", sampleSize: 1000 }), [
+      { nodeId: "a", share: 0.5 },
+      { nodeId: "b", share: 0.5 },
+    ]);
     expect(r.algoConfigParams).toMatchObject({
       compareMetric: "ftd_rate",
       sampleSize: 1000,
