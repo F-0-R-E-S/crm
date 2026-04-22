@@ -27,7 +27,8 @@
     "docs:regen:check": "tsx scripts/docs-regen/index.ts --check",
     "docs:regen:dry": "tsx scripts/docs-regen/index.ts",
     "docs:audit": "tsx scripts/docs-maintenance/audit.ts",
-    "docs:scaffold": "tsx scripts/docs-maintenance/scaffold.ts"
+    "docs:scaffold": "tsx scripts/docs-maintenance/scaffold.ts",
+    "docs:update-prompt": "tsx scripts/docs-maintenance/update-prompt.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

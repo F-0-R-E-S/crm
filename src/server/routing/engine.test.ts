@@ -184,9 +184,7 @@ describe("engine.executeFlow", () => {
     });
     expect(dec.outcome).toBe("selected");
     expect(dec.selectedBrokerId).toBe(b2.id);
-    const gateStep = dec.trace.stepsApplied.find(
-      (s) => s.step === "pql_gate" && s.nodeId === "t1",
-    );
+    const gateStep = dec.trace.stepsApplied.find((s) => s.step === "pql_gate" && s.nodeId === "t1");
     expect(gateStep?.ok).toBe(false);
   });
 

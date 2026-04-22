@@ -34,10 +34,7 @@ export async function bumpRejectionStreak(
 }
 
 /** Reset the in-a-row counter — called on a successful push. */
-export async function resetRejectionStreak(
-  brokerId: string,
-  flowVersionId: string,
-): Promise<void> {
+export async function resetRejectionStreak(brokerId: string, flowVersionId: string): Promise<void> {
   await redis.del(streakKey(brokerId, flowVersionId));
 }
 

@@ -76,12 +76,7 @@ export async function consumeCap(input: CapInput): Promise<CapResult> {
       // as other ambiguous states. Caller should always pass a lead.
       return { ok: true, remaining: -1, resetsAt: at, skipped: true };
     }
-    const verdict = evaluatePqlGate(
-      input.pqlScope.rules,
-      input.pqlScope.logic,
-      input.lead,
-      at,
-    );
+    const verdict = evaluatePqlGate(input.pqlScope.rules, input.pqlScope.logic, input.lead, at);
     if (!verdict.ok) {
       const { resetsAt } = bucketKey(input.window, at, input.tz);
       return { ok: true, remaining: -1, resetsAt, skipped: true };

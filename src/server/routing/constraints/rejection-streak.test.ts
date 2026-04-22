@@ -1,5 +1,5 @@
-import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { redis } from "@/server/redis";
+import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 import {
   bumpRejectionStreak,
   readRejectionStreak,

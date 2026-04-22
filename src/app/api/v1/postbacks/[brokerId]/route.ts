@@ -1,10 +1,17 @@
+import { writeAuditLog } from "@/server/audit";
 import { prisma } from "@/server/db";
 import { withTenant } from "@/server/db-tenant";
 import { emitConversion } from "@/server/finance/emit-conversion";
 import { JOB_NAMES, getBoss, startBossOnce } from "@/server/jobs/queue";
 import { logger, runWithTrace } from "@/server/observability";
 import { verifyHmac } from "@/server/postback/hmac";
+import {
+  bumpRejectionStreak,
+  resetRejectionStreak,
+  shouldAutoPause,
+} from "@/server/routing/constraints/rejection-streak";
 import { UNMAPPED, classifyLeadStatus } from "@/server/status-groups/classify";
+import { emitTelegramEvent } from "@/server/telegram/emit";
 import type { ConversionKind, LeadState, Prisma } from "@prisma/client";
 import { JSONPath } from "jsonpath-plus";
 import { nanoid } from "nanoid";
@@ -228,6 +235,66 @@ export async function POST(req: Request, { params }: { params: Promise<{ brokerI
           leadId: lead.id,
           event: resolved.toLowerCase(),
         });
+      }
+
+      // Rejection-streak bookkeeping (iREV "Rejections In a Row" parity).
+      // We use "global" as the flowVersionId scope because Lead does not
+      // currently carry its routing flowVersionId — the threshold check
+      // below reads from every CapDefinition naming this broker and
+      // picks the strictest (lowest) non-null threshold.
+      if (resolved === "ACCEPTED" || resolved === "FTD") {
+        await resetRejectionStreak(broker.id, "global");
+      } else if (resolved === "DECLINED") {
+        const streak = await bumpRejectionStreak(broker.id, "global");
+        const caps = await prisma.capDefinition.findMany({
+          where: {
+            scope: "BROKER",
+            scopeRefId: broker.id,
+            rejectionsInARow: { not: null },
+          },
+          select: { rejectionsInARow: true },
+        });
+        const thresholds = caps
+          .map((c) => c.rejectionsInARow)
+          .filter((n): n is number => typeof n === "number" && n > 0);
+        const minThreshold = thresholds.length > 0 ? Math.min(...thresholds) : null;
+        if (minThreshold != null && shouldAutoPause(streak, minThreshold) && broker.isActive) {
+          await prisma.broker.update({
+            where: { id: broker.id },
+            data: { isActive: false },
+          });
+          await writeAuditLog({
+            userId: "system",
+            action: "broker_rejection_streak_paused",
+            entity: "Broker",
+            entityId: broker.id,
+            diff: { streak, threshold: minThreshold, via: "postback_reject_streak" },
+          });
+          void emitTelegramEvent(
+            "BROKER_REJECTION_STREAK_PAUSED",
+            {
+              brokerId: broker.id,
+              brokerName: broker.name,
+              streak,
+              threshold: minThreshold,
+            },
+            { brokerId: broker.id },
+          ).catch((e) =>
+            logger.warn(
+              { err: (e as Error).message },
+              "[telegram-emit] BROKER_REJECTION_STREAK_PAUSED failed",
+            ),
+          );
+          logger.info(
+            {
+              event: "broker_paused_on_streak",
+              broker_id: broker.id,
+              streak,
+              threshold: minThreshold,
+            },
+            "broker auto-paused on rejection streak",
+          );
+        }
       }
 
       logger.info(

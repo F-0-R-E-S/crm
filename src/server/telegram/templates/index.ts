@@ -9,6 +9,7 @@ import { render as renderAutologinSlaBreached } from "./autologin-sla-breached";
 import { render as renderBrokerConfigChanged } from "./broker-config-changed";
 import { render as renderBrokerDown } from "./broker-down";
 import { render as renderBrokerRecovered } from "./broker-recovered";
+import { render as renderBrokerRejectionStreakPaused } from "./broker-rejection-streak-paused";
 import { render as renderCapReached } from "./cap-reached";
 import { render as renderDailySummary } from "./daily-summary";
 import { render as renderDeclined } from "./declined";
@@ -67,6 +68,7 @@ export const TEMPLATES: Partial<Record<TelegramEventType, Renderer>> = {
   SUBSCRIPTION_CANCELED: renderSubscriptionCanceled,
   INVOICE_PAID: renderInvoicePaid,
   INVOICE_FAILED: renderInvoiceFailed,
+  BROKER_REJECTION_STREAK_PAUSED: renderBrokerRejectionStreakPaused,
 };
 
 export function fallbackRender(p: Record<string, unknown>): string {
