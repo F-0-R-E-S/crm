@@ -2,6 +2,14 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## Unreleased — Docs maintenance + evolution
+
+- **`pnpm docs:audit`.** Per-PR enforcement: code changed under `src/` but `content/docs/<block>/*.mdx` not updated → audit fails. `NO_DOC_UPDATE_BLOCKS=<list>` escape hatch for pure internal refactors.
+- **GitHub Action** `docs-audit.yml` + PR template. Runs audit on every PR; posts a comment with violations on failure.
+- **`pnpm docs:scaffold <block>`** — scaffolder for a brand-new block (3 MDX files with frontmatter).
+- **`pnpm docs:update-prompt <block>`** — emits a structured LLM-ready prompt (diff + current human docs + deep-ref summaries) to draft surgical MDX patches.
+- **Playbook.** `docs/runbooks/docs-maintenance.md` — layer ownership, author workflow, add/retire playbooks, reviewer etiquette.
+
 ## Unreleased — Docs infrastructure wave 1
 
 - **Feature inventory generator.** `pnpm docs:regen` auto-extracts DB schema (Prisma DMMF), tRPC procedures (ts-morph), REST routes (walk `src/app/api/**/route.ts` + merge OpenAPI), env vars (`src/lib/env.ts`), TRPCError/plain throws, Telegram event catalog, and pg-boss jobs into `content/docs/<block>/_deep/*.md`. Canonical inventory at `docs/feature-inventory.md`. CI guard `pnpm docs:regen:check` fails PRs on drift.
