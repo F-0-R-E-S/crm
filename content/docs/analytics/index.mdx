@@ -3,11 +3,88 @@ audience: human
 block: analytics
 source: hand
 title: "Analytics (BI Report Builder) — overview"
-description: "Public placeholder page; replaced in docs plan #3."
+description: "Real-time BI dashboard at /dashboard/analytics: metric tiles, period-compare chart, breakdown grid, named presets, share links, and drill-down into individual leads."
 order: 1
 slugOverride: "analytics"
 ---
 
 # Analytics (BI Report Builder)
 
-_Coming soon: overview of the block._
+The **BI Report Builder** at `/dashboard/analytics` is the primary operational dashboard for GambChamp operators and affiliate managers. It turns the platform's rollup tables into interactive charts, filterable breakdowns, and shareable snapshots — without touching the raw `Lead` table for every page load.
+
+## Metric tiles
+
+The top of the page displays four summary tiles, each with a sparkline and a delta percentage relative to the comparison period:
+
+| Tile | Meaning |
+|------|---------|
+| **Received** | Total leads submitted (all statuses) |
+| **Accepted** | Leads pushed to a broker and acknowledged |
+| **FTD** | First-deposit conversions confirmed |
+| **Revenue** | Net revenue (FTD × CRG rate, adjusted for rejected CRG) |
+
+The delta percentage is coloured green (improvement) or red (regression) and compares the selected period to whichever comparison mode is active.
+
+## Full-width line chart
+
+Below the tiles a full-width line chart plots all four metrics over time. The X axis follows the selected **date range** (e.g. last 7 days, last 30 days, custom). A **period-compare overlay** can be enabled from the toolbar:
+
+| Overlay mode | What it overlays |
+|-------------|-----------------|
+| `previous_period` | Same-length window immediately before the selected range |
+| `year_ago` | Same calendar range 12 months prior |
+| `custom` | Any manually picked date range |
+
+When a comparison is active the chart draws two line sets (solid = current, dashed = comparison) on the same Y axis.
+
+## Two-column breakdown grid
+
+Below the chart a two-column grid provides deeper breakdowns:
+
+- **Left: Conversion funnel.** Received → Accepted → FTD → Revenue, with conversion rates between each stage.
+- **Right: Rejects by reason.** Counts by rejection category (fraud score, quality score, cap exceeded, routing failure, no matching broker, manual reject).
+
+Both columns respect the active filter bar (date range, affiliate, broker, geo, groupBy).
+
+## Named presets
+
+Any combination of filter-bar state can be saved as a **named preset**:
+
+- Default preset loads automatically on next visit.
+- Presets can be renamed or deleted from the preset drawer.
+- One preset per user can be starred as the default; starring a second preset de-stars the previous one.
+
+Presets are stored in the `AnalyticsPreset` model and are tenant-scoped.
+
+## 30-day share links
+
+Clicking **Share** generates a signed URL at `/share/analytics/:token`. The token:
+
+- Is stored in `AnalyticsShareLink` with the filter-bar snapshot and an expiry timestamp (default 30 days).
+- Renders a read-only version of the dashboard — no filter controls, no preset management.
+- Expires automatically; expired tokens return an in-page banner (not a 404).
+
+Share links are useful for sending stakeholders a frozen view without granting them CRM access.
+
+## Drill-down to leads
+
+Clicking any tile, chart bar, or breakdown row opens a `LeadDrawer` that shows the individual leads matching that segment. The drawer paginates through the `Lead` table using `bucketToRange` to translate the rollup bucket back to a raw timestamp range, then `buildLeadWhere` to apply the remaining filter dimensions.
+
+## Data freshness
+
+All reads are served from two rollup tables:
+
+| Table | Cron frequency | Granularity |
+|-------|---------------|-------------|
+| `LeadDailyRoll` | Every 15 min | Day bucket |
+| `LeadHourlyRoll` | Every 5 min | Hour bucket |
+
+The cron jobs run via pg-boss (`analytics-roll-daily`, `analytics-roll-hourly`). A Redis LRU layer (60-second TTL) sits in front of tRPC reads to avoid redundant rollup scans within the same minute.
+
+See [How to build a preset](/docs/analytics/how-to-build-a-preset) for a step-by-step walkthrough, and [Concepts](/docs/analytics/concepts) for rollup mechanics, cache keys, and drill-down internals.
+
+---
+
+<DeepRefCard label="Prisma models" items={["LeadDailyRoll", "LeadHourlyRoll", "AnalyticsPreset", "AnalyticsShareLink"]} block="analytics" />
+<DeepRefCard label="tRPC router" items={["analytics"]} block="analytics" />
+<DeepRefCard label="pg-boss jobs" items={["analytics-roll-daily", "analytics-roll-hourly"]} block="analytics" />

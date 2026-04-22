@@ -1,0 +1,78 @@
+---
+audience: human
+block: analytics
+source: hand
+title: "How to build an analytics preset and share it"
+description: "Step-by-step guide: configure the analytics filter bar, save a named preset, set it as default, and generate a 30-day share link for stakeholders."
+order: 2
+---
+
+# How to build an analytics preset and share it
+
+This guide walks you through configuring the analytics dashboard for a specific view (e.g. "Weekly US ops"), saving it as a named preset, and sharing it with a stakeholder who doesn't have CRM access.
+
+## 1. Open the analytics dashboard
+
+Navigate to `/dashboard/analytics` (keyboard shortcut `Y` from anywhere in the dashboard).
+
+## 2. Configure the filter bar
+
+Use the filter bar at the top of the page to narrow the data to the view you care about:
+
+| Filter | What it controls |
+|--------|----------------|
+| **Date range** | The primary time window (last 7d / last 30d / custom) |
+| **Affiliate** | Limit to leads from one or more affiliates |
+| **Broker** | Limit to leads routed to a specific broker |
+| **GEO** | ISO-3166-1 alpha-2 country code (e.g. `US`, `DE`) |
+| **Group by** | How the X axis is bucketed (day / hour / week) |
+
+## 3. Enable the compare toggle (optional)
+
+If you want period-over-period deltas on the chart:
+
+1. Click the **Compare** toggle in the filter bar.
+2. Choose a comparison mode:
+   - **Previous period** — same-length window immediately before your selected range.
+   - **Year ago** — same calendar range 12 months prior.
+   - **Custom** — pick any date range manually.
+
+The chart will render two overlapping line sets: solid (current) and dashed (comparison).
+
+## 4. Save the preset
+
+Once the filter bar reflects the view you want:
+
+1. Click **Save preset** (top-right of the filter bar).
+2. Enter a name — e.g. `Weekly US ops`.
+3. Click **Save**.
+
+The preset is now available in the preset dropdown and persists across sessions.
+
+## 5. Star as default
+
+To have this preset load automatically whenever you open the analytics page:
+
+1. Open the preset dropdown and find your preset.
+2. Click the **star icon** next to its name.
+
+The star makes this preset the default for your user. Only one preset can be starred at a time — starring a new one de-stars the previous default.
+
+## 6. Share with a stakeholder
+
+To send a read-only view to someone without CRM access:
+
+1. With your preset active, click **Share**.
+2. The share dialog shows a TTL selector (default 30 days) and a preview of the URL.
+3. Adjust the TTL if needed, then click **Copy link**.
+4. Send the URL to your stakeholder.
+
+The share link at `/share/analytics/:token` renders the dashboard read-only — no filter controls, no preset management. When the TTL expires the page shows an "expired" banner instead of the data.
+
+<Callout type="info">
+Share links capture the filter-bar snapshot at the moment of creation. The underlying data is live — the stakeholder sees fresh numbers each time they load the URL.
+</Callout>
+
+<Callout type="warning">
+Share links do not require authentication. Treat them like a signed URL — do not share them in public channels if the data is sensitive.
+</Callout>

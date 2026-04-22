@@ -1,0 +1,74 @@
+---
+audience: human
+block: analytics
+source: hand
+title: "Analytics concepts: rollups, cache, drill-down, canonical status"
+description: "How LeadDailyRoll and LeadHourlyRoll are built, the Redis cache layer, drill-down mechanics from bucket to individual leads, and v1.5 canonical-status breakdowns."
+order: 3
+---
+
+# Analytics concepts
+
+## Rollup tables {#rollups}
+
+GambChamp avoids hitting the raw `Lead` table for every analytics read. Instead, two pre-aggregated rollup tables are maintained:
+
+**`LeadDailyRoll`** — refreshed every **15 minutes** by the pg-boss cron job `analytics-roll-daily`. Each row is uniquely identified by:
+
+```
+(bucket, affiliateId, brokerId, geo, canonicalStatus)
+```
+
+**`LeadHourlyRoll`** — refreshed every **5 minutes** by `analytics-roll-hourly`. Same unique tuple, but `bucket` is truncated to the hour.
+
+Both tables use the sentinel value `"__none__"` for `brokerId` when a lead has not yet been (or will never be) routed to a broker — for example, leads rejected at the fraud-score stage.
+
+The rollup job uses an atomic `INSERT ... ON CONFLICT DO UPDATE` statement so it is safe to run concurrently. Running two cron workers simultaneously does not produce double-counts.
+
+<Callout type="info">
+Rollup tables are real Prisma-managed tables (`@@unique` constraints enforced at the DB level), not PostgreSQL materialized views. This means they can be queried by Prisma normally and participate in migrations.
+</Callout>
+
+## Redis cache layer {#cache}
+
+All analytics tRPC procedures cache their results in Redis using an LRU with a **60-second TTL**. The cache key format is:
+
+```
+analytics:v1:<procName>:<sha256(serializedParams)>
+```
+
+The SHA-256 hash of the serialized params ensures that different filter combinations get separate cache entries while keeping key lengths predictable.
+
+Cache misses are transparent to the caller — the procedure falls through to the rollup tables and populates the cache on the way out.
+
+<Callout type="warning">
+A 60-second TTL means the dashboard can be up to one minute behind the rollup tables, which are themselves up to 5–15 minutes behind the raw `Lead` table. For real-time lead-by-lead tracking, use the Leads grid or a `LeadDrawer` drill-down.
+</Callout>
+
+## Drill-down: from bucket to individual leads {#drill-down}
+
+Clicking any chart bar, metric tile, or breakdown row opens a `LeadDrawer` that shows the matching individual leads. The mechanics:
+
+1. **`bucketToRange`** — translates the rollup bucket (a `DATE_TRUNC` value) and the active `groupBy` setting into a precise `[from, to)` timestamp range for the `Lead` table.
+2. **`buildLeadWhere`** — assembles a Prisma `where` clause from the remaining filter dimensions (affiliateId, brokerId, geo, canonicalStatus, etc.).
+3. The drawer queries the `Lead` table directly and paginates results.
+
+Because drill-down goes to the `Lead` table — bypassing rollups — it always reflects the current state of individual leads, even if the rollup hasn't been refreshed yet.
+
+## Canonical-status breakdown (v1.5) {#canonical-status}
+
+Starting in v1.5, the two-column breakdown grid gains a **canonical-status dimension** powered by the Status Groups feature (EPIC-18).
+
+Each lead's raw broker status is mapped to a `CanonicalStatus` (e.g. `QUALIFIED`, `CONVERTED`, `REJECTED`) via the per-broker `StatusMapping` table. The analytics filter bar accepts a `canonicalStatuses` multi-select to restrict charts and breakdowns to specific categories.
+
+The `analytics.canonicalStatusBreakdown` tRPC procedure groups `Lead.canonicalStatus` counts across the selected window. Leads without a mapping appear as `"unmapped"`.
+
+<Callout type="info">
+`LeadDailyRoll.canonicalStatus` is part of the unique tuple (added in v1.5) and is populated by the rollup cron when `Lead.canonicalStatus` is non-null. For older leads (before the status-mapping backfill), `canonicalStatus` is `null` and they appear in the `"unmapped"` bucket.
+</Callout>
+
+---
+
+<DeepRefCard label="Prisma models" items={["LeadDailyRoll", "LeadHourlyRoll", "AnalyticsPreset", "AnalyticsShareLink"]} block="analytics" />
+<DeepRefCard label="Invariants" items={["rollup-uniqueness", "cache-key-format"]} block="analytics" />
+<DeepRefCard label="Common errors" items={["stale-rollup", "expired-share-link"]} block="analytics" />
