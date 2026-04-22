@@ -285,3 +285,4 @@ Target: Q4 2027. Full plan at `plans/2027-07-01-v2-5-intelligence-and-platform.m
 - [x] Feature inventory generator + `pnpm docs:regen` + CI drift guard — #2026-04-22-docs-01
 - [x] Docs maintenance + evolution mechanism (audit + scaffold + update-prompt + playbook) — #2026-04-22-docs-07
 - [x] /docs subsite skeleton + two-tier content loader + sitemap — #2026-04-22-docs-02
+- [x] Docs content — top 10 user-facing blocks (+ cross-cutting pages) — #2026-04-22-docs-03

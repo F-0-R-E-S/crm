@@ -2,6 +2,12 @@
 
 All notable changes to GambChamp CRM. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## Unreleased — Docs content wave 1
+
+- **User-facing content for top 10 blocks.** `index.mdx` + `how-to-*.mdx` + `concepts.mdx` for intake, routing-engine, broker-push, postback-status-groups, autologin, conversions-crg, billing-subscription, multi-tenancy, webhooks-outbound, analytics. Cross-cutting getting-started + glossary + architecture tour.
+- **Shared MDX components.** `<Callout>` + `<DeepRefCard>`.
+- **CI link check.** `pnpm docs:links` fails PRs on broken internal `/docs/...` links.
+
 ## Unreleased — Docs subsite skeleton
 
 - **/docs route.** Public Next.js App Router pages at `/docs`. MDX pipeline via `next-mdx-remote` v5 RSC mode with `remark-gfm`, `rehype-slug`, `rehype-autolink-headings`, `rehype-pretty-code`.
