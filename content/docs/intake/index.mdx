@@ -5,8 +5,21 @@ source: hand
 title: "Lead Intake — overview"
 description: "Public placeholder page; replaced in docs plan #3."
 order: 1
+slugOverride: "intake"
 ---
 
 # Lead Intake
 
 _Coming soon: overview of the block._
+
+## Overview
+
+The intake pipeline handles external lead submissions via the REST API.
+
+## Key concepts
+
+Leads are submitted via `POST /api/v1/leads` with a valid API key.
+
+### Validation
+
+All leads go through schema validation, fraud scoring, and quality scoring before routing.
