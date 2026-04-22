@@ -1,0 +1,101 @@
+---
+audience: human
+block: routing-engine
+source: hand
+title: "Concepts: WRR, Slots-Chance, caps, SmartPool"
+description: "Algorithmic details for the two distribution modes, cap semantics, and priority-failover."
+order: 3
+---
+
+# Routing engine concepts
+
+## WRR — Weighted Round Robin
+
+<a id="wrr" />
+
+WRR produces a **smooth distribution** over time. It is modelled after Nginx's smooth weighted round-robin and runs entirely inside a single Redis Lua script (no locking, no MULTI/EXEC).
+
+**How it works:**
+
+Each broker target maintains a `currentWeight` in Redis. On each pick:
+
+1. Increment every eligible broker's `currentWeight` by its `weight`.
+2. Select the broker with the highest `currentWeight`.
+3. Decrement the winner's `currentWeight` by the sum of all weights.
+
+This guarantees that over any window of `gcd(weights)` leads the distribution converges to exact proportions — with no bunching and no starvation. For example, weights `[60, 40]` yield exactly 6 picks out of 10 for the first broker across any 10-lead window.
+
+**When to use:** continuous trickle traffic from affiliates; any scenario where a smooth steady-state distribution matters more than strict per-batch exactness.
+
+**Redis cost:** one Lua eval per routing decision; the Lua script atomically reads + writes all broker counters in a single round trip.
+
+## Slots-Chance — Slot-based CSPRNG
+
+<a id="slots-chance" />
+
+Slots-Chance produces **strict proportions per N-lead window** using a cryptographically secure random draw.
+
+**How it works:**
+
+Before the first lead in a window, the engine generates an ordered slot array of length N where each broker occupies exactly `floor(weight / totalWeight * N)` slots (remainder slots allocated to the heaviest broker). The slot array is stored in Redis. Each arriving lead pops the next slot from the array; when the array is exhausted a new window begins.
+
+For example, weights `[60, 40]` with N=10 produce a slot array like `[A, A, A, B, A, B, A, A, B, B]` — exactly 6 A and 4 B, in a randomly shuffled order.
+
+**When to use:** burst batches where you need exact proportions guaranteed within each cohort; A/B testing where the FTD denominator must be precisely equal for statistical validity.
+
+**Redis cost:** one `crypto.randomInt` draw per lead + one Redis list pop; slot regeneration on window boundary is amortised across N leads.
+
+## Caps
+
+<a id="caps" />
+
+Caps enforce **volumetric limits** on how many leads are pushed to (or rejected from) a broker target within a rolling time period.
+
+### Cap definition fields
+
+| Field | Values | Notes |
+|---|---|---|
+| `period` | `hourly` / `daily` / `weekly` | Redis key TTL matches period boundary |
+| `limit` | integer | Maximum leads in the period |
+| `kind` | `PUSHED` / `REJECTED` | Count pushed leads or rejected ones |
+| `perCountry` | boolean | When true, separate counters per GEO |
+| `CapCountryLimit[]` | `[{geo, limit}]` | Required when `perCountry=true` |
+| `pqlScope` | PQL expression string | Scopes the cap to a lead subset |
+| `rejectionsInARow` | integer | Streak threshold for auto-pause |
+
+### Per-country caps
+
+When `perCountry=true`, the engine maintains a `CapCounter` per `(brokerId, flowVersionId, period, geo)`. A lead whose GEO has no matching `CapCountryLimit` row is rejected with `cap_no_country_limit` (fail-closed). Use this for CPA flows where broker volume agreements are country-specific.
+
+### PQL-scoped caps
+
+`pqlScope` is a PQL expression (same syntax as Filter node rules). When set, the cap counter is only consumed when the expression matches the lead. The Redis bucket key is salted with `sha256(pqlScope).slice(0,8)` so distinct scopes on the same broker maintain independent counters.
+
+### Rejection-streak auto-pause
+
+If `rejectionsInARow` is set on any `CapDefinition` for a broker, the engine tracks a Redis rejection streak key (`cap:streak:{brokerId}:{flowVersionId}`, 24h TTL). When consecutive DECLINED postbacks hit the threshold, the broker is auto-paused (`Broker.isActive = false`) and a `BROKER_REJECTION_STREAK_PAUSED` Telegram event is emitted to admins.
+
+### `effectiveRejectedLimit`
+
+The helper `effectiveRejectedLimit(limit, rejectedLimit, asPercent)` computes the effective cap on rejected leads. When `asPercent=true`, the rejected limit is `floor(limit * rejectedLimit / 100)` — useful for "no more than 20% declines" rules.
+
+## SmartPool — priority failover
+
+<a id="smartpool" />
+
+A `SmartPool` node groups broker targets into a **priority-ordered failover chain**. It is compiled at publish time into ordered `FallbackStep` rows.
+
+**Engine behaviour:**
+
+1. After all constraints run, if any available target is a SmartPool child, the engine picks the **highest-rank** available child — no WRR/Slots-Chance call.
+2. The lead is pushed to that broker.
+3. If the broker's postback returns `DECLINED` (or no postback arrives before SLA), the `push-lead` worker walks to the next `FallbackStep` row and retries with the next-rank broker.
+4. If all pool children are exhausted the lead falls through to the algorithm layer (if any) or to `NO_BROKER_MATCH`.
+
+**Cycle detection:** `detectFallbackCycle` runs at publish time and rejects graphs that would produce an infinite fallback loop.
+
+**Simulator:** The `/simulator` pool tab lets you set per-broker accept-probability and observe which rank absorbs what share of traffic across N leads — useful for sizing pool depth before going live.
+
+<DeepRefCard block="routing-engine" kind="prisma" title="Database schema" description="Flow, FlowVersion, FlowAlgorithmConfig, FallbackStep, CapDefinition, CapCounter, CapCountryLimit." />
+<DeepRefCard block="routing-engine" kind="trpc" title="tRPC router" description="routing.* procedures — list, create, publish, simulate, treeView, caps." />
+<DeepRefCard block="routing-engine" kind="rest" title="REST surface" description="/api/v1/routing/flows/*, /api/v1/routing/caps/:flowId, /api/v1/routing/simulate." />

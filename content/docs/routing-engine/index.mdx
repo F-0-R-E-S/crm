@@ -2,12 +2,84 @@
 audience: human
 block: routing-engine
 source: hand
-title: "Routing Engine — overview"
-description: "Public placeholder page; replaced in docs plan #3."
+title: "Routing engine — overview"
+description: "Flow/FlowVersion model, algorithms, constraints, SmartPool."
 order: 1
 slugOverride: "routing-engine"
 ---
 
-# Routing Engine
+# Routing engine
 
-_Coming soon: overview of the block._
+The routing engine decides **which broker receives each lead** in real time. It reads the active `FlowVersion` for a tenant, evaluates GEO, schedule, and cap constraints, runs the configured algorithm, and returns a single broker target (or a rejection reason).
+
+## The Flow / FlowVersion / FlowBranch model
+
+```
+Flow (one per routing intent, e.g. "EU crypto traffic")
+ └─ FlowVersion (versioned snapshots — only one PUBLISHED at a time)
+     └─ FlowGraph (JSON: nodes + edges)
+         ├─ BrokerTarget nodes  (leaf — points at a Broker)
+         ├─ Filter nodes        (PQL gate: geo, subId, utm_source, …)
+         ├─ Algorithm nodes     (WRR or Slots-Chance weights)
+         ├─ SmartPool nodes     (priority-failover container, v2 S3.1)
+         └─ ComparingSplit nodes (A/B split compiled to WRR, v2 S3.1)
+```
+
+Every write to a flow produces a new `FlowVersion` in `DRAFT` state. Publishing compiles the graph — running cycle detection, emitting `FallbackStep` rows, and optionally compiling `SmartPool` priority chains — and flips the version to `PUBLISHED`. The previous published version is automatically archived.
+
+## DRAFT → PUBLISHED lifecycle
+
+1. Author edits in the visual canvas at `/dashboard/routing/flows/:id`.
+2. Canvas auto-saves as `DRAFT` (debounced 2 s). The breadcrumb shows `dirty` / `ahead` / `saved`.
+3. **Publish** button calls `routing.publishFlow`. The server runs:
+   - Zod validation of the full `FlowGraph`.
+   - `detectFallbackCycle` — rejects circular fallback chains.
+   - SmartPool compiler — translates priority-ordered pool children into `FallbackStep` rows.
+   - ComparingSplit compiler — translates A/B shares into WRR `FlowAlgorithmConfig`.
+4. On success, version flips to `PUBLISHED`; the engine picks it up on the next lead within milliseconds (no restart required).
+
+<Callout type="warning" title="Publish is irreversible for the version">
+You can always create a new draft and publish that. But a PUBLISHED version cannot be edited — it is an immutable snapshot. Archive it by publishing a newer version.
+</Callout>
+
+## WRR vs Slots-Chance — when to choose
+
+| | WRR | Slots-Chance |
+|---|---|---|
+| **Distribution** | Smooth over time — proportional in any window | Strict slots per N leads — exact proportions per batch |
+| **Good for** | Continuous trickle traffic | Burst batches, guaranteed exact splits |
+| **Redis cost** | 1 Lua call per pick | 1 `crypto.randomInt` per pick |
+| **Predictability** | Very smooth (Nginx-style GCD normalisation) | Probabilistic within each N-slot window |
+
+For most flows, WRR is the right default. Use Slots-Chance when you need an exact broker:broker ratio guaranteed per cohort (e.g. 1:1 A/B tests measured by FTD rate).
+
+## Constraint composition
+
+The engine evaluates constraints in this order before passing to the algorithm:
+
+1. **GEO** — `BrokerTarget.allowedGeos` (empty = any). Mismatching targets are excluded from `available`.
+2. **Schedule** — `BrokerTarget.workingHours` DST-aware grid. Inactive-now targets excluded.
+3. **Caps** — `CapDefinition` rows (hourly / daily / weekly). Exhausted targets excluded. Per-country variant uses `CapCountryLimit[]` for separate per-GEO buckets.
+4. **PQL gate** — per-target `pqlGate` rules (8 fields × 10 operators). Gate miss → excluded, traced as `pql_gate`.
+5. **Active flag** — `BrokerTarget.active = false` → excluded unconditionally.
+
+If `available` is empty after all filters → lead goes to the Manual review queue with reason `NO_BROKER_MATCH`.
+
+## SmartPool (v2 S3.1)
+
+A `SmartPool` node wraps a set of broker targets and evaluates them in **priority order** (rank 1 first). If the highest-rank available target accepts the lead, routing stops. If it rejects (post-push postback), the engine walks down to rank 2, and so on — without re-running the WRR/Slots-Chance algorithm.
+
+SmartPool is ideal for "primary + failover" scenarios where you always prefer broker A and only fall back to B if A is at cap or actively declining.
+
+See [concepts](/docs/routing-engine/concepts#smartpool) for the full priority-failover logic.
+
+## How to get started
+
+- [Build your first flow](/docs/routing-engine/how-to-build-a-flow) — step-by-step canvas walkthrough.
+- [Concepts: WRR, Slots-Chance, caps](/docs/routing-engine/concepts) — algorithmic details + cap semantics.
+
+## Deep reference
+
+<DeepRefCard block="routing-engine" kind="prisma" title="Database schema" description="Flow, FlowVersion, FlowBranch, FlowAlgorithmConfig, FallbackStep, CapDefinition, CapCounter models." />
+<DeepRefCard block="routing-engine" kind="trpc" title="tRPC router" description="routing.* procedures — list, create, publish, simulate, treeView, overview." />
+<DeepRefCard block="routing-engine" kind="rest" title="REST surface" description="/api/v1/routing/flows/*, /api/v1/routing/caps/:flowId, /api/v1/routing/simulate." />

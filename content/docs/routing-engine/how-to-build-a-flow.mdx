@@ -1,0 +1,113 @@
+---
+audience: human
+block: routing-engine
+source: hand
+title: "How to build a flow"
+description: "Step-by-step: canvas, branches, algorithm, GEO constraints, caps, schedule, publish."
+order: 2
+---
+
+# How to build a flow
+
+This recipe walks you from an empty flow to a published, live-traffic configuration using the visual editor.
+
+## 1. Open the visual editor
+
+Navigate to **Routing → Flows** in the left sidebar (shortcut `R`), then click **New flow** or open an existing one. The editor opens at:
+
+```
+/dashboard/routing/flows/:id
+```
+
+The canvas has three panes:
+
+- **Left** — version history (DRAFT / PUBLISHED / ARCHIVED).
+- **Centre** — the ReactFlow canvas with draggable nodes.
+- **Right** — the inspector panel (context-sensitive for the selected node).
+
+## 2. Add a broker target
+
+Click **+ Broker** in the canvas toolbar. A `BrokerTarget` node appears. In the inspector:
+
+- **Broker** — pick from the dropdown (lists all active brokers for your tenant).
+- **Active** — checked by default; uncheck to soft-disable without deleting.
+- **Description** — optional label shown in the Tree view.
+
+## 3. Add an algorithm node
+
+Click **+ Algorithm** to insert a `WRR` or **+ Slots-Chance** node. Connect broker targets to it with edges (drag from broker output → algorithm input).
+
+In the algorithm inspector, set weights:
+
+```json
+{
+  "type": "WRR",
+  "brokerWeights": [
+    { "brokerId": "brk_aaa", "weight": 60 },
+    { "brokerId": "brk_bbb", "weight": 40 }
+  ]
+}
+```
+
+Weights are relative — the engine normalises them to the GCD automatically.
+
+## 4. Set a GEO constraint
+
+Select a `BrokerTarget` node and open the **GEO** section in the inspector. Add allowed country codes (ISO 3166-1 alpha-2):
+
+```
+DE, AT, CH
+```
+
+Leave empty to allow all geos. Leads from excluded geos skip this target and proceed to the next available one.
+
+## 5. Set per-country caps
+
+Select the broker target and open **Caps** in the inspector. Click **+ Cap definition**:
+
+| Field | Example | Notes |
+|---|---|---|
+| Period | `daily` | `hourly` / `daily` / `weekly` |
+| Limit | `200` | Leads pushed until exhausted |
+| Per country | ✓ | Enable separate buckets per GEO |
+| Country limits | `DE: 100, AT: 50, CH: 50` | Must sum ≤ `limit` |
+
+With **per country** enabled, `CapCountryLimit` rows enforce separate Redis counters per `(broker, geo, period)`. A lead from a GEO with no matching `CapCountryLimit` is rejected with `cap_no_country_limit`.
+
+## 6. Set a schedule
+
+In the **Schedule** section of the broker inspector, draw working hours on the 7-day grid (UTC). The engine evaluates the broker's local time using `Broker.timezone`. Leads arriving outside the window skip this target.
+
+## 7. (Optional) Add a SmartPool
+
+Click **+ SmartPool** to wrap brokers in a priority-failover container. Connect broker targets to the SmartPool node and drag them vertically in the inspector to set rank (rank 1 = highest priority). The engine tries rank 1 first; on rejection or cap exhaustion it walks to rank 2.
+
+## 8. Publish
+
+Click **Publish** in the canvas header. The server validates the graph, compiles SmartPool chains, and flips the version to `PUBLISHED`. The status badge in the breadcrumb changes to **published**. From this moment, all new leads route through the new version.
+
+<Callout type="info" title="Publish is instant">
+There is no deploy step. The engine reads the active `FlowVersion` from Postgres on each push-lead job tick — typically within one second of publishing.
+</Callout>
+
+## Tree view
+
+For large flows, open the read-only compact tree at:
+
+```
+/dashboard/routing/flows/:id/tree
+```
+
+Nodes are shown with kind pills: `AD` (algorithm) / `FLT` (filter) / `ALG` (algorithm config) / `SM` (SmartPool) / `CO` (ComparingSplit) / `FB` (fallback). Expand/collapse per folder with a click. A **Tree** quick-switch button in the canvas header takes you there without leaving the flow.
+
+## Simulator
+
+Before pushing live traffic, validate distribution at:
+
+```
+/dashboard/routing/flows/:id/simulator
+```
+
+Single-lead mode traces the exact decision path — which constraints fired, which target was selected. Batch mode runs N synthetic leads and shows per-broker tallies + first-10 sequential traces. The **pool** tab (SmartPool flows) lets you set per-broker accept-probability as a JSON editor to simulate failover chains.
+
+<DeepRefCard block="routing-engine" kind="trpc" title="tRPC procedures for flows" description="routing.publishFlow, routing.simulateBatch, routing.treeView." />
