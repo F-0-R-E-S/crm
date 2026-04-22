@@ -439,9 +439,7 @@ export default function SimulatorPage({ params }: { params: Promise<{ flowId: st
 
       {mode === "pool" && (
         <div style={{ display: "grid", gridTemplateColumns: "380px 1fr", gap: 16 }}>
-          <section
-            style={{ border: "1px solid var(--bd-1)", borderRadius: 6, overflow: "hidden" }}
-          >
+          <section style={{ border: "1px solid var(--bd-1)", borderRadius: 6, overflow: "hidden" }}>
             <div
               style={{
                 padding: "10px 14px",
@@ -455,10 +453,9 @@ export default function SimulatorPage({ params }: { params: Promise<{ flowId: st
             </div>
             <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 10 }}>
               <div style={{ fontSize: 11, color: "var(--fg-2)" }}>
-                Feeds N synthetic leads through the flow; each broker rolls a
-                Math.random() against its configured accept probability.
-                On reject inside a SmartPool, the simulator walks the compiled
-                FallbackStep chain until accept or exhaustion.
+                Feeds N synthetic leads through the flow; each broker rolls a Math.random() against
+                its configured accept probability. On reject inside a SmartPool, the simulator walks
+                the compiled FallbackStep chain until accept or exhaustion.
               </div>
               <LabeledInput
                 label="N (leads to simulate)"
@@ -514,9 +511,7 @@ export default function SimulatorPage({ params }: { params: Promise<{ flowId: st
             </div>
           </section>
 
-          <section
-            style={{ border: "1px solid var(--bd-1)", borderRadius: 6, overflow: "hidden" }}
-          >
+          <section style={{ border: "1px solid var(--bd-1)", borderRadius: 6, overflow: "hidden" }}>
             <div
               style={{
                 padding: "10px 14px",
@@ -530,8 +525,8 @@ export default function SimulatorPage({ params }: { params: Promise<{ flowId: st
             </div>
             {!poolResult ? (
               <div style={{ padding: 14, color: "var(--fg-2)", fontSize: 12 }}>
-                Configure accept probabilities and run — you'll see per-broker
-                counts plus sequential attempt traces for the first 10 leads.
+                Configure accept probabilities and run — you'll see per-broker counts plus
+                sequential attempt traces for the first 10 leads.
               </div>
             ) : (
               <div style={{ padding: 14, display: "flex", flexDirection: "column", gap: 14 }}>
@@ -624,9 +619,7 @@ export default function SimulatorPage({ params }: { params: Promise<{ flowId: st
                             <span
                               key={`${t.leadIndex}-${i}-${a.nodeId}`}
                               style={{
-                                color: a.accepted
-                                  ? "oklch(72% 0.16 150)"
-                                  : "oklch(72% 0.15 25)",
+                                color: a.accepted ? "oklch(72% 0.16 150)" : "oklch(72% 0.15 25)",
                               }}
                             >
                               {a.brokerId.slice(0, 10)}

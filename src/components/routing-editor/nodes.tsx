@@ -262,9 +262,7 @@ export function SmartPoolNode({ data }: { data: NodeData }) {
   return (
     <div style={BASE_STYLE}>
       <Header kind="SmartPool" sub={`≤${node.maxHop} hops`} />
-      <div style={{ fontWeight: 500, marginBottom: 4 }}>
-        {data.label ?? "Sequential pool"}
-      </div>
+      <div style={{ fontWeight: 500, marginBottom: 4 }}>{data.label ?? "Sequential pool"}</div>
       <div style={{ fontSize: 10, color: "var(--fg-2)", marginBottom: 6 }}>
         Ask each child in rank order; the first that accepts wins.
       </div>
@@ -291,9 +289,7 @@ export function ComparingSplitNode({ data }: { data: NodeData }) {
   return (
     <div style={BASE_STYLE}>
       <Header kind="ComparingSplit" sub={`n=${node.sampleSize}`} />
-      <div style={{ fontWeight: 500, marginBottom: 4 }}>
-        {data.label ?? "A/B Compare"}
-      </div>
+      <div style={{ fontWeight: 500, marginBottom: 4 }}>{data.label ?? "A/B Compare"}</div>
       <div style={{ fontSize: 10, color: "var(--fg-2)", marginBottom: 6 }}>
         Split traffic; track {node.compareMetric} per branch.
       </div>

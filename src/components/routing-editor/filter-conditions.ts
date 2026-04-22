@@ -9,12 +9,12 @@
 // the Inspector.tsx adapter translates `op ↔ sign` at the PqlRule
 // boundary (see FilterConditionEditor onChange).
 
-import type { z } from "zod";
 import {
-  FilterConditionSchema,
+  type FilterConditionSchema,
   type FilterNodeSchema,
   NodeIdSchema as _NodeId,
 } from "@/server/routing/flow/model";
+import type { z } from "zod";
 
 // Keep the legacy FilterCondition Zod type — the editor operates on
 // this shape. `caseSensitive` is a UI-only extension threaded via the
@@ -76,16 +76,7 @@ export function legalOpsForField(field: FilterField): FilterOp[] {
       return ["eq", "neq", "contains", "starts_with", "ends_with", "matches"];
     default:
       // Free-text fields: subId, utm_source, utm_medium → all string ops.
-      return [
-        "eq",
-        "neq",
-        "in",
-        "not_in",
-        "contains",
-        "starts_with",
-        "ends_with",
-        "matches",
-      ];
+      return ["eq", "neq", "in", "not_in", "contains", "starts_with", "ends_with", "matches"];
   }
 }
 

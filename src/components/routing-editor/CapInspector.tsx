@@ -363,9 +363,7 @@ export function CapInspector({
                     type="checkbox"
                     disabled={readOnly}
                     checked={r.rejectedLimitAsPercent ?? false}
-                    onChange={(e) =>
-                      update(r._uid, { rejectedLimitAsPercent: e.target.checked })
-                    }
+                    onChange={(e) => update(r._uid, { rejectedLimitAsPercent: e.target.checked })}
                   />
                   treat rejected limit as % of pushed cap
                 </label>

@@ -335,8 +335,8 @@ export function Inspector(props: Props) {
               PQL gate (optional)
             </div>
             <div style={{ fontSize: 10, color: "var(--fg-2)", marginBottom: 8 }}>
-              Only this target will accept leads matching the gate. Evaluated
-              after cap check so misses don't consume slots.
+              Only this target will accept leads matching the gate. Evaluated after cap check so
+              misses don't consume slots.
             </div>
             {node.pqlGate && node.pqlGate.rules.length > 0 ? (
               <>
@@ -368,9 +368,7 @@ export function Inspector(props: Props) {
                 {!readOnly && (
                   <button
                     type="button"
-                    onClick={() =>
-                      props.onNodePatch({ pqlGate: undefined } as Partial<FlowNode>)
-                    }
+                    onClick={() => props.onNodePatch({ pqlGate: undefined } as Partial<FlowNode>)}
                     style={{
                       marginTop: 8,
                       fontSize: 11,

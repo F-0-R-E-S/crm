@@ -101,6 +101,13 @@ content:
 
 ---
 
+# POST /api/v1/routing/simulate-pool
+<a id="rest-post--api-v1-routing-simulate-pool"></a>
+
+Handler: `src/app/api/v1/routing/simulate-pool/route.ts`
+
+---
+
 # PUT /api/v1/routing/caps/{flowId}
 <a id="rest-put--api-v1-routing-caps--flowid-"></a>
 
