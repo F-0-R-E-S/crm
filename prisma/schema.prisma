@@ -1291,6 +1291,58 @@ model StatusMapping {
   @@index([brokerId])
 }
 
+// --- Docs RAG: DocChunk / DocSearchEvent / DocAskEvent ---
+
+model DocChunk {
+  id         String   @id
+  slug       String
+  audience   String
+  block      String
+  kind       String
+  title      String
+  body       String
+  anchor     String?
+  sourceHash String
+  embedding  Unsupported("vector(1024)")?
+  createdAt  DateTime @default(now())
+
+  @@index([slug])
+  @@index([audience])
+  @@index([block])
+}
+
+model DocSearchEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  tenantId  String?
+  query     String
+  mode      String
+  topKJson  Json
+  latencyMs Int
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model DocAskEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  tenantId  String?
+  question  String
+  answer    String
+  hitsJson  Json
+  latencyMs Int
+  refused   Boolean  @default(false)
+  promptVer String
+  modelName String
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([refused])
+}
+
 // --- EPIC S8: Alert rules engine ---
 model AlertLog {
   id           String    @id @default(cuid())

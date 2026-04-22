@@ -20,7 +20,7 @@ export function PrevNext({ tree, currentSlug }: { tree: DocsNode[]; currentSlug:
     <nav className="mt-12 flex items-center justify-between gap-4 border-t pt-6 text-sm">
       {prev ? (
         <Link
-          href={`/docs/${prev.slug}` as string}
+          href={`/docs/${prev.slug}` as never}
           className="group flex flex-col items-start gap-1"
         >
           <span className="text-muted-foreground">← Previous</span>
@@ -31,7 +31,7 @@ export function PrevNext({ tree, currentSlug }: { tree: DocsNode[]; currentSlug:
       )}
       {next ? (
         <Link
-          href={`/docs/${next.slug}` as string}
+          href={`/docs/${next.slug}` as never}
           className="group flex flex-col items-end gap-1 text-right"
         >
           <span className="text-muted-foreground">Next →</span>
