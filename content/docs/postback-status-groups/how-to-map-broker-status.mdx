@@ -1,0 +1,69 @@
+---
+audience: human
+block: postback-status-groups
+source: hand
+title: "How to map broker statuses"
+description: "Step-by-step guided workflow for creating and managing status mappings per broker."
+order: 2
+---
+
+# How to map broker statuses
+
+This recipe walks through the full status-mapping workflow for a broker — from viewing unmapped raw statuses to approving suggested mappings and optionally backfilling historical leads.
+
+## 1. Open the Status Mapping page
+
+Navigate to **Brokers** in the left sidebar, click the broker you want to configure, and select the **Status Mapping** tab in the broker detail top-bar.
+
+The page opens at:
+
+```
+/dashboard/brokers/:id/status-mapping
+```
+
+## 2. Review coverage and unmapped statuses
+
+At the top of the page you will see:
+
+- **Coverage tile** — percentage of raw statuses (last 30 days) that have a mapping. Aim for 95%+.
+- **Unmapped tile** — count of distinct raw status strings seen in the last 30 days that have no mapping.
+
+The table below shows all observed raw statuses, their frequency in the last 30 days, and the currently assigned canonical status (if any).
+
+## 3. Use "Suggest" for fast bulk mapping
+
+Click **Suggest all** (or the per-row **Suggest** button) to run Levenshtein-distance matching between each unmapped raw status and the list of `CanonicalStatus` names. The algorithm returns the closest match above the similarity threshold.
+
+Suggestions appear in the **Suggested canonical** column. Review each suggestion:
+
+- If the suggestion is correct, check the row.
+- If it is incorrect, click the **Canonical** dropdown and select the right status manually.
+- If a raw status genuinely maps to nothing (noise, test values), leave it unmapped and it will remain classified as `"unmapped"`.
+
+## 4. Approve the mappings
+
+Select all rows you want to save (use the header checkbox to select all) and click **Apply selected**. The mappings are written to the `StatusMapping` table and the `classifyLeadStatus` cache is invalidated immediately.
+
+![Status mapping page](/public/docs/status-mapping.png)
+
+## 5. Backfill historical leads (optional)
+
+After creating new mappings, existing leads that were previously classified as `"unmapped"` can be retroactively updated.
+
+Click **Remap existing leads** at the bottom of the page. This triggers an inline backfill that:
+
+1. Scans all leads for this broker where `canonicalStatus` does not match the current mapping for their last raw status.
+2. Writes the correct canonical status to each matching lead.
+3. Emits a `STATUS_MAPPING_BACKFILL_PROGRESS` Telegram event with progress (every 500 rows processed + on completion).
+
+<Callout type="warning" title="Backfill is long-running for large brokers">
+For brokers with tens of thousands of historical leads, the backfill may take several minutes. Progress is visible via the Telegram ops bot. Do not close the browser tab — the operation runs server-side and will complete regardless, but you will lose visibility into the progress indicator on the page.
+</Callout>
+
+## 6. Verify coverage
+
+After backfill completes, reload the Status Mapping page. The coverage tile should reflect the updated percentage. If coverage is still below 95%, there may be additional raw status strings from the last 30 days that were not mapped in step 4 — repeat from step 2.
+
+## Maintenance cadence
+
+Brokers sometimes add new raw status strings without notice. Schedule a monthly review of the coverage tile for each active broker. Set up a Telegram subscription for `STATUS_MAPPING_BACKFILL_PROGRESS` events to be notified when automatic backfills run (e.g. after a bulk mapping update).

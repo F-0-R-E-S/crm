@@ -3,11 +3,68 @@ audience: human
 block: postback-status-groups
 source: hand
 title: "Postback + Status Groups — overview"
-description: "Public placeholder page; replaced in docs plan #3."
+description: "How brokers report lead status, raw-to-canonical mapping, coverage metric, and backfill."
 order: 1
 slugOverride: "postback-status-groups"
 ---
 
 # Postback + Status Groups
 
-_Coming soon: overview of the block._
+Brokers report lead status changes by POSTing to GambChamp's postback endpoint. The status mapping layer translates each broker's raw status string into a canonical status that the platform understands universally.
+
+## Postback intake
+
+Brokers send status updates to:
+
+```
+POST /api/v1/postbacks/:brokerId
+```
+
+Requests are authenticated via HMAC signature. The broker signs the request body using the shared `Broker.postbackSecret`, and the server verifies the signature before processing. Unsigned or incorrectly signed requests are rejected with `401`.
+
+Each postback carries a `status` field — a free-form string the broker defines (for example: `"ftd"`, `"Qualified"`, `"duplicate_lead"`, `"hold"`). These raw strings vary widely between brokers and cannot be compared across integrations without normalization.
+
+## Raw → canonical mapping
+
+The `StatusMapping` table maps each `(brokerId, rawStatus)` pair to a `CanonicalStatus` row. When a postback arrives:
+
+1. `classifyLeadStatus(brokerId, rawStatus)` looks up the mapping.
+2. If a mapping exists, the canonical status name is returned.
+3. If no mapping exists, the lead's `canonicalStatus` is written as `"unmapped"`.
+
+The canonical status then drives:
+
+- `Lead.canonicalStatus` — stored on the lead record.
+- `Lead.state` transition — e.g. a `CONVERTED`-category canonical status transitions the lead to `FTD`.
+- `LeadEvent` emission — `STATUS_UPDATED` with the canonical and raw values.
+- `LeadDailyRoll.canonicalStatus` — used by the analytics rollup for cross-broker reporting.
+
+## The four categories
+
+Every canonical status belongs to one of four categories:
+
+| Category | Meaning |
+|----------|---------|
+| `NEW` | Broker accepted the lead; not yet converted |
+| `QUALIFIED` | Lead has registered and verified identity |
+| `REJECTED` | Broker declined the lead |
+| `CONVERTED` | First-time deposit confirmed |
+
+There are 20 seeded `CanonicalStatus` rows (5 per category) covering the most common broker status semantics. Custom canonical statuses can be added via the admin page.
+
+## Coverage metric
+
+The **coverage metric** shows the percentage of observed raw statuses (from the last 30 days of postbacks) that have a mapping for a given broker. A broker with 95% coverage means 5% of postbacks are landing as `"unmapped"` and are not being correctly classified.
+
+Unmapped statuses are visible on the broker's Status Mapping page alongside their observed frequency. You should map any status that appears more than once in 30 days.
+
+## Where to go next
+
+- [Map broker statuses step by step](/docs/postback-status-groups/how-to-map-broker-status) — the guided mapping workflow.
+- [Concepts: canonical status, categories, cache, backfill](/docs/postback-status-groups/concepts) — internals and data model.
+
+## Deep reference
+
+<DeepRefCard block="postback-status-groups" kind="prisma" title="Database schema" description="CanonicalStatus (20 seeded rows), StatusMapping (brokerId + rawStatus unique), Lead.canonicalStatus, LeadDailyRoll.canonicalStatus models." />
+<DeepRefCard block="postback-status-groups" kind="rest" title="REST surface" description="POST /api/v1/postbacks/:brokerId — HMAC-signed broker postback endpoint." />
+<DeepRefCard block="postback-status-groups" kind="errors" title="Error catalog" description="Signature verification failures, unmapped status handling, backfill conflict semantics." />

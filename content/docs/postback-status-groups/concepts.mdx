@@ -1,0 +1,75 @@
+---
+audience: human
+block: postback-status-groups
+source: hand
+title: "Concepts: canonical status, categories, cache, backfill"
+description: "Internals of the status classification system — data model, LRU cache, and backfill mechanics."
+order: 3
+---
+
+# Postback + Status Groups concepts
+
+## Canonical status
+
+<a id="canonical-status" />
+
+`CanonicalStatus` is the platform's normalized representation of a lead's state as reported by a broker. Rather than storing broker-specific status strings in analytics and reporting tables, GambChamp maps each raw string to a `CanonicalStatus` row that has a consistent name and category across all brokers and integrations.
+
+The platform ships **20 seeded `CanonicalStatus` rows**, 5 per category. These cover the most common patterns in the crypto/forex affiliate vertical:
+
+- Examples in `NEW`: `"accepted"`, `"in_progress"`, `"pending_review"`
+- Examples in `QUALIFIED`: `"registered"`, `"verified"`, `"kyc_passed"`
+- Examples in `REJECTED`: `"declined"`, `"duplicate"`, `"invalid_data"`
+- Examples in `CONVERTED`: `"ftd"`, `"first_deposit"`
+
+Canonical statuses are globally unique by name and are not tenant-scoped — they represent a shared vocabulary. Admins can add rows but should not duplicate existing semantics.
+
+## Categories
+
+<a id="categories" />
+
+Every `CanonicalStatus` belongs to exactly one `StatusCategory`. The category drives state-machine transitions on the `Lead` model:
+
+| Category | `Lead.state` transition | Meaning |
+|----------|------------------------|---------|
+| `NEW` | → `ACCEPTED` | Broker acknowledged the lead; awaiting further qualification |
+| `QUALIFIED` | → `ACCEPTED` | Lead has completed registration and identity verification |
+| `REJECTED` | → `DECLINED` | Broker actively refused the lead |
+| `CONVERTED` | → `FTD` | Lead made a first-time deposit — conversion confirmed |
+
+The category also determines how conversions are emitted. A postback that resolves to `CONVERTED` triggers `emit-conversion.ts` with `ConversionKind.FTD`; `QUALIFIED` triggers `ConversionKind.REGISTRATION`. This feeds the Finance / P&L pipeline.
+
+## Cache
+
+<a id="cache" />
+
+`classifyLeadStatus(brokerId, rawStatus)` is called on every postback — potentially hundreds of times per minute for high-volume brokers. To avoid a database round-trip on each call, the classifier uses a **30-second LRU cache** keyed by `brokerId`.
+
+The cache stores the full mapping table for a broker (all `rawStatus → CanonicalStatus` pairs) as a single Map object. On a cache miss, the classifier fetches all `StatusMapping` rows for the broker and populates the cache entry with a 30-second TTL.
+
+**Cache invalidation** is explicit: any write operation to the `StatusMapping` table (upsert, delete, bulk upsert) calls `invalidateStatusMappingCache(brokerId)`, which removes the broker's entry from the LRU. The next classify call will fetch fresh data from Postgres.
+
+This means new mappings take effect **within 30 seconds** for in-flight postbacks, and immediately for the first postback after any cache invalidation.
+
+## Backfill
+
+<a id="backfill" />
+
+When new mappings are created for a broker, historical leads that were classified as `"unmapped"` can be retroactively corrected via the **backfill** operation.
+
+The backfill is triggered by `statusMapping.backfillLeads` tRPC procedure (exposed via the "Remap existing leads" button on the status mapping page). It runs inline (not as a pg-boss job) with the following mechanics:
+
+1. **Scan phase.** Query all `Lead` rows for the broker where `canonicalStatus` is `"unmapped"` or does not match the current mapping for that lead's most recent raw postback status.
+
+2. **Classify phase.** For each scanned lead, call `classifyLeadStatus` with the raw status from the lead's last postback. Leads that now have a mapping receive an updated `canonicalStatus`.
+
+3. **Write phase.** Batch-update `Lead.canonicalStatus` in chunks of 500 rows using `updateMany`.
+
+4. **Progress events.** Every 500 rows processed, a `STATUS_MAPPING_BACKFILL_PROGRESS` Telegram event is emitted with `{brokerId, processed, total, pct}`. A final event is emitted on completion.
+
+**Idempotency:** the backfill can be run multiple times safely. Leads already correctly classified are skipped (no unnecessary writes). A re-run after adding more mappings will only update leads that gained a mapping from the new rows.
+
+**Scope:** the backfill only rewrites `Lead.canonicalStatus`. It does not re-emit `LeadEvent` rows, does not re-trigger state transitions, and does not affect `LeadDailyRoll` rows (rollup re-computation is handled by the analytics rollup cron on its next cycle).
+
+<DeepRefCard block="postback-status-groups" kind="invariants" title="Invariants" description="classifyLeadStatus idempotency, cache invalidation on write, backfill write-only semantics (no event re-emission)." />
+<DeepRefCard block="postback-status-groups" kind="telegram" title="Telegram events" description="STATUS_MAPPING_BACKFILL_PROGRESS — admin-visible progress event emitted during backfill operations." />
