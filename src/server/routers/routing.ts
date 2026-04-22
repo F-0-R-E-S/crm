@@ -3,7 +3,7 @@ import { prisma } from "@/server/db";
 import { validateChanceSum, validateSlotBounds } from "@/server/routing/algorithm/slots-chance";
 import { listFlowCaps, upsertFlowCaps } from "@/server/routing/flow/caps-repository";
 import { CapDefinitionInputSchema } from "@/server/routing/flow/caps-schema";
-import { FlowGraphSchema } from "@/server/routing/flow/model";
+import { type FlowGraph, FlowGraphSchema } from "@/server/routing/flow/model";
 import { archiveFlow, publishFlow } from "@/server/routing/flow/publish";
 import {
   createDraftFlow,
@@ -11,6 +11,7 @@ import {
   loadFlowById,
   updateDraftGraph,
 } from "@/server/routing/flow/repository";
+import { flowToTree } from "@/server/routing/flow/tree";
 import { adminProcedure, protectedProcedure, router } from "@/server/trpc";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
@@ -224,6 +225,33 @@ export const routingRouter = router({
     });
     return rows;
   }),
+
+  // Tree-list projection of the flow's current draft (or published if no
+  // draft exists). Used by /dashboard/routing/flows/:id/tree for a
+  // compact iREV-style view of folders → leaves.
+  treeView: protectedProcedure
+    .input(z.object({ flowId: z.string().min(1) }))
+    .query(async ({ input }) => {
+      const flow = await prisma.flow.findUnique({
+        where: { id: input.flowId },
+        include: {
+          versions: { orderBy: { versionNumber: "desc" }, take: 1 },
+          activeVersion: true,
+        },
+      });
+      if (!flow) throw new TRPCError({ code: "NOT_FOUND", message: "flow_not_found" });
+      // Prefer the latest draft version (reflects in-progress edits)
+      // falling back to the published version.
+      const latest = flow.versions[0] ?? flow.activeVersion;
+      if (!latest) return { tree: { folders: [] }, flowVersionId: null };
+      const graph = latest.graph as unknown as FlowGraph;
+      return {
+        tree: flowToTree(graph),
+        flowVersionId: latest.id,
+        flowName: flow.name,
+        flowStatus: flow.status,
+      };
+    }),
 
   // Overview: aggregated stats for /dashboard/routing. Covers the last
   // 24h by default: total leads received + per-state counts, plus the

@@ -750,6 +750,13 @@ export default function FlowVisualEditorPage({
             <span style={{ fontSize: 10, color: "oklch(72% 0.15 25)" }}>caps: {liveErr}</span>
           )}
           <Link
+            href={`/dashboard/routing/flows/${flowId}/tree` as never}
+            style={{ ...btnStyle(theme), textDecoration: "none" }}
+            title="Compact iREV-style tree view (read-only in v2.0-s3.3)"
+          >
+            Tree
+          </Link>
+          <Link
             href={`/dashboard/routing/flows/${flowId}/simulator` as never}
             style={{ ...btnStyle(theme), textDecoration: "none" }}
           >
