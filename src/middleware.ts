@@ -92,7 +92,9 @@ export default auth((req) => {
     pathname.startsWith("/api/telegram/") ||
     pathname.startsWith("/api/stripe/webhook") ||
     pathname.startsWith("/share/analytics/") ||
-    pathname.startsWith("/api/v1/analytics/share/");
+    pathname.startsWith("/api/v1/analytics/share/") ||
+    pathname === "/sitemap.xml" ||
+    pathname === "/robots.txt";
 
   // Bearer tokens are allowed to reach any /api/v1/* or /api/trpc/* — the
   // route handlers are responsible for verifying them. The redirect-to-login
