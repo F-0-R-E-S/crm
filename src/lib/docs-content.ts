@@ -92,3 +92,13 @@ export async function loadDeepOnly(opts: { root: string; cwd?: string }): Promis
   const full = await loadDocsTree({ ...opts, includeDeep: true });
   return full.flatMap((n) => n.pages).filter((p) => p.audience === "ai-deep");
 }
+
+export async function findDocAnywhere(opts: {
+  root: string;
+  cwd?: string;
+  slug: string;
+}): Promise<DocsPage | null> {
+  const full = await loadDocsTree({ ...opts, includeDeep: true });
+  const flat = full.flatMap((n) => n.pages);
+  return flat.find((p) => p.slug === opts.slug) ?? null;
+}
