@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import fg from "fast-glob";
 import { BLOCK_CATALOG } from "../docs-regen/block-catalog";
@@ -53,9 +54,9 @@ export async function buildUpdatePrompt(input: UpdatePromptInput): Promise<strin
     "",
     "Propose a patch for ONLY the human layer. Respect these rules:",
     "- Keep each file's frontmatter untouched unless the title/description is stale.",
-    "- Preserve existing anchors (`<a id=\"...\" />`) — they may be linked from code.",
+    '- Preserve existing anchors (`<a id="..." />`) — they may be linked from code.',
     "- Prefer surgical edits over rewrites.",
-    '- If the diff is internal-only (no user-visible change), reply: `NO_DOC_UPDATE_NEEDED: <reason>`.',
+    "- If the diff is internal-only (no user-visible change), reply: `NO_DOC_UPDATE_NEEDED: <reason>`.",
     "",
     "Respond with one fenced `diff` block per changed file, or the NO_DOC_UPDATE_NEEDED sentinel.",
   ].join("\n");
@@ -71,9 +72,6 @@ if (require.main === module) {
     console.error("usage: docs:update-prompt <block>");
     process.exit(2);
   }
-  // biome-ignore lint/style/noCommonJs: CLI entry point intentionally uses require for child_process
-  const diff = require("node:child_process").execSync("git diff origin/main...HEAD", {
-    encoding: "utf8",
-  });
+  const diff = execSync("git diff origin/main...HEAD", { encoding: "utf8" });
   buildUpdatePrompt({ block, diffText: diff }).then((p) => process.stdout.write(p));
 }
